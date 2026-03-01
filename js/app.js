@@ -22,15 +22,15 @@ Diğer modüller:
 Bu dosya uygulamanın ana kontrol merkezidir.
 */
 // app.js en başına ekle
-const loginArea = document.getElementById("loginArea");
-const mainArea = document.getElementById("mainArea");
-const inputArea = document.getElementById("inputArea");
-const readingArea = document.getElementById("readingArea");
-const historyArea = document.getElementById("historyArea");
-const menuArea = document.getElementById("menuArea");
-const menuWordsArea = document.getElementById("menuWordsArea");
-const quizArea = document.getElementById("quizArea");
-const bulkWordArea = document.getElementById("bulkWordArea");
+const loginArea = document.getElementById("loginArea") || null;
+const mainArea = document.getElementById("mainArea") || null;
+const inputArea = document.getElementById("inputArea") || null;
+const readingArea = document.getElementById("readingArea") || null;
+const historyArea = document.getElementById("historyArea") || null;
+const menuArea = document.getElementById("menuArea") || null;
+const menuWordsArea = document.getElementById("menuWordsArea") || null;
+const quizArea = document.getElementById("quizArea") || null;
+const bulkWordArea = document.getElementById("bulkWordArea") || null;
 
 const firebaseConfig = {
   apiKey: "AIzaSyCUkBPHSo6O1271n3isD8-hAAgqsyyl5YA",
@@ -61,8 +61,8 @@ function loginWithGoogle(){
         });
 }
 function showUser(user){
-    loginArea.style.display = "none";
-    mainArea.style.display = "block";
+    if(loginArea) loginArea.style.display = "none";
+    if(mainArea) mainArea.style.display = "block";
 
     // Firestore’da kullanıcıya özel document oluştur
     const userRef = db.collection("users").doc(user.email);
@@ -82,8 +82,8 @@ function showUser(user){
 }
 function logout(){
     auth.signOut().then(()=>{
-        mainArea.style.display = "none";
-        loginArea.style.display = "block";
+        if(mainArea) mainArea.style.display = "none";
+        if(loginArea) loginArea.style.display = "block";
     });
 }
 // ===== XP SYSTEM =====
@@ -137,8 +137,7 @@ function goMenu(){
         return;
     }
 
-    hideAll();
-    menuArea.style.display = "block";
+    window.location.href = "index.html";
     menuWordsArea.style.display = "block";
 
     loadMenuWords("date");
@@ -150,12 +149,12 @@ function goMenu(){
 document.addEventListener("keydown",e=>{
 
     // Anlam için T
-    if((e.key==="t"||e.key==="T") && readingArea.style.display==="block"){
+    if(readingArea && (e.key==="t"||e.key==="T")){
         learnMeaning();
     }
 
     // Kaydet için S
-    if((e.key==="s"||e.key==="S") && readingArea.style.display==="block"){
+    if(readingArea && (e.key==="s"||e.key==="S")){
         saveWord();
     }
 
@@ -429,15 +428,15 @@ auth.onAuthStateChanged(user => {
     if(user){
         console.log("Giriş yapılmış:", user.displayName);
 
-        loginArea.style.display = "none";
-        mainArea.style.display = "block";
+        if(loginArea) loginArea.style.display = "none";
+        if(mainArea) mainArea.style.display = "block";
 
         goMenu();
 
     } else {
 
-        mainArea.style.display = "none";
-        loginArea.style.display = "block";
+        if(mainArea) mainArea.style.display = "none";
+        if(loginArea) loginArea.style.display = "block";
 
     }
 
