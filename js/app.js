@@ -21,6 +21,9 @@ Diğer modüller:
 
 Bu dosya uygulamanın ana kontrol merkezidir.
 */
+// app.js en başına ekle
+const loginArea = document.getElementById("loginArea");
+const mainArea = document.getElementById("mainArea");
 const inputArea = document.getElementById("inputArea");
 const readingArea = document.getElementById("readingArea");
 const historyArea = document.getElementById("historyArea");
@@ -42,18 +45,47 @@ firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const db = firebase.firestore();
+
 function loginWithGoogle(){
     const provider = new firebase.auth.GoogleAuthProvider();
 
     auth.signInWithPopup(provider)
         .then(result => {
-            console.log("Giriş başarılı:", result.user);
+            const user = result.user;
+            console.log("Giriş başarılı:", user.email, user.displayName);
+            showUser(user);
         })
         .catch(error => {
             console.error(error);
+            alert("Giriş hatası: " + error.message);
         });
 }
+function showUser(user){
+    loginArea.style.display = "none";
+    mainArea.style.display = "block";
 
+    // Firestore’da kullanıcıya özel document oluştur
+    const userRef = db.collection("users").doc(user.email);
+
+    userRef.get().then(doc=>{
+        if(!doc.exists){
+            userRef.set({
+                xp: 0,
+                level: 1,
+                combo: 0,
+                words: [],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+    });
+
+}
+function logout(){
+    auth.signOut().then(()=>{
+        mainArea.style.display = "none";
+        loginArea.style.display = "block";
+    });
+}
 // ===== XP SYSTEM =====
 let playerData = JSON.parse(localStorage.getItem("playerData") || "null") || {
     xp: 0,
@@ -98,11 +130,17 @@ function showInput(){
 
 
 function goMenu(){
-    hideAll();
-    menuArea.style.display="block";
-    menuWordsArea.style.display="block";
+    if(!auth.currentUser){
+        alert("Önce giriş yapmalısınız!");
+        hideAll();
+        document.querySelector("button[onclick='loginWithGoogle()']").style.display = "block";
+        return;
+    }
 
-    // her zaman tarihe göre aç
+    hideAll();
+    menuArea.style.display = "block";
+    menuWordsArea.style.display = "block";
+
     loadMenuWords("date");
 
     clearInterval(timer);
@@ -125,9 +163,6 @@ document.addEventListener("keydown",e=>{
 
 
 
-document.addEventListener("DOMContentLoaded", function () {
-    goMenu();
-});
 
 function loadMenuWords(mode = "date"){
     let saved = JSON.parse(localStorage.getItem("words") || "[]");
@@ -388,3 +423,22 @@ function filterMenuWords(){
 
     menuWordCount.innerText = visibleCount;
 }
+// Sayfa yüklendiğinde auth durumunu kontrol et
+auth.onAuthStateChanged(user => {
+
+    if(user){
+        console.log("Giriş yapılmış:", user.displayName);
+
+        loginArea.style.display = "none";
+        mainArea.style.display = "block";
+
+        goMenu();
+
+    } else {
+
+        mainArea.style.display = "none";
+        loginArea.style.display = "block";
+
+    }
+
+});

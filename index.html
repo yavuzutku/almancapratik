@@ -10,9 +10,20 @@
 
 
 <body>
-<button onclick="loginWithGoogle()" class="primary">
+<!-- Giriş ekranı -->
+<div id="loginArea">
+    <button id="loginBtn" onclick="loginWithGoogle()" class="primary">
     🔐 Google ile Giriş
-</button>
+    </button>
+</div>
+<button onclick="logout()" class="secondary">Çıkış Yap</button>
+<!-- Tüm içerik bu alanın içinde olacak -->
+<div id="mainArea" style="display:none;">
+    <!-- Buraya senin mevcut container div’ini koyabilirsin -->
+    <div class="container">
+        ... (tüm mevcut kartlar) ...
+    </div>
+</div>
 <div class="container">
 <div class="card" id="listsArea" style="display:none;">
     
@@ -39,7 +50,7 @@
         <p>XP: <span id="playerXP">0</span> | 🔥 Combo: <span id="playerCombo">0</span></p>
     </div>
 
-    <h1>🚀 Almanc Öğrenme Platformu PRO</h1>
+    <h1>🚀 Almanca Öğrenme Platformu PRO</h1>
 
     <div class="menuCardsModern">
 
