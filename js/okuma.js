@@ -5,7 +5,6 @@ let timer;
 let seconds = 0;
 let selectedWordGlobal = "";
 function startReading(id=null){
-
     let text;
 
     if(id){
@@ -23,7 +22,8 @@ function startReading(id=null){
 
     hideAll();
     readingArea.style.display="block";
-    displayText.innerText=text;
+    displayText.innerHTML = "";
+    displayText.textContent = text;
     highlightSavedWords();
     startTimer();
 
@@ -264,7 +264,7 @@ function saveBulkWords(){
         let meaning = meanings[i];
 
         if(!saved.find(w => w.word === word)){
-            saddOrUpdateWord(word, meaning);
+            addOrUpdateWord(word, meaning);
         }
     }
 
@@ -281,21 +281,44 @@ function closeMultiPanel(){
 }
 function highlightSavedWords(){
 
+    displayText.innerHTML = displayText.textContent;
+
     let saved = JSON.parse(localStorage.getItem("words") || "[]");
-    let text = displayText.innerText;
 
-    saved.forEach(wordObj => {
+    const walker = document.createTreeWalker(
+        displayText,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+    );
 
-        let word = wordObj.word;
+    let nodes = [];
+    while(walker.nextNode()){
+        nodes.push(walker.currentNode);
+    }
 
-        let regex = new RegExp(`\\b${word}\\b`, "gi");
+    nodes.forEach(node => {
 
-        text = text.replace(regex, 
-            `<span class="highlight" data-word="${wordObj.word}">${word}</span>`
-        );
+        let originalText = node.nodeValue;
+        let newHTML = originalText;
+
+        saved.forEach(wordObj => {
+
+            let escaped = wordObj.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+            let regex = new RegExp(`(^|\\s|[.,!?])(${escaped})(?=$|\\s|[.,!?])`, "gi");
+
+            newHTML = newHTML.replace(regex,
+                `$1<span class="highlight">$2</span>`
+            );
+        });
+
+        if(newHTML !== originalText){
+            let span = document.createElement("span");
+            span.innerHTML = newHTML;
+            node.replaceWith(span);
+        }
     });
-
-    displayText.innerHTML = text;
 }
 displayText.addEventListener("mouseup", function(e){
 
@@ -383,6 +406,7 @@ displayText.addEventListener("click", function(e){
         floatingMeaningBtn.style.left = (window.scrollX + rect.left) + "px";
     }
 });
+
 function closeTranslate(){
     document.getElementById("translatePopup").style.display = "none";
 }
