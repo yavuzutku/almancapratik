@@ -27,8 +27,32 @@ const historyArea = document.getElementById("historyArea");
 const menuArea = document.getElementById("menuArea");
 const menuWordsArea = document.getElementById("menuWordsArea");
 const quizArea = document.getElementById("quizArea");
+const bulkWordArea = document.getElementById("bulkWordArea");
 
+const firebaseConfig = {
+  apiKey: "AIzaSyCUkBPHSo6O1271n3isD8-hAAgqsyyl5YA",
+  authDomain: "yavuzprogram-6c1db.firebaseapp.com",
+  projectId: "yavuzprogram-6c1db",
+  storageBucket: "yavuzprogram-6c1db.firebasestorage.app",
+  messagingSenderId: "424372113744",
+  appId: "1:424372113744:web:2a8652c974bcbfba81dc55"
+};
 
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+function loginWithGoogle(){
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    auth.signInWithPopup(provider)
+        .then(result => {
+            console.log("Giriş başarılı:", result.user);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
 
 // ===== XP SYSTEM =====
 let playerData = JSON.parse(localStorage.getItem("playerData") || "null") || {
@@ -60,12 +84,9 @@ function savePlayer(){
 }
 
 function hideAll(){
-    inputArea.style.display="none";
-    readingArea.style.display="none";
-    historyArea.style.display="none";
-    menuArea.style.display="none";
-    menuWordsArea.style.display="none";
-    quizArea.style.display="none";
+    document.querySelectorAll(".card").forEach(card=>{
+        card.style.display = "none";
+    });
 }
 
 function showInput(){
@@ -289,6 +310,7 @@ const floatingBtn = document.getElementById("floatingMeaningBtn");
 window.addEventListener("scroll", function(){
 
     let btn = document.getElementById("scrollTopBtn");
+    if(!btn) return;
 
     if(window.scrollY > 250){
         btn.classList.add("show");
