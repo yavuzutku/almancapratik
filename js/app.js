@@ -47,19 +47,17 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 function loginWithGoogle(){
+    console.log("loginWithGoogle çağrıldı");
     const provider = new firebase.auth.GoogleAuthProvider();
 
     auth.signInWithPopup(provider)
         .then(result => {
             const user = result.user;
             console.log("Giriş başarılı:", user.email, user.displayName);
-            
-            // Sadece burada loginArea kaybolacak
             showUser(user);
         })
         .catch(error => {
-            console.error(error);
-            alert("Giriş hatası: " + error.message);
+            console.error("Giriş hatası:", error);
         });
 }
 function showUser(user){
@@ -432,13 +430,22 @@ const currentPage = window.location.pathname.split("/").pop();
 if(currentPage === "index.html" || currentPage === ""){
     // Sayfa yüklendiğinde auth durumunu kontrol et ama sadece loginArea göster/gizle
     auth.onAuthStateChanged(user => {
+        console.log("onAuthStateChanged çalıştı", user);
+
         if(user){
-            console.log("Giriş yapılmış:", user.displayName);
-            // loginArea kaybolacak ama menuArea açılmayacak, kullanıcı manuel olarak sayfayı açacak
-            if(loginArea) loginArea.style.display = "none";
-            if(mainArea) mainArea.style.display = "block"; 
-            // menuArea yüklemesini kaldırıyoruz, sadece giriş sonrası loginWithGoogle() ile açılacak
+            console.log("Kullanıcı var:", user.displayName, user.email);
+
+            // Sadece index.html ise menu aç
+            const currentPage = window.location.pathname.split("/").pop();
+            console.log("currentPage:", currentPage);
+
+            if(currentPage === "index.html" || currentPage === ""){
+                if(loginArea) loginArea.style.display = "none";
+                if(mainArea) mainArea.style.display = "block";
+                goMenu();
+            }
         } else {
+            console.log("Kullanıcı yok, login gösteriliyor");
             if(mainArea) mainArea.style.display = "none";
             if(loginArea) loginArea.style.display = "block";
         }
