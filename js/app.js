@@ -53,6 +53,8 @@ function loginWithGoogle(){
         .then(result => {
             const user = result.user;
             console.log("Giriş başarılı:", user.email, user.displayName);
+            
+            // Sadece burada loginArea kaybolacak
             showUser(user);
         })
         .catch(error => {
@@ -61,7 +63,7 @@ function loginWithGoogle(){
         });
 }
 function showUser(user){
-    // login ekranını gizle
+    // Giriş başarılı olduğunda göster
     if(loginArea) loginArea.style.display = "none";
     if(mainArea) mainArea.style.display = "block";
 
