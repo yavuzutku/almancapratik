@@ -133,11 +133,14 @@ function goMenu(){
     if(!auth.currentUser){
         alert("Önce giriş yapmalısınız!");
         hideAll();
-        document.querySelector("button[onclick='loginWithGoogle()']").style.display = "block";
+        if(document.querySelector("button[onclick='loginWithGoogle()']"))
+            document.querySelector("button[onclick='loginWithGoogle()']").style.display = "block";
         return;
     }
 
+    hideAll();
 
+    if(menuArea) menuArea.style.display = "block";
     if(menuWordsArea) menuWordsArea.style.display = "block";
 
     loadMenuWords("date");
@@ -424,15 +427,20 @@ function filterMenuWords(){
 }
 // Sayfa yüklendiğinde auth durumunu kontrol et
 auth.onAuthStateChanged(user => {
+
     if(user){
         console.log("Giriş yapılmış:", user.displayName);
 
         if(loginArea) loginArea.style.display = "none";
         if(mainArea) mainArea.style.display = "block";
 
-        goMenu(); // sadece UI güncelliyor
+        // Kullanıcı giriş yaptıysa menüyü göster
+        if(menuArea) goMenu();
+
     } else {
+        // Kullanıcı giriş yapmamışsa hiçbir reload yok, sadece login ekranı göster
         if(mainArea) mainArea.style.display = "none";
         if(loginArea) loginArea.style.display = "block";
     }
+
 });
