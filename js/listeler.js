@@ -2,21 +2,22 @@ function listeler(){
 
     hideAll();
 
-    if(!document.getElementById("listsArea")){
+    const listsArea = document.getElementById("listsArea");
 
-        const div = document.createElement("div");
-        div.className = "card";
-        div.id = "listsArea";
-
-        document.querySelector(".container").appendChild(div);
-    }
-
-    listsArea.style.display="block";
+    listsArea.style.display = "block";
 
     renderListsPage();
 }
 
+
+
+// ===============================
+// LISTE ANA SAYFA
+// ===============================
+
 function renderListsPage(){
+
+    const listsArea = document.getElementById("listsArea");
 
     listsArea.innerHTML = `
     
@@ -35,11 +36,19 @@ function renderListsPage(){
     loadLists();
 }
 
+
+
+// ===============================
+// LISTELERI YUKLE
+// ===============================
+
 function loadLists(){
+
+    const listsContainer = document.getElementById("listsContainer");
 
     let lists = JSON.parse(localStorage.getItem("wordLists") || "[]");
 
-    listsContainer.innerHTML="";
+    listsContainer.innerHTML = "";
 
     if(lists.length === 0){
         listsContainer.innerHTML = `
@@ -51,15 +60,14 @@ function loadLists(){
     lists.forEach((list,index)=>{
 
         let div = document.createElement("div");
-
-        div.className="listModernCard";
+        div.className = "listModernCard";
 
         div.innerHTML = `
         <h3>${list.name}</h3>
         <p>${list.words.length} kelime</p>
 
         <button class="primary" onclick="openList(${index})">
-        Aç
+            Aç
         </button>
         `;
 
@@ -68,6 +76,12 @@ function loadLists(){
     });
 
 }
+
+
+
+// ===============================
+// YENI LISTE
+// ===============================
 
 function createNewList(){
 
@@ -78,16 +92,24 @@ function createNewList(){
     let lists = JSON.parse(localStorage.getItem("wordLists") || "[]");
 
     lists.push({
-        name:name,
-        words:[]
+        name: name,
+        words: []
     });
 
-    localStorage.setItem("wordLists",JSON.stringify(lists));
+    localStorage.setItem("wordLists", JSON.stringify(lists));
 
     renderListsPage();
 }
 
+
+
+// ===============================
+// LISTE AC
+// ===============================
+
 function openList(index){
+
+    const listsArea = document.getElementById("listsArea");
 
     let lists = JSON.parse(localStorage.getItem("wordLists") || "[]");
 
@@ -95,7 +117,7 @@ function openList(index){
 
     listsArea.innerHTML = `
     
-    <button class="secondary" onclick="goMenu()">🏠 Ana Menü</button>
+    <button class="secondary" onclick="listeler()">⬅ Geri</button>
 
     <h2 style="margin-top:15px;">📚 ${list.name}</h2>
 
@@ -106,7 +128,7 @@ function openList(index){
     <div class="wordsGrid" id="listWords"></div>
     `;
 
-    let div = document.getElementById("listWords");
+    const div = document.getElementById("listWords");
 
     if(list.words.length === 0){
         div.innerHTML = `<p style="opacity:0.6;">Liste boş</p>`;
@@ -116,31 +138,39 @@ function openList(index){
     list.words.forEach((w,i)=>{
 
         let row = document.createElement("div");
-
-        row.className="wordCard";
+        row.className = "wordCard";
 
         row.innerHTML = `
         <b>${w.word}</b>
         <span>${w.meaning}</span>
 
         <button class="danger" onclick="removeWord(${index},${i})">
-        ❌
+            ❌
         </button>
         `;
 
         div.appendChild(row);
 
     });
-
 }
 
+
+
+// ===============================
+// LISTEYE KELIME EKLE
+// ===============================
+
 function addWordsToList(listIndex){
+
+    const listsArea = document.getElementById("listsArea");
 
     let saved = JSON.parse(localStorage.getItem("words") || "[]");
 
     listsArea.innerHTML = `
     
-    <button class="secondary" onclick="goMenu()">🏠 Ana Menü</button>
+    <button class="secondary" onclick="openList(${listIndex})">
+        ⬅ Geri
+    </button>
 
     <h2 style="margin-top:15px;">Kelime Seç</h2>
 
@@ -160,13 +190,12 @@ function addWordsToList(listIndex){
     </button>
     `;
 
-    let container = document.getElementById("listWordSelect");
+    const container = document.getElementById("listWordSelect");
 
     saved.forEach(word=>{
 
         let div = document.createElement("div");
-
-        div.className="checkboxRow";
+        div.className = "checkboxRow";
 
         div.innerHTML = `
         <label>
@@ -176,9 +205,16 @@ function addWordsToList(listIndex){
         `;
 
         container.appendChild(div);
+
     });
 
 }
+
+
+
+// ===============================
+// SECILENLERI KAYDET
+// ===============================
 
 function saveSelectedWords(listIndex){
 
@@ -195,26 +231,38 @@ function saveSelectedWords(listIndex){
 
     lists[listIndex].words.push(...selectedWords);
 
-    localStorage.setItem("wordLists",JSON.stringify(lists));
+    localStorage.setItem("wordLists", JSON.stringify(lists));
 
     openList(listIndex);
 }
 
-function removeWord(listIndex,wordIndex){
+
+
+// ===============================
+// LISTEDEN KELIME SIL
+// ===============================
+
+function removeWord(listIndex, wordIndex){
 
     let lists = JSON.parse(localStorage.getItem("wordLists") || "[]");
 
-    lists[listIndex].words.splice(wordIndex,1);
+    lists[listIndex].words.splice(wordIndex, 1);
 
-    localStorage.setItem("wordLists",JSON.stringify(lists));
+    localStorage.setItem("wordLists", JSON.stringify(lists));
 
     openList(listIndex);
 }
 
+
+
+// ===============================
+// LISTE ICIN ARAMA
+// ===============================
+
 function filterListWords(){
 
-    let searchValue = listSearch.value.toLowerCase();
-    let items = listWordSelect.querySelectorAll(".checkboxRow");
+    const searchValue = listSearch.value.toLowerCase();
+    const items = listWordSelect.querySelectorAll(".checkboxRow");
 
     let visible = 0;
 
@@ -223,10 +271,10 @@ function filterListWords(){
         let text = div.innerText.toLowerCase();
 
         if(text.includes(searchValue)){
-            div.style.display="block";
+            div.style.display = "block";
             visible++;
         } else {
-            div.style.display="none";
+            div.style.display = "none";
         }
 
     });
