@@ -22,6 +22,9 @@ Diğer modüller:
 Bu dosya uygulamanın ana kontrol merkezidir.
 */
 // app.js en başına ekle
+const menuWordList = document.getElementById("menuWordList") || null;
+const menuWordCount = document.getElementById("menuWordCount") || null;
+const menuSearchInput = document.getElementById("menuSearchInput") || null;
 const loginArea = document.getElementById("loginArea") || null;
 const mainArea = document.getElementById("mainArea") || null;
 const inputArea = document.getElementById("inputArea") || null;
@@ -166,6 +169,7 @@ document.addEventListener("keydown",e=>{
 
 
 function loadMenuWords(mode = "date"){
+    if(!menuWordList) return;
     let saved = JSON.parse(localStorage.getItem("words") || "[]");
     // eski kayıtlar için tarih oluştur
     saved.forEach(w=>{

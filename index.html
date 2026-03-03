@@ -21,7 +21,23 @@
 <div class="container">
 
 <div class="card" id="menuArea">
+<div id="menuWordsArea" style="margin-top:40px;">
 
+    <h2>📚 Kaydedilen Kelimeler</h2>
+
+    <input 
+        id="menuSearchInput"
+        type="text"
+        placeholder="Kelime ara..."
+        oninput="filterMenuWords()"
+        style="padding:10px; width:100%; margin-bottom:15px;"
+    >
+
+    <p>Toplam Kelime: <span id="menuWordCount">0</span></p>
+
+    <div id="menuWordList"></div>
+
+</div>
 <div class="xpCard">
 <h3>🎖 Seviye: <span id="playerLevel">1</span></h3>
 
