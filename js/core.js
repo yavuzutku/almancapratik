@@ -78,10 +78,19 @@ function loadNavbar(){
 
   navbar.innerHTML = `
     <div class="logo">YavuzProgram</div>
-    <button class="logout-btn" id="logoutBtn">Çıkış Yap</button>
+
+    <div style="display:flex; gap:12px; align-items:center;">
+      <button class="home-btn" id="homeBtn">Anamenü</button>
+      <button class="logout-btn" id="logoutBtn">Çıkış Yap</button>
+    </div>
   `;
 
   document.body.prepend(navbar);
+
+  // 🔥 Anamenü butonu
+  document.getElementById("homeBtn").addEventListener("click", ()=>{
+    window.location.href = "https://yavuzutku.github.io/yavuzprogram/anasayfa.html";
+  });
 
   // logout event
   document.getElementById("logoutBtn").addEventListener("click", ()=>{

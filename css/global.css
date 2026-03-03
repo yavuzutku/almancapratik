@@ -49,3 +49,23 @@
   transform:translateY(-2px) scale(1.05);
   box-shadow:0 10px 25px rgba(201,168,76,0.4);
 }
+/* ANAMENU BUTTON */
+
+.home-btn{
+  padding:8px 16px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:10px;
+  cursor:pointer;
+
+  font-size:14px;
+  font-weight:600;
+  color:#fff;
+
+  transition:0.3s ease;
+}
+
+.home-btn:hover{
+  background:rgba(255,255,255,0.15);
+  transform:translateY(-2px);
+}
