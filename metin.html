@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Playfair+Display&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/metin.css">
+<link rel="stylesheet" href="css/global.css">
 
 </head>
 <body>
@@ -18,33 +19,9 @@
 <div class="bottom-action">
   <button id="goReadBtn">📖 Metni Oku</button>
 </div>
-<div class="toolbar">
-
-  <select id="fontSelector">
-    <option value="Inter">Inter</option>
-    <option value="Roboto">Roboto</option>
-    <option value="Playfair Display">Playfair</option>
-  </select>
-
-  <button data-cmd="bold">B</button>
-  <button data-cmd="underline">U</button>
-
-  <button data-align="left">Sol</button>
-  <button data-align="center">Ortala</button>
-  <button data-align="right">Sağ</button>
-
-  <button id="increaseSize">A+</button>
-  <button id="decreaseSize">A-</button>
-
-  <input type="color" id="textColor">
-  <input type="color" id="highlightColor">
-
-</div>
 
 <div class="editor">
-  <div id="textArea" contenteditable="true">
-    Almanca metninizi buraya yapıştırın...
-  </div>
+  <div id="textArea" contenteditable="true" data-placeholder="Almanca metninizi buraya yapıştırın..."></div>
 </div>
 
 <script src="js/metin.js"></script>

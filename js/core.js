@@ -71,3 +71,25 @@ function requireAuth(){
     window.location.href = "index.html";
   }
 }
+function loadNavbar(){
+
+  const navbar = document.createElement("div");
+  navbar.className = "navbar";
+
+  navbar.innerHTML = `
+    <div class="logo">YavuzProgram</div>
+    <button class="logout-btn" id="logoutBtn">Çıkış Yap</button>
+  `;
+
+  document.body.prepend(navbar);
+
+  // logout event
+  document.getElementById("logoutBtn").addEventListener("click", ()=>{
+    localStorage.removeItem("userToken");
+    window.location.href = "index.html";
+  });
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  loadNavbar();
+});

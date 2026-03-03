@@ -24,20 +24,6 @@ body{
   border-bottom:1px solid rgba(255,255,255,0.08);
 }
 
-.toolbar button,
-.toolbar select,
-.toolbar input{
-  padding:6px 10px;
-  border-radius:6px;
-  border:none;
-  cursor:pointer;
-}
-
-.toolbar button{
-  background:#2a2a35;
-  color:white;
-}
-
 .editor{
   padding:40px;
   max-width:900px;
@@ -75,4 +61,8 @@ body{
 .bottom-action button:hover{
   transform:translateY(-5px);
   box-shadow:0 15px 40px rgba(201,168,76,0.6);
+}
+#textArea:empty:before {
+  content: attr(data-placeholder);
+  color: gray;
 }
