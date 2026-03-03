@@ -41,6 +41,13 @@ document.addEventListener("DOMContentLoaded", ()=>{
 });
 function initGoogle(){
 
+  if(!window.google || !google.accounts){
+    console.log("Google henüz yüklenmedi, tekrar deneniyor...");
+
+    setTimeout(initGoogle, 300);
+    return;
+  }
+
   google.accounts.id.initialize({
     client_id:'279266692579-pcrjmld03761be73i2pr6iis9evclm4q.apps.googleusercontent.com',
     callback:handleCredentialResponse,
