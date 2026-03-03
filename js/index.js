@@ -19,16 +19,25 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   const token = localStorage.getItem("userToken");
 
+  // 🔥 Eğer token varsa direkt yönlendir ama kısa gecikmeyle
   if(token){
     const payload = parseJwt(token);
+
     if(payload && payload.exp * 1000 > Date.now()){
-      window.location.href = "anasayfa.html";
+
+      setTimeout(()=>{
+        window.location.href = "anasayfa.html";
+      },50);
+
       return;
     }
   }
+
+  // 🔥 Eğer token yoksa UI ve google başlat
   updateAuthUI();
   initLogout();
   initGoogle();
+
 });
 function initGoogle(){
 
