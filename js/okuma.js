@@ -13,6 +13,13 @@ let selectedWordGlobal = "";
 // ✅ FIX: Attach to window so HTML onclick attributes can access it from global scope
 window.currentTextId = null;
 
+// app.js'e bağımlı olmamak için burada tanımla
+function hideAll(){
+    document.querySelectorAll(".card").forEach(card=>{
+        card.style.display = "none";
+    });
+}
+
 function startReading(id=null){
     let text;
 
