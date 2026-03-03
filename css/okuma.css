@@ -1,0 +1,60 @@
+body{
+  margin:0;
+  font-family:Inter, sans-serif;
+  background:#0a0a0f;
+  color:white;
+}
+
+/* Ortalanmış Okuma Alanı */
+
+.reader-container{
+  display:flex;
+  justify-content:center;
+  padding:80px 20px;
+}
+
+.reader-card{
+  max-width:800px;
+  background:#12121a;
+  padding:60px;
+  border-radius:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  font-size:20px;
+  line-height:1.8;
+  overflow-y:auto;
+  max-height:70vh;
+}
+
+/* Scroll bar güzel görünmesi için */
+
+.reader-card::-webkit-scrollbar{
+  width:8px;
+}
+
+.reader-card::-webkit-scrollbar-thumb{
+  background:#c9a84c;
+  border-radius:10px;
+}
+
+/* Geri bar */
+
+.back-bar{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+.back-bar button{
+  padding:12px 24px;
+  background:#c9a84c;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  transition:0.3s;
+}
+
+.back-bar button:hover{
+  transform:scale(1.05);
+}

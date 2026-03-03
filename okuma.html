@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metin Okuma</title>
+
+<link rel="stylesheet" href="css/okuma.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="reader-container">
+  <div class="reader-card">
+    <div id="readerText"></div>
+  </div>
+</div>
+
+<div class="back-bar">
+  <button onclick="goBack()">← Geri Dön</button>
+</div>
+
+<script src="js/okuma.js"></script>
+
+<script src="js/core.js"></script>
+<script>
+requireAuth();
+</script>
+
+</body>
+</html>
