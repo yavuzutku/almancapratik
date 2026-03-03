@@ -15,7 +15,7 @@ function parseJwt(token){
 }
 
 /* TOKEN KONTROL */
-window.onload = function(){
+document.addEventListener("DOMContentLoaded", ()=>{
 
   const token = localStorage.getItem("userToken");
 
@@ -23,14 +23,12 @@ window.onload = function(){
     const payload = parseJwt(token);
     if(payload && payload.exp * 1000 > Date.now()){
       window.location.href = "anasayfa.html";
-    }else{
-      localStorage.removeItem("userToken");
+      return;
     }
   }
 
   initGoogle();
-}
-
+});
 function initGoogle(){
 
   google.accounts.id.initialize({
