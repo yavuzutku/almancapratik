@@ -1,3 +1,4 @@
+import { Storage } from "./storage.js";
 let currentTextId = null;
 function showHistory(){
     hideAll();
@@ -5,22 +6,10 @@ function showHistory(){
     loadHistory();
 }
 function saveText(text){
-    let texts = getTexts();
-    let id = Date.now();
-
-    let newText = {
-        id: id,
-        content: text,
-        date: new Date().toISOString()
-    };
-
-    texts.push(newText);
-    localStorage.setItem("texts", JSON.stringify(texts));
-
-    return newText; // 🔥 ÇOK ÖNEMLİ
+    return Storage.saveText(text);
 }
 function getTexts(){
-    return JSON.parse(localStorage.getItem("texts")||"[]");
+    return Storage.getTexts();
 }
 
 function loadHistory(){
@@ -67,9 +56,9 @@ function loadHistory(){
             </div>
 
             <div class="historyButtons">
-                <button class="primary" onclick="startReading(${t.id})">Oku</button>
-                <button class="secondary" onclick="editText(${t.id})">Düzenle</button>
-                <button class="danger" onclick="deleteText(${t.id})">Sil</button>
+                <button class="primary" onclick="startReading('${t.id}')">Oku</button>
+                <button class="secondary" onclick="editText('${t.id}')">Düzenle</button>
+                <button class="danger" onclick="deleteText('${t.id}')">Sil</button>
             </div>
         `;
 
@@ -87,11 +76,6 @@ function editText(id){
     currentTextId=id;
 }
 
-function deleteText(id){
-    let texts=getTexts().filter(t=>t.id!==id);
-    localStorage.setItem("texts",JSON.stringify(texts));
-    loadHistory();
-}
 function filterHistory(){
 
     let search = historySearch.value.toLowerCase();
@@ -130,4 +114,8 @@ function togglePreview(element){
         element.innerText = found.content;
         element.dataset.expanded = "true";
     }
+}
+function deleteText(id){
+    Storage.deleteText(id);
+    loadHistory();
 }

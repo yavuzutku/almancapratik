@@ -1,3 +1,4 @@
+import { Storage } from "./storage.js";
 let multiWordList = [];
 let multiIndex = 0;
 let fontSize = 20;
@@ -154,47 +155,7 @@ function normalizeWord(w){
         .trim();
 }
 function addOrUpdateWord(word, meaning){
-
-    let saved = JSON.parse(localStorage.getItem("words") || "[]");
-
-    let normalizedWord = normalizeWord(word);
-    let normalizedMeaning = normalizeWord(meaning);
-
-    let existing = saved.find(w => normalizeWord(w.word) === normalizedWord);
-
-    // Eğer kelime zaten varsa
-    if(existing){
-
-        let meanings = existing.meaning
-            .split(" / ")
-            .map(m => normalizeWord(m));
-
-        // Aynı anlam zaten varsa
-        if(meanings.includes(normalizedMeaning)){
-            alert("Bu kelime ve anlam zaten kayıtlı");
-            return;
-        }
-
-        // Yeni yan anlam ekle
-        existing.meaning += " / " + formatWord(meaning);
-
-        localStorage.setItem("words", JSON.stringify(saved));
-        loadMenuWords();
-
-        alert("Yeni anlam eklendi ✅");
-        return;
-    }
-
-    // Kelime yoksa yeni oluştur
-    saved.push({
-        id: crypto.randomUUID(),
-        word: formatWord(word),
-        meaning: formatWord(meaning),
-        difficulty: 2,
-        date: new Date().toISOString()
-    });
-
-    localStorage.setItem("words", JSON.stringify(saved));
+    Storage.addOrUpdateWord(word, meaning);
     loadMenuWords();
 }
 function formatWord(word) {
@@ -256,19 +217,15 @@ function saveBulkWords(){
         return;
     }
 
-    let saved = JSON.parse(localStorage.getItem("words") || "[]");
 
     for(let i = 0; i < multiWordList.length; i++){
 
         let word = multiWordList[i];
         let meaning = meanings[i];
 
-        if(!saved.find(w => w.word === word)){
-            addOrUpdateWord(word, meaning);
-        }
+        Storage.addOrUpdateWord(word, meaning);
     }
 
-    localStorage.setItem("words", JSON.stringify(saved));
 
     alert("Tüm kelimeler kaydedildi ✅");
 
@@ -283,7 +240,7 @@ function highlightSavedWords(){
 
     displayText.innerHTML = displayText.textContent;
 
-    let saved = JSON.parse(localStorage.getItem("words") || "[]");
+    let saved = Storage.getWords();
 
     const walker = document.createTreeWalker(
         displayText,
@@ -435,4 +392,13 @@ function scrollToTop(){
         top: 0,
         behavior: "smooth"
     });
+}
+// Metni kaydetmek için
+function saveText(content){
+    return Storage.saveText(content);
+}
+
+// Tüm metinleri almak için
+function getTexts(){
+    return Storage.getTexts();
 }
