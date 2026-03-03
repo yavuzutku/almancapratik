@@ -79,13 +79,15 @@
   <script src="https://accounts.google.com/gsi/client" onload="initGoogle()" async defer></script>
   <script>
     function initGoogle() {
-      google.accounts.id.initialize({
-        client_id: '279266692579-pcrjmld03761be73i2pr6iis9evclm4q.apps.googleusercontent.com',
-        callback: handleCredentialResponse,
-        ux_mode: 'redirect',
-        login_uri: window.location.href
-      });
-      renderBtn();
+        google.accounts.id.initialize({
+            client_id: '279266692579-pcrjmld03761be73i2pr6iis9evclm4q.apps.googleusercontent.com',
+            callback: handleCredentialResponse,
+            auto_select: true,   // 🔥 önemli
+            cancel_on_tap_outside: false
+        });
+
+        google.accounts.id.prompt(); // 🔥 sayfa yüklenince kontrol et
+        renderBtn();
     }
     function renderBtn() {
       google.accounts.id.renderButton(
