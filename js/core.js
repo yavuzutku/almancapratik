@@ -14,8 +14,50 @@ function parseJwt(token){
   }
 }
 
+
+/* =========================
+   AUTH CONTROL
+========================= */
+
 function requireAuth(){
+
+  const isLocal =
+    location.hostname === "127.0.0.1" ||
+    location.hostname === "localhost";
+
   const token = localStorage.getItem("userToken");
+
+  /* 🔥 LOCAL DEV MODE */
+  if(isLocal){
+
+    // Eğer token yoksa otomatik fake token üret
+    if(!token){
+
+      console.log("DEV MODE → Fake token created");
+
+      const fakePayload = {
+        name:"Developer",
+        email:"dev@local.dev",
+        picture:"https://i.pravatar.cc/150",
+        exp: Math.floor(Date.now()/1000) + (60*60*24)
+      };
+
+      const fakeToken =
+        btoa(JSON.stringify({alg:"none"})) +
+        "." +
+        btoa(JSON.stringify(fakePayload)) +
+        ".dev";
+
+      localStorage.setItem("userToken", fakeToken);
+    }
+
+    return; // LOCAL'DE REDIRECT YOK
+  }
+
+
+  /* =========================
+     PRODUCTION MODE
+  ========================== */
 
   if(!token){
     window.location.href = "index.html";
