@@ -96,12 +96,8 @@
       );
     }
     function handleCredentialResponse(response) {
-      const payload = JSON.parse(atob(response.credential.split('.')[1]));
-      document.getElementById('user-avatar').src = payload.picture;
-      document.getElementById('user-name').textContent = payload.name;
-      document.getElementById('user-email').textContent = payload.email;
-      document.getElementById('login-view').style.display = 'none';
-      document.getElementById('user-view').style.display = 'flex';
+        localStorage.setItem("userToken", response.credential);
+        window.location.href = "anasayfa.html";
     }
     function signOut() {
         google.accounts.id.disableAutoSelect();
