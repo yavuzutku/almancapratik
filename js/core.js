@@ -89,7 +89,3 @@ function loadNavbar(){
     window.location.href = "index.html";
   });
 }
-
-document.addEventListener("DOMContentLoaded", ()=>{
-  loadNavbar();
-});
