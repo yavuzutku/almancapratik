@@ -112,3 +112,20 @@ body{
   background:#f4f4f4;
   color:black;
 }
+.clickable-word {
+  cursor: pointer;
+}
+
+.clickable-word:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.word-popup {
+  position: absolute;
+  background: #111;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  z-index: 9999;
+}
