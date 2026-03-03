@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Yeni Metin</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Playfair+Display&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:Inter, sans-serif;
+  background:#0a0a0f;
+  color:white;
+}
+
+/* Navbar */
+.navbar{
+  padding:16px 30px;
+  background:#12121a;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  font-size:18px;
+  font-weight:600;
+}
+
+/* Toolbar */
+.toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:12px 20px;
+  background:#181824;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+
+.toolbar button, .toolbar select, .toolbar input{
+  padding:6px 10px;
+  border-radius:6px;
+  border:none;
+  cursor:pointer;
+}
+
+.toolbar button{
+  background:#2a2a35;
+  color:white;
+}
+
+.editor{
+  padding:40px;
+  max-width:900px;
+  margin:auto;
+}
+
+#textArea{
+  min-height:500px;
+  background:white;
+  color:black;
+  padding:40px;
+  border-radius:8px;
+  outline:none;
+  font-size:16px;
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  Almanca Metin Editörü
+</div>
+
+<div class="toolbar">
+
+  <select onchange="changeFont(this.value)">
+    <option value="Inter">Inter</option>
+    <option value="Roboto">Roboto</option>
+    <option value="Playfair Display">Playfair</option>
+  </select>
+
+  <button onclick="format('bold')">B</button>
+  <button onclick="format('underline')">U</button>
+
+  <button onclick="alignText('left')">Sol</button>
+  <button onclick="alignText('center')">Ortala</button>
+  <button onclick="alignText('right')">Sağ</button>
+
+  <button onclick="changeSize(1)">A+</button>
+  <button onclick="changeSize(-1)">A-</button>
+
+  <input type="color" onchange="changeColor(this.value)">
+  <input type="color" onchange="highlight(this.value)">
+</div>
+
+<div class="editor">
+  <div id="textArea" contenteditable="true">
+    Almanca metninizi buraya yapıştırın...
+  </div>
+</div>
+
+<script>
+function format(cmd){
+  document.execCommand(cmd,false,null);
+}
+
+function changeFont(font){
+  document.execCommand("fontName", false, font);
+}
+
+function changeColor(color){
+  document.execCommand("foreColor", false, color);
+}
+
+function highlight(color){
+  document.execCommand("hiliteColor", false, color);
+}
+
+function alignText(alignment){
+  document.execCommand("justify"+alignment.charAt(0).toUpperCase()+alignment.slice(1));
+}
+
+function changeSize(dir){
+  let area = document.getElementById("textArea");
+  let size = window.getComputedStyle(area).fontSize;
+  size = parseFloat(size);
+  area.style.fontSize = (size + dir*2) + "px";
+}
+</script>
+
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Anasayfa</title>
+<title>Almanca Öğrenme Programı</title>
 <style>
 body{
   margin:0;
@@ -11,7 +11,6 @@ body{
   color:white;
 }
 
-/* Navbar */
 .navbar{
   display:flex;
   justify-content:space-between;
@@ -26,19 +25,6 @@ body{
   font-weight:600;
 }
 
-.user-area{
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-
-.avatar{
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  border:2px solid #c9a84c;
-}
-
 .logout-btn{
   padding:8px 16px;
   background:#c9a84c;
@@ -50,11 +36,30 @@ body{
 
 .center{
   display:flex;
+  flex-direction:column;
   justify-content:center;
   align-items:center;
   height:80vh;
-  font-size:36px;
-  font-weight:600;
+  gap:30px;
+}
+
+.title{
+  font-size:40px;
+  font-weight:700;
+}
+
+.new-btn{
+  padding:16px 36px;
+  font-size:18px;
+  background:#c9a84c;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.new-btn:hover{
+  transform:scale(1.05);
 }
 </style>
 </head>
@@ -62,55 +67,22 @@ body{
 
 <div class="navbar">
   <div class="logo">YavuzProgram</div>
-  <div class="user-area">
-    <img id="avatar" class="avatar"/>
-    <button class="logout-btn" onclick="logout()">Çıkış Yap</button>
-  </div>
+  <button class="logout-btn" onclick="logout()">Çıkış Yap</button>
 </div>
 
 <div class="center">
-  <div id="welcome"></div>
+  <div class="title">Almanca Öğrenme Programı</div>
+  <button class="new-btn" onclick="goNew()">Yeni Metin Girişi</button>
 </div>
 
 <script>
-function parseJwt (token) {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  } catch(e) {
-    return null;
-  }
-}
-
-const token = localStorage.getItem("userToken");
-
-if(!token){
-  window.location.href = "index.html";
-}
-
-const payload = parseJwt(token);
-
-if(!payload || payload.exp * 1000 < Date.now()){
-  localStorage.removeItem("userToken");
-  window.location.href = "index.html";
-}
-
-// Kullanıcı bilgileri
-document.getElementById("welcome").innerText =
-  "Hoşgeldiniz, " + payload.name;
-
-document.getElementById("avatar").src = payload.picture;
-
 function logout(){
   localStorage.removeItem("userToken");
   window.location.href = "index.html";
+}
+
+function goNew(){
+  window.location.href = "metin.html";
 }
 </script>
 
