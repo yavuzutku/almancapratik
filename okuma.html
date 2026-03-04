@@ -16,7 +16,13 @@
   </div>
 </div>
 
-<div class="reader-toolbar">
+<!-- Sol toolbar: Kelime Ekle -->
+<div class="reader-toolbar left-toolbar">
+  <button onclick="openAddWordModal()" title="Kelime Ekle">📌<span class="toolbar-label">Kelime Ekle</span></button>
+</div>
+
+<!-- Sağ toolbar: Font & Tema -->
+<div class="reader-toolbar right-toolbar">
   <button onclick="increaseFont()">A+</button>
   <button onclick="decreaseFont()">A-</button>
   <button onclick="toggleDark()">🌙</button>
@@ -26,12 +32,34 @@
   <button onclick="goBack()">← Geri Dön</button>
 </div>
 
+<!-- Kelime Ekleme Modalı -->
+<div class="word-modal-overlay" id="wordModalOverlay">
+  <div class="word-modal">
+    <div class="word-modal-header">
+      <span>📌 Kelime Ekle</span>
+      <button class="word-modal-close" onclick="closeAddWordModal()">✕</button>
+    </div>
+    <div class="word-modal-word" id="modalWordDisplay">—</div>
+    <input
+      type="text"
+      id="modalMeaningInput"
+      class="word-modal-input"
+      placeholder="Türkçe anlamını gir..."
+      autocomplete="off"
+    />
+    <div class="word-modal-actions">
+      <button class="word-modal-cancel" onclick="closeAddWordModal()">İptal</button>
+      <button class="word-modal-save" onclick="saveWordFromModal()">Kaydet ✓</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
-  import "./js/core.js";  
+  import "./js/core.js";
   window.requireAuth();
   window.loadNavbar();
 </script>
-<script src="js/okuma.js"></script>
+<script type="module" src="js/okuma.js"></script>
 
 </body>
 </html>

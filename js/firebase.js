@@ -96,3 +96,49 @@ export async function deleteMetin(userId, id){
     doc(db, "users", userId, "texts", id)
   );
 }
+
+
+/* ============================
+   KELİME KAYDET
+============================= */
+
+export async function saveWord(userId, word, meaning){
+  await addDoc(
+    collection(db, "users", userId, "words"),
+    {
+      word:    word,
+      meaning: meaning,
+      date:    new Date().toISOString(),
+      created: Date.now()
+    }
+  );
+}
+
+
+/* ============================
+   KELİMELERİ GETİR
+============================= */
+
+export async function getWords(userId){
+  const q = query(
+    collection(db, "users", userId, "words"),
+    orderBy("created", "desc")
+  );
+  const snapshot = await getDocs(q);
+  const list = [];
+  snapshot.forEach(d => {
+    list.push({ id: d.id, ...d.data() });
+  });
+  return list;
+}
+
+
+/* ============================
+   KELİME SİL
+============================= */
+
+export async function deleteWord(userId, wordId){
+  await deleteDoc(
+    doc(db, "users", userId, "words", wordId)
+  );
+}

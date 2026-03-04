@@ -1,5 +1,6 @@
-// Kelimeler sayfası JS
-// Kaydetme sistemi daha sonra eklenecek
+import { getWords, deleteWord, onAuthChange } from "./firebase.js";
+
+let allWords = [];
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -8,21 +9,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const wordCountBadge = document.getElementById("wordCountBadge");
   const searchInput    = document.getElementById("searchInput");
 
-  // Şu anlık örnek liste boş — kaydetme sistemi eklenince burası dolacak
-  let allWords = [];
+  onAuthChange(async (user) => {
+    if(user){
+      await loadWords(user.uid);
+    }
+  });
 
-  function render(list) {
+  async function loadWords(userId){
+    wordCountBadge.textContent = "Yükleniyor...";
+    allWords = await getWords(userId);
+    render(allWords);
+  }
 
-    // Sadece .word-card elemanlarını temizle
+  function render(list){
+
     [...wordList.querySelectorAll(".word-card")].forEach(el => el.remove());
 
     wordCountBadge.textContent = allWords.length + " kelime";
 
-    if (list.length === 0) {
+    if(list.length === 0){
       emptyState.style.display = "block";
       return;
     }
-
     emptyState.style.display = "none";
 
     list.forEach((item, idx) => {
@@ -39,19 +47,29 @@ document.addEventListener("DOMContentLoaded", () => {
           <button class="word-delete-btn" data-id="${item.id}">🗑 Sil</button>
         </div>
       `;
+
+      card.querySelector(".word-delete-btn").addEventListener("click", async () => {
+        const userId = window.getUserId();
+        if(!userId) return;
+        if(!confirm(`"${item.word}" silinsin mi?`)) return;
+
+        await deleteWord(userId, item.id);
+        allWords = allWords.filter(w => w.id !== item.id);
+        render(allWords);
+      });
+
       wordList.appendChild(card);
     });
   }
 
-  function formatDate(iso) {
-    if (!iso) return "";
+  function formatDate(iso){
+    if(!iso) return "";
     const d = new Date(iso);
     return d.toLocaleDateString("tr-TR", {
       day: "2-digit", month: "long", year: "numeric"
     });
   }
 
-  // Arama
   searchInput.addEventListener("input", (e) => {
     const q = e.target.value.toLowerCase();
     const filtered = allWords.filter(w =>
@@ -60,7 +78,4 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     render(filtered);
   });
-
-  // İlk yükleme
-  render(allWords);
 });

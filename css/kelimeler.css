@@ -6,7 +6,6 @@ body {
   min-height: 100vh;
 }
 
-/* SAYFA SARMALI */
 .page-wrapper {
   max-width: 800px;
   margin: 0 auto;
@@ -76,9 +75,7 @@ body {
   transition: 0.2s;
 }
 
-.search-bar input::placeholder {
-  color: #555;
-}
+.search-bar input::placeholder { color: #555; }
 
 .search-bar input:focus {
   border-color: #c9a84c;
@@ -139,10 +136,7 @@ body {
   margin-top: 4px;
 }
 
-.word-right {
-  display: flex;
-  gap: 8px;
-}
+.word-right { display: flex; gap: 8px; }
 
 .word-delete-btn {
   background: rgba(239, 68, 68, 0.1);
@@ -166,10 +160,7 @@ body {
   padding: 80px 20px;
 }
 
-.empty-icon {
-  font-size: 54px;
-  margin-bottom: 18px;
-}
+.empty-icon { font-size: 54px; margin-bottom: 18px; }
 
 .empty-title {
   font-size: 20px;

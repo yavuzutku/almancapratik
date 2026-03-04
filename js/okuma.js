@@ -1,3 +1,5 @@
+import { saveWord } from "./firebase.js";
+
 document.addEventListener("DOMContentLoaded", ()=>{
 
   const text = sessionStorage.getItem("savedText");
@@ -10,6 +12,12 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   loadText(text);
   createTranslateUI();
+
+  // Modal Enter tuşu
+  document.getElementById("modalMeaningInput")
+    .addEventListener("keydown", (e) => {
+      if(e.key === "Enter") saveWordFromModal();
+    });
 });
 
 function goBack(){
@@ -39,6 +47,16 @@ const readerText = document.getElementById("readerText");
 function loadText(text) {
   readerText.innerText = text;
 }
+
+// Global fonksiyonlar (HTML onclick için)
+window.goBack        = goBack;
+window.increaseFont  = increaseFont;
+window.decreaseFont  = decreaseFont;
+window.toggleDark    = toggleDark;
+window.openAddWordModal  = openAddWordModal;
+window.closeAddWordModal = closeAddWordModal;
+window.saveWordFromModal = saveWordFromModal;
+window.closeMiniTranslate = closeMiniTranslate;
 
 
 // =====================
@@ -86,7 +104,7 @@ function createTranslateUI(){
   `;
   document.body.appendChild(popup);
 
-  readerText.addEventListener("mouseup", function(e){
+  readerText.addEventListener("mouseup", function(){
     const selectionObj = window.getSelection();
     if(!selectionObj || selectionObj.rangeCount === 0){
       btn.style.display = "none";
@@ -100,13 +118,13 @@ function createTranslateUI(){
     }
     selectedWordGlobal = selection;
     const range = selectionObj.getRangeAt(0);
-    const rect = range.getBoundingClientRect();
+    const rect  = range.getBoundingClientRect();
     if(!rect || rect.width === 0){
       btn.style.display = "none";
       return;
     }
     popup.style.display = "none";
-    btn.style.display = "block";
+    btn.style.display   = "block";
     btn.style.top  = (window.scrollY + rect.bottom + 8) + "px";
     btn.style.left = (window.scrollX + rect.left) + "px";
   });
@@ -115,12 +133,13 @@ function createTranslateUI(){
     if(
       !readerText.contains(e.target) &&
       !btn.contains(e.target) &&
-      !popup.contains(e.target)
+      !popup.contains(e.target) &&
+      !document.getElementById("wordModalOverlay").contains(e.target)
     ){
       btn.style.display   = "none";
       popup.style.display = "none";
       window.getSelection().removeAllRanges();
-      selectedWordGlobal = "";
+      selectedWordGlobal  = "";
     }
   });
 }
@@ -128,7 +147,7 @@ function createTranslateUI(){
 function openMiniTranslate(){
   const btn   = document.getElementById("floatingMeaningBtn");
   const popup = document.getElementById("miniTranslatePopup");
-  btn.style.display = "none";
+  btn.style.display   = "none";
   popup.style.display = "block";
   popup.style.top  = btn.style.top;
   popup.style.left = btn.style.left;
@@ -138,8 +157,8 @@ function openMiniTranslate(){
     .then(data => {
       const translated = data[0][0][0];
       popup.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <span style="font-weight:700; color:#3b82f6; font-size:15px;">${selectedWordGlobal}</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-weight:700;color:#3b82f6;font-size:15px;">${selectedWordGlobal}</span>
           <button onclick="closeMiniTranslate()" style="background:none;border:none;cursor:pointer;font-size:16px;color:#94a3b8;">✕</button>
         </div>
         <div style="color:#334155;">${translated}</div>
@@ -153,4 +172,78 @@ function openMiniTranslate(){
 function closeMiniTranslate(){
   document.getElementById("miniTranslatePopup").style.display = "none";
   selectedWordGlobal = "";
+}
+
+
+// =====================
+// KELİME EKLEME
+// =====================
+
+function openAddWordModal(){
+  if(!selectedWordGlobal){
+    alert("Önce metinden bir kelime seç.");
+    return;
+  }
+  document.getElementById("modalWordDisplay").textContent  = selectedWordGlobal;
+  document.getElementById("modalMeaningInput").value       = "";
+  document.getElementById("wordModalOverlay").classList.add("active");
+  setTimeout(() => document.getElementById("modalMeaningInput").focus(), 100);
+}
+
+function closeAddWordModal(){
+  document.getElementById("wordModalOverlay").classList.remove("active");
+}
+
+async function saveWordFromModal(){
+  const meaning = document.getElementById("modalMeaningInput").value.trim();
+  if(!meaning){
+    document.getElementById("modalMeaningInput").focus();
+    return;
+  }
+
+  const saveBtn = document.querySelector(".word-modal-save");
+  saveBtn.disabled    = true;
+  saveBtn.textContent = "Kaydediliyor...";
+
+  try {
+    const userId = window.getUserId();
+    if(!userId) throw new Error("Oturum yok");
+
+    await saveWord(userId, selectedWordGlobal, meaning);
+
+    closeAddWordModal();
+    selectedWordGlobal = "";
+
+    // Başarı bildirimi
+    showToast("✅ Kelime kaydedildi!");
+
+  } catch(err) {
+    console.error("Kelime kayıt hatası:", err);
+    showToast("❌ Kayıt başarısız.", true);
+  } finally {
+    saveBtn.disabled    = false;
+    saveBtn.textContent = "Kaydet ✓";
+  }
+}
+
+function showToast(msg, isError = false){
+  const toast = document.createElement("div");
+  toast.textContent = msg;
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: ${isError ? "#ef4444" : "#22c55e"};
+    color: white;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 99999;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    animation: fadeInUp 0.3s ease;
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
 }
