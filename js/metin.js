@@ -1,4 +1,4 @@
-import { saveMetin } from "./firebase.js";
+import { saveMetin, onAuthChange } from "./firebase.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   editor.addEventListener("paste", (e) => {
     e.preventDefault();
     const text    = (e.clipboardData || window.clipboardData).getData("text");
-    const cleaned = text.replace(/\s+/g, " ").trim(); // basit temizlik
+    const cleaned = text.replace(/\s+/g, " ").trim();
     document.execCommand("insertText", false, cleaned);
   });
 
@@ -24,8 +24,13 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // ✅ window.getUserId() — core.js tarafından global'e açıldı
+      // ✅ currentUser bekle
       const userId = window.getUserId();
+      if(!userId){
+        alert("Oturum bulunamadı, lütfen tekrar giriş yapın.");
+        window.location.href = "index.html";
+        return;
+      }
 
       try{
         await saveMetin(userId, text);

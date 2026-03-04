@@ -1,4 +1,4 @@
-import { getMetinler, deleteMetin } from "./firebase.js";
+import { getMetinler, deleteMetin, auth, onAuthChange } from "./firebase.js";
 
 let allMetinler = [];
 let activeId    = null;
@@ -56,15 +56,22 @@ function closeModal(){
 }
 
 async function loadHistory(){
-  // ✅ window.getUserId() — core.js global'inden
-  const userId  = window.getUserId();
-  allMetinler   = await getMetinler(userId);
+  const userId = window.getUserId();
+  if(!userId){
+    console.warn("Kullanıcı henüz yüklenmedi");
+    return;
+  }
+  allMetinler = await getMetinler(userId);
   renderList(allMetinler);
 }
-
 document.addEventListener("DOMContentLoaded", () => {
 
-  loadHistory();
+  // ✅ Auth hazır olunca yükle
+  onAuthChange((user) => {
+    if(user){
+      loadHistory();
+    }
+  });
 
   document.getElementById("searchInput").addEventListener("input", (e) => {
     const q        = e.target.value.toLowerCase();
