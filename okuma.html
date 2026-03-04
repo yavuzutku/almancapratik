@@ -28,7 +28,7 @@
 
 <!-- ✅ İkisi de normal script (module değil, zaten import yok) -->
 <script type="module">
-  import { } from "./js/core.js";
+  import "./js/core.js";   <!-- ✅ side-effect import, dosyayı çalıştırır -->
   window.requireAuth();
   window.loadNavbar();
 </script>
