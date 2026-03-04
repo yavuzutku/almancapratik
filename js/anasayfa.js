@@ -4,16 +4,11 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const logoutBtn = document.getElementById("logoutBtn");
   const newTextBtn = document.getElementById("newTextBtn");
   const gecmisBtn  = document.getElementById("gecmisBtn");
 
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("userToken");
-      window.location.href = "index.html";
-    });
-  }
+  // logoutBtn artık loadNavbar() tarafından oluşturuluyor,
+  // burada tekrar dinlemeye gerek yok
 
   if (newTextBtn) {
     newTextBtn.addEventListener("click", () => {
@@ -27,6 +22,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // metin.js'deki readBtn için IndexedDB kayıt fonksiyonunu global'e aç
-  window.saveMetinToDB = saveMetin;
+  // ✅ window.saveMetinToDB kaldırıldı — storage.js artık kullanılmıyor
 });
