@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const text = document.getElementById("textArea").innerText.trim();
 
-            if(text.length < 10){
+            if(text.length < 1){
             alert("Metin boş! Önce metin ekle.");
             return;
             }

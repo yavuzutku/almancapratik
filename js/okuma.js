@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
     return;
   }
 
-  reader.innerText = text;
+  loadText(text);
 });
 
 function goBack(){
@@ -33,23 +33,54 @@ function toggleDark(){
 const readerText = document.getElementById("readerText");
 
 function loadText(text) {
-  const words = text.split(" ");
-  readerText.innerHTML = "";
-
-  words.forEach(word => {
-    const span = document.createElement("span");
-    span.textContent = word + " ";
-    span.classList.add("clickable-word");
-
-    span.onclick = async () => {
-      showMeaning(span, word);
-    };
-
-    readerText.appendChild(span);
-  });
+  readerText.innerText = text;
 }
 
-async function showMeaning(element, word) {
+document.addEventListener("mouseup", function(e){
+
+  const selectedText = window.getSelection().toString().trim();
+
+  // Eğer seçim yoksa butonu kaldır
+  if(selectedText.length === 0){
+    removeMeaningButton();
+    return;
+  }
+
+  showMeaningButton(e.pageX, e.pageY, selectedText);
+});
+
+
+function showMeaningButton(x, y, word){
+
+  removeMeaningButton(); // varsa eskiyi sil
+
+  const button = document.createElement("button");
+  button.id = "meaningBtn";
+  button.textContent = "Anlamına Bak";
+
+  button.style.position = "absolute";
+  button.style.top = y + "px";
+  button.style.left = x + "px";
+  button.style.zIndex = 999;
+  button.style.padding = "6px 10px";
+  button.style.cursor = "pointer";
+
+  button.onclick = function(){
+    translateWord(word);
+    removeMeaningButton();
+    window.getSelection().removeAllRanges(); // seçimi temizle
+  };
+
+  document.body.appendChild(button);
+}
+
+
+function removeMeaningButton(){
+  const oldBtn = document.getElementById("meaningBtn");
+  if(oldBtn) oldBtn.remove();
+}
+async function translateWord(word){
+
   const cleanWord = word.replace(/[.,!?]/g, "");
 
   const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=tr&dt=t&q=${encodeURIComponent(cleanWord)}`;
@@ -59,24 +90,111 @@ async function showMeaning(element, word) {
     const data = await response.json();
     const meaning = data[0][0][0];
 
-    showPopup(element, meaning);
+    alert(cleanWord + " = " + meaning);
+
   } catch (error) {
     console.log("Çeviri hatası:", error);
   }
 }
+document.addEventListener("mouseup", function(e){
 
-function showPopup(element, meaning) {
-  let popup = document.createElement("div");
-  popup.classList.add("word-popup");
-  popup.textContent = meaning;
+  const selectedText = window.getSelection().toString().trim();
 
-  document.body.appendChild(popup);
+  if(selectedText.length === 0){
+    removeMeaningButton();
+    return;
+  }
 
-  const rect = element.getBoundingClientRect();
-  popup.style.top = rect.bottom + window.scrollY + "px";
-  popup.style.left = rect.left + window.scrollX + "px";
+  showMeaningButton(e.pageX, e.pageY, selectedText);
+});
+function showMeaningButton(x, y, word){
 
-  setTimeout(() => {
-    popup.remove();
-  }, 3000);
+  removeMeaningButton();
+
+  const button = document.createElement("button");
+  button.id = "meaningBtn";
+  button.textContent = "Anlamına Bak";
+
+  button.style.position = "absolute";
+  button.style.top = y + "px";
+  button.style.left = x + "px";
+  button.style.zIndex = 999;
+  button.style.padding = "6px 12px";
+  button.style.borderRadius = "8px";
+  button.style.border = "none";
+  button.style.cursor = "pointer";
+
+  button.onclick = function(){
+    showTranslationPopup(word, x, y);
+    removeMeaningButton();
+    window.getSelection().removeAllRanges();
+  };
+
+  document.body.appendChild(button);
+}
+
+function removeMeaningButton(){
+  const oldBtn = document.getElementById("meaningBtn");
+  if(oldBtn) oldBtn.remove();
+}
+async function showTranslationPopup(word, x, y){
+
+  const cleanWord = word.replace(/[.,!?]/g, "");
+
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=tr&dt=t&q=${encodeURIComponent(cleanWord)}`;
+
+  try{
+    const response = await fetch(url);
+    const data = await response.json();
+    const meaning = data[0][0][0];
+
+    removePopup();
+
+    const popup = document.createElement("div");
+    popup.id = "translationPopup";
+
+    popup.style.position = "absolute";
+    popup.style.top = (y + 10) + "px";
+    popup.style.left = x + "px";
+    popup.style.zIndex = 1000;
+    popup.style.background = "white";
+    popup.style.padding = "15px";
+    popup.style.borderRadius = "12px";
+    popup.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
+    popup.style.minWidth = "200px";
+
+    popup.innerHTML = `
+      <div style="font-weight:600; margin-bottom:8px;">${cleanWord}</div>
+      <div style="margin-bottom:12px;">${meaning}</div>
+      <button id="addToDictionaryBtn" style="
+        padding:6px 10px;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+      ">Sözlüğe Ekle</button>
+    `;
+
+    document.body.appendChild(popup);
+
+    // Şimdilik boş
+    document.getElementById("addToDictionaryBtn").onclick = function(){
+      alert("Henüz aktif değil 🙂");
+    };
+
+    // Popup dışına tıklayınca kapansın
+    document.addEventListener("click", function closePopup(event){
+      if(!popup.contains(event.target)){
+        popup.remove();
+        document.removeEventListener("click", closePopup);
+      }
+    });
+
+  }catch(error){
+    console.log("Çeviri hatası:", error);
+  }
+}
+
+function removePopup(){
+  const oldPopup = document.getElementById("translationPopup");
+  if(oldPopup) oldPopup.remove();
 }
