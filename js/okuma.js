@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
   loadText(text);
   createTranslateUI();
 
-  // Modal Enter tuşu
   document.getElementById("modalMeaningInput")
     .addEventListener("keydown", (e) => {
       if(e.key === "Enter") saveWordFromModal();
@@ -48,11 +47,10 @@ function loadText(text) {
   readerText.innerText = text;
 }
 
-// Global fonksiyonlar (HTML onclick için)
-window.goBack        = goBack;
-window.increaseFont  = increaseFont;
-window.decreaseFont  = decreaseFont;
-window.toggleDark    = toggleDark;
+window.goBack            = goBack;
+window.increaseFont      = increaseFont;
+window.decreaseFont      = decreaseFont;
+window.toggleDark        = toggleDark;
 window.openAddWordModal  = openAddWordModal;
 window.closeAddWordModal = closeAddWordModal;
 window.saveWordFromModal = saveWordFromModal;
@@ -130,12 +128,19 @@ function createTranslateUI(){
   });
 
   document.addEventListener("mousedown", function(e){
-    if(
-      !readerText.contains(e.target) &&
-      !btn.contains(e.target) &&
-      !popup.contains(e.target) &&
-      !document.getElementById("wordModalOverlay").contains(e.target)
-    ){
+    // Sol toolbar ve modalı mousedown istisnasına ekle
+    // böylece "Kelime Ekle" butonuna basınca seçim kaybolmaz
+    const leftToolbar    = document.querySelector(".left-toolbar");
+    const wordModalOverlay = document.getElementById("wordModalOverlay");
+
+    const clickedInside =
+      readerText.contains(e.target)     ||
+      btn.contains(e.target)            ||
+      popup.contains(e.target)          ||
+      (leftToolbar && leftToolbar.contains(e.target))  ||
+      (wordModalOverlay && wordModalOverlay.contains(e.target));
+
+    if(!clickedInside){
       btn.style.display   = "none";
       popup.style.display = "none";
       window.getSelection().removeAllRanges();
@@ -184,8 +189,8 @@ function openAddWordModal(){
     alert("Önce metinden bir kelime seç.");
     return;
   }
-  document.getElementById("modalWordDisplay").textContent  = selectedWordGlobal;
-  document.getElementById("modalMeaningInput").value       = "";
+  document.getElementById("modalWordDisplay").textContent = selectedWordGlobal;
+  document.getElementById("modalMeaningInput").value      = "";
   document.getElementById("wordModalOverlay").classList.add("active");
   setTimeout(() => document.getElementById("modalMeaningInput").focus(), 100);
 }
@@ -213,8 +218,6 @@ async function saveWordFromModal(){
 
     closeAddWordModal();
     selectedWordGlobal = "";
-
-    // Başarı bildirimi
     showToast("✅ Kelime kaydedildi!");
 
   } catch(err) {
@@ -242,7 +245,6 @@ function showToast(msg, isError = false){
     font-weight: 600;
     z-index: 99999;
     box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-    animation: fadeInUp 0.3s ease;
   `;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 2500);
