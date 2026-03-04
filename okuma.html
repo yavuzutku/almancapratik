@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Metin Okuma</title>
-<link rel="stylesheet" href="css/global.css">
-<link rel="stylesheet" href="css/okuma.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metin Okuma</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/okuma.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -17,7 +16,6 @@
   </div>
 </div>
 
-<!-- Sadece gerekli butonlar -->
 <div class="reader-toolbar">
   <button onclick="increaseFont()">A+</button>
   <button onclick="decreaseFont()">A-</button>
@@ -28,12 +26,13 @@
   <button onclick="goBack()">← Geri Dön</button>
 </div>
 
-<script src="js/okuma.js"></script>
+<!-- ✅ İkisi de normal script (module değil, zaten import yok) -->
 <script src="js/core.js"></script>
 <script>
-requireAuth();
-loadNavbar();
+  requireAuth();
+  loadNavbar();
 </script>
+<script src="js/okuma.js"></script>
 
 </body>
 </html>

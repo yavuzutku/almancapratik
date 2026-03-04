@@ -14,50 +14,32 @@ function parseJwt(token){
   }
 }
 
-
-/* =========================
-   AUTH CONTROL
-========================= */
-
 function requireAuth(){
-
   const isLocal =
     location.hostname === "127.0.0.1" ||
     location.hostname === "localhost";
 
   const token = localStorage.getItem("userToken");
 
-  /* 🔥 LOCAL DEV MODE */
   if(isLocal){
-
-    // Eğer token yoksa otomatik fake token üret
     if(!token){
-
       console.log("DEV MODE → Fake token created");
-
       const fakePayload = {
+        sub: "dev-user-123",
         name:"Developer",
         email:"dev@local.dev",
         picture:"https://i.pravatar.cc/150",
         exp: Math.floor(Date.now()/1000) + (60*60*24)
       };
-
       const fakeToken =
         btoa(JSON.stringify({alg:"none"})) +
         "." +
         btoa(JSON.stringify(fakePayload)) +
         ".dev";
-
       localStorage.setItem("userToken", fakeToken);
     }
-
-    return; // LOCAL'DE REDIRECT YOK
+    return;
   }
-
-
-  /* =========================
-     PRODUCTION MODE
-  ========================== */
 
   if(!token){
     window.location.href = "index.html";
@@ -71,30 +53,37 @@ function requireAuth(){
     window.location.href = "index.html";
   }
 }
-function loadNavbar(){
 
+function loadNavbar(){
   const navbar = document.createElement("div");
   navbar.className = "navbar";
-
   navbar.innerHTML = `
     <div class="logo">YavuzProgram</div>
-
     <div style="display:flex; gap:12px; align-items:center;">
       <button class="home-btn" id="homeBtn">Anamenü</button>
       <button class="logout-btn" id="logoutBtn">Çıkış Yap</button>
     </div>
   `;
-
   document.body.prepend(navbar);
 
-  // 🔥 Anamenü butonu
   document.getElementById("homeBtn").addEventListener("click", ()=>{
-    window.location.href = "https://yavuzutku.github.io/yavuzprogram/anasayfa.html";
+    window.location.href = "anasayfa.html";
   });
 
-  // logout event
   document.getElementById("logoutBtn").addEventListener("click", ()=>{
     localStorage.removeItem("userToken");
     window.location.href = "index.html";
   });
 }
+
+function getUserId(){
+  const token = localStorage.getItem("userToken");
+  if(!token) return null;
+  const payload = parseJwt(token);
+  return payload ? payload.sub : null;
+}
+
+// ✅ Global scope'a aç — module olmayan <script> tag'lerinden erişilebilsin
+window.requireAuth = requireAuth;
+window.loadNavbar  = loadNavbar;
+window.getUserId   = getUserId;

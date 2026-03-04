@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yeni Metin</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Playfair+Display&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/global.css">
-<link rel="stylesheet" href="css/metin.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yeni Metin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Playfair+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/metin.css">
 </head>
 <body>
+
 <div class="bottom-action">
   <button id="goReadBtn">📖 Metni Oku</button>
 </div>
@@ -19,14 +18,15 @@
   <div id="textArea" contenteditable="true" data-placeholder="Almanca metninizi buraya yapıştırın..."></div>
 </div>
 
-<script src="js/metin.js"></script>
-
-<!-- Auth koruma -->
+<!-- ✅ 1. core.js normal script olarak (global fonksiyonlar için) -->
 <script src="js/core.js"></script>
-
 <script>
-requireAuth();
-loadNavbar();
+  requireAuth();
+  loadNavbar();
 </script>
+
+<!-- ✅ 2. metin.js module olarak (firebase import için) -->
+<script type="module" src="js/metin.js"></script>
+
 </body>
 </html>
