@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", ()=>{
 
-  const text = localStorage.getItem("savedText");
+  const text = sessionStorage.getItem("savedText");
   const reader = document.getElementById("readerText");
 
   if(!text || text.trim().length < 10){
