@@ -32,13 +32,19 @@
         Daha önce eklediğin metinlere geri dön ve tekrar oku.
       </div>
     </div>
+
+    <div class="action-card" id="kelimelerBtn">
+      <div class="action-icon">📖</div>
+      <div class="action-title">Kelimeler</div>
+      <div class="action-desc">
+        Kaydettiğin Almanca kelimeleri görüntüle ve tekrar et.
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ✅ storage.js kaldırıldı -->
-<!-- ✅ core.js önce yüklenmeli ki requireAuth/loadNavbar tanımlı olsun -->
 <script type="module">
-  import "./js/core.js";   
+  import "./js/core.js";
   window.requireAuth();
   window.loadNavbar();
 </script>

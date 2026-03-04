@@ -1,0 +1,187 @@
+body {
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  background: linear-gradient(135deg, #0a0a0f, #12121a);
+  color: white;
+  min-height: 100vh;
+}
+
+/* SAYFA SARMALI */
+.page-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 80px 20px 60px;
+}
+
+/* ÜST BAR */
+.top-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #aaa;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  transition: 0.2s;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+}
+
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+  flex: 1;
+}
+
+.word-count-badge {
+  background: rgba(201, 168, 76, 0.15);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  color: #c9a84c;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ARAMA */
+.search-bar {
+  margin-bottom: 28px;
+}
+
+.search-bar input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
+  font-size: 15px;
+  font-family: inherit;
+  padding: 12px 18px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.search-bar input::placeholder {
+  color: #555;
+}
+
+.search-bar input:focus {
+  border-color: #c9a84c;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* KELİME LİSTESİ */
+.word-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* KELİME KARTI */
+.word-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 18px 22px;
+  transition: 0.3s;
+  animation: fadeInUp 0.3s ease both;
+}
+
+.word-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(201, 168, 76, 0.3);
+  transform: translateX(4px);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.word-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.word-german {
+  font-size: 17px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.word-turkish {
+  font-size: 14px;
+  color: #c9a84c;
+}
+
+.word-date {
+  font-size: 12px;
+  color: #555;
+  margin-top: 4px;
+}
+
+.word-right {
+  display: flex;
+  gap: 8px;
+}
+
+.word-delete-btn {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  transition: 0.2s;
+}
+
+.word-delete-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+/* BOŞ DURUM */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-icon {
+  font-size: 54px;
+  margin-bottom: 18px;
+}
+
+.empty-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #ddd;
+}
+
+.empty-desc {
+  color: #666;
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 360px;
+  margin: 0 auto;
+}

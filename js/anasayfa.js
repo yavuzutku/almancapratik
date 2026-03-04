@@ -1,14 +1,8 @@
-/* =============================================
-   Anasayfa UI
-   ============================================= */
-
 document.addEventListener("DOMContentLoaded", () => {
 
-  const newTextBtn = document.getElementById("newTextBtn");
-  const gecmisBtn  = document.getElementById("gecmisBtn");
-
-  // logoutBtn artık loadNavbar() tarafından oluşturuluyor,
-  // burada tekrar dinlemeye gerek yok
+  const newTextBtn   = document.getElementById("newTextBtn");
+  const gecmisBtn    = document.getElementById("gecmisBtn");
+  const kelimelerBtn = document.getElementById("kelimelerBtn");
 
   if (newTextBtn) {
     newTextBtn.addEventListener("click", () => {
@@ -19,6 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (gecmisBtn) {
     gecmisBtn.addEventListener("click", () => {
       window.location.href = "gecmis.html";
+    });
+  }
+
+  if (kelimelerBtn) {
+    kelimelerBtn.addEventListener("click", () => {
+      window.location.href = "kelimeler.html";
     });
   }
 

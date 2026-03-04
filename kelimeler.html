@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kelimeler</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/kelimeler.css">
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Üst bar -->
+  <div class="top-bar">
+    <button class="back-btn" onclick="window.location.href='index.html'">← Geri</button>
+    <h1 class="page-title">📖 Kelimelerim</h1>
+    <div class="word-count-badge" id="wordCountBadge">0 kelime</div>
+  </div>
+
+  <!-- Arama -->
+  <div class="search-bar">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Kelime ara..."
+      autocomplete="off"
+    />
+  </div>
+
+  <!-- Kelime listesi -->
+  <div class="word-list" id="wordList">
+
+    <!-- Boş durum -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">Henüz kelime eklenmedi</div>
+      <div class="empty-desc">Okuma sırasında bir kelime seçip sözlüğe ekleyerek buraya kaydedebilirsin.</div>
+    </div>
+
+  </div>
+
+</div>
+
+<script type="module">
+  import "./js/core.js";
+  window.requireAuth();
+  window.loadNavbar();
+</script>
+<script src="js/kelimeler.js"></script>
+
+</body>
+</html>
