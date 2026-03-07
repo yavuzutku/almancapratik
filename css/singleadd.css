@@ -104,6 +104,39 @@ body {
   box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
 }
 
+/* ── ÇEVİRİ ÖNERİSİ ── */
+.translate-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  font-size: 14px;
+  animation: fadeSlideIn 0.3s ease;
+}
+
+.hint-label {
+  color: #888;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hint-text {
+  color: #c9a84c;
+  font-style: italic;
+  font-size: 15px;
+}
+
+.hint-text.hint-error {
+  color: #888;
+  font-style: normal;
+}
+
 /* ANA BUTON */
 .primary-btn {
   background: linear-gradient(135deg, #c9a84c, #a87c2a);

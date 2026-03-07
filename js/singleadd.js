@@ -2,15 +2,17 @@ import { auth, getWords, saveWord } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 /* ── DOM ── */
-const backBtn      = document.getElementById("backBtn");
-const stepWord     = document.getElementById("stepWord");
-const stepMeaning  = document.getElementById("stepMeaning");
-const wordInput    = document.getElementById("wordInput");
-const wordNextBtn  = document.getElementById("wordNextBtn");
-const wordPreview  = document.getElementById("wordPreview");
-const meaningInput = document.getElementById("meaningInput");
-const saveBtn      = document.getElementById("saveBtn");
-const statusMsg    = document.getElementById("statusMsg");
+const backBtn       = document.getElementById("backBtn");
+const stepWord      = document.getElementById("stepWord");
+const stepMeaning   = document.getElementById("stepMeaning");
+const wordInput     = document.getElementById("wordInput");
+const wordNextBtn   = document.getElementById("wordNextBtn");
+const wordPreview   = document.getElementById("wordPreview");
+const meaningInput  = document.getElementById("meaningInput");
+const saveBtn       = document.getElementById("saveBtn");
+const statusMsg     = document.getElementById("statusMsg");
+const translateHint = document.getElementById("translateHint");
+const hintText      = document.getElementById("hintText");
 
 let currentUser = null;
 
@@ -27,22 +29,16 @@ backBtn.addEventListener("click", () => {
 /* ── URL'İ YAZARKEN GÜNCELLE (Google Translate tarzı) ── */
 wordInput.addEventListener("input", () => {
   const val = wordInput.value.trim();
-
+  const newUrl = new URL(window.location.href);
   if (val.length > 0) {
-    // URL'yi güncelle — sayfa yenilenmez, sadece adres çubuğu değişir
-    const newUrl = new URL(window.location.href);
     newUrl.searchParams.set("word", val);
-    history.replaceState(null, "", newUrl.toString());
   } else {
-    // Kelime boşsa parametreyi temizle
-    const newUrl = new URL(window.location.href);
     newUrl.searchParams.delete("word");
-    history.replaceState(null, "", newUrl.toString());
   }
+  history.replaceState(null, "", newUrl.toString());
 });
 
 /* ── SAYFA AÇILIRKEN URL'DEN KELİMEYİ OKU ── */
-// Chrome extension veya başka bir yerden ?word=Hund ile açılırsa otomatik doldur
 window.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const prefilledWord = params.get("word");
@@ -66,14 +62,37 @@ function goToMeaningStep() {
     return;
   }
 
-  // Kelimeyi önizleme olarak göster
-  wordPreview.textContent = `"${word}"`;
+  wordPreview.textContent = word;
 
-  // Geçişi yap
   stepWord.classList.add("hidden");
   stepMeaning.classList.remove("hidden");
   hideStatus();
+
+  // Önce "yükleniyor" göster, sonra çeviriyi getir
+  hintText.textContent = "⏳ yükleniyor…";
+  hintText.classList.remove("hint-error");
+  translateHint.classList.remove("hidden");
+
+  fetchTranslationHint(word);
+
   meaningInput.focus();
+}
+
+/* ── ÇEVİRİ ÖNERİSİ ── */
+// okuma.js'deki fetch mantığıyla aynı endpoint
+function fetchTranslationHint(word) {
+  fetch(
+    `https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=tr&dt=t&q=${encodeURIComponent(word)}`
+  )
+    .then((res) => res.json())
+    .then((data) => {
+      const translated = data[0][0][0];
+      hintText.textContent = translated;
+    })
+    .catch(() => {
+      hintText.textContent = "çeviri alınamadı";
+      hintText.classList.add("hint-error");
+    });
 }
 
 /* ── KAYDET ── */
@@ -97,7 +116,6 @@ async function addWord() {
     return;
   }
 
-  // Buton kilitlensin, çift tıklama önlenir
   saveBtn.disabled = true;
   saveBtn.textContent = "Kontrol ediliyor…";
 
@@ -125,7 +143,6 @@ async function addWord() {
 
     showStatus("✅ Kelime başarıyla eklendi!", "success");
 
-    // Formu sıfırla — yeni kelime girilmesine izin ver
     setTimeout(() => {
       resetForm();
     }, 1800);
@@ -143,17 +160,19 @@ function resetForm() {
   wordInput.value    = "";
   meaningInput.value = "";
   wordPreview.textContent = "";
+  hintText.textContent    = "";
+  hintText.classList.remove("hint-error");
+  translateHint.classList.add("hidden");
 
   stepMeaning.classList.add("hidden");
   stepWord.classList.remove("hidden");
 
-  // URL'den word parametresini temizle
   const newUrl = new URL(window.location.href);
   newUrl.searchParams.delete("word");
   history.replaceState(null, "", newUrl.toString());
 
   hideStatus();
-  saveBtn.disabled = false;
+  saveBtn.disabled    = false;
   saveBtn.textContent = "Kelimeyi Ekle ✓";
   wordInput.focus();
 }
