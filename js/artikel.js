@@ -89,7 +89,6 @@ async function fetchGenus(word) {
 
   const wikitext = data?.parse?.wikitext?.['*'] || '';
 
-  // Satır satır tara: |Genus=m  /  |Genus 1=f  gibi
   for (const line of wikitext.split('\n')) {
     const match = line.match(/\|Genus\s*\d*\s*=\s*([mfnu])/i);
     if (match) {
@@ -110,14 +109,20 @@ function showResult(word, genus) {
   const lbl    = document.getElementById('resultLabel');
   const pill   = document.getElementById('genusPill');
   const gName  = document.getElementById('genusName');
+  const link   = document.getElementById('wiktionaryLink');
+
+  const capitalized = word.charAt(0).toUpperCase() + word.slice(1);
 
   badge.textContent  = info.artikel;
   badge.className    = `artikel-badge ${info.cls}`;
-  wEl.textContent    = word.charAt(0).toUpperCase() + word.slice(1);
+  wEl.textContent    = capitalized;
   lbl.textContent    = `${info.artikel.toUpperCase()} → ${info.pill}`;
   pill.textContent   = info.pill;
   pill.className     = `genus-pill ${info.cls}`;
   gName.textContent  = info.name;
+
+  // Wiktionary linki: doğrudan kelime sayfasına yönlendir
+  link.href = `https://de.wiktionary.org/wiki/${encodeURIComponent(capitalized)}`;
 
   show('resultCard');
 }
