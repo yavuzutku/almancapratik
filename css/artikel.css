@@ -24,7 +24,25 @@
   flex-direction: column;
   align-items: center;
   padding: 2rem;
-  /* Inherits background from global.css */
+  background: #0e0e0e;
+  font-family: 'DM Mono', monospace;
+}
+
+.artikel-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 80% 80%, rgba(74,144,217,0.04) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.artikel-back,
+.artikel-container {
+  position: relative;
+  z-index: 1;
 }
 
 /* Back button */
