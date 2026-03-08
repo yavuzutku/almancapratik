@@ -91,8 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     sessionStorage.setItem("savedText", item.text);
     // ✅ Geri dön butonu geçmişe dönsün
-    sessionStorage.setItem("returnPage", "gecmis.html");
-    window.location.href = "okuma.html";
+    sessionStorage.setItem("returnPage", "../gecmis/");
+    window.location.href = "../okuma/";
   });
 
   document.getElementById("modalDelete").addEventListener("click", async () => {

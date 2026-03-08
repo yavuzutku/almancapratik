@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 // =====================
 
 function goBack(){
-  const returnPage = sessionStorage.getItem("returnPage") || "metin.html";
+  const returnPage = sessionStorage.getItem("returnPage") || "../metin/";
   sessionStorage.removeItem("returnPage");
   window.location.href = returnPage;
 }

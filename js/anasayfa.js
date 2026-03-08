@@ -8,31 +8,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (newTextBtn) {
     newTextBtn.addEventListener("click", () => {
-      window.location.href = "metin.html";
+      window.location.href = "../metin/";
     });
   }
 
   if (gecmisBtn) {
     gecmisBtn.addEventListener("click", () => {
-      window.location.href = "gecmis.html";
+      window.location.href = "../gecmis/";
     });
   }
 
   if (kelimelerBtn) {
     kelimelerBtn.addEventListener("click", () => {
-      window.location.href = "kelimeler.html";
+      window.location.href = "../kelimeler/";
     });
   }
 
   if (kelimeEkleBtn) {
     kelimeEkleBtn.addEventListener("click", () => {
-      window.location.href = "wordsadd.html";
+      window.location.href = "../wordsadd/";
     });
   }
 
   if (artikelBtn) {
     artikelBtn.addEventListener("click", () => {
-      window.location.href = "artikel.html";
+      window.location.href = "../artikel/";
     });
   }
 

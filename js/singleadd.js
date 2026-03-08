@@ -26,7 +26,7 @@ onAuthStateChanged(auth, async (user) => {
 
 /* ── GERİ BUTONU ── */
 backBtn.addEventListener("click", () => {
-  window.location.href = "wordsadd.html";
+  window.location.href = "../wordsadd/";
 });
 
 /* ── URL'İ YAZARKEN GÜNCELLE ── */

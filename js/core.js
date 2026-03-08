@@ -11,7 +11,7 @@ function requireAuth(){
 
   onAuthChange((user) => {
     if(!user && !isLocal){
-      window.location.href = "index.html";
+      window.location.href = "../";
     }
   });
 }
@@ -122,13 +122,13 @@ function loadNavbar(){
 
   // Anamenü
   document.getElementById("homeBtn").addEventListener("click", () => {
-    window.location.href = "anasayfa.html";
+    window.location.href = "../anasayfa/";
   });
 
   // Çıkış
   document.getElementById("logoutBtn").addEventListener("click", async () => {
     await logoutFirebase();
-    window.location.href = "index.html";
+    window.location.href = "../";
   });
 
   // Dropdown aç/kapat

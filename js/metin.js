@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const userId = window.getUserId();
       if(!userId){
         alert("Oturum bulunamadı, lütfen tekrar giriş yapın.");
-        window.location.href = "index.html";
+        window.location.href = "../";
         return;
       }
 
@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // ✅ metin.html'den gelindi bilgisini yaz
       sessionStorage.setItem("savedText", text);
       sessionStorage.setItem("returnPage", "metin.html");
-      window.location.href = "okuma.html";
+      window.location.href = "../okuma/";
     });
   }
 });

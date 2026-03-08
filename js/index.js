@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Kullanıcı zaten giriş yapmışsa direkt yönlendir
   onAuthChange((user) => {
     if(user){
-      window.location.href = "anasayfa.html";
+      window.location.href = "anasayfa/";
     }
   });
 

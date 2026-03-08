@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (tekTekEkleBtn) {
     tekTekEkleBtn.addEventListener("click", () => {
-      window.location.href = "singleadd.html";
+      window.location.href = "../singleadd/";
     });
   }
 
