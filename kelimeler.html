@@ -26,15 +26,28 @@
       autocomplete="off"
     />
   </div>
-<div class="filter-bar" id="filterBar">
-  <!-- JS ile doldurulacak -->
-</div>
-  <div class="word-list" id="wordList">
-    <div class="empty-state" id="emptyState">
-      <div class="empty-icon">📭</div>
-      <div class="empty-title">Henüz kelime eklenmedi</div>
-      <div class="empty-desc">Okuma sırasında bir kelime seçip 📌 Kelime Ekle butonuna basarak buraya kaydedebilirsin.</div>
+
+  <!-- filter-bar div'ini tamamen kaldır, word-list div'ini şununla sar: -->
+
+  <div class="content-layout">
+
+    <aside class="filter-sidebar">
+      <div class="filter-sidebar-title">Etiketler</div>
+      <div class="filter-tag-list" id="filterTagList">
+        <!-- JS ile doldurulacak -->
+      </div>
+    </aside>
+
+    <div class="word-list-area">
+      <div class="word-list" id="wordList">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">📭</div>
+          <div class="empty-title">Henüz kelime eklenmedi</div>
+          <div class="empty-desc">Okuma sırasında bir kelime seçip 📌 Kelime Ekle butonuna basarak buraya kaydedebilirsin.</div>
+        </div>
+      </div>
     </div>
+
   </div>
 
 </div>

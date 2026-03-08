@@ -7,7 +7,7 @@ body {
 }
 
 .page-wrapper {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 80px 20px 60px;
 }
@@ -82,14 +82,125 @@ body {
   background: rgba(255, 255, 255, 0.08);
 }
 
-/* KELİME LİSTESİ */
+/* ========================= 
+   ANA LAYOUT
+========================= */
+
+.content-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* ========================= 
+   FİLTRE SIDEBAR
+========================= */
+
+.filter-sidebar {
+  width: 190px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 24px;
+}
+
+.filter-sidebar-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+.filter-tag-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-tag-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #888;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: 0.18s;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filter-tag-item:hover {
+  background: rgba(255,255,255,0.05);
+  color: #ddd;
+}
+
+.filter-tag-item.active {
+  background: rgba(201,168,76,0.12);
+  border-color: rgba(201,168,76,0.3);
+  color: #c9a84c;
+  font-weight: 600;
+}
+
+.filter-tag-item.all-item {
+  color: #aaa;
+  font-weight: 600;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding-bottom: 12px;
+  border-radius: 0;
+  background: none !important;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+.filter-tag-item.all-item.active {
+  color: #c9a84c;
+  border-bottom-color: rgba(201,168,76,0.35);
+}
+
+.filter-count-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.07);
+  color: #666;
+  transition: 0.18s;
+}
+
+.filter-tag-item.active .filter-count-badge {
+  background: rgba(201,168,76,0.2);
+  color: #c9a84c;
+}
+
+/* ========================= 
+   KELİME LİSTESİ ALANI
+========================= */
+
+.word-list-area {
+  flex: 1;
+  min-width: 0;
+}
+
 .word-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* KELİME KARTI */
+/* ========================= 
+   KELİME KARTI
+========================= */
+
 .word-card {
   display: flex;
   align-items: center;
@@ -136,7 +247,11 @@ body {
   margin-top: 4px;
 }
 
-.word-right { display: flex; gap: 8px; }
+.word-right {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
 
 .word-delete-btn {
   background: rgba(239, 68, 68, 0.1);
@@ -153,6 +268,7 @@ body {
 .word-delete-btn:hover {
   background: rgba(239, 68, 68, 0.25);
 }
+
 .word-edit-btn {
   background: rgba(59, 130, 246, 0.1);
   border: 1px solid rgba(59, 130, 246, 0.25);
@@ -168,7 +284,79 @@ body {
 .word-edit-btn:hover {
   background: rgba(59, 130, 246, 0.25);
 }
-/* BOŞ DURUM */
+
+/* ========================= 
+   KART ÜZERİNDEKİ TAG ROZETLER
+========================= */
+
+.word-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+  align-items: center;
+}
+
+.word-tag-badge {
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(201,168,76,0.12);
+  border: 1px solid rgba(201,168,76,0.25);
+  color: #c9a84c;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.add-tag-inline {
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px dashed rgba(255,255,255,0.2);
+  background: transparent;
+  color: #555;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.add-tag-inline:hover {
+  border-color: #c9a84c;
+  color: #c9a84c;
+}
+
+/* ========================= 
+   TAG CHİP (modal içi)
+========================= */
+
+.tag-chip {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  color: #888;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: 500;
+}
+
+.tag-chip:hover {
+  border-color: #c9a84c;
+  color: #c9a84c;
+}
+
+.tag-chip.selected {
+  background: #c9a84c;
+  border-color: #c9a84c;
+  color: #0a0a0f;
+  font-weight: 700;
+}
+
+/* ========================= 
+   BOŞ DURUM
+========================= */
+
 .empty-state {
   text-align: center;
   padding: 80px 20px;
@@ -190,57 +378,41 @@ body {
   max-width: 360px;
   margin: 0 auto;
 }
+
 /* ========================= 
-   TAG FİLTRE BAR
+   MOBİL
 ========================= */
 
-.filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 24px;
-  min-height: 0;
-}
+@media (max-width: 640px) {
+  .content-layout {
+    flex-direction: column;
+  }
 
-.filter-chip {
-  padding: 5px 13px;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.04);
-  color: #888;
-  font-size: 12px;
-  font-family: inherit;
-  cursor: pointer;
-  transition: 0.2s;
-  font-weight: 500;
-}
+  .filter-sidebar {
+    width: 100%;
+    position: static;
+  }
 
-.filter-chip:hover {
-  border-color: #c9a84c;
-  color: #c9a84c;
-}
+  .filter-tag-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
 
-.filter-chip.active {
-  background: #c9a84c;
-  border-color: #c9a84c;
-  color: #0a0a0f;
-  font-weight: 700;
-}
+  .filter-tag-item {
+    width: auto;
+    padding: 6px 12px;
+  }
 
-/* KART ÜZERİNDEKİ TAG ROZETLER */
-.word-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 6px;
-}
+  .filter-tag-item.all-item {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 6px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+  }
 
-.word-tag-badge {
-  padding: 2px 8px;
-  border-radius: 20px;
-  background: rgba(201,168,76,0.12);
-  border: 1px solid rgba(201,168,76,0.25);
-  color: #c9a84c;
-  font-size: 11px;
-  font-weight: 600;
+  .filter-tag-item.all-item.active {
+    border-color: rgba(201,168,76,0.3);
+  }
 }
