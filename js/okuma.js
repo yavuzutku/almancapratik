@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   loadText(text);
   createTranslateUI();
+  initModalTagChips();
 
   document.getElementById("modalMeaningInput")
     .addEventListener("keydown", (e) => {
@@ -47,14 +48,38 @@ function loadText(text) {
   readerText.innerText = text;
 }
 
-window.goBack            = goBack;
-window.increaseFont      = increaseFont;
-window.decreaseFont      = decreaseFont;
-window.toggleDark        = toggleDark;
-window.openAddWordModal  = openAddWordModal;
-window.closeAddWordModal = closeAddWordModal;
-window.saveWordFromModal = saveWordFromModal;
+window.goBack             = goBack;
+window.increaseFont       = increaseFont;
+window.decreaseFont       = decreaseFont;
+window.toggleDark         = toggleDark;
+window.openAddWordModal   = openAddWordModal;
+window.closeAddWordModal  = closeAddWordModal;
+window.saveWordFromModal  = saveWordFromModal;
 window.closeMiniTranslate = closeMiniTranslate;
+window.saveWordFromPopup  = saveWordFromPopup;
+
+
+// =====================
+// MODAL TAG CHİPS
+// =====================
+
+function initModalTagChips(){
+  document.querySelectorAll("#modalTagChips .tag-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      chip.classList.toggle("selected");
+    });
+  });
+}
+
+function getSelectedModalTags(){
+  return [...document.querySelectorAll("#modalTagChips .tag-chip.selected")]
+    .map(c => c.dataset.tag);
+}
+
+function resetModalTags(){
+  document.querySelectorAll("#modalTagChips .tag-chip")
+    .forEach(c => c.classList.remove("selected"));
+}
 
 
 // =====================
@@ -94,8 +119,8 @@ function createTranslateUI(){
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 14px;
-    min-width: 180px;
-    max-width: 260px;
+    min-width: 200px;
+    max-width: 280px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.15);
     font-size: 14px;
     color: #1e293b;
@@ -128,9 +153,7 @@ function createTranslateUI(){
   });
 
   document.addEventListener("mousedown", function(e){
-    // Sol toolbar ve modalı mousedown istisnasına ekle
-    // böylece "Kelime Ekle" butonuna basınca seçim kaybolmaz
-    const leftToolbar    = document.querySelector(".left-toolbar");
+    const leftToolbar      = document.querySelector(".left-toolbar");
     const wordModalOverlay = document.getElementById("wordModalOverlay");
 
     const clickedInside =
@@ -149,7 +172,8 @@ function createTranslateUI(){
   });
 }
 
-// openMiniTranslate fonksiyonunu TAM OLARAK bununla değiştir:
+// Popup'ta kullanılan seçili tag'leri tutmak için
+let _popupSelectedTags = [];
 
 function openMiniTranslate(){
   const btn   = document.getElementById("floatingMeaningBtn");
@@ -159,13 +183,34 @@ function openMiniTranslate(){
   popup.style.top  = btn.style.top;
   popup.style.left = btn.style.left;
   popup.innerHTML  = "⏳ Çevriliyor...";
+  _popupSelectedTags = [];
+
+  const TAG_OPTIONS = ["fiil","isim","sıfat","zarf","B1","B2","seyahat","iş"];
 
   fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=tr&dt=t&q=${encodeURIComponent(selectedWordGlobal)}`)
     .then(res => res.json())
     .then(data => {
       const translated = data[0][0][0];
-      // Çeviriyi global'e kaydet, saveWordFromPopup'ta kullanmak için
       window._lastTranslated = translated;
+
+      const chipsHTML = TAG_OPTIONS.map(tag =>
+        `<button
+          type="button"
+          class="popup-tag-chip"
+          data-tag="${tag}"
+          onclick="togglePopupTag(this)"
+          style="
+            padding:3px 9px;
+            border-radius:20px;
+            border:1px solid #cbd5e1;
+            background:white;
+            color:#64748b;
+            font-size:11px;
+            cursor:pointer;
+            transition:0.15s;
+          "
+        >${tag}</button>`
+      ).join("");
 
       popup.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
@@ -173,7 +218,11 @@ function openMiniTranslate(){
           <button onclick="closeMiniTranslate()" style="background:none;border:none;cursor:pointer;font-size:16px;color:#94a3b8;">✕</button>
         </div>
         <div style="color:#334155;margin-bottom:10px;">${translated}</div>
-        <button 
+        <div style="margin-bottom:10px;">
+          <div style="font-size:10px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Etiket (opsiyonel)</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;">${chipsHTML}</div>
+        </div>
+        <button
           id="popupSaveBtn"
           onclick="saveWordFromPopup()"
           style="
@@ -186,7 +235,6 @@ function openMiniTranslate(){
             font-size:13px;
             font-weight:600;
             cursor:pointer;
-            transition:0.2s;
           "
         >➕ Sözlüğe Ekle</button>
       `;
@@ -196,8 +244,29 @@ function openMiniTranslate(){
     });
 }
 
+window.togglePopupTag = function(el){
+  const tag = el.dataset.tag;
+  const isSelected = _popupSelectedTags.includes(tag);
+  if(isSelected){
+    _popupSelectedTags = _popupSelectedTags.filter(t => t !== tag);
+    el.style.background = "white";
+    el.style.color      = "#64748b";
+    el.style.borderColor = "#cbd5e1";
+    el.style.fontWeight  = "400";
+  } else {
+    _popupSelectedTags.push(tag);
+    el.style.background  = "#3b82f6";
+    el.style.color       = "white";
+    el.style.borderColor = "#3b82f6";
+    el.style.fontWeight  = "700";
+  }
+};
 
-// Bu yeni fonksiyonu da ekle (saveWordFromModal'ın hemen altına):
+function closeMiniTranslate(){
+  document.getElementById("miniTranslatePopup").style.display = "none";
+  selectedWordGlobal   = "";
+  _popupSelectedTags   = [];
+}
 
 async function saveWordFromPopup(){
   const word    = selectedWordGlobal;
@@ -208,43 +277,34 @@ async function saveWordFromPopup(){
     return;
   }
 
-  const btn = document.getElementById("popupSaveBtn");
-  if(btn){
-    btn.disabled     = true;
-    btn.textContent  = "Kaydediliyor...";
+  const saveBtn = document.getElementById("popupSaveBtn");
+  if(saveBtn){
+    saveBtn.disabled    = true;
+    saveBtn.textContent = "Kaydediliyor...";
   }
 
   try {
     const userId = window.getUserId();
     if(!userId) throw new Error("Oturum yok");
 
-    await saveWord(userId, word, meaning);
+    await saveWord(userId, word, meaning, _popupSelectedTags);
     closeMiniTranslate();
-    selectedWordGlobal       = "";
-    window._lastTranslated   = "";
+    window._lastTranslated = "";
     showToast("✅ Kelime kaydedildi!");
 
   } catch(err){
     console.error("Kelime kayıt hatası:", err);
     showToast("❌ Kayıt başarısız.", true);
-    if(btn){
-      btn.disabled    = false;
-      btn.textContent = "➕ Sözlüğe Ekle";
+    if(saveBtn){
+      saveBtn.disabled    = false;
+      saveBtn.textContent = "➕ Sözlüğe Ekle";
     }
   }
 }
 
-// window'a da ekle (dosyanın sonundaki window.xxx = xxx bloğuna):
-window.saveWordFromPopup = saveWordFromPopup;
-
-function closeMiniTranslate(){
-  document.getElementById("miniTranslatePopup").style.display = "none";
-  selectedWordGlobal = "";
-}
-
 
 // =====================
-// KELİME EKLEME
+// KELİME EKLEME (MANUEL MODAL)
 // =====================
 
 function openAddWordModal(){
@@ -254,12 +314,14 @@ function openAddWordModal(){
   }
   document.getElementById("modalWordDisplay").textContent = selectedWordGlobal;
   document.getElementById("modalMeaningInput").value      = "";
+  resetModalTags();
   document.getElementById("wordModalOverlay").classList.add("active");
   setTimeout(() => document.getElementById("modalMeaningInput").focus(), 100);
 }
 
 function closeAddWordModal(){
   document.getElementById("wordModalOverlay").classList.remove("active");
+  resetModalTags();
 }
 
 async function saveWordFromModal(){
@@ -269,6 +331,7 @@ async function saveWordFromModal(){
     return;
   }
 
+  const tags    = getSelectedModalTags();
   const saveBtn = document.querySelector(".word-modal-save");
   saveBtn.disabled    = true;
   saveBtn.textContent = "Kaydediliyor...";
@@ -277,7 +340,7 @@ async function saveWordFromModal(){
     const userId = window.getUserId();
     if(!userId) throw new Error("Oturum yok");
 
-    await saveWord(userId, selectedWordGlobal, meaning);
+    await saveWord(userId, selectedWordGlobal, meaning, tags);
 
     closeAddWordModal();
     selectedWordGlobal = "";

@@ -103,12 +103,13 @@ export async function deleteMetin(userId, id){
    KELİME KAYDET
 ============================= */
 
-export async function saveWord(userId, word, meaning){
+export async function saveWord(userId, word, meaning, tags = []){
   await addDoc(
     collection(db, "users", userId, "words"),
     {
       word:    word,
       meaning: meaning,
+      tags:    tags,           // ← yeni alan
       date:    new Date().toISOString(),
       created: Date.now()
     }

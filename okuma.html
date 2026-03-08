@@ -47,6 +47,20 @@
       placeholder="Türkçe anlamını gir..."
       autocomplete="off"
     />
+    <!-- Mevcut input'un hemen altına, word-modal-actions'ın üstüne ekle -->
+    <div class="word-modal-tags">
+      <div class="tag-label">Etiket (opsiyonel)</div>
+      <div class="tag-chips" id="modalTagChips">
+        <button type="button" class="tag-chip" data-tag="fiil">fiil</button>
+        <button type="button" class="tag-chip" data-tag="isim">isim</button>
+        <button type="button" class="tag-chip" data-tag="sıfat">sıfat</button>
+        <button type="button" class="tag-chip" data-tag="zarf">zarf</button>
+        <button type="button" class="tag-chip" data-tag="B1">B1</button>
+        <button type="button" class="tag-chip" data-tag="B2">B2</button>
+        <button type="button" class="tag-chip" data-tag="seyahat">seyahat</button>
+        <button type="button" class="tag-chip" data-tag="iş">iş</button>
+      </div>
+    </div>
     <div class="word-modal-actions">
       <button class="word-modal-cancel" onclick="closeAddWordModal()">İptal</button>
       <button class="word-modal-save" onclick="saveWordFromModal()">Kaydet ✓</button>
