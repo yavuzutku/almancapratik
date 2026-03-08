@@ -1,7 +1,7 @@
-import { saveWord } from "./firebase.js";
-import { renderTagChips, getSelectedTags } from "./tag.js";
+import { saveWord, getWords } from "./firebase.js";
+import { renderTagChips, getSelectedTags, extractAllTags } from "./tag.js";
 
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener("DOMContentLoaded", async ()=>{
 
   const text   = sessionStorage.getItem("savedText");
   const reader = document.getElementById("readerText");
@@ -13,12 +13,15 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   loadText(text);
   createTranslateUI();
-
-  document.getElementById("modalMeaningInput")
-    .addEventListener("keydown", (e) => {
-      if(e.key === "Enter") saveWordFromModal();
-    });
-});
+  try {
+    const userId = window.getUserId?.();
+    if(userId) _userWords = await getWords(userId);
+  } catch(e) {}
+    document.getElementById("modalMeaningInput")
+      .addEventListener("keydown", (e) => {
+        if(e.key === "Enter") saveWordFromModal();
+      });
+  });
 
 // =====================
 // GENEL
@@ -68,6 +71,7 @@ window.saveWordFromPopup  = saveWordFromPopup;
 // =====================
 
 let selectedWordGlobal = "";
+let _userWords = [];
 
 function createTranslateUI(){
 
@@ -189,7 +193,7 @@ function openMiniTranslate(){
       `;
 
       // tag.js ile chip'leri render et
-      renderTagChips("popupTagChips", []);
+      renderTagChips("popupTagChips", [], extractAllTags(_userWords));
     })
     .catch(() => {
       popup.innerHTML = `<span style="color:#ef4444;">Çeviri başarısız oldu.</span>`;
@@ -246,7 +250,7 @@ function openAddWordModal(){
   document.getElementById("modalMeaningInput").value      = "";
 
   // tag.js ile chip'leri sıfırla ve render et
-  renderTagChips("modalTagChips", []);
+  renderTagChips("modalTagChips", [], extractAllTags(_userWords));
 
   document.getElementById("wordModalOverlay").classList.add("active");
   setTimeout(() => document.getElementById("modalMeaningInput").focus(), 100);

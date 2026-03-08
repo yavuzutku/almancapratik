@@ -1,5 +1,5 @@
 import { getWords, deleteWord, updateWord, onAuthChange } from "./firebase.js";
-import { renderTagChips, getSelectedTags } from "./tag.js";
+import { renderTagChips, getSelectedTags, extractAllTags } from "./tag.js";
 
 let allWords        = [];
 let activeTagFilter = null;
@@ -242,7 +242,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(overlay);
 
     // tag.js ile chip'leri render et — mevcut tag'ler seçili gelsin
-    renderTagChips("editTagChips", item.tags || []);
+    renderTagChips("editTagChips", item.tags || [], extractAllTags(allWords));
+
 
     const close = () => overlay.remove();
     overlay.querySelector("#editModalClose").addEventListener("click", close);

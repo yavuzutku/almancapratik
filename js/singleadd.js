@@ -1,7 +1,6 @@
 import { auth, getWords, saveWord } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { renderTagChips, getSelectedTags } from "./tag.js";
-
+import { renderTagChips, getSelectedTags, extractAllTags } from "./tag.js";
 /* ── DOM ── */
 const backBtn       = document.getElementById("backBtn");
 const stepWord      = document.getElementById("stepWord");
@@ -16,10 +15,13 @@ const translateHint = document.getElementById("translateHint");
 const hintText      = document.getElementById("hintText");
 
 let currentUser = null;
-
+let allExistingWords = [];
 /* ── AUTH ── */
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   currentUser = user;
+  if(user){
+    allExistingWords = await getWords(user.uid);
+  }
 });
 
 /* ── GERİ BUTONU ── */
@@ -69,7 +71,7 @@ function goToMeaningStep(){
   hideStatus();
 
   // tag.js ile chip'leri sıfırla
-  renderTagChips("tagChips", []);
+  renderTagChips("tagChips", [], extractAllTags(allExistingWords));
 
   hintText.textContent = "⏳ yükleniyor…";
   hintText.classList.remove("hint-error");

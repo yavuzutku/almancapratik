@@ -1,35 +1,34 @@
-// =============================================
-// TAG.JS — Ortak etiket sistemi
-// =============================================
-
 export const TAG_OPTIONS = [
   "fiil","isim","sıfat","zarf","A1","A2","B1","B2","seyahat","iş"
 ];
 
-/**
- * Bir container içine chip'leri + özel etiket input'unu render eder.
- * @param {string} containerId  — chip'lerin ekleneceği div'in id'si
- * @param {string[]} selected   — başlangıçta seçili olacak tag'ler
- */
-export function renderTagChips(containerId, selected = []) {
+// Kullanıcının tüm kelimelerinden unique tag'leri toplar
+export function extractAllTags(words = []) {
+  const set = new Set(TAG_OPTIONS);
+  words.forEach(w => {
+    if (Array.isArray(w.tags)) w.tags.forEach(t => set.add(t));
+  });
+  return [...set];
+}
+
+export function renderTagChips(containerId, selected = [], allTags = TAG_OPTIONS) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
   container.innerHTML = "";
 
-  // Sabit chip'ler
-  TAG_OPTIONS.forEach(tag => {
+  // Sabit + kullanıcı tag'leri
+  allTags.forEach(tag => {
     container.appendChild(_makeChip(tag, selected.includes(tag)));
   });
 
-  // ↓ SADECE BU BLOK EKLENDİ ↓
-  // selected içinde TAG_OPTIONS'da olmayan özel etiketleri de göster
+  // selected içinde allTags'de olmayan özel etiketleri de göster
   selected.forEach(tag => {
-    if (!TAG_OPTIONS.includes(tag)) {
+    if (!allTags.includes(tag)) {
       container.appendChild(_makeChip(tag, true));
     }
   });
-  // ↑ SADECE BU BLOK EKLENDİ ↑
+
   // Özel etiket input'u
   const wrapper = document.createElement("div");
   wrapper.style.cssText = "display:flex;gap:6px;margin-top:8px;width:100%;";
@@ -63,17 +62,13 @@ export function renderTagChips(containerId, selected = []) {
   function addCustomTag() {
     const val = input.value.trim();
     if (!val) return;
-
-    // Zaten varsa sadece seç
     const existing = [...container.querySelectorAll(".tag-chip")]
       .find(c => c.dataset.tag.toLowerCase() === val.toLowerCase());
-
     if (existing) {
       existing.classList.add("selected");
     } else {
       container.insertBefore(_makeChip(val, true), wrapper);
     }
-
     input.value = "";
     input.focus();
   }
@@ -88,11 +83,6 @@ export function renderTagChips(containerId, selected = []) {
   container.appendChild(wrapper);
 }
 
-/**
- * Bir container içindeki seçili tag'leri döndürür.
- * @param {string} containerId
- * @returns {string[]}
- */
 export function getSelectedTags(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return [];
@@ -100,7 +90,6 @@ export function getSelectedTags(containerId) {
     .map(c => c.dataset.tag);
 }
 
-// ── İç yardımcı ──
 function _makeChip(tag, selected = false) {
   const chip = document.createElement("button");
   chip.type = "button";
