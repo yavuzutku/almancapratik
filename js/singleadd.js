@@ -1,5 +1,6 @@
 import { auth, getWords, saveWord } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { renderTagChips, getSelectedTags } from "./tag.js";
 
 /* ── DOM ── */
 const backBtn       = document.getElementById("backBtn");
@@ -13,7 +14,6 @@ const saveBtn       = document.getElementById("saveBtn");
 const statusMsg     = document.getElementById("statusMsg");
 const translateHint = document.getElementById("translateHint");
 const hintText      = document.getElementById("hintText");
-const tagChips      = document.getElementById("tagChips");
 
 let currentUser = null;
 
@@ -21,21 +21,6 @@ let currentUser = null;
 onAuthStateChanged(auth, (user) => {
   currentUser = user;
 });
-
-/* ── TAG CHİP TOGGLE ── */
-tagChips.querySelectorAll(".tag-chip").forEach(chip => {
-  chip.addEventListener("click", () => chip.classList.toggle("selected"));
-});
-
-function getSelectedTags(){
-  return [...tagChips.querySelectorAll(".tag-chip.selected")]
-    .map(c => c.dataset.tag);
-}
-
-function resetTags(){
-  tagChips.querySelectorAll(".tag-chip")
-    .forEach(c => c.classList.remove("selected"));
-}
 
 /* ── GERİ BUTONU ── */
 backBtn.addEventListener("click", () => {
@@ -82,7 +67,9 @@ function goToMeaningStep(){
   stepWord.classList.add("hidden");
   stepMeaning.classList.remove("hidden");
   hideStatus();
-  resetTags();
+
+  // tag.js ile chip'leri sıfırla
+  renderTagChips("tagChips", []);
 
   hintText.textContent = "⏳ yükleniyor…";
   hintText.classList.remove("hint-error");
@@ -116,7 +103,7 @@ meaningInput.addEventListener("keydown", (e) => {
 async function addWord(){
   const word    = wordInput.value.trim();
   const meaning = meaningInput.value.trim();
-  const tags    = getSelectedTags();
+  const tags    = getSelectedTags("tagChips"); // tag.js'den
 
   if(!meaning){
     showStatus("Lütfen bir anlam gir.", "error");
@@ -133,7 +120,6 @@ async function addWord(){
   saveBtn.textContent = "Kontrol ediliyor…";
 
   try {
-    /* Duplicate kontrolü */
     const existing = await getWords(currentUser.uid);
     const duplicate = existing.find(w =>
       w.word.toLowerCase().trim()    === word.toLowerCase().trim() &&
@@ -147,12 +133,9 @@ async function addWord(){
       return;
     }
 
-    /* Firebase'e kaydet — tags dahil */
     await saveWord(currentUser.uid, word, meaning, tags);
 
-    const tagSummary = tags.length > 0
-      ? ` [${tags.join(", ")}]`
-      : "";
+    const tagSummary = tags.length > 0 ? ` [${tags.join(", ")}]` : "";
     showStatus(`✅ "${word}"${tagSummary} eklendi!`, "success");
 
     setTimeout(() => resetForm(), 1800);
@@ -181,7 +164,6 @@ function resetForm(){
   newUrl.searchParams.delete("word");
   history.replaceState(null, "", newUrl.toString());
 
-  resetTags();
   hideStatus();
   saveBtn.disabled    = false;
   saveBtn.textContent = "Kelimeyi Ekle ✓";

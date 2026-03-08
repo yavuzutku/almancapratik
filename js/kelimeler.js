@@ -1,4 +1,5 @@
 import { getWords, deleteWord, updateWord, onAuthChange } from "./firebase.js";
+import { renderTagChips, getSelectedTags } from "./tag.js";
 
 let allWords        = [];
 let activeTagFilter = null;
@@ -27,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // =====================
 
   function buildFilterSidebar(){
-    // Tag → count map
     const tagMap = new Map();
     allWords.forEach(w => {
       if(Array.isArray(w.tags)){
@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     filterTagList.innerHTML = "";
 
-    // "Tüm Kelimeler" item
     const allItem = document.createElement("button");
     allItem.className = "filter-tag-item all-item" + (activeTagFilter === null ? " active" : "");
     allItem.innerHTML = `
@@ -51,41 +50,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     filterTagList.appendChild(allItem);
 
-    if(tagMap.size === 0) return;
-
-    // Her tag için item — sayıya göre sırala
-    const sorted = [...tagMap.entries()].sort((a, b) => b[1] - a[1]);
-
-    sorted.forEach(([tag, count]) => {
-      const item = document.createElement("button");
-      item.className = "filter-tag-item" + (activeTagFilter === tag ? " active" : "");
-      item.innerHTML = `
-        <span>${tag}</span>
-        <span class="filter-count-badge">${count}</span>
-      `;
-      item.addEventListener("click", () => {
-        activeTagFilter = (activeTagFilter === tag) ? null : tag;
-        buildFilterSidebar();
-        renderFiltered();
+    if(tagMap.size > 0){
+      const sorted = [...tagMap.entries()].sort((a, b) => b[1] - a[1]);
+      sorted.forEach(([tag, count]) => {
+        const item = document.createElement("button");
+        item.className = "filter-tag-item" + (activeTagFilter === tag ? " active" : "");
+        item.innerHTML = `<span>${tag}</span><span class="filter-count-badge">${count}</span>`;
+        item.addEventListener("click", () => {
+          activeTagFilter = (activeTagFilter === tag) ? null : tag;
+          buildFilterSidebar();
+          renderFiltered();
+        });
+        filterTagList.appendChild(item);
       });
-      filterTagList.appendChild(item);
-    });
+    }
 
-    // Etiketsiz kelime varsa ayırıcı göster
     const untagged = allWords.filter(w => !Array.isArray(w.tags) || w.tags.length === 0).length;
     if(untagged > 0){
       const sep = document.createElement("div");
-      sep.style.cssText = `
-        margin: 10px 0 6px;
-        border-top: 1px solid rgba(255,255,255,0.06);
-        padding-top: 10px;
-      `;
+      sep.style.cssText = "margin:10px 0 6px;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;";
       const untaggedItem = document.createElement("button");
       untaggedItem.className = "filter-tag-item" + (activeTagFilter === "__untagged__" ? " active" : "");
-      untaggedItem.innerHTML = `
-        <span>Etiketsiz</span>
-        <span class="filter-count-badge">${untagged}</span>
-      `;
+      untaggedItem.innerHTML = `<span>Etiketsiz</span><span class="filter-count-badge">${untagged}</span>`;
       untaggedItem.addEventListener("click", () => {
         activeTagFilter = (activeTagFilter === "__untagged__") ? null : "__untagged__";
         buildFilterSidebar();
@@ -122,7 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function render(list){
     [...wordList.querySelectorAll(".word-card")].forEach(el => el.remove());
-
     wordCountBadge.textContent = allWords.length + " kelime";
 
     if(list.length === 0){
@@ -137,13 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
       card.style.animationDelay = (idx * 30) + "ms";
 
       const hasTags = Array.isArray(item.tags) && item.tags.length > 0;
-
       const tagsHTML = `
         <div class="word-tags">
-          ${hasTags
-            ? item.tags.map(t => `<span class="word-tag-badge">${t}</span>`).join("")
-            : ""
-          }
+          ${hasTags ? item.tags.map(t => `<span class="word-tag-badge">${t}</span>`).join("") : ""}
           <button class="add-tag-inline" data-id="${item.id}">
             ${hasTags ? "+ etiket" : "+ etiket ekle"}
           </button>
@@ -163,14 +144,12 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
 
-      // ETİKET INLINE EKLE
       card.querySelector(".add-tag-inline").addEventListener("click", () => {
         const userId = window.getUserId();
         if(!userId) return;
-        openEditModal(userId, item, true); // true = sadece tag odaklı aç
+        openEditModal(userId, item, true);
       });
 
-      // SİL
       card.querySelector(".word-delete-btn").addEventListener("click", async () => {
         const userId = window.getUserId();
         if(!userId) return;
@@ -181,7 +160,6 @@ document.addEventListener("DOMContentLoaded", () => {
         renderFiltered();
       });
 
-      // DÜZENLE
       card.querySelector(".word-edit-btn").addEventListener("click", () => {
         const userId = window.getUserId();
         if(!userId) return;
@@ -196,17 +174,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // DÜZENLEME MODALİ
   // =====================
 
-  const TAG_OPTIONS = ["fiil","isim","sıfat","zarf","B1","B2","seyahat","iş"];
-
   function openEditModal(userId, item, tagFocused = false){
     document.getElementById("editModalOverlay")?.remove();
-
-    const currentTags = Array.isArray(item.tags) ? [...item.tags] : [];
-
-    const chipsHTML = TAG_OPTIONS.map(tag => {
-      const sel = currentTags.includes(tag);
-      return `<button type="button" class="tag-chip${sel ? " selected" : ""}" data-tag="${tag}">${tag}</button>`;
-    }).join("");
 
     const overlay = document.createElement("div");
     overlay.id = "editModalOverlay";
@@ -253,9 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `}
 
         <label style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;">Etiketler</label>
-        <div id="editTagChips" style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 22px;">
-          ${chipsHTML}
-        </div>
+        <div id="editTagChips" style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 22px;"></div>
 
         <div style="display:flex;gap:10px;">
           <button id="editCancelBtn" style="
@@ -274,9 +241,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.body.appendChild(overlay);
 
-    overlay.querySelectorAll("#editTagChips .tag-chip").forEach(chip => {
-      chip.addEventListener("click", () => chip.classList.toggle("selected"));
-    });
+    // tag.js ile chip'leri render et — mevcut tag'ler seçili gelsin
+    renderTagChips("editTagChips", item.tags || []);
 
     const close = () => overlay.remove();
     overlay.querySelector("#editModalClose").addEventListener("click", close);
@@ -288,8 +254,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const newMeaning = tagFocused ? item.meaning : overlay.querySelector("#editMeaningInput").value.trim();
       if(!newWord || !newMeaning) return;
 
-      const newTags = [...overlay.querySelectorAll("#editTagChips .tag-chip.selected")]
-        .map(c => c.dataset.tag);
+      // tag.js'den seçili tag'leri al
+      const newTags = getSelectedTags("editTagChips");
 
       const saveBtn = overlay.querySelector("#editSaveBtn");
       saveBtn.disabled    = true;

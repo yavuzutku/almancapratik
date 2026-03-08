@@ -1,8 +1,9 @@
 import { saveWord } from "./firebase.js";
+import { renderTagChips, getSelectedTags } from "./tag.js";
 
 document.addEventListener("DOMContentLoaded", ()=>{
 
-  const text = sessionStorage.getItem("savedText");
+  const text   = sessionStorage.getItem("savedText");
   const reader = document.getElementById("readerText");
 
   if(!text || text.trim().length < 1){
@@ -12,13 +13,16 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   loadText(text);
   createTranslateUI();
-  initModalTagChips();
 
   document.getElementById("modalMeaningInput")
     .addEventListener("keydown", (e) => {
       if(e.key === "Enter") saveWordFromModal();
     });
 });
+
+// =====================
+// GENEL
+// =====================
 
 function goBack(){
   const returnPage = sessionStorage.getItem("returnPage") || "metin.html";
@@ -44,7 +48,7 @@ function toggleDark(){
 
 const readerText = document.getElementById("readerText");
 
-function loadText(text) {
+function loadText(text){
   readerText.innerText = text;
 }
 
@@ -57,29 +61,6 @@ window.closeAddWordModal  = closeAddWordModal;
 window.saveWordFromModal  = saveWordFromModal;
 window.closeMiniTranslate = closeMiniTranslate;
 window.saveWordFromPopup  = saveWordFromPopup;
-
-
-// =====================
-// MODAL TAG CHİPS
-// =====================
-
-function initModalTagChips(){
-  document.querySelectorAll("#modalTagChips .tag-chip").forEach(chip => {
-    chip.addEventListener("click", () => {
-      chip.classList.toggle("selected");
-    });
-  });
-}
-
-function getSelectedModalTags(){
-  return [...document.querySelectorAll("#modalTagChips .tag-chip.selected")]
-    .map(c => c.dataset.tag);
-}
-
-function resetModalTags(){
-  document.querySelectorAll("#modalTagChips .tag-chip")
-    .forEach(c => c.classList.remove("selected"));
-}
 
 
 // =====================
@@ -115,15 +96,15 @@ function createTranslateUI(){
     display: none;
     position: absolute;
     z-index: 9999;
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: #1a1a26;
+    border: 1px solid rgba(201,168,76,0.25);
     border-radius: 12px;
     padding: 14px;
-    min-width: 200px;
-    max-width: 280px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    min-width: 220px;
+    max-width: 300px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
     font-size: 14px;
-    color: #1e293b;
+    color: #e2e8f0;
   `;
   document.body.appendChild(popup);
 
@@ -172,9 +153,6 @@ function createTranslateUI(){
   });
 }
 
-// Popup'ta kullanılan seçili tag'leri tutmak için
-let _popupSelectedTags = [];
-
 function openMiniTranslate(){
   const btn   = document.getElementById("floatingMeaningBtn");
   const popup = document.getElementById("miniTranslatePopup");
@@ -183,9 +161,6 @@ function openMiniTranslate(){
   popup.style.top  = btn.style.top;
   popup.style.left = btn.style.left;
   popup.innerHTML  = "⏳ Çevriliyor...";
-  _popupSelectedTags = [];
-
-  const TAG_OPTIONS = ["fiil","isim","sıfat","zarf","B1","B2","seyahat","iş"];
 
   fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=tr&dt=t&q=${encodeURIComponent(selectedWordGlobal)}`)
     .then(res => res.json())
@@ -193,79 +168,37 @@ function openMiniTranslate(){
       const translated = data[0][0][0];
       window._lastTranslated = translated;
 
-      const chipsHTML = TAG_OPTIONS.map(tag =>
-        `<button
-          type="button"
-          class="popup-tag-chip"
-          data-tag="${tag}"
-          onclick="togglePopupTag(this)"
-          style="
-            padding:3px 9px;
-            border-radius:20px;
-            border:1px solid #cbd5e1;
-            background:white;
-            color:#64748b;
-            font-size:11px;
-            cursor:pointer;
-            transition:0.15s;
-          "
-        >${tag}</button>`
-      ).join("");
-
       popup.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-weight:700;color:#3b82f6;font-size:15px;">${selectedWordGlobal}</span>
-          <button onclick="closeMiniTranslate()" style="background:none;border:none;cursor:pointer;font-size:16px;color:#94a3b8;">✕</button>
+          <span style="font-weight:700;color:#c9a84c;font-size:15px;">${selectedWordGlobal}</span>
+          <button onclick="closeMiniTranslate()" style="background:none;border:none;cursor:pointer;font-size:16px;color:#666;">✕</button>
         </div>
-        <div style="color:#334155;margin-bottom:10px;">${translated}</div>
-        <div style="margin-bottom:10px;">
-          <div style="font-size:10px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Etiket (opsiyonel)</div>
-          <div style="display:flex;flex-wrap:wrap;gap:5px;">${chipsHTML}</div>
-        </div>
+        <div style="color:#94a3b8;margin-bottom:12px;">${translated}</div>
+        <div style="font-size:10px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Etiket (opsiyonel)</div>
+        <div id="popupTagChips" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;"></div>
         <button
           id="popupSaveBtn"
           onclick="saveWordFromPopup()"
           style="
-            width:100%;
-            padding:7px 0;
-            background:#3b82f6;
-            color:white;
-            border:none;
-            border-radius:8px;
-            font-size:13px;
-            font-weight:600;
-            cursor:pointer;
+            width:100%;padding:8px 0;
+            background:#3b82f6;color:white;border:none;
+            border-radius:8px;font-size:13px;font-weight:600;
+            cursor:pointer;transition:0.2s;
           "
         >➕ Sözlüğe Ekle</button>
       `;
+
+      // tag.js ile chip'leri render et
+      renderTagChips("popupTagChips", []);
     })
     .catch(() => {
-      popup.innerHTML = `<span style="color:red;">Çeviri başarısız oldu.</span>`;
+      popup.innerHTML = `<span style="color:#ef4444;">Çeviri başarısız oldu.</span>`;
     });
 }
 
-window.togglePopupTag = function(el){
-  const tag = el.dataset.tag;
-  const isSelected = _popupSelectedTags.includes(tag);
-  if(isSelected){
-    _popupSelectedTags = _popupSelectedTags.filter(t => t !== tag);
-    el.style.background = "white";
-    el.style.color      = "#64748b";
-    el.style.borderColor = "#cbd5e1";
-    el.style.fontWeight  = "400";
-  } else {
-    _popupSelectedTags.push(tag);
-    el.style.background  = "#3b82f6";
-    el.style.color       = "white";
-    el.style.borderColor = "#3b82f6";
-    el.style.fontWeight  = "700";
-  }
-};
-
 function closeMiniTranslate(){
   document.getElementById("miniTranslatePopup").style.display = "none";
-  selectedWordGlobal   = "";
-  _popupSelectedTags   = [];
+  selectedWordGlobal = "";
 }
 
 async function saveWordFromPopup(){
@@ -278,27 +211,24 @@ async function saveWordFromPopup(){
   }
 
   const saveBtn = document.getElementById("popupSaveBtn");
-  if(saveBtn){
-    saveBtn.disabled    = true;
-    saveBtn.textContent = "Kaydediliyor...";
-  }
+  if(saveBtn){ saveBtn.disabled = true; saveBtn.textContent = "Kaydediliyor..."; }
 
   try {
     const userId = window.getUserId();
     if(!userId) throw new Error("Oturum yok");
 
-    await saveWord(userId, word, meaning, _popupSelectedTags);
+    // tag.js'den seçili tag'leri al
+    const tags = getSelectedTags("popupTagChips");
+
+    await saveWord(userId, word, meaning, tags);
     closeMiniTranslate();
     window._lastTranslated = "";
     showToast("✅ Kelime kaydedildi!");
 
   } catch(err){
-    console.error("Kelime kayıt hatası:", err);
+    console.error(err);
     showToast("❌ Kayıt başarısız.", true);
-    if(saveBtn){
-      saveBtn.disabled    = false;
-      saveBtn.textContent = "➕ Sözlüğe Ekle";
-    }
+    if(saveBtn){ saveBtn.disabled = false; saveBtn.textContent = "➕ Sözlüğe Ekle"; }
   }
 }
 
@@ -314,14 +244,16 @@ function openAddWordModal(){
   }
   document.getElementById("modalWordDisplay").textContent = selectedWordGlobal;
   document.getElementById("modalMeaningInput").value      = "";
-  resetModalTags();
+
+  // tag.js ile chip'leri sıfırla ve render et
+  renderTagChips("modalTagChips", []);
+
   document.getElementById("wordModalOverlay").classList.add("active");
   setTimeout(() => document.getElementById("modalMeaningInput").focus(), 100);
 }
 
 function closeAddWordModal(){
   document.getElementById("wordModalOverlay").classList.remove("active");
-  resetModalTags();
 }
 
 async function saveWordFromModal(){
@@ -331,7 +263,8 @@ async function saveWordFromModal(){
     return;
   }
 
-  const tags    = getSelectedModalTags();
+  // tag.js'den seçili tag'leri al
+  const tags    = getSelectedTags("modalTagChips");
   const saveBtn = document.querySelector(".word-modal-save");
   saveBtn.disabled    = true;
   saveBtn.textContent = "Kaydediliyor...";
@@ -341,13 +274,12 @@ async function saveWordFromModal(){
     if(!userId) throw new Error("Oturum yok");
 
     await saveWord(userId, selectedWordGlobal, meaning, tags);
-
     closeAddWordModal();
     selectedWordGlobal = "";
     showToast("✅ Kelime kaydedildi!");
 
-  } catch(err) {
-    console.error("Kelime kayıt hatası:", err);
+  } catch(err){
+    console.error(err);
     showToast("❌ Kayıt başarısız.", true);
   } finally {
     saveBtn.disabled    = false;
