@@ -373,7 +373,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function fetchExampleSentences(word, meaning) {
-    const GEMINI_API_KEY = "BURAYA_API_KEY_YAZ"; // 👈 tek değişiklik
+    const GEMINI_API_KEY = "AIzaSyAuREkHAgZ07NBvl3daLHgxs-sZUoZl-t0"; // 👈 tek değişiklik
 
     try {
       const response = await fetch(
