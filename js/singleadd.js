@@ -44,9 +44,17 @@ wordInput.addEventListener("input", () => {
 /* ── SAYFA AÇILIRKEN URL'DEN KELİMEYİ OKU ── */
 window.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
-  const prefilledWord = params.get("word");
+  const prefilledWord    = params.get("word");
+  const prefilledMeaning = params.get("meaning");
+
   if(prefilledWord){
     wordInput.value = prefilledWord;
+  }
+
+  // Extension'dan meaning de geldiyse direkt step 2'ye atla
+  if(prefilledWord && prefilledMeaning){
+    goToMeaningStep();
+    meaningInput.value = prefilledMeaning;
   }
 });
 
