@@ -372,8 +372,13 @@ document.addEventListener("DOMContentLoaded", () => {
     `).join("");
   }
 
-  async function fetchExampleSentences(word, meaning) {
-    const GEMINI_API_KEY = "AIzaSyAuREkHAgZ07NBvl3daLHgxs-sZUoZl-t0"; // 👈 tek değişiklik
+  const exampleCache = new Map(); // cache için
+
+  async function fetchExampleSentences(word, meaning, retryCount = 0) {
+    // Cache'de varsa direkt dön
+    if (exampleCache.has(word)) return exampleCache.get(word);
+
+    const GEMINI_API_KEY = "AIzaSyAuREkHAgZ07NBvl3daLHgxs-sZUoZl-t0";
 
     try {
       const response = await fetch(
@@ -398,15 +403,37 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       );
 
+      // 429 gelirse bekle ve tekrar dene (max 3 kez)
+      if (response.status === 429) {
+        if (retryCount < 3) {
+          const waitSeconds = (retryCount + 1) * 2;
+          
+          // Modal içinde bekleme mesajı göster
+          const container = document.getElementById("exampleSentences");
+          if (container) {
+            container.innerHTML = `
+              <div style="padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.03);
+                border:1px solid rgba(255,255,255,0.06);color:#888;font-size:14px;text-align:center;">
+                ⏳ Rate limit — ${waitSeconds} saniye bekleniyor...
+              </div>`;
+          }
+
+          await new Promise(r => setTimeout(r, waitSeconds * 1000));
+          return fetchExampleSentences(word, meaning, retryCount + 1);
+        }
+        return [{ original: "Günlük limit doldu.", turkish: "Birkaç dakika sonra tekrar dene." }];
+      }
+
       const data = await response.json();
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
       const clean = text.replace(/```json|```/g, "").trim();
-      return JSON.parse(clean);
+      const result = JSON.parse(clean);
+
+      exampleCache.set(word, result); // Cache'e kaydet
+      return result;
 
     } catch (err) {
-      return [
-        { original: "Hata oluştu.", turkish: "Lütfen tekrar deneyin." }
-      ];
+      return [{ original: "Hata oluştu.", turkish: "Lütfen tekrar deneyin." }];
     }
   }
 
