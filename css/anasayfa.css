@@ -90,3 +90,20 @@ body {
   box-shadow: 0 20px 60px rgba(201, 168, 76, 0.45);
   background: rgba(201, 168, 76, 0.1);
 }
+/* Mevcut anasayfa.css dosyanın SONUNA ekle */
+
+/* ── Cümle Bul kartı ── */
+.action-card--cumlebul {
+  border-color: rgba(96, 200, 240, 0.25);
+  background: rgba(96, 200, 240, 0.06);
+}
+
+.action-card--cumlebul .action-title {
+  color: #60c8f0;
+}
+
+.action-card--cumlebul:hover {
+  border-color: #60c8f0;
+  box-shadow: 0 20px 60px rgba(96, 200, 240, 0.35);
+  background: rgba(96, 200, 240, 0.1);
+}

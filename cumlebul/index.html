@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cümle Bul</title>
+  <link rel="icon" href="../favicon.ico">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/cumlebul.css">
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <p class="eyebrow">🇩🇪 Almanca Örnek Cümle</p>
+      <h1>Kelimeyi <em>bağlamında</em> gör.</h1>
+      <p class="subtitle">Wiktionary · Tatoeba — gerçek kullanım örnekleri</p>
+    </header>
+
+    <div class="search-box">
+      <input id="wordInput" type="text" placeholder="ein deutsches Wort…" autocomplete="off" spellcheck="false" />
+      <button id="btn">Ara</button>
+    </div>
+
+    <div class="range-row">
+      <span class="range-label">Kelime aralığı</span>
+      <input class="range-input" id="minWords" type="number" min="1" max="100" value="4" />
+      <span class="range-sep">—</span>
+      <input class="range-input" id="maxWords" type="number" min="1" max="100" value="20" />
+      <span class="range-label">kelime</span>
+    </div>
+
+    <p id="error"></p>
+    <div id="results"></div>
+
+    <hr class="divider"/>
+    <footer>wiktionary.org &amp; tatoeba.org üzerinden sorgulanır</footer>
+  </div>
+
+  <script type="module">
+    import "../js/core.js";
+    window.requireAuth();
+    window.loadNavbar();
+  </script>
+  <script src="../js/cumlebul.js"></script>
+
+</body>
+</html>

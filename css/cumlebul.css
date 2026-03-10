@@ -1,0 +1,220 @@
+/* ── cumlebul.css ── */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;1,300&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0e0e10;
+  --surface: #18181c;
+  --border: #2a2a30;
+  --accent: #c8f060;
+  --accent2: #60c8f0;
+  --text: #e8e8e2;
+  --muted: #6b6b72;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 60px 20px 40px;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 640px;
+}
+
+header { margin-bottom: 48px; text-align: left; }
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+  color: var(--text);
+}
+
+h1 em { font-style: italic; color: var(--accent2); }
+
+.subtitle {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+.search-box {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface);
+  transition: border-color 0.2s;
+}
+
+.search-box:focus-within { border-color: var(--accent); }
+
+#wordInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 16px 20px;
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: 0.03em;
+}
+
+#wordInput::placeholder { color: var(--muted); font-style: italic; }
+
+#btn {
+  background: var(--accent);
+  color: #0e0e10;
+  border: none;
+  padding: 16px 24px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+  white-space: nowrap;
+}
+
+#btn:hover { background: #d4f570; }
+#btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.range-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.range-label {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.range-input {
+  width: 64px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.range-input:focus { border-color: var(--accent); }
+.range-sep { font-size: 11px; color: var(--muted); }
+
+#error {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #f06060;
+  letter-spacing: 0.05em;
+  min-height: 18px;
+}
+
+#results { margin-top: 36px; }
+
+.loading {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.result-item {
+  border-left: 2px solid var(--accent);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  background: var(--surface);
+  border-radius: 0 4px 4px 0;
+  animation: fadeSlide 0.3s ease forwards;
+  opacity: 0;
+}
+
+.result-item:nth-child(1) { animation-delay: 0.05s; }
+.result-item:nth-child(2) { animation-delay: 0.12s; }
+.result-item:nth-child(3) { animation-delay: 0.19s; }
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.de {
+  font-family: 'Fraunces', serif;
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.source {
+  margin-top: 20px;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+.source a { color: var(--accent2); text-decoration: none; }
+.source a:hover { text-decoration: underline; }
+
+.divider {
+  margin: 48px 0 0;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+footer {
+  margin-top: 16px;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-align: center;
+}
