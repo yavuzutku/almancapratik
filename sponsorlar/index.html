@@ -698,9 +698,8 @@
           <h2>Yönetici Girişi</h2>
           <p>Sponsor listesini düzenlemek için giriş yapın.</p>
           <div class="login-form">
-            <input type="email" id="loginEmail" placeholder="E-posta adresi">
             <input type="password" id="loginPass" placeholder="Şifre">
-            <p class="login-error" id="loginError">❌ Geçersiz e-posta veya şifre.</p>
+            <p class="login-error" id="loginError">❌ Yanlış şifre.</p>
             <button class="btn btn-gold" style="width:100%;justify-content:center" onclick="doLogin()">Giriş Yap</button>
           </div>
         </div>`;
@@ -770,12 +769,10 @@
 
   // ── AUTH ─────────────────────────────────────────────────────────
   function doLogin() {
-    const email = document.getElementById('loginEmail').value.trim();
-    const pass  = document.getElementById('loginPass').value;
-    const err   = document.getElementById('loginError');
+    const pass = document.getElementById('loginPass').value;
+    const err  = document.getElementById('loginError');
 
-    // Şifreyi burada sabit tutuyoruz; gerçek projede backend auth kullanın
-    if (email.toLowerCase() === ADMIN_EMAIL && pass === 'admin123') {
+    if (pass === 'yavuz123') {
       sessionStorage.setItem('sp_admin', '1');
       isAdmin = true;
       renderAdminArea();
