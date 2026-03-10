@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz – YavuzProgram</title>
+  <link rel="icon" href="../favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="quiz.css">
+</head>
+<body>
+
+<!-- ── BAŞLANGIÇ EKRANI ───────────────────────────────── -->
+<div class="screen" id="screen-start">
+  <div class="start-wrap">
+    <div class="start-badge">🧠 QUIZ</div>
+    <h1 class="start-title">Kelime Testi</h1>
+    <p class="start-sub">Kaydettiğin kelimelerden karışık yönlü sorular üretilir.<br>Her soru çoktan seçmeli <em>veya</em> yazarak cevaplama modunda gelir.</p>
+
+    <div class="settings-row">
+      <div class="setting-box">
+        <label>Soru sayısı</label>
+        <div class="stepper">
+          <button id="countDown">−</button>
+          <span id="countVal">10</span>
+          <button id="countUp">+</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-start" id="startBtn">Başla →</button>
+    <div class="start-info" id="wordCountInfo"></div>
+  </div>
+</div>
+
+<!-- ── YÜKLEME ────────────────────────────────────────── -->
+<div class="screen hidden" id="screen-loading">
+  <div class="loader-wrap">
+    <div class="loader-ring"></div>
+    <p>Kelimeler yükleniyor…</p>
+  </div>
+</div>
+
+<!-- ── SORU EKRANI ────────────────────────────────────── -->
+<div class="screen hidden" id="screen-quiz">
+  <div class="quiz-layout">
+
+    <!-- Üst bar -->
+    <div class="quiz-topbar">
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <span class="progress-label" id="progressLabel">1 / 10</span>
+      </div>
+      <div class="score-badge" id="scoreBadge">✓ 0</div>
+    </div>
+
+    <!-- Kart -->
+    <div class="question-card" id="questionCard">
+      <div class="q-direction" id="qDirection">Almanca → Türkçe</div>
+      <div class="q-word" id="qWord">—</div>
+      <div class="q-mode-tag" id="qModeTag">Çoktan Seçmeli</div>
+    </div>
+
+    <!-- Çoktan seçmeli alanı -->
+    <div class="choices-grid" id="choicesGrid"></div>
+
+    <!-- Yazarak cevaplama alanı -->
+    <div class="type-area hidden" id="typeArea">
+      <input type="text" id="typeInput" placeholder="Cevabını yaz…" autocomplete="off" spellcheck="false">
+      <button class="btn-check" id="checkBtn">Kontrol Et</button>
+    </div>
+
+    <!-- Feedback -->
+    <div class="feedback hidden" id="feedback">
+      <div class="feedback-icon" id="feedbackIcon"></div>
+      <div class="feedback-text" id="feedbackText"></div>
+      <button class="btn-next" id="nextBtn">Sonraki →</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── SONUÇ EKRANI ───────────────────────────────────── -->
+<div class="screen hidden" id="screen-result">
+  <div class="result-wrap">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <h2 class="result-title" id="resultTitle">Harika!</h2>
+    <div class="result-score" id="resultScore">8 / 10</div>
+    <p class="result-msg" id="resultMsg">Mükemmel bir performans!</p>
+
+    <div class="result-breakdown" id="resultBreakdown"></div>
+
+    <div class="result-actions">
+      <button class="btn-restart" id="restartBtn">Tekrar Dene</button>
+      <button class="btn-home" id="homeBtn">Ana Sayfa</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import "../js/core.js";
+  window.requireAuth();
+  window.loadNavbar();
+</script>
+<script type="module" src="quiz.js"></script>
+</body>
+</html>
