@@ -336,6 +336,14 @@ body {
   .btn-primary, .btn-secondary { justify-content:center; }
 }
 </style>
+<script type="module">
+  import { onAuthChange } from "./js/firebase.js";
+  onAuthChange((user) => {
+    if (user) {
+      window.location.href = "./anasayfa/";
+    }
+  });
+</script>
 </head>
 <body>
 
