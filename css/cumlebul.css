@@ -11,18 +11,17 @@
   --muted: #6b6b72;
 }
 
+/* ── Body: sadece arka plan, layout yok — navbar bozulmasın ── */
 body {
+  margin: 0;
+  padding: 0;
   background: var(--bg);
   color: var(--text);
   font-family: 'DM Mono', monospace;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 60px 20px 40px;
 }
 
+/* ── Grid desen: body'ye fixed olarak ── */
 body::before {
   content: '';
   position: fixed;
@@ -34,6 +33,17 @@ body::before {
   opacity: 0.35;
   pointer-events: none;
   z-index: 0;
+}
+
+/* ── Sayfa içeriği wrapper ── */
+.page-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px 40px;
+  min-height: calc(100vh - 62px); /* navbar yüksekliği çıkar */
 }
 
 .container {
@@ -59,6 +69,7 @@ h1 {
   font-size: clamp(2rem, 5vw, 3rem);
   line-height: 1.1;
   color: var(--text);
+  margin: 0;
 }
 
 h1 em { font-style: italic; color: var(--accent2); }

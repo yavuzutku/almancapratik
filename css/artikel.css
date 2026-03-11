@@ -17,6 +17,13 @@
   --error:      #d97070;
 }
 
+/* ── Body: dark background everywhere, navbar dışarı taşmasın ── */
+body {
+  margin: 0;
+  padding: 0;
+  background: #0e0e0e;
+}
+
 /* Page wrapper */
 .artikel-page {
   min-height: 100vh;
@@ -153,6 +160,7 @@
   border-radius: 8px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
 }
 
 .input-wrapper input[type="text"]::placeholder {
@@ -365,13 +373,9 @@
   transition: opacity 0.2s, gap 0.2s;
 }
 
-.wikt-link:hover {
-  opacity: 1;
-}
+.wikt-link:hover { opacity: 1; }
 
-.wikt-link:hover .wikt-arrow {
-  transform: translateX(4px);
-}
+.wikt-link:hover .wikt-arrow { transform: translateX(4px); }
 
 .wikt-arrow {
   display: inline-block;
