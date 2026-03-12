@@ -545,3 +545,10 @@ body {
     padding: 14px 12px 10px;
   }
 }
+
+
+/* ── Çeviri kartı (mavi-yeşil — bilgi/keşif tonu) ── */
+.action-card--ceviri .card-glow    { background: #38bdf8; }
+.action-card--ceviri:hover         { border-color:rgba(56,189,248,0.3); box-shadow:0 20px 40px -10px rgba(56,189,248,0.12); }
+.action-card--ceviri:hover .card-icon { color:#38bdf8; border-color:rgba(56,189,248,0.25); }
+.action-card--ceviri:hover .card-tag  { color:#38bdf8; border-color:rgba(56,189,248,0.25); }

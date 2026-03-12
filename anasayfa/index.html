@@ -164,6 +164,21 @@
       <div class="card-tag">Test</div>
     </button>
 
+    <button class="action-card action-card--ceviri" id="ceviriBtn" role="listitem" aria-label="Çeviri sayfasına git">
+      <div class="card-glow" aria-hidden="true"></div>
+      <div class="card-top">
+        <div class="card-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+        </div>
+        <div class="card-arrow" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </div>
+      </div>
+      <div class="card-title">Çeviri</div>
+      <div class="card-desc">Almanca kelimeleri çevir, artikel ve örnek cümlelerini gör, sözlüğüne ekle.</div>
+      <div class="card-tag">Wiktionary</div>
+    </button>
+
     <button class="action-card action-card--sponsor" id="sponsorBtn" role="listitem" aria-label="Sponsorlar sayfasına git">
       <div class="card-glow" aria-hidden="true"></div>
       <div class="card-top">
@@ -197,6 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const kelimeEkleBtn = document.getElementById("kelimeEkleBtn");
   const artikelBtn    = document.getElementById("artikelBtn");
   const cumlebulBtn   = document.getElementById("cumlebulBtn");
+  const ceviriBtn     = document.getElementById("ceviriBtn");
   const sponsorBtn    = document.getElementById("sponsorBtn");
   const quizBtn       = document.getElementById("quizBtn");
 
@@ -207,6 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (kelimeEkleBtn) kelimeEkleBtn.addEventListener("click", () => window.location.href = "../wordsadd/");
   if (artikelBtn)    artikelBtn.addEventListener("click",    () => window.location.href = "../artikel/");
   if (cumlebulBtn)   cumlebulBtn.addEventListener("click",   () => window.location.href = "../cumlebul/");
+  if (ceviriBtn)     ceviriBtn.addEventListener("click",     () => window.location.href = "../ceviri/");
   if (sponsorBtn)    sponsorBtn.addEventListener("click",    () => window.location.href = "../sponsorlar/");
 });
 </script>
