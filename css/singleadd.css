@@ -1,9 +1,7 @@
+/* global.css temel stilleri geçerli; sadece bu sayfaya özel override: */
+/* global.css temel stilleri geçerli; sadece bu sayfaya özel override: */
 body {
-  margin: 0;
-  font-family: 'DM Sans', sans-serif;
   background: linear-gradient(135deg, #0a0a0f, #12121a);
-  color: white;
-  min-height: 100vh;
 }
 
 /* CONTAINER */
@@ -223,3 +221,4 @@ body {
   color: #0a0a0f;
   font-weight: 700;
 }
+

@@ -3,11 +3,9 @@
 ══════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* global.css temel stilleri geçerli; sadece bu sayfaya özel override: */
 body {
-  font-family: 'DM Sans', sans-serif;
   background: linear-gradient(135deg, #0a0a0f, #12121a);
-  color: #fff;
-  min-height: 100vh;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -520,3 +518,4 @@ body {
   .modal { padding: 24px 18px; }
   .toast { right: 16px; bottom: 16px; left: 16px; max-width: unset; }
 }
+

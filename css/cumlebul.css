@@ -12,13 +12,9 @@
 }
 
 /* ── Body: sadece arka plan, layout yok — navbar bozulmasın ── */
+/* global.css temel stilleri geçerli; sadece bu sayfaya özel override: */
 body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  color: var(--text);
   font-family: 'DM Mono', monospace;
-  min-height: 100vh;
 }
 
 /* ── Grid desen: body'ye fixed olarak ── */
@@ -229,3 +225,4 @@ footer {
   letter-spacing: 0.1em;
   text-align: center;
 }
+

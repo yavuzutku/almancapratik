@@ -44,7 +44,26 @@
   window.requireAuth();
   window.loadNavbar();
 </script>
-<script src="../js/wordsadd.js"></script>
+
+<!-- wordsadd.js buraya inline taşındı (ayrı dosyaya gerek yok) -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const listeEkleBtn  = document.getElementById("listeEkleBtn");
+  const tekTekEkleBtn = document.getElementById("tekTekEkleBtn");
+
+  if (listeEkleBtn) {
+    listeEkleBtn.addEventListener("click", () => {
+      // TODO: liste halinde kelime ekleme akışı
+    });
+  }
+
+  if (tekTekEkleBtn) {
+    tekTekEkleBtn.addEventListener("click", () => {
+      window.location.href = "../singleadd/";
+    });
+  }
+});
+</script>
 
 </body>
 </html>

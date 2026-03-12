@@ -14,12 +14,6 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  min-height: 100vh;
-}
 
 .page-wrap {
   max-width: 780px;
@@ -270,3 +264,4 @@ body {
   transition: 0.2s;
 }
 .btn-danger:hover { background: rgba(224,82,82,0.22); }
+

@@ -1,4 +1,21 @@
 /* =========================
+   BASE RESET
+   (Tüm sayfalarda geçerli — sayfa CSS'lerinde tekrar yazmaya gerek yok)
+========================= */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  background: #0a0a0f;
+  color: #fff;
+  min-height: 100vh;
+}
+
+/* =========================
    NAVBAR
 ========================= */
 
@@ -120,10 +137,6 @@
 
 /* ══════════════════════════════════════════════
    NAVBAR — RESPONSIVE
-
-   Masaüstü → geniş padding, "Anamenü" yazısı tam
-   Tablet   → padding azal
-   Mobil    → padding minimal, home-btn sadece ikon
 ══════════════════════════════════════════════ */
 
 /* ── Tablet (≤768px) ── */
@@ -154,8 +167,6 @@
     font-size: 14px;
   }
 
-  /* Dar ekranda "Anamenü" metni taşıyabilir,
-     sadece ev ikonunu göster */
   .home-btn .home-btn-label {
     display: none;
   }
@@ -165,7 +176,6 @@
     font-size: 11px;
   }
 
-  /* Avatar biraz küçült */
   .profile-avatar {
     width: 30px !important;
     height: 30px !important;

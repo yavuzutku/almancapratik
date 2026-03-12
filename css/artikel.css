@@ -17,11 +17,10 @@
   --error:      #d97070;
 }
 
-/* ── Body: dark background everywhere, navbar dışarı taşmasın ── */
+/* global.css temel stilleri geçerli; sadece bu sayfaya özel override: */
 body {
-  margin: 0;
-  padding: 0;
   background: #0e0e0e;
+  padding: 0;
 }
 
 /* Page wrapper */
@@ -381,3 +380,4 @@ body {
   display: inline-block;
   transition: transform 0.2s;
 }
+
