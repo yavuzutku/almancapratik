@@ -5,7 +5,11 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+  sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
@@ -39,19 +43,45 @@ const provider = new GoogleAuthProvider();
 
 
 /* ============================
-   AUTH
+   AUTH — GOOGLE
 ============================= */
 
-export function loginWithGoogle(){
+export function loginWithGoogle() {
   return signInWithPopup(auth, provider);
 }
 
-export function logoutFirebase(){
+export function logoutFirebase() {
   return signOut(auth);
 }
 
-export function onAuthChange(callback){
+export function onAuthChange(callback) {
   return onAuthStateChanged(auth, callback);
+}
+
+
+/* ============================
+   AUTH — EMAIL / ŞİFRE  ← YENİ
+============================= */
+
+export async function registerWithEmail(email, password, displayName) {
+  if (!email || !password || !displayName)
+    throw new Error("Ad, e-posta ve şifre zorunludur.");
+  if (password.length < 6)
+    throw new Error("Şifre en az 6 karakter olmalıdır.");
+  const cred = await createUserWithEmailAndPassword(auth, email, password);
+  await updateProfile(cred.user, { displayName });
+  return cred;
+}
+
+export async function loginWithEmail(email, password) {
+  if (!email || !password)
+    throw new Error("E-posta ve şifre zorunludur.");
+  return signInWithEmailAndPassword(auth, email, password);
+}
+
+export async function resetPassword(email) {
+  if (!email) throw new Error("E-posta adresi zorunludur.");
+  return sendPasswordResetEmail(auth, email);
 }
 
 
@@ -59,17 +89,14 @@ export function onAuthChange(callback){
    METİN KAYDET
 ============================= */
 
-export async function saveMetin(userId, text){
+export async function saveMetin(userId, text) {
   if (!userId) throw new Error("Kullanıcı kimliği bulunamadı.");
   if (!text || text.trim().length === 0) throw new Error("Metin boş olamaz.");
 
   try {
     await addDoc(
       collection(db, "users", userId, "texts"),
-      {
-        text: text.trim(),
-        created: Date.now()
-      }
+      { text: text.trim(), created: Date.now() }
     );
   } catch (err) {
     console.error("[saveMetin] Firestore hatası:", err);
@@ -82,7 +109,7 @@ export async function saveMetin(userId, text){
    METİNLERİ GETİR
 ============================= */
 
-export async function getMetinler(userId){
+export async function getMetinler(userId) {
   if (!userId) throw new Error("Kullanıcı kimliği bulunamadı.");
 
   try {
@@ -91,11 +118,7 @@ export async function getMetinler(userId){
       orderBy("created", "desc")
     );
     const snapshot = await getDocs(q);
-    const list = [];
-    snapshot.forEach(d => {
-      list.push({ id: d.id, ...d.data() });
-    });
-    return list;
+    return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch (err) {
     console.error("[getMetinler] Firestore hatası:", err);
     throw new Error("Metinler yüklenemedi. Lütfen sayfayı yenile.");
@@ -107,13 +130,11 @@ export async function getMetinler(userId){
    METİN SİL
 ============================= */
 
-export async function deleteMetin(userId, id){
+export async function deleteMetin(userId, id) {
   if (!userId || !id) throw new Error("Geçersiz parametre.");
 
   try {
-    await deleteDoc(
-      doc(db, "users", userId, "texts", id)
-    );
+    await deleteDoc(doc(db, "users", userId, "texts", id));
   } catch (err) {
     console.error("[deleteMetin] Firestore hatası:", err);
     throw new Error("Metin silinemedi. Lütfen tekrar dene.");
@@ -125,7 +146,7 @@ export async function deleteMetin(userId, id){
    KELİME KAYDET
 ============================= */
 
-export async function saveWord(userId, word, meaning, tags = []){
+export async function saveWord(userId, word, meaning, tags = []) {
   if (!userId) throw new Error("Kullanıcı kimliği bulunamadı.");
   if (!word || !meaning) throw new Error("Kelime ve anlam boş olamaz.");
 
@@ -151,7 +172,7 @@ export async function saveWord(userId, word, meaning, tags = []){
    KELİMELERİ GETİR
 ============================= */
 
-export async function getWords(userId){
+export async function getWords(userId) {
   if (!userId) throw new Error("Kullanıcı kimliği bulunamadı.");
 
   try {
@@ -160,11 +181,7 @@ export async function getWords(userId){
       orderBy("created", "desc")
     );
     const snapshot = await getDocs(q);
-    const list = [];
-    snapshot.forEach(d => {
-      list.push({ id: d.id, ...d.data() });
-    });
-    return list;
+    return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch (err) {
     console.error("[getWords] Firestore hatası:", err);
     throw new Error("Kelimeler yüklenemedi. Lütfen sayfayı yenile.");
@@ -176,13 +193,11 @@ export async function getWords(userId){
    KELİME SİL
 ============================= */
 
-export async function deleteWord(userId, wordId){
+export async function deleteWord(userId, wordId) {
   if (!userId || !wordId) throw new Error("Geçersiz parametre.");
 
   try {
-    await deleteDoc(
-      doc(db, "users", userId, "words", wordId)
-    );
+    await deleteDoc(doc(db, "users", userId, "words", wordId));
   } catch (err) {
     console.error("[deleteWord] Firestore hatası:", err);
     throw new Error("Kelime silinemedi. Lütfen tekrar dene.");
@@ -198,8 +213,7 @@ export async function updateWord(userId, wordId, data) {
   if (!userId || !wordId) throw new Error("Geçersiz parametre.");
 
   try {
-    const ref = doc(db, "users", userId, "words", wordId);
-    await updateDoc(ref, data);
+    await updateDoc(doc(db, "users", userId, "words", wordId), data);
   } catch (err) {
     console.error("[updateWord] Firestore hatası:", err);
     throw new Error("Kelime güncellenemedi. Lütfen tekrar dene.");

@@ -5,60 +5,99 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="favicon.ico" type="image/x-icon">
 <title>Giriş Yap — AlmancaPratik</title>
-
-<!-- ✅ SEO: Sayfaya özel meta description -->
-<meta name="description" content="AlmancaPratik'e Google hesabınla ücretsiz giriş yap. Kelime quizleri, metin analizi ve artikel bulucu ile Almancana hız kat.">
-
+<meta name="description" content="AlmancaPratik'e Google veya e-posta ile ücretsiz giriş yap.">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
 
-<!-- Dekoratif arka plan (aria-hidden: ekran okuyuculardan gizli) -->
 <div class="bg-layer" aria-hidden="true"></div>
 <div class="bg-grid"  aria-hidden="true"></div>
 <div class="orb orb-1" aria-hidden="true"></div>
 <div class="orb orb-2" aria-hidden="true"></div>
 
-<!-- ✅ ERİŞİLEBİLİRLİK: <main> landmark eklendi -->
 <main>
   <div class="card">
+
+    <div class="user-panel" id="user-view" style="display:none" aria-live="polite">
+      <img id="user-avatar" class="user-avatar" src="" alt="Profil fotoğrafı">
+      <div>
+        <div class="user-name"  id="user-name"></div>
+        <div class="user-email" id="user-email"></div>
+      </div>
+      <div class="badge">Giriş yapıldı ✓</div>
+      <button class="signout-btn" id="logoutBtn">Çıkış Yap</button>
+    </div>
+
     <div id="login-view">
       <div class="logo-wrap">
         <div class="logo-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="2.2"
+               stroke-linecap="round" stroke-linejoin="round" width="26" height="26">
             <path d="M12 2L2 7l10 5 10-5-10-5z"/>
             <path d="M2 17l10 5 10-5"/>
             <path d="M2 12l10 5 10-5"/>
           </svg>
         </div>
         <div class="logo-name">AlmancaPratik</div>
-        <p class="logo-tagline">Hesabına güvenle giriş yap</p>
+        <p class="logo-tagline">Almancayı pratikle öğren</p>
       </div>
 
-      <div class="divider" aria-hidden="true"><span>Devam et</span></div>
+      <div class="tabs" role="tablist">
+        <button class="tab tab--active" id="tab-giris"
+                role="tab" aria-selected="true" aria-controls="form-giris">Giriş Yap</button>
+        <button class="tab" id="tab-kayit"
+                role="tab" aria-selected="false" aria-controls="form-kayit">Kayıt Ol</button>
+      </div>
 
-      <!-- ✅ Google butonu JS tarafından buraya ekleniyor -->
-      <div id="google-btn-container"></div>
+      <div id="form-giris" role="tabpanel" aria-labelledby="tab-giris"
+           style="display:flex;flex-direction:column;gap:12px;">
+        <div id="google-btn-giris"></div>
+        <div class="divider" aria-hidden="true"><span>veya e-posta ile</span></div>
+        <div class="field-group">
+          <label class="field-label" for="giris-email">E-posta</label>
+          <input class="field-input" type="email" id="giris-email" placeholder="ornek@mail.com" autocomplete="email">
+        </div>
+        <div class="field-group">
+          <div class="field-label-row">
+            <label class="field-label" for="giris-sifre">Şifre</label>
+            <a href="#" class="forgot-link" id="forgot-link">Şifremi unuttum</a>
+          </div>
+          <input class="field-input" type="password" id="giris-sifre" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <p class="form-error" id="err-giris" role="alert" style="display:none"></p>
+        <button class="btn-submit" id="btn-giris" type="button"><span>Giriş Yap</span></button>
+      </div>
+
+      <div id="form-kayit" role="tabpanel" aria-labelledby="tab-kayit"
+           style="display:none;flex-direction:column;gap:12px;">
+        <div id="google-btn-kayit"></div>
+        <div class="divider" aria-hidden="true"><span>veya e-posta ile</span></div>
+        <div class="field-group">
+          <label class="field-label" for="kayit-ad">Ad Soyad</label>
+          <input class="field-input" type="text" id="kayit-ad" placeholder="Adınız Soyadınız" autocomplete="name">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="kayit-email">E-posta</label>
+          <input class="field-input" type="email" id="kayit-email" placeholder="ornek@mail.com" autocomplete="email">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="kayit-sifre">Şifre</label>
+          <input class="field-input" type="password" id="kayit-sifre" placeholder="En az 6 karakter" autocomplete="new-password">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="kayit-sifre2">Şifre Tekrar</label>
+          <input class="field-input" type="password" id="kayit-sifre2" placeholder="••••••••" autocomplete="new-password">
+        </div>
+        <p class="form-error" id="err-kayit" role="alert" style="display:none"></p>
+        <button class="btn-submit" id="btn-kayit" type="button"><span>Kayıt Ol</span></button>
+      </div>
 
       <div class="footer">
-        <!-- ✅ ERİŞİLEBİLİRLİK: Linkler ayırt edici metin içeriyor +
-             ✅ CSS'de underline eklendi (sadece renge dayalı değil) -->
-        Giriş yaparak
-        <a href="kullanim-sartlari.html">Kullanım Koşulları</a>'nı ve<br>
+        Devam ederek
+        <a href="kullanim-sartlari.html">Kullanım Koşulları</a>'nı ve
         <a href="privacy.html">Gizlilik Politikası</a>'nı kabul etmiş olursunuz.
       </div>
-    </div>
-
-    <!-- Giriş yapıldıktan sonra gösterilen panel -->
-    <div class="user-panel" id="user-view" aria-live="polite">
-      <img id="user-avatar" class="user-avatar" src="" alt="Profil fotoğrafı"/>
-      <div>
-        <div class="user-name"  id="user-name"></div>
-        <div class="user-email" id="user-email"></div>
-      </div>
-      <div class="badge">Giriş yapıldı</div>
-      <button class="signout-btn" id="logoutBtn">Çıkış Yap</button>
     </div>
   </div>
 </main>
