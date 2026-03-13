@@ -1,5 +1,9 @@
 import { saveWord, getWords } from "./firebase.js";
 import { renderTagChips, getSelectedTags, extractAllTags } from "./tag.js";
+import {
+  fetchWikiData, fetchTranslate, normalizeGermanWord,
+  artikelBadgeHtml, escapeHtml, ARTIKEL_COLORS
+} from "./german.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -71,89 +75,8 @@ window.saveWordFromPopup  = saveWordFromPopup;
 let selectedWordGlobal = "";
 let _userWords         = [];
 let _popupWikiData     = null;   // popup için Wiktionary verisi
-let _wikiCache         = new Map();
 
-/* ══════════════════════════════════════════════
-   WİKTİONARY — ORTAK YARDIMCI
-   (ceviri.js ile aynı mantık, okuma.js'e kopyalandı)
-══════════════════════════════════════════════ */
-async function fetchWikiForWord(word) {
-  if (_wikiCache.has(word)) return _wikiCache.get(word);
 
-  const result = { artikel: "", wordType: "", plural: "", genitive: "", baseForm: "", autoTags: [] };
-
-  try {
-    const cap = word.charAt(0).toUpperCase() + word.slice(1);
-    const params = new URLSearchParams({
-      action: "parse", page: cap,
-      prop: "wikitext", format: "json", origin: "*"
-    });
-    const res  = await fetch("https://de.wiktionary.org/w/api.php?" + params);
-    const data = await res.json();
-    const wt   = data?.parse?.wikitext?.["*"] || "";
-
-    if (!wt) { _wikiCache.set(word, result); return result; }
-
-    // Kelime türü
-    const typeMatch = wt.match(/\{\{Wortart\|([^|}\n]+)/);
-    if (typeMatch) {
-      const raw = typeMatch[1].trim();
-      const typeMap = {
-        "Substantiv": { label: "İsim", tag: "isim" },
-        "Verb":       { label: "Fiil", tag: "fiil" },
-        "Adjektiv":   { label: "Sıfat", tag: "sıfat" },
-        "Adverb":     { label: "Zarf",  tag: "zarf" },
-      };
-      const info = typeMap[raw] || { label: raw, tag: null };
-      result.wordType = info.label;
-      if (info.tag) result.autoTags.push(info.tag);
-
-      // Artikel (sadece isimler)
-      if (raw === "Substantiv") {
-        if (/\|\s*Genus\s*=\s*m/i.test(wt))       result.artikel = "der";
-        else if (/\|\s*Genus\s*=\s*[fp]/i.test(wt)) result.artikel = "die";
-        else if (/\|\s*Genus\s*=\s*n/i.test(wt))   result.artikel = "das";
-
-        const pMatch = wt.match(/\|\s*Nominativ Plural\s*=\s*([^\n|{}]+)/);
-        if (pMatch) {
-          const p = pMatch[1].trim().replace(/\[\[|\]\]/g, "");
-          if (p && p !== "—" && p !== "-") result.plural = p;
-        }
-        const gMatch = wt.match(/\|\s*Genitiv Singular\s*=\s*([^\n|{}]+)/);
-        if (gMatch) {
-          const g = gMatch[1].trim().replace(/\[\[|\]\]/g, "");
-          if (g && g !== "—" && g !== "-") result.genitive = g;
-        }
-      }
-
-      // Fiil: temel form
-      if (raw === "Verb") {
-        const bMatch = wt.match(/\|\s*Grundform\s*=\s*([^\n|{}]+)/);
-        if (bMatch) {
-          const b = bMatch[1].trim().replace(/\[\[|\]\]/g, "");
-          if (b && b.toLowerCase() !== word.toLowerCase()) result.baseForm = b;
-        }
-        const iMatch = wt.match(/\|\s*Infinitiv\s*=\s*([^\n|{}]+)/);
-        if (!result.baseForm && iMatch) {
-          const inf = iMatch[1].trim().replace(/\[\[|\]\]/g, "");
-          if (inf && inf.toLowerCase() !== word.toLowerCase()) result.baseForm = inf;
-        }
-      }
-
-      // Sıfat: temel form
-      if (raw === "Adjektiv") {
-        const pMatch = wt.match(/\|\s*Positiv\s*=\s*([^\n|{}]+)/);
-        if (pMatch) {
-          const pos = pMatch[1].trim().replace(/\[\[|\]\]/g, "");
-          if (pos && pos.toLowerCase() !== word.toLowerCase()) result.baseForm = pos;
-        }
-      }
-    }
-  } catch { /* sessizce geç */ }
-
-  _wikiCache.set(word, result);
-  return result;
-}
 
 /* ══════════════════════════════════════════════
    ÇEVİRİ POPUP SİSTEMİ
@@ -257,32 +180,15 @@ function openMiniTranslate() {
 
   // Google Translate + Wiktionary paralel
   Promise.all([
-    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=tr&dt=t&dt=at&q=${encodeURIComponent(selectedWordGlobal)}`)
-      .then(r => r.json()),
-    fetchWikiForWord(selectedWordGlobal),
+    fetchTranslate(selectedWordGlobal),   // ← german.js
+    fetchWikiData(selectedWordGlobal),    // ← german.js
   ])
-  .then(([transData, wiki]) => {
-    const main = transData[0]?.map(t => t?.[0]).filter(Boolean).join("") || "—";
+  .then(([{ main, alts }, wiki]) => {
     window._lastTranslated = main;
     _popupWikiData = wiki;
 
-    // Alternatifler
-    const alts = [];
-    if (transData[5]) {
-      transData[5].forEach(entry => {
-        entry?.[2]?.forEach(item => {
-          const w = item?.[0];
-          if (w && w !== main) alts.push(w);
-        });
-      });
-    }
-
     // Artikel badge
-    const artikelColor = { der: "#60c8f0", die: "#f07068", das: "#a064ff" };
-    const artikelBg    = { der: "rgba(96,200,240,0.12)", die: "rgba(240,112,104,0.1)", das: "rgba(160,100,255,0.1)" };
-    const artikelHtml  = wiki.artikel
-      ? `<span style="font-family:monospace;font-size:12px;padding:2px 8px;border-radius:5px;background:${artikelBg[wiki.artikel]};color:${artikelColor[wiki.artikel]};border:1px solid ${artikelColor[wiki.artikel]}33;">${wiki.artikel}</span>`
-      : "";
+    const artikelHtml = artikelBadgeHtml(wiki.artikel, { size: 12 });  // ← german.js
 
     // Kelime türü badge
     const typeHtml = wiki.wordType
@@ -385,12 +291,7 @@ async function saveWordFromPopup() {
     const userId = window.getUserId();
     if (!userId) throw new Error("Oturum yok");
 
-    // Artikel varsa ekle, baş harf büyüt
-    if (_popupWikiData?.artikel) {
-      word = `${_popupWikiData.artikel} ${word.charAt(0).toUpperCase() + word.slice(1)}`;
-    } else if (_popupWikiData?.wordType === "İsim") {
-      word = word.charAt(0).toUpperCase() + word.slice(1);
-    }
+    word = normalizeGermanWord(word, _popupWikiData);   // ← german.js
 
     const tags = getSelectedTags("popupTagChips");
 
@@ -415,57 +316,57 @@ function openAddWordModal() {
     return;
   }
 
-  const wiki = _wikiCache.get(selectedWordGlobal);
-
-  // Artikel varsa önizlemede göster
-  const artikelColor = { der: "#60c8f0", die: "#f07068", das: "#a064ff" };
-  const artikel = wiki?.artikel || "";
+  const wiki      = _popupWikiData || {};
+  const artikel   = wiki.artikel || "";
   const displayEl = document.getElementById("modalWordDisplay");
+
   if (artikel) {
-    displayEl.innerHTML = `<span style="font-family:monospace;font-size:14px;margin-right:6px;color:${artikelColor[artikel]};">${artikel}</span>${escapeHtml(selectedWordGlobal.charAt(0).toUpperCase() + selectedWordGlobal.slice(1))}`;
+    displayEl.innerHTML = artikelBadgeHtml(artikel, { size: 14 })   // ← german.js
+      + ` ${escapeHtml(wiki.baseForm
+          ? wiki.baseForm.charAt(0).toUpperCase() + wiki.baseForm.slice(1)
+          : selectedWordGlobal.charAt(0).toUpperCase() + selectedWordGlobal.slice(1))}`;
   } else {
     displayEl.textContent = selectedWordGlobal;
   }
 
-  // Temel form uyarısı
   const baseWrap = document.getElementById("modalBaseFormWrap");
   const baseSpan = document.getElementById("modalBaseFormText");
-  if (baseWrap && baseSpan && wiki?.baseForm) {
-    baseSpan.textContent = wiki.baseForm;
+  if (baseWrap && baseSpan && wiki.baseForm) {
+    baseSpan.textContent   = wiki.baseForm;
     baseWrap.style.display = "flex";
   } else if (baseWrap) {
     baseWrap.style.display = "none";
   }
 
   document.getElementById("modalMeaningInput").value = "";
-  renderTagChips("modalTagChips", wiki?.autoTags || [], extractAllTags(_userWords));
+  renderTagChips("modalTagChips", wiki.autoTags || [], extractAllTags(_userWords));
 
   document.getElementById("wordModalOverlay").classList.add("active");
   setTimeout(() => document.getElementById("modalMeaningInput").focus(), 100);
 }
 
-// "Temel formu kullan" — modal içindeki buton
 window.applyModalBaseForm = function() {
-  const wiki = _wikiCache.get(selectedWordGlobal);
+  const wiki = _popupWikiData;
   if (!wiki?.baseForm) return;
   selectedWordGlobal = wiki.baseForm;
 
   const baseWrap = document.getElementById("modalBaseFormWrap");
   if (baseWrap) baseWrap.style.display = "none";
 
-  // Wiki cache'de yoksa fetch et, sonra modalı güncelle
-  fetchWikiForWord(wiki.baseForm).then(newWiki => {
+  fetchWikiData(wiki.baseForm).then(newWiki => {         // ← german.js
+    _popupWikiData = newWiki;
     const displayEl = document.getElementById("modalWordDisplay");
-    const artikelColor = { der: "#60c8f0", die: "#f07068", das: "#a064ff" };
     const a = newWiki.artikel;
     if (a) {
-      displayEl.innerHTML = `<span style="font-family:monospace;font-size:14px;margin-right:6px;color:${artikelColor[a]};">${a}</span>${escapeHtml(wiki.baseForm.charAt(0).toUpperCase() + wiki.baseForm.slice(1))}`;
+      displayEl.innerHTML = artikelBadgeHtml(a, { size: 14 })    // ← german.js
+        + ` ${escapeHtml(wiki.baseForm.charAt(0).toUpperCase() + wiki.baseForm.slice(1))}`;
     } else {
       displayEl.textContent = wiki.baseForm;
     }
     renderTagChips("modalTagChips", newWiki.autoTags, extractAllTags(_userWords));
   });
 };
+
 
 function closeAddWordModal() {
   document.getElementById("wordModalOverlay").classList.remove("active");
@@ -488,13 +389,7 @@ async function saveWordFromModal() {
     const userId = window.getUserId();
     if (!userId) throw new Error("Oturum yok");
 
-    // Artikel + baş harf
-    let word = selectedWordGlobal;
-    if (wiki.artikel) {
-      word = `${wiki.artikel} ${word.charAt(0).toUpperCase() + word.slice(1)}`;
-    } else if (wiki.wordType === "İsim") {
-      word = word.charAt(0).toUpperCase() + word.slice(1);
-    }
+    const word = normalizeGermanWord(selectedWordGlobal, wiki);   // ← german.js
 
     await saveWord(userId, word, meaning, tags);
     closeAddWordModal();
@@ -534,11 +429,6 @@ function showToast(msg, isError = false) {
   setTimeout(() => toast.remove(), 2500);
 }
 
-function escapeHtml(str) {
-  return String(str ?? "")
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
 
 /* CSS — loading dots (popup içinde kullanılan animasyon) */
 const styleEl = document.createElement("style");

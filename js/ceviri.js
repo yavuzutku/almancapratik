@@ -1,6 +1,11 @@
 import { auth, saveWord, getWords } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { renderTagChips, getSelectedTags, extractAllTags } from "./tag.js";
+import {
+  fetchWikiData, fetchTranslate, normalizeGermanWord,
+  artikelBadgeHtml, capitalize, escapeHtml, escapeRegex,
+  isSingleWord, ARTIKEL_COLORS
+} from "./german.js";
 
 /* ══════════════════════════════════════════════
    STATE
@@ -153,29 +158,12 @@ async function translate() {
   saveWordBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> Sözlüğe Ekle`;
 
   try {
-    // 1) Ana çeviri + alternatifler
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&dt=at&q=${encodeURIComponent(text)}`;
-    const res  = await fetch(url);
-    if (!res.ok) throw new Error("Çeviri servisi şu an yanıt vermiyor.");
-    const data = await res.json();
-
-    const mainTranslation = data[0]?.map(t => t?.[0]).filter(Boolean).join("") || "—";
+    // 1) Ana çeviri + alternatifler — german.js fetchTranslate
+    const { main: mainTranslation, alts } = await fetchTranslate(text, { sl, tl });
     lastTranslation = { source: text, target: mainTranslation, sl, tl };
 
-    // Sonucu göster
-    resultMain.textContent = mainTranslation;
+    resultMain.textContent   = mainTranslation;
     resultWrap.style.display = "block";
-
-    // Alternatif çeviriler (dt=at → data[5])
-    const alts = [];
-    if (data[5]) {
-      data[5].forEach(entry => {
-        entry?.[2]?.forEach(item => {
-          const word = item?.[0];
-          if (word && word !== mainTranslation) alts.push(word);
-        });
-      });
-    }
 
     if (alts.length > 0) {
       altChips.innerHTML = "";
@@ -194,7 +182,6 @@ async function translate() {
       altTranslations.style.display = "none";
     }
 
-    // Geçmişe ekle
     addToHistory(text, mainTranslation, sl, tl);
 
     // 2) Detay paneli — sadece Almanca kelimeler için Wiktionary
@@ -215,9 +202,6 @@ async function translate() {
   }
 }
 
-function isSingleWord(text) {
-  return text.trim().split(/\s+/).length <= 2;
-}
 
 /* ══════════════════════════════════════════════
    DETAY PANELİ — Wiktionary + Tatoeba
@@ -229,7 +213,7 @@ async function loadWordDetails(deWord, trMeaning) {
 
   try {
     const [artikelInfo, examples] = await Promise.all([
-      fetchArtikelAndInfo(deWord),
+      fetchWikiData(deWord),          // ← german.js
       fetchExamples(deWord),
     ]);
 
@@ -265,10 +249,8 @@ async function loadWordDetails(deWord, trMeaning) {
         examples.slice(0, 4).map(async (ex) => {
           let tr = null;
           try {
-            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=tr&dt=t&q=${encodeURIComponent(ex.original)}`;
-            const r   = await fetch(url);
-            const d   = await r.json();
-            tr = d[0]?.map(t => t?.[0]).filter(Boolean).join("") || null;
+            const { main } = await fetchTranslate(ex.original);   // ← german.js
+            tr = main !== "—" ? main : null;
           } catch { /* sessizce geç */ }
           return { ...ex, turkish: tr };
         })
@@ -311,63 +293,7 @@ async function loadWordDetails(deWord, trMeaning) {
   }
 }
 
-/* ── Wiktionary: Artikel + tür + çoğul ── */
-async function fetchArtikelAndInfo(word) {
-  const capitalized = capitalize(word);
-  const params = new URLSearchParams({
-    action: "parse", page: capitalized,
-    prop: "wikitext", format: "json", origin: "*"
-  });
 
-  try {
-    const res  = await fetch("https://de.wiktionary.org/w/api.php?" + params);
-    const data = await res.json();
-    const wikitext = data?.parse?.wikitext?.["*"] || "";
-
-    const result = { artikel: "", wordType: "", plural: "", genitive: "" };
-
-    // Artikel
-    if (/\{\{Wortart\|Substantiv[^}]*\}\}/.test(wikitext)) {
-      const derMatch  = /\|\s*Genus\s*=\s*m/i.test(wikitext);
-      const dieMatch  = /\|\s*Genus\s*=\s*f/i.test(wikitext);
-      const dasMatch  = /\|\s*Genus\s*=\s*n/i.test(wikitext);
-      const dieMatch2 = /\|\s*Genus\s*=\s*p/i.test(wikitext); // plurale tantum
-      if (derMatch)  result.artikel = "der";
-      else if (dieMatch || dieMatch2) result.artikel = "die";
-      else if (dasMatch) result.artikel = "das";
-    }
-
-    // Kelime türü
-    const typeMatch = wikitext.match(/\{\{Wortart\|([^|}\n]+)/);
-    if (typeMatch) {
-      const raw = typeMatch[1].trim();
-      const typeMap = {
-        "Substantiv": "İsim", "Verb": "Fiil", "Adjektiv": "Sıfat",
-        "Adverb": "Zarf", "Präposition": "Edat", "Konjunktion": "Bağlaç",
-        "Pronomen": "Zamir", "Artikel": "Artikel", "Interjektion": "Ünlem"
-      };
-      result.wordType = typeMap[raw] || raw;
-    }
-
-    // Çoğul
-    const pluralMatch = wikitext.match(/\|\s*Nominativ Plural\s*=\s*([^\n|{}]+)/);
-    if (pluralMatch) {
-      const p = pluralMatch[1].trim().replace(/\[\[|\]\]/g, "");
-      if (p && p !== "—" && p !== "-") result.plural = p;
-    }
-
-    // Genitif
-    const genMatch = wikitext.match(/\|\s*Genitiv Singular\s*=\s*([^\n|{}]+)/);
-    if (genMatch) {
-      const g = genMatch[1].trim().replace(/\[\[|\]\]/g, "");
-      if (g && g !== "—" && g !== "-") result.genitive = g;
-    }
-
-    return result;
-  } catch {
-    return { artikel: "", wordType: "", plural: "", genitive: "" };
-  }
-}
 
 /* ── Wiktionary + Tatoeba örnek cümleler ── */
 async function fetchExamples(word) {
@@ -514,13 +440,7 @@ saveWordBtn.addEventListener("click", () => {
     ? lastTranslation.target
     : lastTranslation.source;
 
-  // Artikel varsa kelimeye ekle (der Hund), baş harfi büyüt
-  const artikel  = lastWikiData?.artikel || "";
-  const deWord   = artikel
-    ? `${artikel} ${deWordRaw.charAt(0).toUpperCase() + deWordRaw.slice(1)}`
-    : deWordRaw;
-
-  // autoTag: Wiktionary'den gelen kelime türü
+  const deWord   = normalizeGermanWord(deWordRaw, lastWikiData);  // ← german.js
   const autoTags = lastWikiData?.autoTags || [];
 
   modalWord.value    = deWord;
@@ -640,19 +560,8 @@ function hideModalStatus() {
   modalStatus.textContent   = "";
 }
 
-function escapeHtml(str) {
-  return String(str ?? "")
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
 
-function escapeRegex(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
 
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
 
 function cleanWikitext(text) {
   return text

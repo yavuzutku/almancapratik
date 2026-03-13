@@ -1,6 +1,10 @@
 import { auth, getWords, saveWord } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { renderTagChips, getSelectedTags, extractAllTags } from "./tag.js";
+import {
+  fetchWikiData, fetchTranslate, normalizeGermanWord,
+  artikelBadgeHtml, capitalize, escapeHtml, ARTIKEL_COLORS
+} from "./german.js";
 
 /* ══════════════════════════════════════════════
    STATE
@@ -96,128 +100,20 @@ async function fetchWikiEnrichment(word) {
   wikiCard.style.display    = "none";
 
   try {
-    const capitalized = word.charAt(0).toUpperCase() + word.slice(1);
-    const params = new URLSearchParams({
-      action: "parse", page: capitalized,
-      prop: "wikitext", format: "json", origin: "*"
-    });
-    const res  = await fetch("https://de.wiktionary.org/w/api.php?" + params);
-    const data = await res.json();
-    const wt   = data?.parse?.wikitext?.["*"] || "";
-
-    if (!wt) {
+    const result = await fetchWikiData(word);   // ← german.js
+    if (!result.wordType) {
       wikiLoading.style.display = "none";
       return;
     }
-
-    const result = parseWikitext(wt, word);
-    if (!result.found) {
-      wikiLoading.style.display = "none";
-      return;
-    }
-
     wikiData = result;
     renderWikiCard(result, word);
-
   } catch {
-    // Sessizce geç - zorunlu değil
+    // Sessizce geç
   } finally {
     wikiLoading.style.display = "none";
   }
 }
 
-function parseWikitext(wt, originalWord) {
-  const result = {
-    found:    false,
-    artikel:  "",
-    wordType: "",
-    baseForm: "",   // gehe → gehen, schöner → schön
-    plural:   "",
-    genitive: "",
-    autoTags: [],
-  };
-
-  // Kelime türü
-  const typeMatch = wt.match(/\{\{Wortart\|([^|}\n]+)/);
-  if (!typeMatch) return result;
-  result.found = true;
-
-  const rawType = typeMatch[1].trim();
-  const typeMap = {
-    "Substantiv":   { label: "İsim",        tag: "isim" },
-    "Verb":         { label: "Fiil",         tag: "fiil" },
-    "Adjektiv":     { label: "Sıfat",        tag: "sıfat" },
-    "Adverb":       { label: "Zarf",         tag: "zarf" },
-    "Präposition":  { label: "Edat",         tag: null },
-    "Konjunktion":  { label: "Bağlaç",       tag: null },
-    "Pronomen":     { label: "Zamir",        tag: null },
-    "Interjektion": { label: "Ünlem",        tag: null },
-  };
-  const typeInfo    = typeMap[rawType] || { label: rawType, tag: null };
-  result.wordType   = typeInfo.label;
-  if (typeInfo.tag) result.autoTags.push(typeInfo.tag);
-
-  // Artikel (isimler için)
-  if (rawType === "Substantiv") {
-    const genusMatch = wt.match(/\|\s*Genus\s*=\s*([a-z]+)/i);
-    if (genusMatch) {
-      const g = genusMatch[1];
-      if (g === "m") result.artikel = "der";
-      else if (g === "f" || g === "p") result.artikel = "die";
-      else if (g === "n") result.artikel = "das";
-    }
-
-    // Çoğul
-    const pMatch = wt.match(/\|\s*Nominativ Plural\s*=\s*([^\n|{}]+)/);
-    if (pMatch) {
-      const p = pMatch[1].trim().replace(/\[\[|\]\]/g, "");
-      if (p && p !== "—" && p !== "-") result.plural = p;
-    }
-
-    // Genitif
-    const gMatch = wt.match(/\|\s*Genitiv Singular\s*=\s*([^\n|{}]+)/);
-    if (gMatch) {
-      const g = gMatch[1].trim().replace(/\[\[|\]\]/g, "");
-      if (g && g !== "—" && g !== "-") result.genitive = g;
-    }
-  }
-
-  // Fiil: temel form (Grundform = infinitiv)
-  if (rawType === "Verb") {
-    // Eğer girilmiş kelime ile infinitiv farklıysa göster
-    // Wiktionary'de "Grundform" veya "Verb" tablosunda infinitiv zaten sayfa başlığı
-    // Ama çekimli form girilmişse, sayfa "Grundform = gehen" içerir
-    const baseMatch = wt.match(/\|\s*Grundform\s*=\s*([^\n|{}]+)/);
-    if (baseMatch) {
-      const base = baseMatch[1].trim().replace(/\[\[|\]\]/g, "");
-      if (base && base.toLowerCase() !== originalWord.toLowerCase()) {
-        result.baseForm = base;
-      }
-    }
-
-    // Alternatif: infinitiv için "Infinitiv" field
-    const infMatch = wt.match(/\|\s*Infinitiv\s*=\s*([^\n|{}]+)/);
-    if (!result.baseForm && infMatch) {
-      const inf = infMatch[1].trim().replace(/\[\[|\]\]/g, "");
-      if (inf && inf.toLowerCase() !== originalWord.toLowerCase()) {
-        result.baseForm = inf;
-      }
-    }
-  }
-
-  // Sıfat: temel form (Komparativ/Superlativ girilmişse)
-  if (rawType === "Adjektiv") {
-    const posMatch = wt.match(/\|\s*Positiv\s*=\s*([^\n|{}]+)/);
-    if (posMatch) {
-      const pos = posMatch[1].trim().replace(/\[\[|\]\]/g, "");
-      if (pos && pos.toLowerCase() !== originalWord.toLowerCase()) {
-        result.baseForm = pos;
-      }
-    }
-  }
-
-  return result;
-}
 
 function renderWikiCard(data, word) {
   // Artikel badge
@@ -323,48 +219,29 @@ function goToMeaningStep() {
 ══════════════════════════════════════════════ */
 async function fetchTranslationHint(word) {
   try {
-    const url  = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=tr&dt=t&dt=at&q=${encodeURIComponent(word)}`;
-    const res  = await fetch(url);
-    const data = await res.json();
+    const { main, alts } = await fetchTranslate(word);   // ← german.js
 
-    // Ana çeviri
-    const main = data[0]?.map(t => t?.[0]).filter(Boolean).join("") || "—";
     hintText.textContent = main;
+    if (!meaningInput.value.trim()) meaningInput.value = main;
 
-    // Anlam alanına otomatik doldur (boşsa)
-    if (!meaningInput.value.trim()) {
-      meaningInput.value = main;
-    }
+    if (altHints && alts.length > 0) {
+      const label = document.createElement("span");
+      label.className   = "alt-hints-label";
+      label.textContent = "Diğer anlamlar:";
+      altHints.appendChild(label);
 
-    // Alternatif anlamlar (dt=at → data[5])
-    if (altHints && data[5]) {
-      const alts = [];
-      data[5].forEach(entry => {
-        entry?.[2]?.forEach(item => {
-          const w = item?.[0];
-          if (w && w !== main) alts.push(w);
+      alts.slice(0, 6).forEach(alt => {
+        const chip = document.createElement("button");
+        chip.type        = "button";
+        chip.className   = "alt-hint-chip";
+        chip.textContent = alt;
+        chip.addEventListener("click", () => {
+          meaningInput.value = alt;
+          meaningInput.focus();
         });
+        altHints.appendChild(chip);
       });
-
-      if (alts.length > 0) {
-        const label = document.createElement("span");
-        label.className   = "alt-hints-label";
-        label.textContent = "Diğer anlamlar:";
-        altHints.appendChild(label);
-
-        alts.slice(0, 6).forEach(alt => {
-          const chip = document.createElement("button");
-          chip.type      = "button";
-          chip.className = "alt-hint-chip";
-          chip.textContent = alt;
-          chip.addEventListener("click", () => {
-            meaningInput.value = alt;
-            meaningInput.focus();
-          });
-          altHints.appendChild(chip);
-        });
-        altHints.style.display = "flex";
-      }
+      altHints.style.display = "flex";
     }
 
   } catch {
@@ -372,6 +249,7 @@ async function fetchTranslationHint(word) {
     hintText.classList.add("hint-error");
   }
 }
+
 
 /* ══════════════════════════════════════════════
    KAYDET
@@ -397,15 +275,9 @@ async function addWord() {
     return;
   }
 
-  // Akıllı kelime normalleştirme:
-  // İsim ise → büyük harf + artikel ekle (eğer zaten yoksa)
-  if (wikiData?.artikel && !word.toLowerCase().startsWith(wikiData.artikel.toLowerCase())) {
-    word = `${wikiData.artikel} ${word.charAt(0).toUpperCase() + word.slice(1)}`;
-    wordInput.value = word;
-  } else if (wikiData?.wordType === "İsim" && !wikiData.artikel) {
-    word = word.charAt(0).toUpperCase() + word.slice(1);
-    wordInput.value = word;
-  }
+  // german.js normalizeGermanWord: artikel ekle + baş harf büyüt
+  word = normalizeGermanWord(word, wikiData);
+  wordInput.value = word;
 
   saveBtn.disabled    = true;
   saveBtn.textContent = "Kontrol ediliyor…";
@@ -480,10 +352,4 @@ function hideStatus() {
   statusMsg.classList.add("hidden");
   statusMsg.textContent = "";
   statusMsg.className   = "status-msg hidden";
-}
-
-function escapeHtml(str) {
-  return String(str ?? "")
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
