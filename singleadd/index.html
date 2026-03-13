@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kelime Ekle</title>
-  <link rel="icon" href="data:,">
+  <title>Kelime Ekle — AlmancaPratik</title>
+  <link rel="icon" href="../favicon.ico">
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/singleadd.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -15,26 +17,66 @@
   <button class="back-btn" id="backBtn">← Geri</button>
 
   <div class="singleadd-hero">
-    <h1>Tek Kelime Ekle 🔤</h1>
-    <p>Almanca kelimeyi ve Türkçe anlamını gir.</p>
+    <h1>Kelime Ekle 🔤</h1>
+    <p>Almanca kelimeyi yaz, sistem artikel ve temel formu otomatik önerir.</p>
   </div>
 
-  <!-- ADIM 1: Kelime -->
+  <!-- ══════════════════════════
+       ADIM 1: Kelime
+  ══════════════════════════ -->
   <div class="step" id="stepWord">
     <label class="step-label">Almanca Kelime</label>
     <input
       type="text"
       id="wordInput"
       class="word-input"
-      placeholder="z.B. der Hund"
+      placeholder="ör. gehe, schöner, Hund…"
       autocomplete="off"
       spellcheck="false"
     />
+
+    <!-- Wiktionary yükleniyor -->
+    <div class="wiki-loading" id="wikiLoading" style="display:none">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <span>Kelime analiz ediliyor…</span>
+    </div>
+
+    <!-- Wiktionary öneri kartı -->
+    <div class="wiki-card" id="wikiCard" style="display:none">
+
+      <div class="wiki-card-header">
+        <span class="wiki-card-title">Wiktionary Önerisi</span>
+        <span class="wiki-badges">
+          <span class="wiki-artikel" id="wikiArtikel" style="display:none"></span>
+          <span class="wiki-wordtype" id="wikiWordType" style="display:none"></span>
+        </span>
+      </div>
+
+      <!-- Temel form önerisi (gehe → gehen) -->
+      <div class="wiki-baseform-wrap" id="wikiBaseWrap" style="display:none">
+        <div class="wiki-baseform-text">
+          Temel form:
+          <strong id="wikiBaseForm"></strong>
+        </div>
+        <button class="wiki-apply-btn" id="applyBaseForm" type="button">
+          Bu formu kullan →
+        </button>
+      </div>
+
+      <!-- Ek bilgi: çoğul, genitif -->
+      <div class="wiki-extra" id="wikiExtra" style="display:none"></div>
+
+    </div>
+
     <button class="primary-btn" id="wordNextBtn">Devam Et →</button>
   </div>
 
-  <!-- ADIM 2: Anlam -->
+  <!-- ══════════════════════════
+       ADIM 2: Anlam
+  ══════════════════════════ -->
   <div class="step hidden" id="stepMeaning">
+
+    <!-- Kelime önizleme (artikel ile birlikte) -->
     <div class="word-preview" id="wordPreview"></div>
 
     <label class="step-label">Türkçe Anlam</label>
@@ -42,34 +84,30 @@
       type="text"
       id="meaningInput"
       class="word-input"
-      placeholder="z.B. köpek"
+      placeholder="Türkçe karşılığı…"
       autocomplete="off"
       spellcheck="false"
     />
 
-    <!-- ÇEVİRİ ÖNERİSİ -->
-    <div class="translate-hint" id="translateHint">
-      <span class="hint-label">Çeviri önerisi →</span>
-      <span class="hint-text" id="hintText">⏳ yükleniyor…</span>
+    <!-- Çeviri önerisi (ana + alternatifler) -->
+    <div class="translate-hint" id="translateHint" style="display:none">
+      <span class="hint-label">Çeviri önerisi</span>
+      <span class="hint-text" id="hintText"></span>
     </div>
-    <!-- saveBtn'in hemen üstüne ekle -->
+
+    <!-- Alternatif çeviri chip'leri -->
+    <div class="alt-hints" id="altHints" style="display:none"></div>
+
+    <!-- Etiket seçici -->
     <div class="step-tag-section">
-      <label class="step-label">Etiket (opsiyonel)</label>
-      <div class="tag-chips" id="tagChips">
-        <button type="button" class="tag-chip" data-tag="fiil">fiil</button>
-        <button type="button" class="tag-chip" data-tag="isim">isim</button>
-        <button type="button" class="tag-chip" data-tag="sıfat">sıfat</button>
-        <button type="button" class="tag-chip" data-tag="zarf">zarf</button>
-        <button type="button" class="tag-chip" data-tag="B1">B1</button>
-        <button type="button" class="tag-chip" data-tag="B2">B2</button>
-        <button type="button" class="tag-chip" data-tag="seyahat">seyahat</button>
-        <button type="button" class="tag-chip" data-tag="iş">iş</button>
-      </div>
+      <label class="step-label">Etiket <span class="step-label-hint">(otomatik seçildi, değiştirebilirsin)</span></label>
+      <div class="tag-chips" id="tagChips"></div>
     </div>
+
     <button class="primary-btn" id="saveBtn">Kelimeyi Ekle ✓</button>
   </div>
 
-  <!-- DURUM MESAJLARI -->
+  <!-- Durum mesajları -->
   <div class="status-msg hidden" id="statusMsg"></div>
 
 </div>
