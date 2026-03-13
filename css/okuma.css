@@ -53,7 +53,7 @@ body.focus-mode .progress-bar-wrap {
   transition: opacity 0.4s;
 }
 body.focus-mode .reader-container {
-  padding-top: 24px;
+  padding-top: 80px; /* sadece navbar boşluğu */
 }
 
 /* ── Reset / Base ── */
@@ -72,8 +72,8 @@ body {
 ========================================================== */
 .reader-header {
   position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 54px;
+  top: 62px; left: 0; right: 0;  /* navbar: 62px */
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -160,7 +160,7 @@ body.theme-light .reader-header {
 ========================================================== */
 .progress-bar-wrap {
   position: fixed;
-  top: 54px;
+  top: 110px;
   left: 0; right: 0;
   height: 2px;
   background: var(--border);
@@ -180,7 +180,7 @@ body.theme-light .reader-header {
 ========================================================== */
 .features-banner {
   position: relative;
-  margin: 66px auto 0;
+  margin: 122px auto 0; /* 62 navbar + 48 reader-header + 12 gap */
   max-width: 900px;
   padding: 0 20px;
   transition: opacity 0.3s, max-height 0.5s;
@@ -832,6 +832,11 @@ body.theme-light .reader-header {
   }
   .hdr-btn span { display: none; }
   :root { --body-size: 17px; }
+
+  /* tablet navbar: 56px */
+  .reader-header { top: 56px; }
+  .progress-bar-wrap { top: 104px; }
+  .features-banner { margin-top: 116px; }
 }
 
 @media (max-width: 480px) {
@@ -839,4 +844,9 @@ body.theme-light .reader-header {
   .icon-btn { padding: 5px 8px; }
   :root { --body-size: 16px; }
   .reader-container { padding: 16px 16px 60px; }
+
+  /* mobil navbar: 52px */
+  .reader-header { top: 52px; }
+  .progress-bar-wrap { top: 100px; }
+  .features-banner { margin-top: 112px; }
 }
