@@ -52,7 +52,7 @@
     <div class="stat-divider" aria-hidden="true"></div>
     <div class="stat-item">
       <span class="stat-num" id="statQuizzes">—</span>
-      <span class="stat-label">Quiz</span>
+      <span class="stat-label">Etiket</span>
     </div>
   </div>
 
@@ -227,6 +227,51 @@ document.addEventListener("DOMContentLoaded", () => {
   if (sponsorBtn)    sponsorBtn.addEventListener("click",    () => window.location.href = "../sponsorlar/");
 });
 </script>
+<script type="module">
+  import { getWords, getMetinler, onAuthChange } from "../js/firebase.js";
 
+  onAuthChange(async (user) => {
+    if (!user) return;
+
+    ["statWords", "statTexts", "statQuizzes"].forEach(id => {
+      document.getElementById(id).textContent = "…";
+    });
+
+    try {
+      const [words, texts] = await Promise.all([
+        getWords(user.uid),
+        getMetinler(user.uid)
+      ]);
+
+      const uniqueTags = new Set(words.flatMap(w => w.tags || []));
+
+      animateCount("statWords",   words.length);
+      animateCount("statTexts",   texts.length);
+      animateCount("statQuizzes", uniqueTags.size);
+
+    } catch (err) {
+      ["statWords", "statTexts", "statQuizzes"].forEach(id => {
+        document.getElementById(id).textContent = "—";
+      });
+    }
+  });
+
+  function animateCount(id, target) {
+    const el = document.getElementById(id);
+    if (!el || target === 0) { el.textContent = "0"; return; }
+    const steps = 50;
+    let current = 0;
+    const timer = setInterval(() => {
+      current += target / steps;
+      el.textContent = Math.floor(current).toLocaleString("tr");
+      if (current >= target) {
+        el.textContent = target.toLocaleString("tr");
+        clearInterval(timer);
+      }
+    }, 16);
+  }
+</script>
+
+</body>
 </body>
 </html>
