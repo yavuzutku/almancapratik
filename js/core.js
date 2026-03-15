@@ -32,6 +32,11 @@ function loadNavbar(){
         Seviye Testi
       </a>
       <div class="nav-divider"></div>
+      <a class="nav-blog-btn" href="/blog/">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Blog
+      </a>
+      <div class="nav-divider"></div>
       <a class="nav-login-btn" id="navLoginBtn" href="${getLoginHref()}" style="display:none">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
         Giriş Yap
@@ -66,6 +71,9 @@ function loadNavbar(){
     .nav-seviye-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(96,200,240,0.08);border:1px solid rgba(96,200,240,0.2);border-radius:8px;color:rgba(96,200,240,0.8);font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:600;text-decoration:none;transition:all 0.2s;white-space:nowrap;}
     .nav-seviye-btn svg{opacity:0.8;stroke:rgba(96,200,240,0.8);}
     .nav-seviye-btn:hover{background:rgba(96,200,240,0.14);border-color:rgba(96,200,240,0.4);color:#60c8f0;transform:translateY(-1px);}
+    .nav-blog-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;background:transparent;border:1px solid rgba(255,255,255,0.09);border-radius:8px;color:rgba(240,238,232,0.5);font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:500;text-decoration:none;transition:all 0.2s;white-space:nowrap;}
+    .nav-blog-btn svg{opacity:0.6;}
+    .nav-blog-btn:hover{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.16);color:rgba(240,238,232,0.9);}
     .nav-login-btn{display:flex;align-items:center;gap:6px;padding:7px 16px;background:linear-gradient(135deg,#c9a84c,#e8c97a);color:#0a0a0f!important;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;border-radius:8px;text-decoration:none;box-shadow:0 3px 14px rgba(201,168,76,0.3);transition:all 0.2s;white-space:nowrap;}
     .nav-login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,0.45);}
     .nav-login-btn:active{transform:scale(0.97);}
@@ -81,7 +89,7 @@ function loadNavbar(){
     .profile-dropdown__divider{height:1px;background:rgba(255,255,255,0.07);margin:2px 0;}
     .profile-dropdown .logout-btn{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;background:transparent;color:rgba(240,112,104,0.8);border:none;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;text-align:left;transition:background 0.15s,color 0.15s;}
     .profile-dropdown .logout-btn:hover{background:rgba(240,112,104,0.1);color:#f07068;}
-    @media(max-width:480px){.nav-tab-btn{font-size:12px;padding:5px 10px;gap:4px;}.nav-divider{display:none;}.nav-login-btn{padding:7px 12px;font-size:12px;}.nav-seviye-btn{display:none;}}
+    @media(max-width:480px){.nav-tab-btn{font-size:12px;padding:5px 10px;gap:4px;}.nav-divider{display:none;}.nav-login-btn{padding:7px 12px;font-size:12px;}.nav-seviye-btn{display:none;}.nav-blog-btn{display:none;}}
   `;
   document.head.appendChild(style);
   document.body.prepend(navbar);
