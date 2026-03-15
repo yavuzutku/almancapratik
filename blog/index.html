@@ -688,7 +688,8 @@ function showView(id, urlParams = {}) {
   // URL güncelle
   const url = new URL(window.location.href);
   url.search = "";
-  if (id === "viewPost"   && urlParams.id)   url.searchParams.set("id",   urlParams.id);
+  if (id === "viewPost"   && urlParams.slug) url.searchParams.set("p",    urlParams.slug);
+  if (id === "viewPost"   && !urlParams.slug && urlParams.id) url.searchParams.set("id", urlParams.id);
   if (id === "viewEditor" && urlParams.edit)  url.searchParams.set("edit", urlParams.edit);
   if (id === "viewEditor" && !urlParams.edit) url.searchParams.set("edit", "new");
   history.pushState({view: id, ...urlParams}, "", url.toString());
@@ -697,11 +698,14 @@ function showView(id, urlParams = {}) {
 // Geri/ileri tuşu
 window.addEventListener("popstate", e => {
   const params = new URLSearchParams(window.location.search);
+  const slug = params.get("p");
   const id   = params.get("id");
   const edit = params.get("edit");
   if (edit) {
     if (edit === "new") openEditor(null);
     else editPost(edit);
+  } else if (slug) {
+    loadPostBySlug(slug);
   } else if (id) {
     loadPostById(id);
   } else {
@@ -810,6 +814,18 @@ async function loadPostById(id) {
   }
 }
 
+async function loadPostBySlug(slug) {
+  try {
+    const q    = query(BLOGS_COL, where("slug", "==", slug));
+    const snap = await getDocs(q);
+    if (snap.empty) { showView("viewList"); loadPosts(); return; }
+    const d = snap.docs[0];
+    openPost({ id: d.id, ...d.data() }, false);
+  } catch(e) {
+    console.error(e); showView("viewList"); loadPosts();
+  }
+}
+
 function openPost(post, pushUrl = true) {
   _currentPostId = post.id;
 
@@ -852,8 +868,9 @@ function openPost(post, pushUrl = true) {
   // Admin butonları
   adminEl.style.display = isAdmin ? "flex" : "none";
 
-  if (pushUrl) showView("viewPost", { id: post.id });
-  else {
+  if (pushUrl) {
+    showView("viewPost", post.slug ? { slug: post.slug } : { id: post.id });
+  } else {
     ["viewList","viewPost","viewEditor"].forEach(v => {
       document.getElementById(v).classList.toggle("active", v === "viewPost");
     });
@@ -1033,8 +1050,24 @@ async function savePost(publish) {
       return publish;
     })();
 
+    // Slug: yeni yazıda her zaman üret, düzenlemede sadece başlık değiştiyse güncelle
+    let slug;
+    if (editingId) {
+      // Mevcut slug'ı koru, sadece başlık değişmişse güncelle
+      const existing = await getDoc(doc(db, "blogs", editingId));
+      const existingSlug = existing.data()?.slug;
+      const existingTitle = existing.data()?.title;
+      if (!existingSlug || existingTitle !== title) {
+        slug = await ensureUniqueSlug(toSlug(title), editingId);
+      } else {
+        slug = existingSlug;
+      }
+    } else {
+      slug = await ensureUniqueSlug(toSlug(title));
+    }
+
     const data = {
-      title, content, tag, excerpt,
+      title, content, tag, excerpt, slug,
       published: isPublished,
       updatedAt: serverTimestamp(),
       ...(coverUrl !== null ? { coverUrl } : {}),
@@ -1150,6 +1183,41 @@ function wordCountText(t) {
   return (t||"").trim().replace(/<[^>]+>/g,"").split(/\s+/).filter(Boolean).length;
 }
 
+/* Türkçe dahil tüm dilleri destekleyen slug üretici */
+function toSlug(title) {
+  const trMap = {
+    'ğ':'g','Ğ':'g','ü':'u','Ü':'u','ş':'s','Ş':'s',
+    'ı':'i','İ':'i','ö':'o','Ö':'o','ç':'c','Ç':'c',
+    'â':'a','Â':'a','î':'i','Î':'i','û':'u','Û':'u'
+  };
+  return title
+    .split('').map(ch => trMap[ch] || ch).join('')  // Türkçe harfleri dönüştür
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')   // harf/rakam/boşluk/tire dışını kaldır
+    .trim()
+    .replace(/\s+/g, '-')            // boşlukları tireye çevir
+    .replace(/-+/g, '-')             // tekrar eden tireleri temizle
+    .slice(0, 80);                   // max 80 karakter
+}
+
+/* Slug'ın Firestore'da benzersiz olup olmadığını kontrol et */
+async function ensureUniqueSlug(baseSlug, excludeId = null) {
+  const q    = query(BLOGS_COL, where("slug", "==", baseSlug));
+  const snap = await getDocs(q);
+  const existing = snap.docs.filter(d => d.id !== excludeId);
+  if (existing.length === 0) return baseSlug;
+  // Çakışma varsa sonuna sayı ekle
+  let n = 2;
+  while (true) {
+    const candidate = baseSlug + "-" + n;
+    const q2    = query(BLOGS_COL, where("slug", "==", candidate));
+    const snap2 = await getDocs(q2);
+    const ex2   = snap2.docs.filter(d => d.id !== excludeId);
+    if (ex2.length === 0) return candidate;
+    n++;
+  }
+}
+
 /* Globals for inline onclick */
 window.editPost          = editPost;
 window.confirmDeletePost = confirmDeletePost;
@@ -1157,19 +1225,19 @@ window.confirmDeletePost = confirmDeletePost;
 /* ── Init — URL'e göre başla ── */
 (async function init() {
   const params = new URLSearchParams(window.location.search);
+  const slug = params.get("p");
   const id   = params.get("id");
   const edit = params.get("edit");
 
-  // Önce listeyi yükle (arka planda)
   await loadPosts();
 
   if (edit && edit !== "new") {
-    // Direkt editöre
     await editPost(edit);
   } else if (edit === "new") {
     openEditor(null);
+  } else if (slug) {
+    await loadPostBySlug(slug);
   } else if (id) {
-    // Direkt yazıya
     await loadPostById(id);
   } else {
     showView("viewList");
