@@ -523,3 +523,10 @@ body {
 .action-card--ceviri:hover         { border-color:rgba(56,189,248,0.3); box-shadow:0 20px 40px -10px rgba(56,189,248,0.12); }
 .action-card--ceviri:hover .card-icon { color:#38bdf8; border-color:rgba(56,189,248,0.25); }
 .action-card--ceviri:hover .card-tag  { color:#38bdf8; border-color:rgba(56,189,248,0.25); }
+
+
+/* AI Kontrol kartı — admin rengi */
+.action-card--ai .card-glow     { background: #a064ff; }
+.action-card--ai:hover          { border-color:rgba(160,100,255,0.3); box-shadow:0 20px 40px -10px rgba(160,100,255,0.12); }
+.action-card--ai:hover .card-icon { color:#a064ff; border-color:rgba(160,100,255,0.25); }
+.action-card--ai:hover .card-tag  { color:#a064ff; border-color:rgba(160,100,255,0.25); }
