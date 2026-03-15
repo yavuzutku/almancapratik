@@ -7,7 +7,7 @@
   <meta name="description" content="AlmancaPratik blog — Almanca öğrenme ipuçları, gramer rehberleri ve dil öğrenimi hakkında yazılar.">
   <link rel="icon" href="../favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;1,300&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;600&family=Raleway:wght@300;400;600&family=Josefin+Sans:wght@300;400;600&family=Courier+Prime:ital,wght@0,400;1,400&family=Bebas+Neue&family=Dancing+Script:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/global.css">
 <style>
 :root {
@@ -311,6 +311,7 @@ body { font-family: var(--font-b); background: var(--bg); color: var(--text); mi
   font-family: var(--font-b); font-size: 11px; cursor: pointer;
   outline: none; transition: var(--tr); max-width: 90px;
 }
+.tb-select--wide { max-width: 140px; font-size: 12px; }
 .tb-select:hover { border-color: var(--border-h); color: var(--text); }
 .tb-select option { background: #12121a; color: var(--text); }
 /* Highlight */
@@ -566,6 +567,22 @@ mark { background: rgba(255,210,80,0.28); color: var(--text); border-radius: 2px
     <!-- Sol: editör -->
     <div class="editor-main">
       <div class="editor-toolbar">
+        <!-- Yazı tipi -->
+        <select class="tb-select tb-select--wide" id="tbFontFamily" title="Yazı tipi">
+          <option value="">Yazı tipi</option>
+          <option value="DM Sans, sans-serif">DM Sans</option>
+          <option value="Lora, Georgia, serif">Lora</option>
+          <option value="Playfair Display, Georgia, serif">Playfair Display</option>
+          <option value="Merriweather, Georgia, serif">Merriweather</option>
+          <option value="Crimson Text, Georgia, serif">Crimson Text</option>
+          <option value="Nunito, sans-serif">Nunito</option>
+          <option value="Raleway, sans-serif">Raleway</option>
+          <option value="Josefin Sans, sans-serif">Josefin Sans</option>
+          <option value="Courier Prime, monospace">Courier Prime</option>
+          <option value="Bebas Neue, sans-serif">Bebas Neue</option>
+          <option value="Dancing Script, cursive">Dancing Script</option>
+        </select>
+        <div class="tb-sep"></div>
         <!-- Geri al / Yinele -->
         <button class="tb-btn" data-cmd="undo"  title="Geri al (Ctrl+Z)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg></button>
         <button class="tb-btn" data-cmd="redo"  title="Yinele (Ctrl+Y)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg></button>
@@ -586,11 +603,11 @@ mark { background: rgba(255,210,80,0.28); color: var(--text); border-radius: 2px
         <button class="tb-btn" data-cmd="italic"         title="İtalik (Ctrl+I)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
         <button class="tb-btn" data-cmd="underline"      title="Altı çizili (Ctrl+U)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg></button>
         <button class="tb-btn" data-cmd="strikeThrough"  title="Üstü çizili (Ctrl+Shift+X)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><line x1="4" y1="12" x2="20" y2="12"/></svg></button>
-        <button class="tb-btn" data-cmd="highlight"      title="Vurgula (Ctrl+Shift+H)" style="font-size:14px;font-weight:700;color:#ffd250;">H</button>
+        <button class="tb-btn" data-cmd="highlight"      title="Vurgula — tekrar basınca kaldırır (Ctrl+Shift+H)" style="font-size:14px;font-weight:700;color:#ffd250;">H</button>
         <div class="tb-sep"></div>
         <!-- Başlıklar -->
-        <button class="tb-btn" data-cmd="h2" title="Büyük başlık (Ctrl+2)">H2</button>
-        <button class="tb-btn" data-cmd="h3" title="Küçük başlık (Ctrl+3)">H3</button>
+        <button class="tb-btn" data-cmd="h2" title="Büyük başlık — tekrar basınca normal metne döner (Ctrl+2)">H2</button>
+        <button class="tb-btn" data-cmd="h3" title="Küçük başlık — tekrar basınca normal metne döner (Ctrl+3)">H3</button>
         <div class="tb-sep"></div>
         <!-- Hizalama -->
         <button class="tb-btn" data-cmd="justifyLeft"   title="Sola hizala (Ctrl+Shift+L)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg></button>
@@ -600,7 +617,7 @@ mark { background: rgba(255,210,80,0.28); color: var(--text); border-radius: 2px
         <!-- Listeler -->
         <button class="tb-btn" data-cmd="insertUnorderedList" title="Madde listesi"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg></button>
         <button class="tb-btn" data-cmd="insertOrderedList" title="Numaralı liste"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></button>
-        <button class="tb-btn" data-cmd="blockquote"    title="Alıntı"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg></button>
+        <button class="tb-btn" data-cmd="blockquote"    title="Alıntı — tekrar basınca kaldırır"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg></button>
         <div class="tb-sep"></div>
         <!-- Ekle -->
         <button class="tb-btn" data-cmd="insertHR"      title="Yatay çizgi"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/></svg></button>
@@ -987,6 +1004,16 @@ function openEditor(post = null) {
 }
 
 /* ── Toolbar ── */
+/* Seçimin bulunduğu blok etiketini döndürür */
+function getSelectionBlock() {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return "";
+  let node = sel.getRangeAt(0).commonAncestorContainer;
+  if (node.nodeType === 3) node = node.parentElement;
+  const block = node.closest("h2,h3,h4,blockquote,p,div");
+  return block ? block.tagName : "";
+}
+
 document.querySelectorAll(".tb-btn").forEach(btn => {
   btn.addEventListener("mousedown", e => {
     e.preventDefault();
@@ -995,21 +1022,49 @@ document.querySelectorAll(".tb-btn").forEach(btn => {
     const ed = document.getElementById("editorContent");
 
     if (cmd === "h2") {
-      document.execCommand("formatBlock", false, "h2");
+      /* Toggle: zaten h2 ise normal paragrafa döndür */
+      const block = getSelectionBlock();
+      document.execCommand("formatBlock", false, block === "H2" ? "p" : "h2");
     } else if (cmd === "h3") {
-      document.execCommand("formatBlock", false, "h3");
+      const block = getSelectionBlock();
+      document.execCommand("formatBlock", false, block === "H3" ? "p" : "h3");
     } else if (cmd === "blockquote") {
-      document.execCommand("formatBlock", false, "blockquote");
+      /* Toggle: zaten blockquote ise p'ye çevir */
+      const block = getSelectionBlock();
+      document.execCommand("formatBlock", false, block === "BLOCKQUOTE" ? "p" : "blockquote");
     } else if (cmd === "createLink") {
       const url = prompt("Link URL:");
       if (url) document.execCommand("createLink", false, url);
     } else if (cmd === "highlight") {
-      /* Vurgulama: seçili metni <mark> içine al */
+      /* Toggle vurgulama: zaten mark içindeyse kaldır, değilse ekle */
       const sel = window.getSelection();
       if (sel && sel.rangeCount && !sel.isCollapsed) {
-        const range = sel.getRangeAt(0);
-        const mark  = document.createElement("mark");
-        range.surroundContents(mark);
+        const range    = sel.getRangeAt(0);
+        const ancestor = range.commonAncestorContainer;
+        const markEl   = ancestor.nodeType === 1
+          ? ancestor.closest("mark")
+          : ancestor.parentElement?.closest("mark");
+        if (markEl) {
+          /* Zaten mark içinde — mark'ı kaldır, içeriği bırak */
+          const parent = markEl.parentNode;
+          while (markEl.firstChild) parent.insertBefore(markEl.firstChild, markEl);
+          parent.removeChild(markEl);
+        } else {
+          try {
+            const mark = document.createElement("mark");
+            range.surroundContents(mark);
+          } catch {
+            /* Seçim birden fazla elementi kapsıyorsa insertHTML kullan */
+            const div = document.createElement("div");
+            div.appendChild(range.extractContents());
+            div.querySelectorAll("mark").forEach(m => {
+              m.replaceWith(...m.childNodes);
+            });
+            const mark = document.createElement("mark");
+            mark.innerHTML = div.innerHTML;
+            range.insertNode(mark);
+          }
+        }
         sel.removeAllRanges();
       }
     } else if (cmd === "insertHR") {
@@ -1041,6 +1096,14 @@ document.querySelectorAll(".tb-btn").forEach(btn => {
 document.getElementById("tbFontSize").addEventListener("change", function() {
   if (!this.value) return;
   document.execCommand("fontSize", false, this.value);
+  document.getElementById("editorContent").focus();
+  this.value = "";
+});
+
+/* Yazı tipi select */
+document.getElementById("tbFontFamily").addEventListener("change", function() {
+  if (!this.value) return;
+  document.execCommand("fontName", false, this.value);
   document.getElementById("editorContent").focus();
   this.value = "";
 });
