@@ -11,10 +11,10 @@ const MAX_HISTORY   = 30;
 
 /* Model listesi */
 const MODELS = {
-  "gemini-2.5-flash": { label: "Gemini 2.5 Flash", note: "En güncel · Önerilen", stable: false },
-  "gemini-2.0-flash": { label: "Gemini 2.0 Flash", note: "Hızlı & kararlı",      stable: true  },
-  "gemini-1.5-flash": { label: "Gemini 1.5 Flash", note: "Eski · Stabil",         stable: true  },
-  "gemini-1.5-pro":   { label: "Gemini 1.5 Pro",   note: "Güçlü · Yavaş",        stable: true  },
+  "gemini-2.5-flash":      { label: "Gemini 2.5 Flash",      note: "En güncel · Önerilen", stable: true },
+  "gemini-2.5-flash-lite": { label: "Gemini 2.5 Flash-Lite", note: "Hızlı & ucuz",          stable: true },
+  "gemini-2.5-pro":        { label: "Gemini 2.5 Pro",        note: "En güçlü · Yavaş",       stable: true },
+  "gemini-2.0-flash":      { label: "Gemini 2.0 Flash",      note: "Eski · Haziran'a kadar", stable: true },
 };
 
 const DEFAULT_MODEL = "gemini-2.0-flash";
