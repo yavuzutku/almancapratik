@@ -563,6 +563,7 @@ body { font-family: var(--font-b); background: var(--bg); color: var(--text); mi
         <div class="cover-upload-area" id="coverUploadArea">
           <span class="cover-upload-icon">🖼</span>
           <span class="cover-upload-text">Görsel seç veya sürükle</span>
+          <span style="font-size:10px;color:var(--text-3);margin-top:2px;">Max 8MB · Otomatik sıkıştırılır</span>
           <img id="coverPreview" src="" alt="" style="display:none">
           <button class="cover-remove-btn" id="coverRemoveBtn" style="display:none" title="Görseli kaldır">✕</button>
         </div>
@@ -607,9 +608,6 @@ import {
   getFirestore, collection, addDoc, getDocs, getDoc,
   doc, updateDoc, deleteDoc, query, orderBy, where, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-  getStorage, ref, uploadBytes, getDownloadURL, deleteObject
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 /* ── Firebase ── */
@@ -621,10 +619,9 @@ const firebaseConfig = {
   messagingSenderId: "653560965391",
   appId:             "1:653560965391:web:545142e9be6d130a54b67a"
 };
-const app     = getApps().find(a=>a.name==="[DEFAULT]") || initializeApp(firebaseConfig);
-const db      = getFirestore(app);
-const storage = getStorage(app);
-const auth    = getAuth(app);
+const app  = getApps().find(a=>a.name==="[DEFAULT]") || initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
 
 const ADMIN_EMAIL = "yavuzutku144@gmail.com";
 const BLOGS_COL   = collection(db, "blogs");
@@ -858,17 +855,26 @@ coverArea.addEventListener("click", e => {
 coverInput.addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) return;
-  if (file.size > 5 * 1024 * 1024) { toast("Görsel 5MB'dan küçük olmalı", "err"); return; }
+  if (file.size > 8 * 1024 * 1024) { toast("Görsel 8MB'dan küçük olmalı", "err"); return; }
   coverFile = file;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    coverDataUrl = ev.target.result;
+  /* Görseli canvas'ta sıkıştır — max 1200px, JPEG %80 */
+  const img = new Image();
+  const objectUrl = URL.createObjectURL(file);
+  img.onload = () => {
+    URL.revokeObjectURL(objectUrl);
+    const MAX = 1200;
+    let w = img.width, h = img.height;
+    if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+    const canvas = document.createElement("canvas");
+    canvas.width = w; canvas.height = h;
+    canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+    coverDataUrl = canvas.toDataURL("image/jpeg", 0.80);
     const preview = document.getElementById("coverPreview");
     const removeBtn = document.getElementById("coverRemoveBtn");
     preview.src = coverDataUrl; preview.style.display = "block";
     removeBtn.style.display = "flex";
   };
-  reader.readAsDataURL(file);
+  img.src = objectUrl;
 });
 
 /* Drag & drop */
@@ -908,14 +914,8 @@ async function savePost(publish) {
   publishBtn.disabled = true; draftBtn.disabled = true;
 
   try {
-    let coverUrl = coverDataUrl && !coverFile ? coverDataUrl : null;
-
-    /* Yeni görsel var → Storage'a yükle */
-    if (coverFile) {
-      const storageRef = ref(storage, `blog-covers/${Date.now()}_${coverFile.name}`);
-      const snap = await uploadBytes(storageRef, coverFile);
-      coverUrl = await getDownloadURL(snap.ref);
-    }
+    /* Görsel base64 olarak Firestore'a kaydedilir — Storage/CORS gerektirmez */
+    let coverUrl = coverDataUrl || null;
 
     const isPublished = (() => {
       if (publish === null) {
