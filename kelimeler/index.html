@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kelimeler</title>
-  <link rel="icon" href="data:,">
+  <title>Kelimelerim — AlmancaPratik</title>
+  <meta name="description" content="Kaydettiğin Almanca kelimeleri listele, filtrele, düzenle ve tekrar et. Kendi kelime bankanı oluştur.">
+  <link rel="icon" href="../favicon.ico">
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/kelimeler.css">
 </head>
@@ -13,7 +14,8 @@
 <div class="page-wrapper">
 
   <div class="top-bar">
-    <button class="back-btn" onclick="window.location.href='../index.html'">← Geri</button>
+    <!-- DÜZELTME: ../index.html → ../anasayfa/ -->
+    <button class="back-btn" onclick="window.location.href='../anasayfa/'">← Geri</button>
     <h1 class="page-title">📖 Kelimelerim</h1>
     <div class="word-count-badge" id="wordCountBadge">0 kelime</div>
   </div>
@@ -27,15 +29,11 @@
     />
   </div>
 
-  <!-- filter-bar div'ini tamamen kaldır, word-list div'ini şununla sar: -->
-
   <div class="content-layout">
 
     <aside class="filter-sidebar">
       <div class="filter-sidebar-title">Etiketler</div>
-      <div class="filter-tag-list" id="filterTagList">
-        <!-- JS ile doldurulacak -->
-      </div>
+      <div class="filter-tag-list" id="filterTagList"></div>
     </aside>
 
     <div class="word-list-area">

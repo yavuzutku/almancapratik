@@ -193,6 +193,7 @@
       <div class="card-desc">Projeyi destekleyen sponsorlarımıza göz at ve katkılarını gör.</div>
       <div class="card-tag">Destek</div>
     </button>
+
     <button class="action-card action-card--ai hidden" id="aiBtn" role="listitem" aria-label="AI Kontrol sayfasına git">
       <div class="card-glow" aria-hidden="true"></div>
       <div class="card-top">
@@ -207,6 +208,7 @@
       <div class="card-desc">Gemini AI ile cümle düzelt, gramer sor, kelime analizi yap.</div>
       <div class="card-tag">✦ Admin</div>
     </button>
+
   </div>
 </main>
 
@@ -216,7 +218,6 @@
   window.loadNavbar();
 </script>
 
-<!-- anasayfa.js buraya inline taşındı (ayrı dosyaya gerek yok) -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const newTextBtn    = document.getElementById("newTextBtn");
@@ -240,6 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (sponsorBtn)    sponsorBtn.addEventListener("click",    () => window.location.href = "../sponsorlar/");
 });
 </script>
+
 <script type="module">
   import { getWords, getMetinler, onAuthChange } from "../js/firebase.js";
 
@@ -284,9 +286,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 16);
   }
 </script>
+
 <script type="module">
   import { onAuthChange } from "../js/firebase.js";
-  import { doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
   onAuthChange((user) => {
     const btn = document.getElementById("aiBtn");
     if (btn && user && user.email === "yavuzutku144@gmail.com") {
@@ -295,6 +297,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 </script>
-</body>
+
 </body>
 </html>
