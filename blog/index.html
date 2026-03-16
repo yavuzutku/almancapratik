@@ -728,7 +728,10 @@ const app  = getApps().find(a=>a.name==="[DEFAULT]") || initializeApp(firebaseCo
 const db   = getFirestore(app);
 const auth = getAuth(app);
 
-const ADMIN_EMAIL = "yavuzutku144@gmail.com";
+const ADMIN_EMAILS = [
+  "yavuzutku144@gmail.com",
+  "almancapratik80@gmail.com"
+];
 const BLOGS_COL   = collection(db, "blogs");
 
 /* ── State ── */
