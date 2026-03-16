@@ -353,13 +353,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <!-- Admin AI butonu -->
 <script type="module">
-  import { onAuthChange } from "../js/firebase.js";
-  const ADMIN_EMAILS = ["yavuzutku144@gmail.com", "almancapratik80@gmail.com"];
-  onAuthChange((user) => {
+  import { onAdminChange } from "../src/admin.js";
+  onAdminChange((adminStatus) => {
     const btn = document.getElementById("aiBtn");
-    if (btn && user && ADMIN_EMAILS.includes(user.email)) {
+    if (!btn) return;
+    if (adminStatus) {
       btn.classList.remove("hidden");
-      btn.addEventListener("click", () => window.location.href = "../ai/");
+      if (!btn._adminBound) {
+        btn._adminBound = true;
+        btn.addEventListener("click", () => window.location.href = "../ai/");
+      }
+    } else {
+      btn.classList.add("hidden");
     }
   });
 </script>

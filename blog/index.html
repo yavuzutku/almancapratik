@@ -708,12 +708,13 @@ mark { background: rgba(255,210,80,0.28); color: var(--text); border-radius: 2px
 
 <!-- Blog logic -->
 <script type="module">
+import { onAdminChange } from "../src/admin.js";
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore, collection, addDoc, getDocs, getDoc,
   doc, updateDoc, deleteDoc, query, orderBy, where, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 
 /* ── Firebase ── */
 const firebaseConfig = {
@@ -726,29 +727,25 @@ const firebaseConfig = {
 };
 const app  = getApps().find(a=>a.name==="[DEFAULT]") || initializeApp(firebaseConfig);
 const db   = getFirestore(app);
-const auth = getAuth(app);
 
-const ADMIN_EMAILS = [
-  "yavuzutku144@gmail.com",
-  "almancapratik80@gmail.com"
-];
 const BLOGS_COL   = collection(db, "blogs");
 
 /* ── State ── */
-let currentUser   = null;
-let isAdmin       = false;
+let currentUser = null;
+let isAdmin     = false;
+
+/* ── Admin değişimini merkezi modülden dinle ── */
+onAdminChange((adminStatus, user) => {
+  isAdmin     = adminStatus;
+  currentUser = user;
+  document.getElementById("btnNewPost").style.display = adminStatus ? "flex" : "none";
+});
 let editingId     = null;
 let coverFile     = null;
 let coverDataUrl  = null;
 let deleteTargetId= null;
 let wordTimer     = null;
 
-/* ── Auth ── */
-onAuthStateChanged(auth, user => {
-  currentUser = user;
-  isAdmin = !!(user && ADMIN_EMAILS.includes(user.email));
-  document.getElementById("btnNewPost").style.display = isAdmin ? "flex" : "none";
-});
 
 /* ── View switching + URL routing ── */
 let _currentPostId = null;
