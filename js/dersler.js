@@ -592,15 +592,23 @@ window.confirmDeleteLesson = confirmDeleteLesson;
 /* ══════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════ */
+// dersler.js — sadece en alttaki init() fonksiyonunu bununla değiştir:
+
 (async function init() {
   const p    = new URLSearchParams(window.location.search);
   const slug = p.get("ders");
   const id   = p.get("id");
   const edit = p.get("edit");
+  const cat  = p.get("cat");   // ← YENİ: navbar kategori linki
+
   await loadLessons();
+
   if (edit === "new")  openEditor(null);
   else if (edit)       await editLesson(edit);
   else if (slug)       await loadLessonBySlug(slug);
   else if (id)         await loadLessonById(id);
-  else showViewOnly("viewList");
+  else {
+    showViewOnly("viewList");
+    if (cat) setCatFilter(cat);  // ← YENİ: ?cat=A1 → filtreyi uygula
+  }
 })();
