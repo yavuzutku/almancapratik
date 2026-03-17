@@ -6,6 +6,8 @@
   <title>Blog — AlmancaPratik</title>
   <meta name="description" content="AlmancaPratik blog — Almanca öğrenme ipuçları, gramer rehberleri ve dil öğrenimi hakkında yazılar.">
   <link rel="icon" href="../favicon.ico">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/blog.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;1,300&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;600&family=Raleway:wght@300;400;600&family=Josefin+Sans:wght@300;400;600&family=Courier+Prime:ital,wght@0,400;1,400&family=Bebas+Neue&family=Dancing+Script:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/global.css">
@@ -212,22 +214,19 @@
   </div>
 </div>
 
+
 <script type="module">
   import "../js/core.js";
   window.loadNavbar();
 </script>
 
 <script type="module">
-  // Bir üstteki js klasörüne git dedik (../)
   import { onAuthChange } from "../js/firebase.js";
+  // İki nokta (..) koyarak blog klasöründen dışarı çıkıp js klasörüne giriyoruz
   import "../js/blog.js"; 
 
   onAuthChange((user) => {
-    if (user) {
-      console.log("Blog sistemi hazır, kullanıcı:", user.email);
-    } else {
-      console.log("Giriş yapılmış bir kullanıcı yok.");
-    }
+    console.log("Kullanıcı durumu:", user ? "Giriş yapıldı" : "Giriş yok");
   });
 </script>
 </body>
