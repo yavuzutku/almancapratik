@@ -27,7 +27,7 @@ function loadNavbar(){
           <span>Dersler</span>
           <svg class="nav-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </a>
-        <div class="nav-dropdown" id="derslerDrop">
+        <div class="nav-dropdown" id="derslerDrop"><div class="nav-dropdown-inner">
           <div class="nav-drop-header">Seviyeye Göre</div>
           <a class="nav-drop-item" href="/dersler/?cat=A1">
             <span class="nav-drop-badge nav-drop-badge--a1">A1</span>
@@ -54,7 +54,7 @@ function loadNavbar(){
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
             Tüm Dersleri Gör
           </a>
-        </div>
+        </div></div>
       </div>
 
       <!-- Pratik dropdown -->
@@ -64,7 +64,7 @@ function loadNavbar(){
           <span>Pratik</span>
           <svg class="nav-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="nav-dropdown nav-dropdown--wide" id="pratikDrop">
+        <div class="nav-dropdown nav-dropdown--wide" id="pratikDrop"><div class="nav-dropdown-inner">
           <div class="nav-drop-cols">
             <div class="nav-drop-col">
               <div class="nav-drop-header">Araçlar</div>
@@ -111,7 +111,7 @@ function loadNavbar(){
               Seviye testini ücretsiz çöz →
             </a>
           </div>
-        </div>
+        </div></div>
       </div>
 
       <!-- Blog (düz link) -->
@@ -235,35 +235,40 @@ function loadNavbar(){
 
     /* ── Dropdown container ── */
     .nav-dropdown-wrap{position:relative;display:inline-flex;}
-    .nav-dropdown-wrap:hover .nav-chevron{transform:rotate(180deg);}
-    .nav-dropdown-wrap:hover .nav-dropdown{
+    .nav-dropdown-wrap.open .nav-chevron{transform:rotate(180deg);}
+    .nav-dropdown-wrap.open .nav-dropdown{
       opacity:1;
       pointer-events:all;
       transform:translateY(0);
     }
+    .nav-dropdown-wrap.open .nav-dropdown--wide{
+      transform:translateX(-50%) translateY(0);
+    }
 
     /* ── Dropdown panel ── */
+    /* top:100% + padding-top:10px = fare kesintisiz gecebilir */
     .nav-dropdown{
-      position:absolute;top:calc(100% + 10px);left:0;
+      position:absolute;
+      top:100%;left:0;
+      padding-top:10px;
       min-width:240px;
+      opacity:0;
+      pointer-events:none;
+      transform:translateY(-4px);
+      transition:opacity 0.15s ease, transform 0.15s cubic-bezier(0.4,0,0.2,1);
+      z-index:9999;
+    }
+    .nav-dropdown-inner{
       background:#0c0c12;
       border:1px solid rgba(255,255,255,0.1);
       border-radius:14px;
       padding:8px;
       box-shadow:0 20px 60px rgba(0,0,0,0.7),0 4px 16px rgba(0,0,0,0.4);
-      z-index:9999;
-      opacity:0;
-      pointer-events:none;
-      transform:translateY(-6px);
-      transition:opacity 0.18s ease, transform 0.18s cubic-bezier(0.4,0,0.2,1);
     }
     .nav-dropdown--wide{
       min-width:480px;
       left:50%;
-      transform:translateX(-50%) translateY(-6px);
-    }
-    .nav-dropdown-wrap:hover .nav-dropdown--wide{
-      transform:translateX(-50%) translateY(0);
+      transform:translateX(-50%) translateY(-4px);
     }
 
     /* ── Dropdown items ── */
@@ -388,9 +393,9 @@ function loadNavbar(){
       .nav-pill span{display:none;}
       .nav-chevron{display:none;}
       .nav-pill{padding:7px 10px;}
-      .nav-dropdown{left:50%;transform:translateX(-50%) translateY(-6px);}
-      .nav-dropdown-wrap:hover .nav-dropdown:not(.nav-dropdown--wide){transform:translateX(-50%) translateY(0);}
-      .nav-dropdown--wide{min-width:300px;left:50%;transform:translateX(-50%) translateY(-6px);}
+      .nav-dropdown{left:50%;transform:translateX(-50%) translateY(-4px);}
+      .nav-dropdown-wrap.open .nav-dropdown:not(.nav-dropdown--wide){transform:translateX(-50%) translateY(0);}
+      .nav-dropdown--wide{min-width:300px;left:50%;transform:translateX(-50%) translateY(-4px);}
       .nav-drop-cols{grid-template-columns:1fr;}
     }
     @media(max-width:600px){
@@ -400,6 +405,18 @@ function loadNavbar(){
   `;
   document.head.appendChild(style);
   document.body.prepend(navbar);
+
+  /* ── Dropdown hover — gecikme ile açık tut ── */
+  const DELAY = 180;
+  document.querySelectorAll(".nav-dropdown-wrap").forEach(wrap => {
+    let timer = null;
+    const open  = () => { clearTimeout(timer); wrap.classList.add("open"); };
+    const close = () => { timer = setTimeout(() => wrap.classList.remove("open"), DELAY); };
+    wrap.addEventListener("mouseenter", open);
+    wrap.addEventListener("mouseleave", close);
+    /* Dışa tıklayınca kapat */
+    document.addEventListener("click", e => { if(!wrap.contains(e.target)) wrap.classList.remove("open"); });
+  });
 
   /* ── Çıkış ── */
   document.getElementById("logoutBtn").addEventListener("click", async () => {
