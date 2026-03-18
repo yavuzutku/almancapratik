@@ -7,6 +7,8 @@
    2. Tüm event listener'lar DOMContentLoaded içinde TEK KERE bağlandı.
    3. Modal toggle: display manipülasyonu JS'de, CSS class sadece flex açar.
    4. Promise'ler kapatılmış; hiç { once:true } kullanılmıyor.
+   5. positionPopup(): popup alta sığmazsa otomatik üste çevrilir,
+      yatayda da viewport'tan taşmaz. Scroll'da popup kaybolmaz.
    ═══════════════════════════════════════════════════════════ */
 
 import { saveWord, getWords } from "./firebase.js";
@@ -125,8 +127,6 @@ function bindToolbar() {
     sessionStorage.removeItem("parsedBlocks");
     const ret = sessionStorage.getItem("returnPage");
 
-    /* returnPage değeri eski formatlarda "metin.html" veya "../gecmis/"
-       gibi gelebilir. Her durumda doğru URL'e yönlendir. */
     let href;
     if (!ret) {
       href = "../metin/";
@@ -135,9 +135,8 @@ function bindToolbar() {
     } else if (ret === "gecmis" || ret === "gecmis/" || ret === "../gecmis/") {
       href = "../gecmis/";
     } else if (ret.startsWith("../")) {
-      href = ret;          /* zaten doğru format */
+      href = ret;
     } else {
-      /* "foo.html" → "../foo/" ya da "foo/" → "../foo/" */
       href = "../" + ret.replace(/\.html$/, "/").replace(/\/?$/, "/");
     }
 
@@ -209,14 +208,11 @@ function restorePrefs() {
    KELİME SEÇİMİ
    ═══════════════════════════════════════════════════════════ */
 function bindSelection() {
-  /* Metin seçilince floating buton göster */
   $body.addEventListener("mouseup", onBodyMouseUp);
   $body.addEventListener("touchend", onBodyMouseUp);
 
-  /* Butona tıklanınca popup aç */
   $meaning.addEventListener("click", openPopup);
 
-  /* Dış tıklamada kapat */
   document.addEventListener("mousedown", e => {
     if (_modalOpen) return;
     const inside = [$body, $meaning, $popup, $overlay].some(el => el && el.contains(e.target));
@@ -233,7 +229,6 @@ function onBodyMouseUp() {
   const sel = window.getSelection();
   if (!sel || sel.rangeCount === 0) { hideMeaning(); return; }
 
-  /* Unicode letter-only trim */
   const raw = sel.toString().trim().replace(/^[^\p{L}]+|[^\p{L}]+$/gu, "");
   if (!raw) { hideMeaning(); return; }
 
@@ -241,13 +236,11 @@ function onBodyMouseUp() {
   const rect = sel.getRangeAt(0).getBoundingClientRect();
   if (!rect.width) { hideMeaning(); return; }
 
-  /* position:fixed → koordinatlar viewport-relative, scrollY YOK */
   hidePopup();
   $meaning.style.top  = (rect.bottom + 10) + "px";
   $meaning.style.left = rect.left + "px";
   $meaning.style.display = "inline-flex";
   $meaning.classList.remove("pop");
-  /* reflow sonrası animasyon class ekle */
   requestAnimationFrame(() => $meaning.classList.add("pop"));
 }
 
@@ -261,16 +254,45 @@ function hidePopup() {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   POPUP KONUMLANDIRMA
+   Alta sığmazsa üste çevirir; yatayda taşmayı önler.
+   İçerik async yüklenince tekrar çağrılır.
+   ═══════════════════════════════════════════════════════════ */
+function positionPopup(anchorRect) {
+  const vw  = window.innerWidth;
+  const vh  = window.innerHeight;
+  const pw  = $popup.offsetWidth  || 300;
+  const ph  = $popup.offsetHeight || 120;
+  const GAP = 8;
+
+  /* Dikey: önce alta, sığmazsa üste */
+  let top = anchorRect.bottom + GAP;
+  if (top + ph > vh - 10) {
+    top = anchorRect.top - ph - GAP;
+  }
+  top = Math.max(6, top);   /* ekranın üstünden çıkmasın */
+
+  /* Yatay: soldan hizala, sağ kenara taşmasın */
+  let left = anchorRect.left;
+  if (left + pw > vw - 10) {
+    left = vw - pw - 10;
+  }
+  left = Math.max(6, left);
+
+  $popup.style.top  = top  + "px";
+  $popup.style.left = left + "px";
+}
+
+/* ═══════════════════════════════════════════════════════════
    ANLAM POPUP
    ═══════════════════════════════════════════════════════════ */
 async function openPopup() {
-  /* Popup'u meaning butonunun hemen altında göster */
   const btnRect = $meaning.getBoundingClientRect();
-  $popup.style.top  = (btnRect.bottom + 8) + "px";
-  $popup.style.left = btnRect.left + "px";
-  $popup.style.display = "block";
+
+  /* Gizli aç → yükleniyor içeriğini yerleştir → konumlandır → göster */
+  $popup.style.visibility = "hidden";
+  $popup.style.display    = "block";
   $popup.classList.remove("slide");
-  requestAnimationFrame(() => $popup.classList.add("slide"));
 
   hideMeaning();
   _wiki = null;
@@ -281,6 +303,11 @@ async function openPopup() {
       <span>Çevriliyor…</span>
     </div>`;
 
+  /* Yükleniyor konumlandırması */
+  positionPopup(btnRect);
+  $popup.style.visibility = "visible";
+  requestAnimationFrame(() => $popup.classList.add("slide"));
+
   let mainTr = "—", alts = [], wikiData = {};
 
   try {
@@ -290,13 +317,13 @@ async function openPopup() {
     ]);
   } catch {
     $popup.innerHTML = `<div style="padding:16px;color:var(--ok-error);font-size:13px">Çeviri alınamadı.</div>`;
+    positionPopup(btnRect);
     return;
   }
 
   _tr   = mainTr;
   _wiki = wikiData;
 
-  /* Popup içeriğini oluştur */
   const artHtml  = artikelBadgeHtml(wikiData.artikel, { size: 11 });
   const typeHtml = wikiData.wordType
     ? `<span class="ok-ptb">${wikiData.wordType}</span>` : "";
@@ -328,9 +355,11 @@ async function openPopup() {
       <button class="ok-psave" id="ppSave">+ Sözlüğe Ekle</button>
     </div>`;
 
+  /* İçerik yüklendi → gerçek yüksekliğe göre yeniden konumlandır */
+  positionPopup(btnRect);
+
   renderTagChips("ppTags", wikiData.autoTags || [], extractAllTags(_userWords));
 
-  /* Alt çeviri chip'leri */
   $popup.querySelectorAll(".ok-palt").forEach(chip => {
     chip.addEventListener("click", () => {
       _tr = chip.dataset.a;
@@ -339,7 +368,6 @@ async function openPopup() {
     });
   });
 
-  /* Temel form uygula */
   document.getElementById("ppApply")?.addEventListener("click", async () => {
     _word = wikiData.baseForm;
     hidePopup();
@@ -347,7 +375,6 @@ async function openPopup() {
       const nw = await fetchWikiData(_word);
       _wiki = nw;
     } catch { _wiki = {}; }
-    /* Popup'u yeniden aç */
     $meaning.style.top  = $popup.style.top;
     $meaning.style.left = $popup.style.left;
     $meaning.style.display = "inline-flex";
@@ -360,7 +387,6 @@ async function openPopup() {
 
 /* ── Popup'tan kaydet ────────────────────────────────────── */
 async function saveFromPopup() {
-  // Auth kontrolü
   if (!isLoggedIn()) {
     showAuthGate({
       title: 'Kelime kaydetmek için giriş yap',
@@ -368,15 +394,15 @@ async function saveFromPopup() {
     });
     return;
   }
- 
+
   const word = normalizeGermanWord(_word, _wiki);
   if (!word || !_tr || _tr === "—") {
     showToast("Kelime veya çeviri eksik.", false); return;
   }
- 
+
   const btn = document.getElementById("ppSave");
   if (btn) { btn.disabled = true; btn.textContent = "Kaydediliyor…"; }
- 
+
   try {
     const uid = window.getUserId?.();
     if (!uid) throw new Error("Oturum yok");
@@ -393,7 +419,6 @@ async function saveFromPopup() {
 
 /* ═══════════════════════════════════════════════════════════
    KELIME KAYDETME MODALI
-   Tüm listener'lar tek kez bindModal() içinde bağlanır.
    ═══════════════════════════════════════════════════════════ */
 function bindModal() {
   const close = () => {
@@ -437,7 +462,6 @@ function openModal() {
 
   renderTagChips("modalTagChips", _wiki?.autoTags || [], extractAllTags(_userWords));
 
-  /* Inline display:none → display:flex override */
   $overlay.style.display = "flex";
   $overlay.classList.add("active");
   _modalOpen = true;
@@ -456,7 +480,6 @@ function fillModalWord() {
 }
 
 async function doSaveModal() {
-  // Auth kontrolü
   if (!isLoggedIn()) {
     showAuthGate({
       title: 'Kelime kaydetmek için giriş yap',
@@ -464,24 +487,24 @@ async function doSaveModal() {
     });
     return;
   }
- 
+
   const inp     = document.getElementById("modalMeaningInput");
   const meaning = inp?.value.trim();
   if (!meaning) { inp?.focus(); return; }
- 
+
   const word = normalizeGermanWord(_word, _wiki || {});
   const tags = getSelectedTags("modalTagChips");
   const btn  = document.getElementById("wordModalSaveBtn");
- 
+
   if (btn) { btn.disabled = true; btn.textContent = "Kaydediliyor…"; }
- 
+
   try {
     const uid = window.getUserId?.();
     if (!uid) throw new Error("Oturum yok");
     await saveWord(uid, word, meaning, tags);
     getWords(uid).then(l => { _userWords = l; }).catch(() => {});
-    _overlay.style.display = "none";
-    _overlay.classList.remove("active");
+    $overlay.style.display = "none";
+    $overlay.classList.remove("active");
     _modalOpen = false;
     _word      = "";
     showToast(`"${word}" sözlüğe eklendi`);
@@ -490,8 +513,6 @@ async function doSaveModal() {
     if (btn) { btn.disabled = false; btn.textContent = "Kaydet"; }
   }
 }
-
-
 
 /* ═══════════════════════════════════════════════════════════
    MINI YARDIMCILAR
