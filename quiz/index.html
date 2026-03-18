@@ -51,7 +51,18 @@
     <!-- H1 -->
     <h1 class="start-title">Kelime Testi</h1>
     <p class="start-sub">Kaydettiğin Almanca kelimelerden karışık yönlü sorular üretilir.<br>Her soru çoktan seçmeli <em>veya</em> yazarak cevaplama modunda gelir.</p>
-
+    <div style="margin-top:12px;">
+      <a id="adminSharedQuizBtn"
+        href="../quiz/shared/"
+        style="display:none;align-items:center;gap:7px;padding:8px 18px;
+                background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);
+                border-radius:8px;color:#c9a84c;font-family:'Syne',sans-serif;
+                font-size:12px;font-weight:700;text-decoration:none;"
+        onmouseover="this.style.background='rgba(201,168,76,0.2)'"
+        onmouseout="this.style.background='rgba(201,168,76,0.1)'">
+        📤 Paylaşılabilir Quiz Oluştur
+      </a>
+    </div>
     <div class="settings-row">
       <div class="setting-box">
         <label for="countVal">Soru sayısı</label>
@@ -132,5 +143,12 @@
   window.loadNavbar();
 </script>
 <script type="module" src="../js/quiz.js"></script>
+<script type="module">
+  import { onAdminChange } from "../src/admin.js";
+  onAdminChange((adminStatus) => {
+    const btn = document.getElementById("adminSharedQuizBtn");
+    if (btn) btn.style.display = adminStatus ? "inline-flex" : "none";
+  });
+</script>
 </body>
 </html>
