@@ -265,8 +265,9 @@ body.ok-light .ok-toolbar { background: rgba(244,240,232,0.92); }
 .ok-para {
   margin: 0.7em 0;
   color: var(--ok-text);
+  text-indent: 2em; 
 }
-.ok-title + .ok-para { margin-top: 0.4em; }
+.ok-title + .ok-para { margin-top: 0.4em; text-indent: 0;}
 
 .ok-dialog {
   padding-left: 16px;
@@ -519,6 +520,46 @@ body.ok-light .ok-toolbar { background: rgba(244,240,232,0.92); }
   border-radius: 10px; border: 1px solid var(--ok-border);
   word-break: break-word; line-height: 1.4;
 }
+.ok-modal-word-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--ok-border);
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+ 
+.ok-modal-badge {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+ 
+.ok-modal-word-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--ok-serif);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ok-text);
+  min-width: 0;
+  caret-color: var(--ok-gold);
+}
+.ok-modal-word-input::placeholder {
+  color: var(--ok-text3);
+  font-weight: 400;
+  font-style: italic;
+}
+/* Odaklanınca hafif vurgu */
+.ok-modal-word-row:focus-within {
+  border-color: var(--ok-gold-glow);
+  background: rgba(255,255,255,0.05);
+}
+ 
 
 .ok-base-row {
   display: flex; align-items: center; justify-content: space-between;

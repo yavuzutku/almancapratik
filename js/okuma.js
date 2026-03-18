@@ -23,14 +23,16 @@ import {
 import { showToast } from "../src/components/toast.js";
 import { showAuthGate, isLoggedIn } from '../src/components/authGate.js';
 /* ── State ───────────────────────────────────────────────── */
-let _word       = "";   /* seçili kelime */
-let _wiki       = null; /* Wiktionary verisi */
-let _tr         = "";   /* son çeviri */
-let _userWords  = [];
-let _fontSize   = 19;
-let _themeIdx   = 0;
-let _serifMode  = true;
-let _modalOpen  = false;
+let _word            = "";   /* seçili kelime */
+let _wiki            = null; /* Wiktionary verisi */
+let _tr              = "";   /* son çeviri */
+let _userWords       = [];
+let _fontSize        = 19;
+let _themeIdx        = 0;
+let _serifMode       = true;
+let _modalOpen       = false;
+let _prefetchWord    = "";   /* arka planda fetch edilen kelime */
+let _prefetchPromise = null; /* Promise<[{main,alts}, wikiData]> | null */
 
 const THEMES = ["", "ok-sepia", "ok-light"];
 const THEME_ICONS = ["☀", "📜", "🌙"];
@@ -234,7 +236,22 @@ function onBodyMouseUp() {
   const raw = sel.toString().trim().replace(/^[^\p{L}]+|[^\p{L}]+$/gu, "");
   if (!raw) { hideMeaning(); return; }
 
+  /* Yeni kelime → eski çeviri/wiki sıfırla, arka planda hemen fetch başlat */
+  if (raw !== _word) {
+    _tr   = "";
+    _wiki = null;
+  }
   _word = raw;
+
+  /* Prefetch: henüz bu kelime için başlamadıysa başlat */
+  if (_prefetchWord !== raw) {
+    _prefetchWord    = raw;
+    _prefetchPromise = Promise.all([
+      fetchTranslate(raw),
+      fetchWikiData(raw),
+    ]).catch(() => null);
+  }
+
   const rect = sel.getRangeAt(0).getBoundingClientRect();
   if (!rect.width) { hideMeaning(); return; }
 
@@ -313,10 +330,15 @@ async function openPopup() {
   let mainTr = "—", alts = [], wikiData = {};
 
   try {
-    [ {main: mainTr, alts}, wikiData ] = await Promise.all([
-      fetchTranslate(_word),
-      fetchWikiData(_word),
-    ]);
+    let result = null;
+    /* Prefetch zaten bu kelime için başlatıldıysa onu kullan */
+    if (_prefetchWord === _word && _prefetchPromise) {
+      result = await _prefetchPromise;
+    }
+    if (!result) {
+      result = await Promise.all([fetchTranslate(_word), fetchWikiData(_word)]);
+    }
+    [{ main: mainTr, alts }, wikiData] = result;
   } catch {
     $popup.innerHTML = `<div style="padding:16px;color:var(--ok-error);font-size:13px">Çeviri alınamadı.</div>`;
     positionPopup(btnRect);
@@ -458,7 +480,7 @@ function bindModal() {
     if (!base) return;
     _word = base;
     try { _wiki = await fetchWikiData(_word); } catch { _wiki = {}; }
-    fillModalWord();
+    fillModalWord(true);  /* force: temel form uygulandı, input'u güncelle */
     renderTagChips("modalTagChips", _wiki?.autoTags || [], extractAllTags(_userWords));
   });
 
@@ -466,36 +488,68 @@ function bindModal() {
   on("wordModalSaveBtn",  "click",   doSaveModal);
 }
 
-function openModal() {
-  fillModalWord();
+async function openModal() {
+  /* Modal hemen aç — kullanıcı beklemesin */
+  $overlay.style.display = "flex";
+  $overlay.classList.add("active");
+  _modalOpen = true;
+
+  /* Kelimeyi göster (wiki henüz gelmemiş olabilir) */
+  fillModalWord(true);
 
   const inp = document.getElementById("modalMeaningInput");
-  if (inp) inp.value = _tr || "";
+  if (inp) { inp.value = ""; inp.placeholder = "Yükleniyor…"; }
+
+  /* Prefetch sonucunu bekle — kelime seçildiği anda başlamıştı */
+  if (_prefetchWord === _word && _prefetchPromise) {
+    try {
+      const result = await _prefetchPromise;
+      if (result) {
+        const [{ main: mainTr }, wikiRes] = result;
+        _tr   = mainTr;
+        _wiki = wikiRes;
+      }
+    } catch { /* sessizce geç */ }
+  }
+
+  /* Şimdi gerçek verilerle doldur */
+  fillModalWord();
+  if (inp) {
+    inp.placeholder = "Türkçe anlamını gir…";
+    inp.value       = _tr || "";
+  }
 
   const baseWrap = document.getElementById("modalBaseFormWrap");
   const baseText = document.getElementById("modalBaseFormText");
   if (baseWrap && baseText) {
-    const base = _wiki?.baseForm;
-    baseText.textContent  = base || "";
+    const base        = _wiki?.baseForm;
+    baseText.textContent   = base || "";
     baseWrap.style.display = base ? "flex" : "none";
   }
 
   renderTagChips("modalTagChips", _wiki?.autoTags || [], extractAllTags(_userWords));
-
-  $overlay.style.display = "flex";
-  $overlay.classList.add("active");
-  _modalOpen = true;
-  setTimeout(() => document.getElementById("modalMeaningInput")?.focus(), 60);
+  setTimeout(() => inp?.focus(), 60);
 }
 
-function fillModalWord() {
-  const el = document.getElementById("modalWordDisplay");
-  if (!el) return;
-  if (_wiki?.artikel) {
-    const cap = _word.charAt(0).toUpperCase() + _word.slice(1);
-    el.innerHTML = artikelBadgeHtml(_wiki.artikel, { size: 14 }) + " " + escapeHtml(cap);
-  } else {
-    el.textContent = normalizeGermanWord(_word, _wiki || {});
+/* force=true → kullanıcının düzenlemesini ezip güncelle (ilk açılışta) */
+function fillModalWord(force = false) {
+  const badge = document.getElementById("modalArticleBadge");
+  const input = document.getElementById("modalWordInput");
+  if (!input) return;
+
+  const wordNorm = normalizeGermanWord(_word, _wiki || {});
+
+  /* Kullanıcı henüz değiştirmediyse (lastFill ile eşleşiyorsa) güncelle */
+  if (force || input.value === "" || input.value === (input.dataset.lastFill || "")) {
+    input.value            = wordNorm;
+    input.dataset.lastFill = wordNorm;
+  }
+
+  /* Artikel rozeti */
+  if (badge) {
+    badge.innerHTML = _wiki?.artikel
+      ? artikelBadgeHtml(_wiki.artikel, { size: 13 })
+      : "";
   }
 }
 
@@ -512,7 +566,8 @@ async function doSaveModal() {
   const meaning = inp?.value.trim();
   if (!meaning) { inp?.focus(); return; }
 
-  const word = normalizeGermanWord(_word, _wiki || {});
+  const wordInput = document.getElementById("modalWordInput");
+  const word      = wordInput?.value.trim() || normalizeGermanWord(_word, _wiki || {});
   const tags = getSelectedTags("modalTagChips");
   const btn  = document.getElementById("wordModalSaveBtn");
 
