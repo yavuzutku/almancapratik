@@ -19,7 +19,6 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
 
-    /* BG */
     .bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
     .bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black 20%,transparent 100%);}
     .bg-glow{position:absolute;border-radius:50%;filter:blur(120px);opacity:0.09;animation:drift 14s ease-in-out infinite alternate;}
@@ -27,110 +26,113 @@
     .bg-glow-2{width:400px;height:400px;top:30%;right:-120px;background:radial-gradient(circle,#a064ff,transparent 70%);animation-delay:-7s;opacity:0.06;}
     @keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(30px,20px) scale(1.06)}}
 
-    /* ACCESS DENIED */
-    #accessDenied{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(7,7,9,0.97);flex-direction:column;gap:14px;text-align:center;padding:24px;}
+    .page{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:36px 24px 80px;}
 
-    /* PAGE */
-    .page{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:36px 24px 80px;}
-
-    /* TOP BAR */
     .top-bar{display:flex;align-items:center;gap:12px;margin-bottom:32px;}
     .back-btn{padding:7px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--t2);font-family:var(--fb);font-size:13px;cursor:pointer;transition:var(--tr);}
     .back-btn:hover{background:var(--surface2);border-color:var(--border-h);color:var(--text);}
     .page-title{font-family:var(--fd);font-size:22px;font-weight:800;letter-spacing:-0.02em;flex:1;}
-    .admin-badge{display:flex;align-items:center;gap:5px;padding:4px 12px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);border-radius:999px;color:var(--gold);font-size:11px;font-weight:700;letter-spacing:0.04em;}
+    .admin-badge{display:flex;align-items:center;gap:5px;padding:4px 12px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);border-radius:999px;color:var(--gold);font-size:11px;font-weight:700;}
 
-    /* TWO-COL LAYOUT */
     .layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
     @media(max-width:720px){.layout{grid-template-columns:1fr;}}
 
-    /* PANEL */
     .panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
     .panel-header{padding:14px 18px;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:space-between;}
-    .panel-title{font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:-0.01em;}
+    .panel-title{font-family:var(--fd);font-size:13px;font-weight:700;}
     .panel-body{padding:18px;}
 
-    /* INPUT STYLES */
     .field-label{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--t3);margin-bottom:6px;display:block;}
-    .field-input,.field-textarea,.field-select{width:100%;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--fb);font-size:14px;padding:10px 14px;outline:none;transition:var(--tr);}
-    .field-input::placeholder,.field-textarea::placeholder{color:var(--t3);}
-    .field-input:focus,.field-textarea:focus,.field-select:focus{border-color:rgba(201,168,76,0.4);background:rgba(255,255,255,0.06);}
-    .field-textarea{resize:vertical;min-height:100px;line-height:1.6;}
+    .field-input,.field-select{width:100%;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--fb);font-size:14px;padding:10px 14px;outline:none;transition:var(--tr);}
+    .field-input::placeholder{color:var(--t3);}
+    .field-input:focus,.field-select:focus{border-color:rgba(201,168,76,0.4);background:rgba(255,255,255,0.06);}
     .field-select option{background:#12121a;color:var(--text);}
     .field-row{margin-bottom:14px;}
-    .field-row:last-child{margin-bottom:0;}
-    .field-hint{font-size:11px;color:var(--t3);margin-top:4px;}
+    .field-hint{font-size:11px;color:var(--t3);margin-top:4px;line-height:1.5;}
 
-    /* WORD ENTRY */
-    .word-entry-wrap{display:flex;gap:8px;margin-bottom:10px;}
-    .word-entry-de{flex:1;}
-    .word-entry-tr{flex:1;}
+    /* QUIZ TÜRÜ SEÇİCİ */
+    .quiz-type-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+    .quiz-type-tab{padding:12px 10px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;color:var(--t2);font-family:var(--fb);font-size:12px;font-weight:500;cursor:pointer;transition:var(--tr);text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;}
+    .quiz-type-tab:hover{border-color:var(--border-h);color:var(--text);}
+    .quiz-type-tab.active{border-color:rgba(201,168,76,0.4);background:rgba(201,168,76,0.08);color:var(--gold);}
+    .quiz-type-tab .tab-icon{font-size:20px;}
+    .quiz-type-tab .tab-label{font-weight:600;}
+    .quiz-type-tab .tab-sub{font-size:10px;color:var(--t3);margin-top:1px;}
+    .quiz-type-tab.active .tab-sub{color:rgba(201,168,76,0.6);}
+
+    /* WORD ENTRY — normal mod */
+    .word-entry-wrap{display:flex;gap:8px;margin-bottom:8px;}
     .word-entry-del{width:34px;height:38px;background:rgba(240,112,104,0.08);border:1px solid rgba(240,112,104,0.2);border-radius:8px;color:var(--rose);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:var(--tr);}
     .word-entry-del:hover{background:rgba(240,112,104,0.18);}
     .word-entry-del svg{width:13px;height:13px;}
 
-    /* BUTTONS */
-    .btn-add-word{display:flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(255,255,255,0.04);border:1px dashed var(--border-h);border-radius:8px;color:var(--t2);font-family:var(--fb);font-size:13px;cursor:pointer;transition:var(--tr);width:100%;justify-content:center;}
-    .btn-add-word:hover{border-color:rgba(201,168,76,0.4);color:var(--gold);background:rgba(201,168,76,0.05);}
+    /* ARTIKEL ENTRY */
+    .artikel-entry-wrap{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
+    .artikel-select{width:90px;flex-shrink:0;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--fb);font-size:14px;padding:9px 10px;outline:none;transition:var(--tr);cursor:pointer;}
+    .artikel-select:focus{border-color:rgba(201,168,76,0.4);}
+    .artikel-select option{background:#12121a;}
+    .artikel-select.der{border-color:rgba(96,200,240,0.4);color:#60c8f0;}
+    .artikel-select.die{border-color:rgba(240,112,104,0.4);color:#f07068;}
+    .artikel-select.das{border-color:rgba(160,100,255,0.4);color:#a064ff;}
+
+    /* COLUMN HEADERS */
+    .col-headers{display:flex;gap:8px;margin-bottom:4px;}
+    .col-header{font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--t3);}
+
+    .btn-add-word{display:flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(255,255,255,0.03);border:1px dashed var(--border-h);border-radius:8px;color:var(--t2);font-family:var(--fb);font-size:13px;cursor:pointer;transition:var(--tr);width:100%;justify-content:center;margin-top:4px;}
+    .btn-add-word:hover{border-color:rgba(201,168,76,0.4);color:var(--gold);background:rgba(201,168,76,0.04);}
+
     .btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:var(--gold);border:none;border-radius:10px;color:#0a0a0f;font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;transition:var(--tr);margin-top:16px;}
     .btn-primary:hover{background:var(--gold-l);transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,0.3);}
     .btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none;}
-    .btn-secondary{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--t2);font-family:var(--fb);font-size:13px;cursor:pointer;transition:var(--tr);margin-top:8px;}
-    .btn-secondary:hover{background:var(--surface2);border-color:var(--border-h);color:var(--text);}
 
-    /* WORD COUNT */
-    .word-count-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--fm);font-size:11px;color:var(--gold);background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.18);border-radius:5px;padding:2px 8px;}
+    .word-count-badge{font-family:var(--fm);font-size:11px;color:var(--gold);background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.18);border-radius:5px;padding:2px 8px;}
 
-    /* SHARE BOX */
-    .share-box{background:rgba(79,214,156,0.06);border:1px solid rgba(79,214,156,0.2);border-radius:14px;padding:20px;}
-    .share-box-title{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--green);margin-bottom:4px;display:flex;align-items:center;gap:7px;}
-    .share-box-title svg{width:16px;height:16px;}
-    .share-box-desc{font-size:12px;color:var(--t2);margin-bottom:16px;line-height:1.6;}
+    .share-box{background:rgba(79,214,156,0.06);border:1px solid rgba(79,214,156,0.2);border-radius:14px;padding:20px;margin-top:16px;}
+    .share-box-title{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--green);margin-bottom:4px;}
+    .share-box-desc{font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.6;}
     .url-copy-wrap{display:flex;gap:8px;}
     .url-input{flex:1;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:var(--fm);font-size:12px;padding:9px 12px;outline:none;}
     .btn-copy-url{padding:9px 16px;background:var(--green);border:none;border-radius:8px;color:#0a0a0f;font-family:var(--fb);font-size:12px;font-weight:700;cursor:pointer;transition:var(--tr);white-space:nowrap;}
-    .btn-copy-url:hover{background:#62e8a8;transform:translateY(-1px);}
-    .btn-copy-url.copied{background:var(--blue);}
+    .btn-copy-url:hover{background:#62e8a8;}
+    .btn-copy-url.copied{background:var(--blue);color:#fff;}
 
-    /* EXISTING QUIZZES */
     .quiz-list{display:flex;flex-direction:column;gap:8px;}
     .quiz-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;transition:var(--tr);}
     .quiz-item:hover{border-color:var(--border-h);}
-    .quiz-item-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;}
+    .quiz-item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px;}
     .quiz-item-name{font-family:var(--fd);font-size:13px;font-weight:700;color:var(--text);}
     .quiz-item-meta{font-family:var(--fm);font-size:10px;color:var(--t3);}
-    .quiz-item-actions{display:flex;gap:6px;}
+    .quiz-item-actions{display:flex;gap:6px;flex-shrink:0;}
     .quiz-item-btn{padding:4px 10px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--t2);font-family:var(--fb);font-size:11px;cursor:pointer;transition:var(--tr);}
     .quiz-item-btn:hover{border-color:var(--border-h);color:var(--text);}
     .quiz-item-btn.danger:hover{border-color:rgba(240,112,104,0.4);color:var(--rose);}
     .quiz-item-btn.share{border-color:rgba(79,214,156,0.25);color:var(--green);}
     .quiz-item-btn.share:hover{background:rgba(79,214,156,0.08);}
 
-    /* STATUS */
+    /* quiz türü rozet */
+    .type-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;font-family:var(--fm);}
+    .type-badge.normal{background:rgba(96,200,240,0.1);border:1px solid rgba(96,200,240,0.2);color:#60c8f0;}
+    .type-badge.artikel{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.22);color:var(--gold);}
+
     .status-msg{padding:10px 14px;border-radius:8px;font-size:13px;font-weight:500;margin-top:12px;display:none;}
     .status-msg.ok{background:rgba(79,214,156,0.1);border:1px solid rgba(79,214,156,0.25);color:var(--green);}
     .status-msg.err{background:rgba(240,112,104,0.1);border:1px solid rgba(240,112,104,0.2);color:var(--rose);}
 
-    /* SPINNER */
     .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.15);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;}
     @keyframes spin{to{transform:rotate(360deg)}}
-
-    /* LOADING */
     .loading-state{display:flex;align-items:center;gap:10px;padding:20px;color:var(--t2);font-size:13px;}
     .empty-state{text-align:center;padding:32px 20px;color:var(--t3);font-size:13px;}
-    .empty-state .empty-icon{font-size:28px;margin-bottom:8px;opacity:0.4;}
+    .empty-icon{font-size:28px;margin-bottom:8px;opacity:0.4;}
 
-    /* CONFIRM OVERLAY */
     .confirm-overlay{position:fixed;inset:0;z-index:8888;display:none;background:rgba(7,7,9,0.82);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;}
     .confirm-overlay.open{display:flex;}
-    .confirm-card{background:#0f0f14;border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:32px 28px;max-width:340px;width:100%;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.7);}
+    .confirm-card{background:#0f0f14;border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:32px 28px;max-width:340px;width:100%;text-align:center;}
     .confirm-title{font-family:var(--fd);font-size:17px;font-weight:800;margin-bottom:10px;}
     .confirm-desc{font-size:13px;color:var(--t2);margin-bottom:24px;line-height:1.6;}
     .confirm-actions{display:flex;gap:10px;}
-    .btn-confirm-cancel{flex:1;padding:11px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;color:var(--t2);font-family:var(--fb);font-size:14px;cursor:pointer;transition:var(--tr);}
-    .btn-confirm-cancel:hover{background:var(--surface2);color:var(--text);}
-    .btn-confirm-delete{flex:1;padding:11px;background:rgba(240,112,104,0.12);border:1px solid rgba(240,112,104,0.25);border-radius:10px;color:var(--rose);font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;transition:var(--tr);}
-    .btn-confirm-delete:hover{background:rgba(240,112,104,0.22);}
+    .btn-confirm-cancel{flex:1;padding:11px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;color:var(--t2);font-family:var(--fb);font-size:14px;cursor:pointer;}
+    .btn-confirm-delete{flex:1;padding:11px;background:rgba(240,112,104,0.12);border:1px solid rgba(240,112,104,0.25);border-radius:10px;color:var(--rose);font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;}
   </style>
 </head>
 <body>
@@ -172,6 +174,23 @@
         </div>
         <div class="panel-body">
 
+          <!-- Quiz Türü -->
+          <div class="field-row">
+            <label class="field-label">Quiz Türü</label>
+            <div class="quiz-type-tabs">
+              <button class="quiz-type-tab active" id="tabNormal" onclick="setQuizType('normal')">
+                <span class="tab-icon">🔤</span>
+                <span class="tab-label">Normal Quiz</span>
+                <span class="tab-sub">Almanca ↔ Türkçe</span>
+              </button>
+              <button class="quiz-type-tab" id="tabArtikel" onclick="setQuizType('artikel')">
+                <span class="tab-icon">🇩🇪</span>
+                <span class="tab-label">Artikel Quizi</span>
+                <span class="tab-sub">der / die / das</span>
+              </button>
+            </div>
+          </div>
+
           <div class="field-row">
             <label class="field-label">Quiz Adı</label>
             <input type="text" id="quizName" class="field-input" placeholder="ör. A1 Temel Kelimeler" autocomplete="off">
@@ -182,17 +201,37 @@
             <input type="text" id="quizDesc" class="field-input" placeholder="ör. Hafta 1 çalışma listesi" autocomplete="off">
           </div>
 
-          <div class="field-row">
-            <label class="field-label" style="display:flex;align-items:center;justify-content:space-between;">
-              <span>Kelimeler</span>
-              <span style="font-size:10px;color:var(--t3);font-weight:400;">Almanca → Türkçe</span>
-            </label>
+          <!-- Normal mod kelime alanı -->
+          <div id="normalWordSection" class="field-row">
+            <div class="col-headers">
+              <span class="col-header" style="flex:1;">Almanca</span>
+              <span class="col-header" style="flex:1;">Türkçe</span>
+              <span style="width:34px;"></span>
+            </div>
             <div id="wordEntries"></div>
             <button class="btn-add-word" id="btnAddWord">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Kelime Ekle
             </button>
-            <div class="field-hint">Minimum 4 kelime gerekli. Quizi çözenler kendi listelerini değil bu listeyi kullanır.</div>
+            <div class="field-hint">Minimum 4 kelime gerekli.</div>
+          </div>
+
+          <!-- Artikel mod kelime alanı -->
+          <div id="artikelWordSection" class="field-row" style="display:none;">
+            <div class="col-headers">
+              <span class="col-header" style="width:90px;flex-shrink:0;">Artikel</span>
+              <span class="col-header" style="flex:1;">Almanca İsim</span>
+              <span style="width:34px;"></span>
+            </div>
+            <div id="artikelEntries"></div>
+            <button class="btn-add-word" id="btnAddArtikel">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Kelime Ekle
+            </button>
+            <div class="field-hint">
+              Artikel seç → ismi yaz. Soru olarak isim gösterilir, doğru artikeli seçmesi istenir.
+              <br>Minimum 4 kelime gerekli.
+            </div>
           </div>
 
           <div class="field-row">
@@ -211,17 +250,13 @@
           </button>
 
           <div class="status-msg" id="statusMsg"></div>
-
         </div>
       </div>
 
-      <!-- Share Box — oluşturma sonrası gösterilir -->
-      <div class="share-box" id="shareBox" style="display:none;margin-top:16px;">
-        <div class="share-box-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-          Quiz hazır! Link kopyala ve paylaş.
-        </div>
-        <div class="share-box-desc">Aşağıdaki linki paylaştığın herkes bu quizi oynayabilir — giriş yapmasına gerek yok.</div>
+      <!-- Share Box -->
+      <div class="share-box" id="shareBox" style="display:none;">
+        <div class="share-box-title">✅ Quiz hazır! Linki paylaş.</div>
+        <div class="share-box-desc">Bu linki paylaştığın herkes quizi oynayabilir — giriş yapmasına gerek yok.</div>
         <div class="url-copy-wrap">
           <input type="text" id="shareUrlInput" class="url-input" readonly>
           <button class="btn-copy-url" id="btnCopyUrl">Kopyala</button>
@@ -234,19 +269,15 @@
       <div class="panel">
         <div class="panel-header">
           <span class="panel-title">Oluşturulan Quizler</span>
-          <button class="quiz-item-btn" id="btnRefresh" title="Yenile" style="font-size:16px;padding:3px 8px;">↻</button>
+          <button class="quiz-item-btn" id="btnRefresh" style="font-size:15px;padding:3px 9px;">↻</button>
         </div>
         <div class="panel-body" id="quizListWrap">
-          <div class="loading-state">
-            <div class="spinner"></div>
-            <span>Yükleniyor…</span>
-          </div>
+          <div class="loading-state"><div class="spinner"></div><span>Yükleniyor…</span></div>
         </div>
       </div>
     </div>
 
   </div>
-
 </div>
 </div>
 
@@ -275,7 +306,6 @@ import {
   doc, query, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* ── Firebase ── */
 const firebaseConfig = {
   apiKey:"AIzaSyCGpRMUNNSx4Kla2YrmDOBHlLSt4rOM1wQ",
   authDomain:"lernen-deutsch-bea69.firebaseapp.com",
@@ -288,17 +318,28 @@ const app = getApps().find(a=>a.name==="[DEFAULT]") || initializeApp(firebaseCon
 const db  = getFirestore(app);
 const COL = collection(db, "sharedQuizzes");
 
-/* ── Admin guard ── */
 requireAdmin({ showDeniedId:"accessDenied", showContentId:"mainContent" });
 
 /* ── State ── */
+let quizType = "normal"; // "normal" | "artikel"
 let deleteTargetId = null;
 
-/* ── İlk kelime satırı ekle ── */
-addWordEntry(); addWordEntry(); addWordEntry(); addWordEntry();
+/* ── Quiz Türü ── */
+window.setQuizType = function(type) {
+  quizType = type;
+  document.getElementById("tabNormal").classList.toggle("active", type === "normal");
+  document.getElementById("tabArtikel").classList.toggle("active", type === "artikel");
+  document.getElementById("normalWordSection").style.display  = type === "normal"  ? "block" : "none";
+  document.getElementById("artikelWordSection").style.display = type === "artikel" ? "block" : "none";
+  updateWordCount();
+};
+
+/* ── Başlangıç satırları ── */
+for (let i = 0; i < 4; i++) addWordEntry();
+for (let i = 0; i < 4; i++) addArtikelEntry();
 loadQuizList();
 
-/* ── Word Entry ── */
+/* ── Normal kelime satırı ── */
 document.getElementById("btnAddWord").addEventListener("click", addWordEntry);
 
 function addWordEntry(de="", tr="") {
@@ -306,19 +347,47 @@ function addWordEntry(de="", tr="") {
   const row  = document.createElement("div");
   row.className = "word-entry-wrap";
   row.innerHTML = `
-    <input type="text" class="field-input word-de" placeholder="Almanca (ör. der Hund)" value="${esc(de)}" autocomplete="off" spellcheck="false">
-    <input type="text" class="field-input word-tr" placeholder="Türkçe (ör. köpek)" value="${esc(tr)}" autocomplete="off" spellcheck="false">
+    <input type="text" class="field-input word-de" placeholder="ör. der Hund" value="${esc(de)}" autocomplete="off" spellcheck="false" style="flex:1;">
+    <input type="text" class="field-input word-tr" placeholder="ör. köpek"    value="${esc(tr)}" autocomplete="off" spellcheck="false" style="flex:1;">
     <button class="word-entry-del" title="Sil">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>`;
-  row.querySelector(".word-entry-del").addEventListener("click", () => {
-    row.remove(); updateWordCount();
-  });
-  row.querySelectorAll("input").forEach(inp => inp.addEventListener("input", updateWordCount));
+  row.querySelector(".word-entry-del").addEventListener("click", () => { row.remove(); updateWordCount(); });
+  row.querySelectorAll("input").forEach(i => i.addEventListener("input", updateWordCount));
   wrap.appendChild(row);
   updateWordCount();
 }
 
+/* ── Artikel kelime satırı ── */
+document.getElementById("btnAddArtikel").addEventListener("click", () => addArtikelEntry());
+
+function addArtikelEntry(artikel="der", word="") {
+  const wrap = document.getElementById("artikelEntries");
+  const row  = document.createElement("div");
+  row.className = "artikel-entry-wrap";
+  row.innerHTML = `
+    <select class="artikel-select ${artikel}" title="Artikel seç">
+      <option value="der" ${artikel==="der"?"selected":""}>der</option>
+      <option value="die" ${artikel==="die"?"selected":""}>die</option>
+      <option value="das" ${artikel==="das"?"selected":""}>das</option>
+    </select>
+    <input type="text" class="field-input artikel-word" placeholder="ör. Hund, Schule, Kind" value="${esc(word)}" autocomplete="off" spellcheck="false" style="flex:1;">
+    <button class="word-entry-del" title="Sil">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>`;
+
+  const sel = row.querySelector(".artikel-select");
+  sel.addEventListener("change", function() {
+    this.className = "artikel-select " + this.value;
+    updateWordCount();
+  });
+  row.querySelector(".artikel-word").addEventListener("input", updateWordCount);
+  row.querySelector(".word-entry-del").addEventListener("click", () => { row.remove(); updateWordCount(); });
+  wrap.appendChild(row);
+  updateWordCount();
+}
+
+/* ── Kelime sayısı ── */
 function updateWordCount() {
   const count = getWords().length;
   const badge = document.getElementById("wordCountBadge");
@@ -327,17 +396,28 @@ function updateWordCount() {
 }
 
 function getWords() {
-  const rows = document.querySelectorAll(".word-entry-wrap");
-  const words = [];
-  rows.forEach(row => {
-    const de = row.querySelector(".word-de").value.trim();
-    const tr = row.querySelector(".word-tr").value.trim();
-    if (de && tr) words.push({ word: de, meaning: tr });
-  });
-  return words;
+  if (quizType === "artikel") {
+    const rows = document.querySelectorAll(".artikel-entry-wrap");
+    const out  = [];
+    rows.forEach(row => {
+      const artikel = row.querySelector(".artikel-select").value;
+      const word    = row.querySelector(".artikel-word").value.trim();
+      if (word) out.push({ word, meaning: artikel }); // meaning = doğru artikel
+    });
+    return out;
+  } else {
+    const rows = document.querySelectorAll(".word-entry-wrap");
+    const out  = [];
+    rows.forEach(row => {
+      const de = row.querySelector(".word-de").value.trim();
+      const tr = row.querySelector(".word-tr").value.trim();
+      if (de && tr) out.push({ word: de, meaning: tr });
+    });
+    return out;
+  }
 }
 
-/* ── Create Quiz ── */
+/* ── Quiz Oluştur ── */
 document.getElementById("btnCreate").addEventListener("click", createQuiz);
 
 async function createQuiz() {
@@ -346,7 +426,7 @@ async function createQuiz() {
   const count = document.getElementById("quizDefaultCount").value;
   const words = getWords();
 
-  if (!name) { showStatus("Quiz adı boş olamaz.", "err"); return; }
+  if (!name)          { showStatus("Quiz adı boş olamaz.", "err"); return; }
   if (words.length < 4) { showStatus("En az 4 kelime gerekli.", "err"); return; }
 
   const btn = document.getElementById("btnCreate");
@@ -354,14 +434,15 @@ async function createQuiz() {
   btn.innerHTML = `<div class="spinner"></div> Oluşturuluyor…`;
 
   try {
-    const docRef = await addDoc(COL, {
+    const ref = await addDoc(COL, {
       name, desc, words,
+      quizType,          // "normal" veya "artikel"
       defaultCount: count,
       createdAt: serverTimestamp(),
       playCount: 0,
     });
 
-    const url = buildPlayUrl(docRef.id);
+    const url = buildPlayUrl(ref.id);
     document.getElementById("shareUrlInput").value = url;
     document.getElementById("shareBox").style.display = "block";
     document.getElementById("shareBox").scrollIntoView({ behavior:"smooth", block:"nearest" });
@@ -378,30 +459,26 @@ async function createQuiz() {
 }
 
 function buildPlayUrl(id) {
-  const base = window.location.origin;
-  return `${base}/quiz/play/?id=${id}`;
+  return window.location.origin + "/quiz/play/?id=" + id;
 }
 
-/* ── Copy URL ── */
+/* ── Kopyala ── */
 document.getElementById("btnCopyUrl").addEventListener("click", async () => {
-  const url = document.getElementById("shareUrlInput").value;
-  if (!url) return;
-  await navigator.clipboard.writeText(url).catch(() => {});
+  await navigator.clipboard.writeText(document.getElementById("shareUrlInput").value).catch(()=>{});
   const btn = document.getElementById("btnCopyUrl");
   btn.textContent = "✓ Kopyalandı";
   btn.classList.add("copied");
   setTimeout(() => { btn.textContent = "Kopyala"; btn.classList.remove("copied"); }, 2000);
 });
 
-/* ── Load Quiz List ── */
+/* ── Quiz Listesi ── */
 document.getElementById("btnRefresh").addEventListener("click", loadQuizList);
 
 async function loadQuizList() {
   const wrap = document.getElementById("quizListWrap");
   wrap.innerHTML = `<div class="loading-state"><div class="spinner"></div><span>Yükleniyor…</span></div>`;
-
   try {
-    const snap = await getDocs(query(COL, orderBy("createdAt","desc")));
+    const snap    = await getDocs(query(COL, orderBy("createdAt","desc")));
     const quizzes = snap.docs.map(d => ({ id:d.id, ...d.data() }));
 
     if (!quizzes.length) {
@@ -418,18 +495,25 @@ async function loadQuizList() {
       const date = q.createdAt?.toDate
         ? q.createdAt.toDate().toLocaleDateString("tr-TR",{day:"2-digit",month:"short",year:"numeric"})
         : "—";
+      const typeBadge = q.quizType === "artikel"
+        ? `<span class="type-badge artikel">🇩🇪 Artikel</span>`
+        : `<span class="type-badge normal">🔤 Normal</span>`;
+
       item.innerHTML = `
         <div class="quiz-item-top">
           <div>
             <div class="quiz-item-name">${esc(q.name)}</div>
-            ${q.desc ? `<div class="quiz-item-meta" style="margin-top:2px;">${esc(q.desc)}</div>` : ""}
+            <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+              ${typeBadge}
+              ${q.desc ? `<span class="quiz-item-meta">${esc(q.desc)}</span>` : ""}
+            </div>
           </div>
           <div class="quiz-item-actions">
             <button class="quiz-item-btn share" data-id="${q.id}">Link</button>
             <button class="quiz-item-btn danger" data-del="${q.id}">Sil</button>
           </div>
         </div>
-        <div class="quiz-item-meta">${q.words?.length || 0} kelime · ${date}</div>`;
+        <div class="quiz-item-meta">${q.words?.length || 0} kelime · ${date} · ${q.playCount || 0} oynama</div>`;
 
       item.querySelector("[data-id]").addEventListener("click", () => {
         const url = buildPlayUrl(q.id);
@@ -437,26 +521,22 @@ async function loadQuizList() {
         document.getElementById("shareBox").style.display = "block";
         document.getElementById("shareBox").scrollIntoView({ behavior:"smooth", block:"nearest" });
       });
-
       item.querySelector("[data-del]").addEventListener("click", () => {
         deleteTargetId = q.id;
         document.getElementById("confirmOverlay").classList.add("open");
       });
-
       list.appendChild(item);
     });
-
   } catch(e) {
     wrap.innerHTML = `<div class="empty-state"><p>Yüklenemedi: ${esc(e.message)}</p></div>`;
   }
 }
 
-/* ── Delete ── */
+/* ── Sil ── */
 document.getElementById("confirmCancel").addEventListener("click", () => {
   document.getElementById("confirmOverlay").classList.remove("open");
   deleteTargetId = null;
 });
-
 document.getElementById("confirmDelete").addEventListener("click", async () => {
   if (!deleteTargetId) return;
   document.getElementById("confirmOverlay").classList.remove("open");
@@ -467,11 +547,11 @@ document.getElementById("confirmDelete").addEventListener("click", async () => {
   deleteTargetId = null;
 });
 
-/* ── Helpers ── */
+/* ── Yardımcılar ── */
 function showStatus(msg, type) {
   const el = document.getElementById("statusMsg");
   el.textContent = msg;
-  el.className = `status-msg ${type}`;
+  el.className = "status-msg " + type;
   el.style.display = "block";
   setTimeout(() => { el.style.display = "none"; }, 4000);
 }
@@ -480,7 +560,9 @@ function clearForm() {
   document.getElementById("quizName").value = "";
   document.getElementById("quizDesc").value = "";
   document.getElementById("wordEntries").innerHTML = "";
-  addWordEntry(); addWordEntry(); addWordEntry(); addWordEntry();
+  document.getElementById("artikelEntries").innerHTML = "";
+  for (let i = 0; i < 4; i++) addWordEntry();
+  for (let i = 0; i < 4; i++) addArtikelEntry();
   updateWordCount();
 }
 
