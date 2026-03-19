@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Almanca Kelime Quizi — A1-C1 Kelime Testi | AlmancaPratik</title>
-  <meta name="description" content="Kendi kelime listenle Almanca quiz çöz. Çoktan seçmeli ve yazarak cevaplama modları, Almanca-Türkçe yönlü sorular. A1'den C1'e ücretsiz kelime testi.">
-  <meta name="keywords" content="almanca kelime quizi, almanca kelime testi, almanca a1 quiz türkçe, almanca öğrenme quizi, almanca pratik testi">
+  <title>Almanca Kelime Quizi — A1'den C1'e Ücretsiz Test | AlmancaPratik</title>
+  <meta name="description" content="Almanca kelime quizi ile A1'den C1'e tüm seviyelerde pratik yap. Kendi kelime listen veya hazır quizler ile der/die/das artikel testi, kelime ezber, çoktan seçmeli sorular. Ücretsiz.">
+  <meta name="keywords" content="almanca kelime quizi, almanca quiz, der die das quiz, almanca artikel testi, almanca kelime testi, almanca a1 quiz, almanca b1 quiz, almanca pratik">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://almancapratik.com/quiz/">
 
   <meta property="og:type"        content="website">
   <meta property="og:url"         content="https://almancapratik.com/quiz/">
   <meta property="og:title"       content="Almanca Kelime Quizi — AlmancaPratik">
-  <meta property="og:description" content="Kendi kelime listenle Almanca quiz çöz. Çoktan seçmeli ve yazarak cevaplama modları ile A1-C1 arası pratik yap.">
+  <meta property="og:description" content="Kendi kelime listen veya hazır quizlerle Almanca pratik yap. Der/die/das artikel testi, A1-C1 arası kelime testleri. Ücretsiz.">
   <meta property="og:locale"      content="tr_TR">
   <meta property="og:site_name"   content="AlmancaPratik">
 
@@ -23,7 +23,7 @@
     "@type": "WebApplication",
     "name": "Almanca Kelime Quizi",
     "url": "https://almancapratik.com/quiz/",
-    "description": "Kişisel kelime listesine göre Almanca-Türkçe kelime quizi oluşturan ücretsiz uygulama.",
+    "description": "Almanca kelime quizi uygulaması. Kendi kelime listesi veya hazır quizlerle A1-C1 arası pratik yapma imkânı sunar.",
     "applicationCategory": "EducationalApplication",
     "inLanguage": "tr",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "TRY" },
@@ -38,117 +38,577 @@
   </script>
 
   <link rel="icon" href="../favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/quiz.css">
+
+
 </head>
 <body>
 
-<!-- ── BAŞLANGIÇ EKRANI ───────────────────────────────── -->
-<div class="screen" id="screen-start">
-  <div class="start-wrap">
-    <div class="start-badge">🧠 ALMANCA QUIZ</div>
-    <!-- H1 -->
-    <h1 class="start-title">Kelime Testi</h1>
-    <p class="start-sub">Kaydettiğin Almanca kelimelerden karışık yönlü sorular üretilir.<br>Her soru çoktan seçmeli <em>veya</em> yazarak cevaplama modunda gelir.</p>
-    <div style="margin-top:12px;">
-      <a id="adminSharedQuizBtn"
-        href="../quiz/shared/"
-        style="display:none;align-items:center;gap:7px;padding:8px 18px;
-                background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);
-                border-radius:8px;color:#c9a84c;font-family:'Syne',sans-serif;
-                font-size:12px;font-weight:700;text-decoration:none;"
-        onmouseover="this.style.background='rgba(201,168,76,0.2)'"
-        onmouseout="this.style.background='rgba(201,168,76,0.1)'">
-        📤 Paylaşılabilir Quiz Oluştur
-      </a>
-    </div>
-    <div class="settings-row">
-      <div class="setting-box">
-        <label for="countVal">Soru sayısı</label>
-        <div class="stepper">
-          <button id="countDown" aria-label="Soru sayısını azalt">−</button>
-          <span id="countVal" aria-live="polite">10</span>
-          <button id="countUp" aria-label="Soru sayısını artır">+</button>
-        </div>
+<div class="bg-canvas" aria-hidden="true">
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ANA SAYFA
+══════════════════════════════════════ -->
+<div id="viewMain">
+<div class="page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow"><span class="eyebrow-dot"></span>Ücretsiz · Türkçe · A1–C1</div>
+    <h1 class="hero-title">
+      Almanca Kelime<br>
+      <span class="hero-title-em">Quiz Merkezi</span>
+    </h1>
+    <p class="hero-sub">
+      Kendi kelime listenle kişisel quiz oluştur veya hazır quizlerden birini seç.
+      Çoktan seçmeli, yazarak cevaplama ve <strong>der/die/das artikel testi</strong> modlarıyla pratik yap.
+    </p>
+
+    <div class="hero-stats" role="status" aria-label="Platform istatistikleri">
+      <div class="stat-pill">
+        <span class="stat-pill-num">2</span>
+        <span class="stat-pill-label">Quiz Modu</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-pill">
+        <span class="stat-pill-num">A1–C1</span>
+        <span class="stat-pill-label">Seviye</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-pill">
+        <span class="stat-pill-num">0₺</span>
+        <span class="stat-pill-label">Ücret</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-pill">
+        <span class="stat-pill-num" id="statQuizCount">—</span>
+        <span class="stat-pill-label">Hazır Quiz</span>
       </div>
     </div>
 
-    <button class="btn-start" id="startBtn">Quize Başla →</button>
-    <div class="start-info" id="wordCountInfo"></div>
+    <!-- Tab seçici -->
+    <div class="tab-wrap" role="tablist">
+      <button class="tab-btn active" id="tabBtnPersonal" onclick="switchTab('personal')" role="tab" aria-selected="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Kendi Quizim
+      </button>
+      <button class="tab-btn" id="tabBtnShared" onclick="switchTab('shared')" role="tab" aria-selected="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Hazır Quizler
+      </button>
+    </div>
+  </section>
+
+  <!-- ── KİŞİSEL QUIZ ── -->
+  <section id="sectionPersonal">
+
+    <!-- Giriş yapmamış kullanıcı -->
+    <div class="login-prompt" id="loginPrompt" style="display:none;">
+      <div class="login-prompt-icon">📚</div>
+      <div class="login-prompt-body">
+        <div class="login-prompt-title">Kişisel kelime listen için giriş yap</div>
+        <div class="login-prompt-desc">Kendi sözlüğünden quiz oluşturmak için ücretsiz hesabınla giriş yap. Hazır quizleri giriş yapmadan oynayabilirsin.</div>
+      </div>
+      <a class="login-prompt-btn" href="../login.html">Giriş Yap →</a>
+    </div>
+
+    <!-- Kişisel quiz kartı -->
+    <div class="personal-quiz-card" id="personalQuizCard">
+      <div class="pq-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div class="pq-body">
+        <div class="pq-title">Kişisel Kelime Quizi</div>
+        <div class="pq-desc">Sözlüğüne kaydettiğin Almanca kelimelerden otomatik quiz. Almanca→Türkçe ve Türkçe→Almanca yönlü, çoktan seçmeli ve yazarak cevaplama.</div>
+        <div class="pq-meta" id="personalWordInfo">Kelimeler yükleniyor…</div>
+      </div>
+      <div class="pq-settings">
+        <div class="pq-count-wrap">
+          <span class="pq-count-label">Soru sayısı</span>
+          <div class="stepper">
+            <button id="countDown" aria-label="Azalt">−</button>
+            <span id="countVal" aria-live="polite">10</span>
+            <button id="countUp" aria-label="Artır">+</button>
+          </div>
+        </div>
+        <button class="btn-start-personal" id="startBtn">Başla →</button>
+      </div>
+    </div>
+
+    <!-- Admin quiz oluştur linki -->
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+      <a class="admin-quiz-btn" id="adminQuizBtn" href="shared/">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        Paylaşılabilir Quiz Oluştur
+      </a>
+    </div>
+
+  </section>
+
+  <!-- ── HAZIR QUIZler ── -->
+  <section id="sectionShared" style="display:none;">
+    <div class="section-head">
+      <div>
+        <div class="section-label">Hazır Quizler</div>
+        <h2 class="section-title">Herkese açık quizler</h2>
+      </div>
+    </div>
+    <div class="shared-grid" id="sharedGrid">
+      <div class="grid-loading"><div class="spinner"></div><span>Quizler yükleniyor…</span></div>
+    </div>
+  </section>
+
+  <!-- ── SEO İÇERİK ── -->
+  <div class="seo-section">
+
+    <div class="feature-strip">
+      <div class="feature-cell"><span class="feat-num">2</span><span class="feat-label">Quiz modu</span></div>
+      <div class="feature-cell"><span class="feat-num">∞</span><span class="feat-label">Kişisel kelime</span></div>
+      <div class="feature-cell"><span class="feat-num">5</span><span class="feat-label">CEFR seviyesi</span></div>
+      <div class="feature-cell"><span class="feat-num">0₺</span><span class="feat-label">Tamamen ücretsiz</span></div>
+    </div>
+
+    <div class="seo-grid">
+
+      <div class="seo-card">
+        <div class="seo-kicker">Nasıl Çalışır</div>
+        <h2>Almanca Kelime Quizi Nasıl Kullanılır?</h2>
+        <p>AlmancaPratik'in quiz aracı iki farklı şekilde çalışır. <strong>Kişisel Quiz</strong> modunda, <a href="../kelimeler/">sözlüğüne kaydettiğin kelimeler</a> otomatik olarak test sorularına dönüşür. Almanca→Türkçe ve Türkçe→Almanca yönlerinde hem çoktan seçmeli hem de yazarak cevaplama soruları gelir.</p>
+        <p><strong>Hazır Quiz</strong> modunda ise giriş yapmana gerek yoktur. Hazır kelime listelerinden oluşturulan quizleri hemen oynayabilirsin.</p>
+        <p>Her iki modda da soru sayısını 4'ten kelime listesinin tamamına kadar ayarlayabilirsin.</p>
+      </div>
+
+      <div class="seo-card">
+        <div class="seo-kicker">Artikel Quizi</div>
+        <h2>Der Die Das Quizi Nedir?</h2>
+        <p>Almancada en çok zorlanan konulardan biri isim artikelleridir. <strong>Der</strong> (maskulin), <strong>Die</strong> (feminin) ve <strong>Das</strong> (nötrum) arasındaki farkı ezberlemek yerine test ederek öğrenmek çok daha kalıcıdır.</p>
+        <p>Artikel quiz modunda ekrana bir Almanca isim gelir, altında üç büyük renkli buton çıkar: mavi <strong>der</strong>, kırmızı <strong>die</strong>, mor <strong>das</strong>. Doğru artikeli seçmen yeterli.</p>
+        <p>Hazır artikel quizlerini deneyin veya <a href="../artikel/">artikel bulucu aracı</a>nı kullanın.</p>
+      </div>
+
+      <div class="seo-card">
+        <div class="seo-kicker">İpuçları</div>
+        <h2>Almanca Kelime Ezberleme Taktikleri</h2>
+        <ul>
+          <li>Her kelimeyi artikeli ile birlikte kaydet — "Hund" değil "der Hund" olarak.</li>
+          <li><a href="../metin/">Metin analizi aracıyla</a> gerçek metinlerde gördüğün kelimeleri ekle, ardından quizle pekiştir.</li>
+          <li>Günde 10-15 dakika düzenli quiz, haftada 2 saatlik sıkışık çalışmadan daha etkilidir.</li>
+          <li>Yanlış cevapladığın kelimeler için <a href="../cumlebul/">cümle örnekleri bak</a>; bağlamda gören kelimeler daha kolay hatırlanır.</li>
+          <li>A1-A2 için temel fiiller, B1 için bağlaçlar ve B2+ için akademik kelimeler önceliklidir.</li>
+        </ul>
+      </div>
+
+      <div class="seo-card">
+        <div class="seo-kicker">Diğer Araçlar</div>
+        <h2>Quiz Sonrası Ne Yapmalısın?</h2>
+        <p>Quizde yanlış yaptığın kelimeleri <a href="../ceviri/">çeviri aracıyla</a> detaylı incele — artikel, kelime türü ve örnek cümlelerini gör.</p>
+        <p>Seviyeni bilmiyorsan <a href="../seviyeler/seviyetespit/">25 soruluk ücretsiz seviye testini</a> çöz. Hangi CEFR seviyesinde olduğunu öğren ve ona göre kelime listesi oluştur.</p>
+        <p>Yeni kelime eklemek için <a href="../singleadd/">tekli kelime ekleme</a> veya <a href="../wordsadd/">toplu ekleme</a> araçlarını kullanabilirsin.</p>
+      </div>
+
+      <div class="seo-card seo-card-wide">
+        <div class="seo-kicker">Sık Sorulan Sorular</div>
+        <h2>Almanca Quiz Hakkında Merak Edilenler</h2>
+        <div class="faq">
+          <div class="faq-item">
+            <div class="faq-q">Almanca kelime quizi ücretsiz mi?</div>
+            <p class="faq-a">Evet, tamamen ücretsizdir. Hazır quizleri giriş yapmadan oynayabilirsin. Kişisel kelime listenden quiz oluşturmak için ücretsiz hesap oluşturman yeterli.</p>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Der die das quizi nasıl çalışır?</div>
+            <p class="faq-a">Artikel quizinde ekrana bir Almanca isim gelir. Altındaki üç renkli butona (der/die/das) tıklayarak doğru artikeli seçersin. Her doğru cevaptan sonra hemen bir sonraki soruya geçilir. <a href="../artikel/">Artikel bulucu aracımızı</a> da deneyebilirsin.</p>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Kaç kelime eklersem quiz yapabilirim?</div>
+            <p class="faq-a">En az 4 kelime gereklidir. Sözlüğüne ne kadar çok kelime eklersen, quiz o kadar çeşitlenir ve zorlaşır. <a href="../kelimeler/">Kelimeler sayfandan</a> mevcut listenini görebilirsin.</p>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Hazır quizleri de başkasıyla paylaşabilir miyim?</div>
+            <p class="faq-a">Evet! Her hazır quizin kendine özel bir linki var. Linki kopyalayıp arkadaşlarınla paylaşabilirsin. Quize giriş yapmadan da erişilebilir.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
+
+</div>
 </div>
 
-<!-- ── YÜKLEME ────────────────────────────────────────── -->
+<!-- ══════════════════════════════════════
+     QUIZ OYNANMA EKRANLARI
+══════════════════════════════════════ -->
+
+<!-- Yüklenme -->
 <div class="screen hidden" id="screen-loading">
   <div class="loader-wrap">
-    <div class="loader-ring" aria-hidden="true"></div>
+    <div class="loader-ring"></div>
     <p>Kelimeler yükleniyor…</p>
   </div>
 </div>
 
-<!-- ── SORU EKRANI ────────────────────────────────────── -->
+<!-- Quiz -->
 <div class="screen hidden" id="screen-quiz">
   <div class="quiz-layout">
-
     <div class="quiz-topbar">
       <div class="progress-wrap">
-        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar" role="progressbar">
           <div class="progress-fill" id="progressFill"></div>
         </div>
-        <span class="progress-label" id="progressLabel" aria-live="polite">1 / 10</span>
+        <span class="progress-label" id="progressLabel">1 / 10</span>
       </div>
-      <div class="score-badge" id="scoreBadge" aria-live="polite">✓ 0</div>
+      <div class="score-badge" id="scoreBadge">✓ 0</div>
     </div>
-
-    <div class="question-card" id="questionCard">
+    <div class="question-card">
       <div class="q-direction" id="qDirection">Almanca → Türkçe</div>
-      <div class="q-word" id="qWord" aria-live="polite">—</div>
+      <div class="q-word" id="qWord">—</div>
       <div class="q-mode-tag" id="qModeTag">Çoktan Seçmeli</div>
     </div>
-
     <div class="choices-grid" id="choicesGrid" role="list"></div>
-
     <div class="type-area hidden" id="typeArea">
       <input type="text" id="typeInput" placeholder="Cevabını yaz…" autocomplete="off" spellcheck="false" aria-label="Cevabınızı yazın">
       <button class="btn-check" id="checkBtn">Kontrol Et</button>
     </div>
-
     <div class="feedback hidden" id="feedback" aria-live="polite">
       <div class="feedback-icon" id="feedbackIcon"></div>
       <div class="feedback-text" id="feedbackText"></div>
       <button class="btn-next" id="nextBtn">Sonraki →</button>
     </div>
-
   </div>
 </div>
 
-<!-- ── SONUÇ EKRANI ───────────────────────────────────── -->
+<!-- Sonuç -->
 <div class="screen hidden" id="screen-result">
   <div class="result-wrap">
-    <div class="result-emoji" id="resultEmoji" aria-hidden="true">🎉</div>
+    <div class="result-emoji" id="resultEmoji">🎉</div>
     <h2 class="result-title" id="resultTitle">Harika!</h2>
-    <div class="result-score" id="resultScore" aria-live="polite">8 / 10</div>
-    <p class="result-msg" id="resultMsg">Mükemmel bir performans!</p>
+    <div class="result-score" id="resultScore">0 / 0</div>
+    <p class="result-msg" id="resultMsg"></p>
     <div class="result-breakdown" id="resultBreakdown"></div>
     <div class="result-actions">
       <button class="btn-restart" id="restartBtn">Tekrar Dene</button>
-      <button class="btn-home" id="homeBtn">Ana Sayfa</button>
+      <button class="btn-home" id="homeBtn">← Geri</button>
     </div>
   </div>
 </div>
 
+<!-- Navbar -->
 <script type="module">
   import "../js/core.js";
   window.loadNavbar();
 </script>
-<script type="module" src="../js/quiz.js"></script>
+
+<!-- Quiz Logic -->
 <script type="module">
-  import { onAdminChange } from "../src/admin.js";
-  onAdminChange((adminStatus) => {
-    const btn = document.getElementById("adminSharedQuizBtn");
-    if (btn) btn.style.display = adminStatus ? "inline-flex" : "none";
+import { getWords, onAuthChange } from "../js/firebase.js";
+import { onAdminChange }          from "../src/admin.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, getDocs, query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ── Firebase ── */
+const firebaseConfig = {
+  apiKey:"AIzaSyCGpRMUNNSx4Kla2YrmDOBHlLSt4rOM1wQ",
+  authDomain:"lernen-deutsch-bea69.firebaseapp.com",
+  projectId:"lernen-deutsch-bea69",
+  storageBucket:"lernen-deutsch-bea69.firebasestorage.app",
+  messagingSenderId:"653560965391",
+  appId:"1:653560965391:web:545142e9be6d130a54b67a"
+};
+const app = getApps().find(a=>a.name==="[DEFAULT]") || initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+/* ── STATE ── */
+let allWords   = [];
+let questions  = [];
+let current    = 0;
+let score      = 0;
+let wrongList  = [];
+let totalCount = 10;
+let activeTab  = "personal";
+
+/* ── AUTH ── */
+onAuthChange(async (user) => {
+  if (user) {
+    document.getElementById("loginPrompt").style.display    = "none";
+    document.getElementById("personalQuizCard").style.display = "flex";
+    try {
+      const data = await getWords(user.uid);
+      allWords = data.map(d => ({ word:d.word, meaning:d.meaning })).filter(d=>d.word&&d.meaning);
+      document.getElementById("personalWordInfo").textContent =
+        allWords.length > 0
+          ? `Sözlüğünde ${allWords.length} kelime var.`
+          : "Sözlüğünde henüz kelime yok. Önce kelime ekle.";
+      document.getElementById("startBtn").disabled = allWords.length < 4;
+    } catch {
+      document.getElementById("personalWordInfo").textContent = "Kelimeler yüklenemedi.";
+    }
+  } else {
+    document.getElementById("loginPrompt").style.display      = "flex";
+    document.getElementById("personalQuizCard").style.display = "none";
+  }
+});
+
+/* ── ADMIN ── */
+onAdminChange((isAdmin) => {
+  const btn = document.getElementById("adminQuizBtn");
+  if (btn) btn.classList.toggle("visible", isAdmin);
+});
+
+/* ── HAZIR QUIZLERİ YÜKLE ── */
+async function loadSharedQuizzes() {
+  const grid = document.getElementById("sharedGrid");
+  try {
+    const snap = await getDocs(query(collection(db,"sharedQuizzes"), orderBy("createdAt","desc")));
+    const list = snap.docs.map(d=>({id:d.id,...d.data()}));
+
+    // Stat güncelle
+    document.getElementById("statQuizCount").textContent = list.length;
+
+    if (!list.length) {
+      grid.innerHTML = `<div class="grid-empty"><div class="grid-empty-icon">📋</div><p>Henüz hazır quiz eklenmemiş.</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = "";
+    list.forEach((q, i) => {
+      const card = document.createElement("a");
+      card.className = "shared-card";
+      card.href      = `play/?id=${q.id}`;
+      card.style.animationDelay = (i * 50) + "ms";
+
+      const isArtikel = q.quizType === "artikel";
+      const icon      = isArtikel ? "🇩🇪" : "🔤";
+      const badgeCls  = isArtikel ? "artikel" : "normal";
+      const badgeTxt  = isArtikel ? "Artikel Quizi" : "Kelime Quizi";
+      const date      = q.createdAt?.toDate
+        ? q.createdAt.toDate().toLocaleDateString("tr-TR",{day:"2-digit",month:"short"})
+        : "—";
+
+      card.innerHTML = `
+        <div class="shared-card-top">
+          <div class="shared-card-icon ${badgeCls}">${icon}</div>
+          <span class="shared-card-badge ${badgeCls}">${badgeTxt}</span>
+        </div>
+        <div class="shared-card-name">${esc(q.name)}</div>
+        ${q.desc ? `<div class="shared-card-desc">${esc(q.desc)}</div>` : ""}
+        <div class="shared-card-footer">
+          <span class="shared-card-meta">${q.words?.length||0} kelime · ${date} · ${q.playCount||0} oynama</span>
+          <span class="shared-card-arrow">→</span>
+        </div>`;
+
+      grid.appendChild(card);
+    });
+  } catch(e) {
+    grid.innerHTML = `<div class="grid-empty"><p>Yüklenemedi: ${esc(e.message)}</p></div>`;
+  }
+}
+loadSharedQuizzes();
+
+/* ── TAB GEÇIŞI ── */
+window.switchTab = function(tab) {
+  activeTab = tab;
+  document.getElementById("tabBtnPersonal").classList.toggle("active", tab === "personal");
+  document.getElementById("tabBtnShared").classList.toggle("active",   tab === "shared");
+  document.getElementById("sectionPersonal").style.display = tab === "personal" ? "block" : "none";
+  document.getElementById("sectionShared").style.display   = tab === "shared"   ? "block" : "none";
+};
+
+/* ── STEPPER ── */
+document.getElementById("countDown").addEventListener("click", () => {
+  if (totalCount > 5) { totalCount -= 5; updateCountVal(); }
+});
+document.getElementById("countUp").addEventListener("click", () => {
+  if (totalCount < 50) { totalCount += 5; updateCountVal(); }
+});
+function updateCountVal() {
+  document.getElementById("countVal").textContent = totalCount;
+}
+
+/* ── BAŞLAT ── */
+document.getElementById("startBtn").addEventListener("click", () => {
+  if (allWords.length < 4) {
+    alert("Quiz için en az 4 kelime gerekli. Önce kelime ekle!"); return;
+  }
+  buildQuestions();
+  current = 0; score = 0; wrongList = [];
+  showScreen("quiz");
+  renderQuestion();
+});
+
+/* ── GERİ ── */
+document.getElementById("restartBtn").addEventListener("click", () => {
+  buildQuestions();
+  current = 0; score = 0; wrongList = [];
+  showScreen("quiz");
+  renderQuestion();
+});
+document.getElementById("homeBtn").addEventListener("click", () => {
+  showScreen("main");
+});
+
+/* ════════════════════════════════════
+   QUIZ LOGIC
+════════════════════════════════════ */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function buildQuestions() {
+  const pool  = shuffle(allWords);
+  const count = Math.min(totalCount, pool.length);
+  questions   = [];
+  for (let i = 0; i < count; i++) {
+    const item      = pool[i];
+    const direction = Math.random() < .5 ? "de-tr" : "tr-de";
+    const mode      = Math.random() < .6 ? "multiple" : "typing";
+    const question  = direction === "de-tr" ? item.word    : item.meaning;
+    const answer    = direction === "de-tr" ? item.meaning : item.word;
+    let choices = null;
+    if (mode === "multiple") {
+      const wrongs = shuffle(
+        allWords.filter(w=>w!==item).map(w => direction==="de-tr" ? w.meaning : w.word)
+      ).slice(0,3);
+      choices = shuffle([answer,...wrongs]);
+    }
+    questions.push({ question, answer, direction, mode, choices });
+  }
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  const pct = (current / questions.length) * 100;
+  document.getElementById("progressFill").style.width  = pct + "%";
+  document.getElementById("progressLabel").textContent = `${current+1} / ${questions.length}`;
+  document.getElementById("scoreBadge").textContent    = `✓ ${score}`;
+  document.getElementById("qDirection").textContent    = q.direction==="de-tr" ? "Almanca → Türkçe" : "Türkçe → Almanca";
+  document.getElementById("qWord").textContent         = q.question;
+  const mt = document.getElementById("qModeTag");
+  mt.textContent = q.mode==="multiple" ? "Çoktan Seçmeli" : "Yazarak Cevapla";
+  mt.className   = "q-mode-tag " + (q.mode==="multiple" ? "multiple" : "typing");
+  hideFeedback();
+
+  const grid = document.getElementById("choicesGrid");
+  const ta   = document.getElementById("typeArea");
+  const inp  = document.getElementById("typeInput");
+
+  if (q.mode === "multiple") {
+    grid.classList.remove("hidden"); ta.classList.add("hidden");
+    grid.innerHTML = "";
+    q.choices.forEach(ch => {
+      const btn = document.createElement("button");
+      btn.className   = "choice-btn";
+      btn.textContent = ch;
+      btn.addEventListener("click", () => handleChoice(ch, q.answer, grid));
+      grid.appendChild(btn);
+    });
+  } else {
+    grid.classList.add("hidden"); ta.classList.remove("hidden");
+    inp.value=""; inp.disabled=false; inp.className="";
+    document.getElementById("checkBtn").disabled=false;
+    setTimeout(() => inp.focus(), 60);
+  }
+}
+
+function handleChoice(chosen, correct, grid) {
+  grid.querySelectorAll(".choice-btn").forEach(b => {
+    b.disabled = true;
+    if (b.textContent===correct) b.classList.add("correct");
+    if (b.textContent===chosen && chosen!==correct) b.classList.add("wrong");
   });
+  if (chosen===correct) score++;
+  else wrongList.push(questions[current]);
+  showFeedback(chosen===correct, correct);
+}
+
+document.getElementById("checkBtn").addEventListener("click", checkTyping);
+document.getElementById("typeInput").addEventListener("keydown", e => { if(e.key==="Enter") checkTyping(); });
+
+function checkTyping() {
+  const q   = questions[current];
+  const inp = document.getElementById("typeInput");
+  const val = inp.value.trim();
+  if (!val) return;
+  const ok = norm(val) === norm(q.answer);
+  inp.disabled = true;
+  document.getElementById("checkBtn").disabled = true;
+  inp.classList.add(ok ? "correct" : "wrong");
+  if (ok) score++;
+  else wrongList.push(questions[current]);
+  showFeedback(ok, q.answer);
+}
+
+function norm(s) {
+  return s.trim().toLowerCase()
+    .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
+    .replace(/[^a-z0-9\s]/g,"");
+}
+
+document.getElementById("nextBtn").addEventListener("click", () => {
+  current++;
+  if (current >= questions.length) showResult();
+  else renderQuestion();
+});
+
+function showFeedback(ok, correct) {
+  const fb = document.getElementById("feedback");
+  fb.classList.remove("hidden","correct-fb","wrong-fb");
+  fb.classList.add(ok ? "correct-fb" : "wrong-fb");
+  document.getElementById("feedbackIcon").textContent = ok ? "✅" : "❌";
+  document.getElementById("feedbackText").innerHTML   = ok
+    ? "<strong>Doğru!</strong> Harika gidiyor."
+    : `<strong>Yanlış.</strong> Doğru cevap: <strong style="color:#f0ede8">${esc(correct)}</strong>`;
+}
+
+function hideFeedback() {
+  document.getElementById("feedback").classList.add("hidden");
+}
+
+function showResult() {
+  showScreen("result");
+  const total = questions.length;
+  const pct   = Math.round((score/total)*100);
+  let emoji, title, msg;
+  if(pct===100)    {emoji="🏆";title="Mükemmel!";         msg="Tüm soruları doğru yanıtladın!";}
+  else if(pct>=80) {emoji="🎉";title="Harika!";            msg="Çok başarılı bir performans!";}
+  else if(pct>=60) {emoji="👍";title="İyi İş!";            msg="Biraz daha pratikle mükemmel olacak.";}
+  else if(pct>=40) {emoji="📚";title="Çalışmaya Devam!";  msg="Bu kelimeleri biraz daha tekrar et.";}
+  else             {emoji="💪";title="Devam Et!";          msg="Her tekrar seni daha iyi yapıyor.";}
+  document.getElementById("resultEmoji").textContent  = emoji;
+  document.getElementById("resultTitle").textContent  = title;
+  document.getElementById("resultScore").textContent  = `${score} / ${total}`;
+  document.getElementById("resultMsg").textContent    = msg;
+  document.getElementById("resultBreakdown").innerHTML = `
+    <div class="rb-item"><span class="rb-num green">${score}</span><span class="rb-label">Doğru</span></div>
+    <div class="rb-item"><span class="rb-num red">${total-score}</span><span class="rb-label">Yanlış</span></div>
+    <div class="rb-item"><span class="rb-num" style="color:var(--purple)">${pct}%</span><span class="rb-label">Başarı</span></div>`;
+}
+
+/* ── Ekran geçişi ── */
+function showScreen(name) {
+  document.getElementById("viewMain").style.display         = name==="main"    ? "block"  : "none";
+  document.getElementById("screen-loading").classList.toggle("hidden", name!=="loading");
+  document.getElementById("screen-quiz").classList.toggle("hidden",    name!=="quiz");
+  document.getElementById("screen-result").classList.toggle("hidden",  name!=="result");
+  if (name !== "main") window.scrollTo(0,0);
+}
+
+function esc(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
 </script>
+
 </body>
 </html>
