@@ -21,6 +21,8 @@ import {
   escapeHtml,
 } from "./german.js";
 import { showToast } from "../src/components/toast.js";
+import { showLemmaHintOnce } from '../src/components/lemmaHint.js';
+
 import { showAuthGate, isLoggedIn } from '../src/components/authGate.js';
 /* ── State ───────────────────────────────────────────────── */
 let _word            = "";   /* seçili kelime */
@@ -496,7 +498,18 @@ async function openModal() {
 
   /* Kelimeyi göster (wiki henüz gelmemiş olabilir) */
   fillModalWord(true);
-
+  const okumaMountEl = document.getElementById('okumLemmaMount');
+  if (okumaMountEl && _word) {
+    showLemmaHintOnce({
+      word: _word,
+      mountEl: okumaMountEl,
+      onApply: (lemma) => {
+        const inp = document.getElementById('modalWordInput');
+        if (inp) inp.value = lemma;
+        okumaMountEl.innerHTML = '';
+      }
+    });
+  }
   const inp = document.getElementById("modalMeaningInput");
   if (inp) { inp.value = ""; inp.placeholder = "Yükleniyor…"; }
 

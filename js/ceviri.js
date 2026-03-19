@@ -7,6 +7,8 @@ import {
   isSingleWord, ARTIKEL_COLORS
 } from "./german.js";
 import { showAuthGate, isLoggedIn } from '../src/components/authGate.js';
+import { showLemmaHintOnce } from '../src/components/lemmaHint.js';
+
 /* ══════════════════════════════════════════════
    STATE
 ══════════════════════════════════════════════ */
@@ -450,6 +452,17 @@ saveWordBtn.addEventListener("click", () => {
   const autoTags = lastWikiData?.autoTags || [];
 
   modalWord.value    = deWord;
+  const ceviriMountEl = document.getElementById('ceviriLemmaMount');
+    if (ceviriMountEl) {
+      showLemmaHintOnce({
+        word: deWord,
+        mountEl: ceviriMountEl,
+        onApply: (lemma) => {
+          modalWord.value = lemma;
+          ceviriMountEl.innerHTML = '';
+        }
+      });
+    }
   modalMeaning.value = trWord;
 
   renderTagChips("modalTagChips", autoTags, extractAllTags(allWords));

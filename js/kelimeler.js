@@ -1,4 +1,5 @@
 import { getWords, deleteWord, updateWord, onAuthChange } from "./firebase.js";
+import { showLemmaHintOnce } from '../src/components/lemmaHint.js';
 import { renderTagChips, getSelectedTags, extractAllTags } from "./tag.js";
 
 let allWords        = [];
@@ -353,6 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div id="_wordFields">
           <label style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;">Kelime</label>
           <input id="editWordInput" style="
+            <div id="editLemmaMount"></div>
             width:100%;box-sizing:border-box;margin:6px 0 14px;
             background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
             border-radius:10px;color:white;font-size:15px;font-family:inherit;
@@ -416,6 +418,17 @@ document.addEventListener("DOMContentLoaded", () => {
       overlay.querySelector("#_tagPreview").style.display = "none";
       /* .value ile set etmek tamamen güvenlidir */
       overlay.querySelector("#editWordInput").value    = item.word;
+      const editMountEl = overlay.querySelector('#editLemmaMount');
+      if (editMountEl && item.word) {
+        showLemmaHintOnce({
+          word: item.word,
+          mountEl: editMountEl,
+          onApply: (lemma) => {
+            overlay.querySelector('#editWordInput').value = lemma;
+            editMountEl.innerHTML = '';
+          }
+        });
+      }
       overlay.querySelector("#editMeaningInput").value = item.meaning;
     }
 

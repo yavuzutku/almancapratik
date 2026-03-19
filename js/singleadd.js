@@ -5,6 +5,7 @@ import {
   fetchWikiData, fetchTranslate, normalizeGermanWord,
   artikelBadgeHtml, capitalize, escapeHtml, ARTIKEL_COLORS
 } from "./german.js";
+import { LemmaHint } from '../src/components/lemmaHint.js';
 
 /* ══════════════════════════════════════════════
    STATE
@@ -80,7 +81,15 @@ window.addEventListener("DOMContentLoaded", () => {
   const params           = new URLSearchParams(window.location.search);
   const prefilledWord    = params.get("word");
   const prefilledMeaning = params.get("meaning");
-
+  const lemmaHint = new LemmaHint({
+    inputEl: document.getElementById('wordInput'),
+    mountEl: document.getElementById('lemmaHintMount'),
+    onApply: (lemma) => {
+      document.getElementById('wordInput').value = lemma;
+      // Wiktionary yeniden sorgula (eğer fetchWikiEnrichment varsa)
+      fetchWikiEnrichment?.(lemma);
+    }
+  });
   if (prefilledWord) {
     wordInput.value = prefilledWord;
     fetchWikiEnrichment(prefilledWord);
