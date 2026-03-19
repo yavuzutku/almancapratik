@@ -174,7 +174,22 @@
 
   </div>
 </div>
-
+<div class="wa-preview-modal" id="previewModal">
+  <div class="wa-preview-backdrop" id="previewBackdrop"></div>
+  <div class="wa-preview-panel">
+    <div class="wa-preview-top">
+      <span class="wa-preview-title">Analiz Önizlemesi</span>
+      <button class="wa-preview-close" id="previewClose">✕</button>
+    </div>
+    <div class="wa-preview-body" id="previewBody"></div>
+    <div class="wa-preview-footer">
+      <button class="wa-preview-cancel" id="previewCancel">İptal</button>
+      <button class="wa-preview-confirm" id="previewConfirm">
+        Devam Et — İncelemeye Geç →
+      </button>
+    </div>
+  </div>
+</div>
 <script type="module">
   import "../js/core.js";
   window.loadNavbar();
