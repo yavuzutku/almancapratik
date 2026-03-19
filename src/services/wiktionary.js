@@ -5,16 +5,18 @@ export const ARTIKEL_COLORS = {
   die: { text: "#f07068", bg: "rgba(240,112,104,0.10)", border: "rgba(240,112,104,0.25)" },
   das: { text: "#a064ff", bg: "rgba(160,100,255,0.10)", border: "rgba(160,100,255,0.25)" },
 };
-
 export const TYPE_MAP = {
-  "Substantiv":   { label: "İsim",   tag: "isim"  },
-  "Verb":         { label: "Fiil",   tag: "fiil"  },
-  "Adjektiv":     { label: "Sıfat",  tag: "sıfat" },
-  "Adverb":       { label: "Zarf",   tag: "zarf"  },
-  "Präposition":  { label: "Edat",   tag: null    },
-  "Konjunktion":  { label: "Bağlaç", tag: null    },
-  "Pronomen":     { label: "Zamir",  tag: null    },
-  "Interjektion": { label: "Ünlem",  tag: null    },
+  "Substantiv":         { label: "İsim",              tag: "isim"  },
+  "Verb":               { label: "Fiil",               tag: "fiil"  },
+  "Adjektiv":           { label: "Sıfat",              tag: "sıfat" },
+  "Adverb":             { label: "Zarf",               tag: "zarf"  },
+  "Konjugierte Form":   { label: "Çekimli Form",       tag: "fiil"  },
+  "Deklinierte Form":   { label: "Çekimlenmiş Form",   tag: null    },
+  "Partizip II":        { label: "Geçmiş Zaman",       tag: "fiil"  },
+  "Präposition":        { label: "Edat",               tag: null    },
+  "Konjunktion":        { label: "Bağlaç",             tag: null    },
+  "Pronomen":           { label: "Zamir",              tag: null    },
+  "Interjektion":       { label: "Ünlem",              tag: null    },
 };
 
 const _wikiCache = new Map();
@@ -23,9 +25,9 @@ export async function fetchWikiData(word) {
   const key = word.trim().toLowerCase();
   if (_wikiCache.has(key)) return _wikiCache.get(key);
 
-  const empty = { 
-    artikel: "", wordType: "", plural: "", 
-    genitive: "", baseForm: "", autoTags: [] 
+  const empty = {
+    artikel: "", wordType: "", plural: "",
+    genitive: "", baseForm: "", autoTags: []
   };
 
   try {
@@ -50,11 +52,30 @@ export async function fetchWikiData(word) {
 }
 
 function _parseWikitext(wt, originalWord) {
-  const result = { 
-    artikel: "", wordType: "", plural: "", 
-    genitive: "", baseForm: "", autoTags: [] 
+  const result = {
+    artikel: "", wordType: "", plural: "",
+    genitive: "", baseForm: "", autoTags: []
   };
 
+  // DÜZELTME: Çekimli formları yakala (gegangen → gehen gibi)
+  // Wiktionary'de bunlar {{Grundformverweis Konj|gehen}} şeklinde gösterilir
+  const gfMatch = wt.match(/\{\{Grundformverweis(?:\s+\w+)?\|([^}|]+)/);
+  if (gfMatch) {
+    const base = gfMatch[1].trim().replace(/\[\[|\]\]/g, "");
+    if (base && base.toLowerCase() !== originalWord.toLowerCase()) {
+      result.baseForm = base;
+      const typeMatch = wt.match(/\{\{Wortart\|([^|}\n]+)/);
+      if (typeMatch) {
+        const rawType  = typeMatch[1].trim();
+        const typeInfo = TYPE_MAP[rawType] || { label: rawType, tag: null };
+        result.wordType = typeInfo.label;
+        if (typeInfo.tag) result.autoTags.push(typeInfo.tag);
+      }
+      return result;
+    }
+  }
+
+  // Normal kelime ayrıştırma
   const typeMatch = wt.match(/\{\{Wortart\|([^|}\n]+)/);
   if (!typeMatch) return result;
 
@@ -82,8 +103,9 @@ function _parseWikitext(wt, originalWord) {
   }
 
   if (rawType === "Verb") {
-    const bMatch = wt.match(/\|\s*Grundform\s*=\s*([^\n|{}]+)/)
-                || wt.match(/\|\s*Infinitiv\s*=\s*([^\n|{}]+)/);
+    // Önce Infinitiv'i dene, sonra Grundform
+    const bMatch = wt.match(/\|\s*Infinitiv\s*=\s*([^\n|{}]+)/)
+                || wt.match(/\|\s*Grundform\s*=\s*([^\n|{}]+)/);
     if (bMatch) {
       const b = bMatch[1].trim().replace(/\[\[|\]\]/g, "");
       if (b && b.toLowerCase() !== originalWord.toLowerCase()) result.baseForm = b;
