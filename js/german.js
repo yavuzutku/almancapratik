@@ -1,12 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
    js/german.js  —  Merkezi Almanca yardımcı modülü
 
-   KRİTİK DÜZELTME: Bu dosya daha önce sadece normalizeGermanWord
-   ve artikelBadgeHtml'i dışa aktarıyordu. ceviri.js, singleadd.js
-   ve okuma.js'nin beklediği tüm fonksiyonlar eksikti, bu da söz
-   konusu sayfaların tamamen çalışmamasına yol açıyordu.
-   ═══════════════════════════════════════════════════════════ */
-
 /* ── Servis modüllerini yeniden dışa aktar ── */
 export { fetchTranslate }        from "../src/services/translate.js";
 export { fetchWikiData, ARTIKEL_COLORS, TYPE_MAP } from "../src/services/wiktionary.js";

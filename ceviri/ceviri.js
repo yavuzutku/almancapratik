@@ -1,11 +1,11 @@
-import { auth, saveWord, getWords } from "./firebase.js";
+import { auth, saveWord, getWords } from "../js/firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { renderTagChips, getSelectedTags, extractAllTags, getAutoLevel } from "./tag.js";
+import { renderTagChips, getSelectedTags, extractAllTags, getAutoLevel } from "../js/tag.js";
 import {
   fetchWikiData, fetchTranslate, normalizeGermanWord,
   artikelBadgeHtml, capitalize, escapeHtml, escapeRegex,
   isSingleWord, ARTIKEL_COLORS
-} from "./german.js";
+} from "../js/german.js";
 import { showAuthGate, isLoggedIn } from '../src/components/authGate.js';
 import { showLemmaHintOnce } from '../src/components/lemmaHint.js';
 
