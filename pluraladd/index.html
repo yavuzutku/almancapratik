@@ -27,7 +27,7 @@
       <div class="wa-hero-icon">📋</div>
       <div>
         <h1 class="wa-hero-title">Kelime Listesi Ekle</h1>
-        <p class="wa-hero-sub">Listenizi yapıştırın — sistem formatı otomatik tanır ve düzeltir.</p>
+        <p class="wa-hero-sub">Listenizi yapıştırın — sistem formatı otomatik analiz eder ve ayırır.</p>
       </div>
     </div>
 
@@ -65,10 +65,26 @@ Buch, kitap</code>
         </div>
 
         <div class="wa-fmt-card">
-          <div class="wa-fmt-label">Parantez / Köşeli / Açılı</div>
+          <div class="wa-fmt-label">Parantez / Köşeli</div>
           <code>Haus (ev)
 Hund [köpek]
 schön &lt;güzel&gt;</code>
+        </div>
+
+        <div class="wa-fmt-card">
+          <div class="wa-fmt-label">Tab (Excel / Tablo)</div>
+          <code>1	der Hund	köpek
+2	die Katze	kedi
+3	das Haus	ev</code>
+          <div class="wa-fmt-note">Numara sütunu otomatik atlanır</div>
+        </div>
+
+        <div class="wa-fmt-card">
+          <div class="wa-fmt-label">Çift Boşluk</div>
+          <code>Haus    ev
+gehen   gitmek
+schön   güzel</code>
+          <div class="wa-fmt-note">2+ boşluk ayraç sayılır</div>
         </div>
 
         <div class="wa-fmt-card">
@@ -98,7 +114,7 @@ Hund
 ---
 ev
 köpek</code>
-          <div class="wa-fmt-note">---, ===, ***, ~~~ desteklenir</div>
+          <div class="wa-fmt-note">--- === *** ~~~ desteklenir</div>
         </div>
 
         <div class="wa-fmt-card">
@@ -121,21 +137,6 @@ köpek</code>
         </div>
 
         <div class="wa-fmt-card">
-          <div class="wa-fmt-label">Otomatik Düzeltme</div>
-          <code>HAUS = ev
-ev = Haus
-Hund = köpek.</code>
-          <div class="wa-fmt-note">BÜYÜK harf, ters sıra, sondaki nokta — hepsi düzeltilir</div>
-        </div>
-
-        <div class="wa-fmt-card">
-          <div class="wa-fmt-label">Tab Ayrımlı</div>
-          <code>Haus	ev
-gehen	gitmek</code>
-          <div class="wa-fmt-note">Excel kopyala-yapıştır için</div>
-        </div>
-
-        <div class="wa-fmt-card">
           <div class="wa-fmt-label">Artikel Dahil</div>
           <code>der Hund = köpek
 die Katze - kedi
@@ -144,11 +145,11 @@ das Haus → ev</code>
         </div>
 
         <div class="wa-fmt-card">
-          <div class="wa-fmt-label">Sadece Almanca</div>
-          <code>Haus
-gehen
-schön</code>
-          <div class="wa-fmt-note">Çeviri otomatik çekilir</div>
+          <div class="wa-fmt-label">Otomatik Düzeltme</div>
+          <code>HAUS = ev
+ev = Haus
+Hund = köpek.</code>
+          <div class="wa-fmt-note">BÜYÜK harf, ters sıra, sondaki nokta düzeltilir</div>
         </div>
 
       </div>
@@ -158,16 +159,20 @@ schön</code>
     <div class="wa-input-wrap">
       <div class="wa-input-header">
         <span class="wa-input-label">Listenizi Buraya Yapıştırın</span>
-        <span class="wa-input-meta">
-          <span id="inputLineCount">0 satır</span>
-          <span class="wa-input-sep">·</span>
-          <span id="inputCharCount">0</span> karakter
-        </span>
+        <div class="wa-input-header-right">
+          <!-- Canlı format tespiti badge -->
+          <span class="wa-detected-badge" id="detectedFormat" style="display:none"></span>
+          <span class="wa-input-meta">
+            <span id="inputLineCount">0 satır</span>
+            <span class="wa-input-sep">·</span>
+            <span id="inputCharCount">0</span> karakter
+          </span>
+        </div>
       </div>
       <textarea
         id="inputArea"
         class="wa-textarea"
-        placeholder='Haus = ev&#10;der Hund - köpek&#10;"schön" = "güzel"&#10;gehen bedeutet gitmek&#10;Q: Katze | A: kedi&#10;Haus=ev; Hund=köpek&#10;&#10;Veya iki blok:&#10;Haus&#10;Hund&#10;---&#10;ev&#10;köpek'
+        placeholder="Haus = ev&#10;1&#9;der Hund&#9;köpek&#10;&quot;schön&quot; = &quot;güzel&quot;&#10;gehen bedeutet gitmek&#10;Q: Katze | A: kedi&#10;Haus=ev; Hund=köpek&#10;&#10;Veya iki blok:&#10;Haus&#10;Hund&#10;---&#10;ev&#10;köpek"
         spellcheck="false"
         autocomplete="off"
       ></textarea>
@@ -196,7 +201,6 @@ schön</code>
       </div>
     </div>
 
-    <!-- Üst bilgi bar -->
     <div class="wa-infobar">
       <div class="wa-info-chip wa-info-chip--total">
         <span class="wa-info-num" id="barTotal">0</span>
@@ -218,7 +222,6 @@ schön</code>
         <span class="wa-info-num" id="barSaved">0</span>
         <span class="wa-info-lbl">Kaydedildi</span>
       </div>
-
       <div class="wa-infobar-actions">
         <button class="wa-translate-btn" id="btnAutoTranslate">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
@@ -227,18 +230,13 @@ schön</code>
       </div>
     </div>
 
-    <!-- Çeviri progress bar -->
     <div class="wa-translate-progress" id="translateProgress" style="display:none">
-      <div class="wa-tprog-track">
-        <div class="wa-tprog-bar" id="translateBar"></div>
-      </div>
+      <div class="wa-tprog-track"><div class="wa-tprog-bar" id="translateBar"></div></div>
       <span class="wa-tprog-text" id="translateText">0 / 0</span>
     </div>
 
-    <!-- Özet banner -->
     <div class="wa-summary" id="saveSummary" style="display:none"></div>
 
-    <!-- Tablo -->
     <div class="wa-table-wrap">
       <table class="wa-table">
         <thead>
@@ -255,7 +253,6 @@ schön</code>
       </table>
     </div>
 
-    <!-- Alt aksiyonlar -->
     <div class="wa-table-footer">
       <button class="wa-save-btn" id="btnSave">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -276,9 +273,7 @@ schön</code>
     <div class="wa-preview-body" id="previewBody"></div>
     <div class="wa-preview-footer">
       <button class="wa-preview-cancel" id="previewCancel">İptal</button>
-      <button class="wa-preview-confirm" id="previewConfirm">
-        Devam Et — İncelemeye Geç →
-      </button>
+      <button class="wa-preview-confirm" id="previewConfirm">Devam Et — İncelemeye Geç →</button>
     </div>
   </div>
 </div>
@@ -291,7 +286,7 @@ schön</code>
     icon:     '📋',
     title:    'Kelime listesi eklemek için giriş yap',
     desc:     'Toplu kelime ekleme aracını kullanmak için giriş yap.',
-    features: ['15+ format desteği', 'Otomatik çeviri', 'Tekrar koruması', 'Akıllı düzeltme'],
+    features: ['15+ format · tablo desteği', 'Otomatik çeviri', 'Tekrar koruması', 'Akıllı format tespiti'],
     backHref: '../pratik/'
   });
 </script>
