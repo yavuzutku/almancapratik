@@ -27,7 +27,7 @@
       <div class="wa-hero-icon">📋</div>
       <div>
         <h1 class="wa-hero-title">Kelime Listesi Ekle</h1>
-        <p class="wa-hero-sub">Listenizi yapıştırın — sistem formatı otomatik tanır.</p>
+        <p class="wa-hero-sub">Listenizi yapıştırın — sistem formatı otomatik tanır ve düzeltir.</p>
       </div>
     </div>
 
@@ -35,31 +35,122 @@
     <div class="wa-formats">
       <div class="wa-formats-title">Desteklenen Formatlar</div>
       <div class="wa-formats-grid">
+
         <div class="wa-fmt-card">
-          <div class="wa-fmt-label">Eşittir</div>
-          <code>Haus = ev<br>gehen = gitmek</code>
+          <div class="wa-fmt-label">Eşittir / Ok</div>
+          <code>Haus = ev
+gehen → gitmek
+lernen => öğrenmek</code>
         </div>
+
         <div class="wa-fmt-card">
-          <div class="wa-fmt-label">Tire / Ok</div>
-          <code>Hund - köpek<br>lernen → öğrenmek</code>
+          <div class="wa-fmt-label">Tire / Pipe / Noktalı virgül</div>
+          <code>Hund - köpek
+schön | güzel
+Katze ; kedi</code>
         </div>
+
         <div class="wa-fmt-card">
-          <div class="wa-fmt-label">Virgül</div>
-          <code>Katze, kedi<br>schön, güzel</code>
+          <div class="wa-fmt-label">Virgül / Eğik Çizgi</div>
+          <code>Haus, ev
+gehen / gitmek
+Buch, kitap</code>
         </div>
+
         <div class="wa-fmt-card">
-          <div class="wa-fmt-label">İki Blok</div>
-          <code>Haus<br>Hund<br>---<br>ev<br>köpek</code>
+          <div class="wa-fmt-label">Tırnak İşaretli</div>
+          <code>"Haus" = "ev"
+'Hund' - 'köpek'
+„schön" = „güzel"</code>
         </div>
+
         <div class="wa-fmt-card">
-          <div class="wa-fmt-label">Sadece Almanca</div>
-          <code>Haus<br>gehen<br>schön</code>
-          <div class="wa-fmt-note">Çeviri otomatik çekilir</div>
+          <div class="wa-fmt-label">Parantez / Köşeli / Açılı</div>
+          <code>Haus (ev)
+Hund [köpek]
+schön &lt;güzel&gt;</code>
         </div>
+
+        <div class="wa-fmt-card">
+          <div class="wa-fmt-label">Anahtar Kelimeler</div>
+          <code>Haus bedeutet ev
+gehen heißt gitmek
+schön means güzel</code>
+        </div>
+
+        <div class="wa-fmt-card">
+          <div class="wa-fmt-label">Flashcard / Q-A</div>
+          <code>Q: Haus | A: ev
+F: gehen / C: gitmek
+Soru: Hund - Cevap: köpek</code>
+        </div>
+
+        <div class="wa-fmt-card">
+          <div class="wa-fmt-label">Çoklu Çift (tek satır)</div>
+          <code>Haus=ev; Hund=köpek
+gehen=gitmek; kommen=gelmek</code>
+        </div>
+
+        <div class="wa-fmt-card">
+          <div class="wa-fmt-label">İki Blok (bölücülü)</div>
+          <code>Haus
+Hund
+---
+ev
+köpek</code>
+          <div class="wa-fmt-note">---, ===, ***, ~~~ desteklenir</div>
+        </div>
+
+        <div class="wa-fmt-card">
+          <div class="wa-fmt-label">İki Blok (boş satırla)</div>
+          <code>Haus
+Hund
+
+
+ev
+köpek</code>
+          <div class="wa-fmt-note">2+ boş satır bölücü sayılır</div>
+        </div>
+
+        <div class="wa-fmt-card">
+          <div class="wa-fmt-label">Liste İşaretli</div>
+          <code>1. Haus = ev
+• Hund - köpek
+- lernen → öğrenmek</code>
+          <div class="wa-fmt-note">İşaretler otomatik kaldırılır</div>
+        </div>
+
+        <div class="wa-fmt-card">
+          <div class="wa-fmt-label">Otomatik Düzeltme</div>
+          <code>HAUS = ev
+ev = Haus
+Hund = köpek.</code>
+          <div class="wa-fmt-note">BÜYÜK harf, ters sıra, sondaki nokta — hepsi düzeltilir</div>
+        </div>
+
+        <div class="wa-fmt-card">
+          <div class="wa-fmt-label">Tab Ayrımlı</div>
+          <code>Haus	ev
+gehen	gitmek</code>
+          <div class="wa-fmt-note">Excel kopyala-yapıştır için</div>
+        </div>
+
         <div class="wa-fmt-card">
           <div class="wa-fmt-label">Artikel Dahil</div>
-          <code>der Hund = köpek<br>die Katze - kedi</code>
+          <code>der Hund = köpek
+die Katze - kedi
+das Haus → ev</code>
+          <div class="wa-fmt-note">der/die/das korunur</div>
         </div>
+
+        <div class="wa-fmt-card">
+          <div class="wa-fmt-label">Sadece Almanca</div>
+          <code>Haus
+gehen
+schön</code>
+          <div class="wa-fmt-note">Çeviri otomatik çekilir</div>
+        </div>
+
       </div>
     </div>
 
@@ -76,7 +167,7 @@
       <textarea
         id="inputArea"
         class="wa-textarea"
-        placeholder="Haus = ev&#10;der Hund - köpek&#10;gehen, gitmek&#10;schön&#10;&#10;Veya iki blok:&#10;Haus&#10;Hund&#10;---&#10;ev&#10;köpek"
+        placeholder='Haus = ev&#10;der Hund - köpek&#10;"schön" = "güzel"&#10;gehen bedeutet gitmek&#10;Q: Katze | A: kedi&#10;Haus=ev; Hund=köpek&#10;&#10;Veya iki blok:&#10;Haus&#10;Hund&#10;---&#10;ev&#10;köpek'
         spellcheck="false"
         autocomplete="off"
       ></textarea>
@@ -174,6 +265,7 @@
 
   </div>
 </div>
+
 <div class="wa-preview-modal" id="previewModal">
   <div class="wa-preview-backdrop" id="previewBackdrop"></div>
   <div class="wa-preview-panel">
@@ -190,6 +282,7 @@
     </div>
   </div>
 </div>
+
 <script type="module">
   import "../js/core.js";
   window.loadNavbar();
@@ -198,7 +291,7 @@
     icon:     '📋',
     title:    'Kelime listesi eklemek için giriş yap',
     desc:     'Toplu kelime ekleme aracını kullanmak için giriş yap.',
-    features: ['Çoklu format desteği', 'Otomatik çeviri', 'Tekrar koruması'],
+    features: ['15+ format desteği', 'Otomatik çeviri', 'Tekrar koruması', 'Akıllı düzeltme'],
     backHref: '../pratik/'
   });
 </script>

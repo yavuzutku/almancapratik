@@ -1,14 +1,27 @@
 /* ═══════════════════════════════════════════════════════════
-   wordsadd.js  —  AlmancaPratik Çoklu Kelime Ekleme
+   pluraladd.js  —  AlmancaPratik Çoklu Kelime Ekleme
    ═══════════════════════════════════════════════════════════
-   Desteklenen formatlar:
-     Haus = ev          Haus → ev        Haus -> ev
-     Haus - ev          Haus : ev        Haus | ev
-     Haus, ev           Haus	ev        (tab)
-     Haus (ev)          Haus [ev]
-     1. Haus = ev       • Haus - ev
-     der Hund = köpek   (artikel korunur)
-     Sadece: Haus       (çeviri otomatik çekilir)
+   Desteklenen formatlar (genişletilmiş):
+     Haus = ev           Haus → ev          Haus -> ev
+     Haus - ev           Haus : ev          Haus | ev
+     Haus, ev            Haus   ev          (çift boşluk)
+     Haus (ev)           Haus [ev]          Haus <ev>
+     «Haus» ev           "Haus" "ev"        'Haus' 'ev'
+     Haus; ev            Haus :: ev         Haus / ev
+     Haus bedeutet ev    Haus heißt ev      Haus means ev
+     gehen => gitmek     gehen --> gitmek
+     Q: Haus | A: ev     F: Haus / C: ev    (flashcard)
+     1. Haus = ev        • Haus - ev        (liste işaretleri)
+     der Hund = köpek    (artikel korunur)
+     ev = Haus           (ters yazılmış → otomatik düzeltilir)
+     HAUS = ev           (büyük harf → normalleştirilir)
+     Haus=ev; Hund=köpek (aynı satırda çoklu çift)
+     Sadece: Haus        (çeviri otomatik çekilir)
+
+   İki blok modları:
+     --- / === / *** / ~~~ / ___ bölücüler
+     2+ boş satır ile ayrılmış bloklar
+     Implicit: üst yarı Almanca, alt yarı Türkçe
    ═══════════════════════════════════════════════════════════ */
 
 import { auth, getWords, saveWord } from "../js/firebase.js";
@@ -18,7 +31,7 @@ import { fetchTranslate, normalizeGermanWord } from "../js/german.js";
 /* ─── STATE ─────────────────────────────────────────────── */
 let currentUser   = null;
 let existingWords = [];
-let entries       = [];   // { id, de, tr, method, selected, status, translating }
+let entries       = [];
 let uidCounter    = 0;
 let isTranslating = false;
 
@@ -27,107 +40,344 @@ onAuthStateChanged(auth, async (user) => {
   currentUser = user;
   if (user) {
     existingWords = await getWords(user.uid).catch(() => []);
-    /* Eğer review zaten açıksa duplicate kontrolü yenile */
     if (entries.length) reCheckDuplicates();
   }
 });
 
 /* ═══════════════════════════════════════════════════════════
-   PARSER
+   PARSER — Kapsamlı Format Desteği
    ═══════════════════════════════════════════════════════════ */
-
-/* Sıralı ayraç denemeleri — önce en kesin olanlar */
-const SEPS = [
-  { re: /\s*=\s*/,         name: '=' },
-  { re: /\s*→\s*/,         name: '→' },
-  { re: /\s*->\s*/,        name: '→' },
-  { re: /\s*≈\s*/,         name: '≈' },
-  { re: /\s*\|\s*/,        name: '|' },
-  { re: /\t+/,             name: 'tab' },
-  { re: /\s*:\s*/,         name: ':' },
-  { re: /\s+[-–—]\s+/,     name: '–' },   /* boşluklu tire (artikel tiresinden ayır) */
-];
 
 const ARTICLE_RE = /^(der|die|das|ein|eine)\s+/i;
 
+/* Sıralı ayraç denemeleri — en kesin önce */
+const SEPS = [
+  /* Eşittir varyantları */
+  { re: /\s*={1,3}\s*/,                                              name: '='   },
+  /* Ok varyantları (unicode + ASCII) */
+  { re: /\s*[→⟶➔➜⇒⟹➡🔀]\s*/,                                        name: '→'   },
+  { re: /\s*-{1,2}>\s*/,                                             name: '→'   },
+  { re: /\s*={1,2}>\s*/,                                             name: '→'   },
+  /* Yaklaşık eşit */
+  { re: /\s*[≈~≃≡]\s*/,                                              name: '≈'   },
+  /* Pipe */
+  { re: /\s*\|\s*/,                                                  name: '|'   },
+  /* Tab */
+  { re: /\t+/,                                                       name: 'tab' },
+  /* Noktalı virgül */
+  { re: /\s*;\s*/,                                                   name: ';'   },
+  /* Çift iki nokta */
+  { re: /\s*::\s*/,                                                  name: '::'  },
+  /* Boşluklu tire/çizgi */
+  { re: /\s+[-–—]+\s+/,                                              name: '–'   },
+  /* Doğal dil anahtar kelimeleri */
+  { re: /\s+(?:bedeutet|heißt|means|yani|demek(?:\s+ki)?|d\.h\.|i\.e\.)\s+/i, name: 'kw' },
+  /* Tek iki nokta (en sona) */
+  { re: /\s*:\s*/,                                                   name: ':'   },
+];
+
+/* ─── YARDIMCILAR ────────────────────────────────────────── */
+
 /** Satır başındaki liste işaretlerini kaldır */
 function stripMarker(line) {
-  return line.replace(/^(\d+[.)]\s+|[•\-\*◦▸▹›»·]\s+)/, '').trim();
+  return line.replace(/^(\d+[.)]\s*|[•\-\*◦▸▹›»·#☐☑✓✗✕]\s*)/, '').trim();
 }
 
-/** Tek satırı parse et → { de, tr, method } veya null */
-function parseLine(raw) {
-  let line = raw.trim();
-  if (!line) return null;
-  line = stripMarker(line);
-  if (!line) return null;
-
-  /* Parantez/köşeli parantez: "Wort (anlam)" */
-  const parenM = line.match(/^(.+?)\s*[(\[](.*?)[)\]]\s*$/);
-  if (parenM) {
-    const de = parenM[1].trim(), tr = parenM[2].trim();
-    if (de && tr) return { de, tr, method: '()' };
-  }
-
-  /* Açık ayraçlar */
-  for (const sep of SEPS) {
-    const m = line.match(sep.re);
-    if (!m || m.index === 0) continue;
-    const idx = m.index;
-    const de  = line.slice(0, idx).trim();
-    const tr  = line.slice(idx + m[0].length).trim();
-
-    /* Kolon: saat formatını atla (10:30) */
-    if (sep.name === ':' && /^\d{1,2}:\d{2}/.test(line)) continue;
-    /* Tire: artikel + tire kombinasyonunu ayırt et (die → geç, çünkü "die Straße" değil) */
-    if (sep.name === '–' && ARTICLE_RE.test(line) && !/ [-–—] /.test(line)) continue;
-
-    if (de && tr) return { de, tr, method: sep.name };
-  }
-
-  /* Virgül: heuristik */
-  const ci = line.indexOf(',');
-  if (ci > 0) {
-    const de = line.slice(0, ci).trim();
-    const tr = line.slice(ci + 1).trim();
-    if (de && tr && looksLikeTurkish(tr)) return { de, tr, method: ',' };
-  }
-
-  /* Ayraç yok → sadece Almanca kelime */
-  return { de: line, tr: '', method: '?' };
+/** Çevreleyen tırnak işaretlerini kaldır */
+function stripQuotes(s) {
+  return s.replace(/^["'«»„"‟""''`´❝❞❛❜]+|["'«»„"‟""''`´❝❞❛❜]+$/g, '').trim();
 }
 
-/** Türkçe/yabancı anlam mı diye tahmin et */
+/** Sondaki noktalama temizle */
+function stripTrailingPunct(s) {
+  return s.replace(/[.,;:!?。、…]+$/, '').trim();
+}
+
+/** ALLCAPS → Title Case normalleştir: "HAUS" → "Haus" */
+function normalizeCaps(s) {
+  if (!s || s.length < 2) return s;
+  const hasLower = /[a-zäöüß]/.test(s);
+  if (!hasLower && /[A-ZÜÖÄ]{2,}/.test(s)) {
+    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  }
+  return s;
+}
+
+/** Kelime/ifadeyi kapsamlı temizle */
+function cleanPart(s) {
+  if (!s) return '';
+  s = s.trim();
+  s = stripQuotes(s);
+  s = stripTrailingPunct(s);
+  s = normalizeCaps(s);
+  return s.trim();
+}
+
+/** Türkçe'ye has karakter/pattern var mı? */
 function looksLikeTurkish(s) {
   if (!s) return false;
-  /* Türkçe'ye özgü karakterler */
   if (/[şğıçŞĞİÇ]/.test(s)) return true;
   /* Küçük harfle başlıyorsa (Almanca isimler büyük başlar) */
-  if (s[0] === s[0].toLowerCase() && /[a-zA-Z]/.test(s[0])) return true;
-  /* Çok kısa & latin-only */
-  if (s.length < 25 && !/[A-ZÜÖÄ]/.test(s)) return true;
+  if (/^[a-zäöü]/.test(s)) return true;
+  /* Kısa ve sadece latin */
+  if (s.length < 25 && !/[A-ZÜÖÄ]/.test(s) && /[a-z]/.test(s)) return true;
+  return false;
+}
+
+/** Almancaya özgü işaret var mı? */
+function looksLikeGerman(s) {
+  if (!s) return false;
+  if (/[ÄÖÜäöüß]/.test(s)) return true;
+  if (ARTICLE_RE.test(s)) return true;
+  if (/^[A-ZÜÖÄ]/.test(s)) return true;
   return false;
 }
 
 /**
- * Ana parse fonksiyonu.
- * İki-blok modu: Eğer metin iki ayrı blok içeriyorsa (---/=== ayraçlı ya
- * da üst yarı büyük harfli Almanca, alt yarı küçük harfli Türkçe),
- * pozisyon eşlemesi yapar.
+ * Ters yazılmış mı? (Türkçe sol, Almanca sağ)
+ * Otomatik taraf değiştir.
  */
+function maybeSwap(de, tr) {
+  if (de && tr && looksLikeTurkish(de) && looksLikeGerman(tr)) {
+    return { de: tr, tr: de };
+  }
+  return { de, tr };
+}
+
+/* ─── ÖZEL FORMAT PARSERLARI ─────────────────────────────── */
+
+/** Köşeli / açılı parantez / guillemet formatları */
+function tryBracketFormats(line) {
+  /* Sonda parantez: Haus (ev) → kelime <anlam> */
+  const endParen = line.match(/^(.+?)\s*[(\[<«]\s*(.+?)\s*[)\]>»]\s*$/);
+  if (endParen) {
+    const left  = endParen[1].trim();
+    const right = endParen[2].trim();
+    if (left && right) {
+      /* Sağ taraf çeviri gibi görünüyor mu? */
+      if (looksLikeTurkish(right) || (!looksLikeGerman(right) && right.length < 30)) {
+        return { de: left, tr: right, method: '<>' };
+      }
+      /* Sağ taraf plural/artikel bilgisi olabilir → atla */
+    }
+  }
+
+  /* Başta parantez: [Haus] ev veya <Haus> ev */
+  const startParen = line.match(/^[(\[<«]\s*(.+?)\s*[)\]>»]\s+(.+)$/);
+  if (startParen) {
+    const de = startParen[1].trim();
+    const tr = startParen[2].trim();
+    if (de && tr) return { de, tr, method: '<>' };
+  }
+
+  return null;
+}
+
+/** Tırnaklı format: "Haus" "ev" veya 'Haus' 'ev' */
+function tryQuotedFormat(line) {
+  /* Her iki taraf tırnakla: "Haus" = "ev" veya "Haus" "ev" */
+  const bothQ = line.match(/^(["'„"❝`])(.+?)\1\s*[=:→\-|]?\s*(["'„"❝`])(.+?)\3\s*$/);
+  if (bothQ) {
+    const de = bothQ[2].trim();
+    const tr = bothQ[4].trim();
+    if (de && tr) return { de, tr, method: '""' };
+  }
+  /* Sadece sağ taraf tırnakla: Haus = "ev" */
+  const rightQ = line.match(/^(.+?)\s*[=:→\-|]\s*(["'„"❝`])(.+?)\2\s*$/);
+  if (rightQ) {
+    const de = rightQ[1].trim();
+    const tr = rightQ[3].trim();
+    if (de && tr) return { de, tr, method: '""' };
+  }
+  /* Sadece sol taraf tırnakla: "Haus" = ev */
+  const leftQ = line.match(/^(["'„"❝`])(.+?)\1\s*[=:→\-|]\s*(.+)$/);
+  if (leftQ) {
+    const de = leftQ[2].trim();
+    const tr = leftQ[3].trim();
+    if (de && tr) return { de, tr, method: '""' };
+  }
+  return null;
+}
+
+/** Flashcard / soru-cevap formatı */
+function tryFlashcardFormat(line) {
+  /* Q: Haus | A: ev  /  F: Haus / C: ev  /  Soru: Haus - Cevap: ev */
+  const fc = line.match(
+    /^(?:q|f|frage|soru|question|s)\s*[:.)]\s*(.+?)\s*[|/\-]\s*(?:a|c|answer|antwort|cevap)\s*[:.)]\s*(.+)$/i
+  );
+  if (fc) {
+    const de = fc[1].trim();
+    const tr = fc[2].trim();
+    if (de && tr) return { de, tr, method: 'Q/A' };
+  }
+  return null;
+}
+
+/** Eğik çizgi ayracı — artikel varyantlarına dikkat */
+function trySlashSep(line) {
+  /* "der/die/das" gibi artikel varyantları içeriyorsa ayraç olarak kullanma */
+  if (/\b(?:der|die|das)\s*\/\s*(?:der|die|das)\b/i.test(line)) return null;
+  /* Sadece tek eğik çizgi olmalı */
+  const slashes = (line.match(/\//g) || []).length;
+  if (slashes !== 1) return null;
+  const m = line.match(/^([^/]+)\s*\/\s*([^/]+)$/);
+  if (!m) return null;
+  const de = m[1].trim();
+  const tr = m[2].trim();
+  if (!de || !tr) return null;
+  /* Her iki taraf çok uzunsa (cümle olabilir) atla */
+  if (de.split(/\s+/).length > 5 || tr.split(/\s+/).length > 5) return null;
+  return { de, tr, method: '/' };
+}
+
+/** Çift boşluk ayracı: "Haus    ev" */
+function tryMultiSpaceSep(line) {
+  const m = line.match(/^(.+?)\s{2,}(.+)$/);
+  if (!m) return null;
+  const de = m[1].trim();
+  const tr = m[2].trim();
+  if (!de || !tr) return null;
+  /* Hiçbir taraf zaten çok boşluk içermemeli */
+  if (de.match(/\s{2,}/) || tr.match(/\s{2,}/)) return null;
+  return { de, tr, method: '··' };
+}
+
+/* ─── ÇOKLU ÇİFT (aynı satırda birden fazla) ─────────────── */
+
+/**
+ * "Haus=ev; Hund=köpek" → iki entry
+ * "Haus=ev, Hund=köpek" → iki entry (her biri kendi ayracına sahipse)
+ */
+function tryMultiPairLine(line) {
+  /* Noktalı virgülle ayrılmış çiftler */
+  if (/;/.test(line)) {
+    const parts = line.split(';').map(p => p.trim()).filter(Boolean);
+    if (parts.length >= 2) {
+      const parsed = parts.map(p => parseSingleLine(p)).filter(Boolean);
+      if (parsed.length === parts.length && parsed.every(p => p.tr)) {
+        return parsed;
+      }
+    }
+  }
+  /* Virgülle ayrılmış çiftler (her biri açık bir ayraç içeriyorsa) */
+  if (/,/.test(line)) {
+    const parts = line.split(',').map(p => p.trim()).filter(Boolean);
+    if (parts.length >= 2 && parts.every(p => /[=→\-:|]/.test(p))) {
+      const parsed = parts.map(p => parseSingleLine(p)).filter(Boolean);
+      if (parsed.length === parts.length && parsed.every(p => p.tr)) {
+        return parsed;
+      }
+    }
+  }
+  return null;
+}
+
+/* ─── ANA SATIR PARSER ───────────────────────────────────── */
+
+/** Tek satırı parse et (liste işareti vb. zaten soyulmuş) */
+function parseSingleLine(line) {
+  if (!line.trim()) return null;
+
+  /* Flashcard */
+  const fc = tryFlashcardFormat(line);
+  if (fc) return fc;
+
+  /* Tırnaklı */
+  const quoted = tryQuotedFormat(line);
+  if (quoted) {
+    const r = maybeSwap(cleanPart(quoted.de), cleanPart(quoted.tr));
+    return { de: r.de, tr: r.tr, method: '""' };
+  }
+
+  /* Açık ayraçlar (SEPS) */
+  for (const sep of SEPS) {
+    const m = line.match(sep.re);
+    if (!m || m.index === 0) continue;
+    const idx = m.index;
+    let de = line.slice(0, idx).trim();
+    let tr = line.slice(idx + m[0].length).trim();
+
+    /* Saat formatı kontrolü (10:30) */
+    if (sep.name === ':' && /^\d{1,2}:\d{2}/.test(line)) continue;
+    /* URL kontrolü */
+    if (sep.name === ':' && tr.includes('://')) continue;
+
+    de = cleanPart(de);
+    tr = cleanPart(tr);
+    if (!de) continue;
+
+    const r = maybeSwap(de, tr);
+    return { de: r.de, tr: r.tr, method: sep.name };
+  }
+
+  /* Köşeli / açılı parantez */
+  const bracket = tryBracketFormats(line);
+  if (bracket) {
+    const r = maybeSwap(cleanPart(bracket.de), cleanPart(bracket.tr));
+    return { de: r.de, tr: r.tr, method: bracket.method };
+  }
+
+  /* Eğik çizgi */
+  const slash = trySlashSep(line);
+  if (slash) {
+    const r = maybeSwap(cleanPart(slash.de), cleanPart(slash.tr));
+    return { de: r.de, tr: r.tr, method: '/' };
+  }
+
+  /* Virgül (heuristik) */
+  const ci = line.indexOf(',');
+  if (ci > 0) {
+    const de = cleanPart(line.slice(0, ci));
+    const tr = cleanPart(line.slice(ci + 1));
+    if (de && tr && looksLikeTurkish(tr)) {
+      const r = maybeSwap(de, tr);
+      return { de: r.de, tr: r.tr, method: ',' };
+    }
+  }
+
+  /* Çift boşluk */
+  const multi = tryMultiSpaceSep(line);
+  if (multi) {
+    const r = maybeSwap(cleanPart(multi.de), cleanPart(multi.tr));
+    return { de: r.de, tr: r.tr, method: '··' };
+  }
+
+  /* Ayraç yok → tek Almanca kelime */
+  const cleaned = cleanPart(line);
+  if (cleaned) return { de: cleaned, tr: '', method: '?' };
+  return null;
+}
+
+/** Dışarıdan çağrılan satır parser (liste işaretini soy, sonra parse et) */
+function parseLine(raw) {
+  const stripped = stripMarker(raw.trim());
+  return parseSingleLine(stripped);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ANA GİRDİ PARSE FONKSİYONU
+   ═══════════════════════════════════════════════════════════ */
 export function parseInput(raw) {
   if (!raw.trim()) return [];
 
-  /* ── İki-blok modu deneyi ────────────────────────────── */
+  /* ── İki-blok modu ── */
   const twoBlock = tryTwoBlockMode(raw);
   if (twoBlock) return twoBlock;
 
-  /* ── Normal satır-satır mod ──────────────────────────── */
+  /* ── Normal satır-satır mod ── */
   const lines   = raw.split(/\r?\n/);
   const results = [];
 
   for (const line of lines) {
     if (!line.trim()) continue;
+
+    /* Aynı satırda çoklu çift? */
+    const multi = tryMultiPairLine(line);
+    if (multi) {
+      multi.forEach(p => results.push(makeEntry(p.de, p.tr, p.method)));
+      continue;
+    }
+
     const p = parseLine(line);
     if (!p) continue;
     results.push(makeEntry(p.de, p.tr, p.method));
@@ -136,37 +386,47 @@ export function parseInput(raw) {
   return results;
 }
 
-/**
- * İki-blok modu:
- * Eğer boş satır / --- / === ile ayrılmış iki blok varsa,
- * bunları Almanca listesi + Türkçe listesi olarak eşleştir.
- */
+/* ─── İKİ-BLOK MODU ─────────────────────────────────────── */
 function tryTwoBlockMode(raw) {
-  /* Açık bölücü: ---, ===, ___ tek satır */
-  const dividerRe = /^[-=_]{3,}\s*$/m;
+  /* Açık bölücüler: ---, ===, ***, ~~~, ___ */
+  const dividerRe = /^[-=_*~#]{3,}\s*$/m;
   if (dividerRe.test(raw)) {
-    const [blockA, ...rest] = raw.split(dividerRe);
-    const blockB = rest.join('\n');
-    const deLines = blockA.trim().split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-    const trLines = blockB.trim().split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const parts  = raw.split(dividerRe);
+    const blockA = parts[0];
+    const blockB = parts.slice(1).join('\n');
+    const deLines = blockA.trim().split(/\r?\n/).map(l => cleanPart(stripMarker(l))).filter(Boolean);
+    const trLines = blockB.trim().split(/\r?\n/).map(l => cleanPart(stripMarker(l))).filter(Boolean);
     if (deLines.length > 0 && deLines.length === trLines.length) {
-      return deLines.map((de, i) => makeEntry(
-        stripMarker(de), stripMarker(trLines[i]), 'blok'
-      ));
+      return deLines.map((de, i) => makeEntry(de, trLines[i], 'blok'));
     }
   }
 
-  /* Implicit iki-blok: üst yarı büyük harfle başlıyor, alt yarı küçük */
+  /* 2+ boş satır ile ayrılmış bloklar */
+  const doubleBlankRe = /\n{3,}/;
+  if (doubleBlankRe.test(raw)) {
+    const blocks = raw.split(doubleBlankRe).map(b => b.trim()).filter(Boolean);
+    if (blocks.length === 2) {
+      const deLines = blocks[0].split(/\r?\n/).map(l => cleanPart(stripMarker(l))).filter(Boolean);
+      const trLines = blocks[1].split(/\r?\n/).map(l => cleanPart(stripMarker(l))).filter(Boolean);
+      if (deLines.length > 0 && deLines.length === trLines.length) {
+        return deLines.map((de, i) => makeEntry(de, trLines[i], 'blok'));
+      }
+    }
+  }
+
+  /* Implicit iki-blok: üst yarı büyük harfli Almanca, alt yarı küçük Türkçe */
   const allLines = raw.trim().split(/\r?\n/).map(l => l.trim()).filter(Boolean);
   if (allLines.length >= 4 && allLines.length % 2 === 0) {
-    const half = allLines.length / 2;
+    const half    = allLines.length / 2;
     const topHalf = allLines.slice(0, half);
     const botHalf = allLines.slice(half);
     const topGerman  = topHalf.every(l => !parseLine(l)?.tr && /^[A-ZÜÖÄ]/.test(stripMarker(l)));
     const botTurkish = botHalf.every(l => looksLikeTurkish(stripMarker(l)));
     if (topGerman && botTurkish) {
       return topHalf.map((de, i) => makeEntry(
-        stripMarker(de), stripMarker(botHalf[i]), 'blok'
+        cleanPart(stripMarker(de)),
+        cleanPart(stripMarker(botHalf[i])),
+        'blok'
       ));
     }
   }
@@ -174,14 +434,15 @@ function tryTwoBlockMode(raw) {
   return null;
 }
 
+/* ─── ENTRY FABRİKASI ───────────────────────────────────── */
 function makeEntry(de, tr, method) {
   return {
-    id: uidCounter++,
+    id:          uidCounter++,
     de:          de.trim(),
     tr:          tr.trim(),
     method,
     selected:    true,
-    status:      'new',      /* 'new' | 'duplicate' | 'saved' | 'error' */
+    status:      'new',
     translating: false,
   };
 }
@@ -222,11 +483,9 @@ async function autoTranslateMissing() {
 
   let done = 0;
   for (const entry of missing) {
-    /* Entry hâlâ listede ve seçili mi? */
     const live = entries.find(e => e.id === entry.id);
     if (!live || !live.selected) { done++; continue; }
 
-    /* Loading göstergesi */
     live.translating = true;
     updateRowTranslating(live.id, true);
 
@@ -244,8 +503,6 @@ async function autoTranslateMissing() {
     const pct = Math.round((done / missing.length) * 100);
     if (progBar)  progBar.style.width = pct + '%';
     if (progText) progText.textContent = `${done} / ${missing.length}`;
-
-    /* Rate-limit dostu gecikme */
     await sleep(220);
   }
 
@@ -257,7 +514,6 @@ async function autoTranslateMissing() {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-/* ─── Tek satırın çeviri alanını güncelle ───────────────── */
 function updateRowTranslating(id, loading, value) {
   const row = document.querySelector(`tr[data-id="${id}"]`);
   if (!row) return;
@@ -292,9 +548,8 @@ async function saveSelected() {
   for (const entry of toSave) {
     const normalizedDe = normalizeGermanWord(entry.de, null);
     try {
-      /* Duplicate kontrolü (anlam dahil) */
       const dup = existingWords.find(w =>
-        (w.word || '').toLowerCase().trim()    === normalizedDe.toLowerCase().trim() &&
+        (w.word    || '').toLowerCase().trim() === normalizedDe.toLowerCase().trim() &&
         (w.meaning || '').toLowerCase().trim() === entry.tr.toLowerCase().trim()
       );
       if (dup) { entry.status = 'duplicate'; skipped++; continue; }
@@ -309,7 +564,6 @@ async function saveSelected() {
       updateRowStatus(entry.id, 'error');
       errors++;
     }
-
     await sleep(60);
   }
 
@@ -324,7 +578,7 @@ function updateRowStatus(id, status) {
   row.dataset.status = status;
   const badge = row.querySelector('.status-badge');
   if (badge) {
-    badge.className  = `status-badge status-badge--${status}`;
+    badge.className   = `status-badge status-badge--${status}`;
     badge.textContent = STATUS_LABELS[status] || status;
   }
 }
@@ -339,12 +593,21 @@ const STATUS_LABELS = {
 const METHOD_LABELS = {
   '=':   '=',
   '→':   '→',
+  '≈':   '≈',
   '–':   '–',
   ':':   ':',
+  '::':  '::',
+  ';':   ';',
   '|':   '|',
   ',':   ',',
+  '/':   '/',
+  '··':  '··',
   '()':  '()',
+  '<>':  '<>',
+  '""':  '""',
   'tab': '⇥',
+  'kw':  'kw',
+  'Q/A': 'Q/A',
   '?':   '?',
   'blok':'☰',
 };
@@ -387,7 +650,6 @@ function renderTable() {
       </td>
     `;
 
-    /* Checkbox */
     tr.querySelector('.row-check').addEventListener('change', ev => {
       const entry = entries.find(x => x.id === e.id);
       if (entry) entry.selected = ev.target.checked;
@@ -395,7 +657,6 @@ function renderTable() {
       updateBar();
     });
 
-    /* DE input */
     tr.querySelector('.de-input').addEventListener('input', ev => {
       const entry = entries.find(x => x.id === e.id);
       if (entry) {
@@ -406,14 +667,12 @@ function renderTable() {
       updateBar();
     });
 
-    /* TR input */
     tr.querySelector('.tr-input').addEventListener('input', ev => {
       const entry = entries.find(x => x.id === e.id);
       if (entry) entry.tr = ev.target.value;
       updateBar();
     });
 
-    /* Sil */
     tr.querySelector('.del-btn').addEventListener('click', () => {
       entries = entries.filter(x => x.id !== e.id);
       tr.remove();
@@ -426,9 +685,9 @@ function renderTable() {
   updateBar();
 }
 
-/* ─── Üst bilgi çubuğunu güncelle ───────────────────────── */
+/* ─── Bar güncelle ──────────────────────────────────────── */
 function updateBar() {
-  const total   = entries.length;
+  const total    = entries.length;
   const selCount = entries.filter(e => e.selected).length;
   const missingTr = entries.filter(e => e.selected && !e.tr).length;
   const dupCount  = entries.filter(e => e.status === 'duplicate').length;
@@ -444,7 +703,8 @@ function updateBar() {
   if (saveBtn) saveBtn.textContent = `Seçilileri Kaydet (${getSelectCount()})`;
 
   const transBtn = document.getElementById("btnAutoTranslate");
-  if (transBtn) transBtn.textContent = `Eksikleri Otomatik Çevir${missingTr ? ` (${missingTr})` : ''}`;
+  if (transBtn) transBtn.textContent =
+    `Eksikleri Otomatik Çevir${missingTr ? ` (${missingTr})` : ''}`;
 }
 
 function getSelectCount() {
@@ -455,11 +715,9 @@ function getSelectCount() {
 function showSummary(saved, skipped, errors) {
   const el = document.getElementById("saveSummary");
   if (!el) return;
-
   let html = `<span class="sum-item sum-ok">✓ ${saved} kelime kaydedildi</span>`;
   if (skipped) html += `<span class="sum-item sum-warn">⚠ ${skipped} zaten mevcuttu</span>`;
   if (errors)  html += `<span class="sum-item sum-err">✕ ${errors} hata</span>`;
-
   el.innerHTML = html;
   el.style.display = 'flex';
   setTimeout(() => el.classList.add('sum--visible'), 10);
@@ -479,18 +737,18 @@ function showPhase(n) {
    ═══════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
 
-  /* ── Faza 1: Giriş ── */
-  const textarea   = document.getElementById('inputArea');
-  const parseBtn   = document.getElementById('btnParse');
-  const charCount  = document.getElementById('inputCharCount');
-  const lineCount  = document.getElementById('inputLineCount');
+  const textarea  = document.getElementById('inputArea');
+  const parseBtn  = document.getElementById('btnParse');
+  const charCount = document.getElementById('inputCharCount');
+  const lineCount = document.getElementById('inputLineCount');
+
   document.getElementById('previewClose')?.addEventListener('click', closePreviewModal);
   document.getElementById('previewCancel')?.addEventListener('click', closePreviewModal);
   document.getElementById('previewBackdrop')?.addEventListener('click', closePreviewModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closePreviewModal(); });
 
   textarea?.addEventListener('input', () => {
-    const val  = textarea.value;
+    const val   = textarea.value;
     const lines = val.split('\n').filter(l => l.trim()).length;
     if (charCount) charCount.textContent = val.length;
     if (lineCount) lineCount.textContent = lines + ' satır';
@@ -504,7 +762,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!parsed.length) { showToast("Kelime bulunamadı!", "err"); return; }
     openPreviewModal(parsed);
 
-    /* Tümünü seç butonu */
     document.getElementById("btnSelectAll")?.addEventListener('click', () => {
       entries.forEach(e => e.selected = true);
       document.querySelectorAll('.row-check').forEach(cb => cb.checked = true);
@@ -522,23 +779,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("btnSelectNew")?.addEventListener('click', () => {
       entries.forEach(e => { e.selected = e.status !== 'duplicate'; });
       document.querySelectorAll('tr[data-id]').forEach(row => {
-        const id  = parseInt(row.dataset.id);
-        const e   = entries.find(x => x.id === id);
-        const cb  = row.querySelector('.row-check');
-        if (cb)   cb.checked = e?.selected || false;
+        const id = parseInt(row.dataset.id);
+        const e  = entries.find(x => x.id === id);
+        const cb = row.querySelector('.row-check');
+        if (cb)  cb.checked = e?.selected || false;
         row.classList.toggle('row--deselected', !e?.selected);
       });
       updateBar();
     });
   });
 
-  /* ── Faza 2: İnceleme ── */
   document.getElementById("btnAutoTranslate")?.addEventListener('click', autoTranslateMissing);
-
   document.getElementById("btnSave")?.addEventListener('click', saveSelected);
 
   document.getElementById("btnBackToInput")?.addEventListener('click', () => {
-    entries = [];
+    entries    = [];
     uidCounter = 0;
     showPhase(1);
     const sum = document.getElementById("saveSummary");
@@ -548,27 +803,24 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById("goSingleAdd")?.addEventListener('click', () => {
     window.location.href = '../singleadd/';
   });
-
 });
 
 /* ═══════════════════════════════════════════════════════════
-   YARDIMCILAR
+   YARDIMCI FONKSİYONLAR
    ═══════════════════════════════════════════════════════════ */
 function escHtml(s) {
   return String(s ?? '')
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
 function setText(id, val) {
   const el = document.getElementById(id);
   if (el) el.textContent = val;
 }
-
 function showToast(msg, type = '') {
   let toast = document.getElementById('_toast');
   if (!toast) {
     toast = document.createElement('div');
-    toast.id = '_toast';
+    toast.id        = '_toast';
     toast.className = 'wa-toast';
     document.body.appendChild(toast);
   }
@@ -580,7 +832,6 @@ function showToast(msg, type = '') {
 function closePreviewModal() {
   document.getElementById('previewModal')?.classList.remove('open');
 }
-
 function openPreviewModal(parsed) {
   const modal = document.getElementById('previewModal');
   const body  = document.getElementById('previewBody');
@@ -596,9 +847,9 @@ function openPreviewModal(parsed) {
     row.className = 'pv-row';
 
     let statusClass, statusLabel;
-    if (isDup)       { statusClass = 'pv-status--dup';  statusLabel = 'Mevcut'; }
-    else if (noTr)   { statusClass = 'pv-status--miss'; statusLabel = 'Çevirisiz'; }
-    else             { statusClass = 'pv-status--new';  statusLabel = 'Yeni'; }
+    if (isDup)     { statusClass = 'pv-status--dup';  statusLabel = 'Mevcut'; }
+    else if (noTr) { statusClass = 'pv-status--miss'; statusLabel = 'Çevirisiz'; }
+    else           { statusClass = 'pv-status--new';  statusLabel = 'Yeni'; }
 
     row.innerHTML = `
       <span class="pv-de">${escHtml(e.de)}</span>
