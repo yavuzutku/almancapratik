@@ -15,7 +15,7 @@ function escHtml(str) {
 }
 
 function parseExamples(wikitext) {
-  // Düzeltme 1: <ref>...</ref> etiketlerini içerikleriyle birlikte sil
+  // <ref>...</ref> etiketlerini içerikleriyle birlikte sil
   wikitext = wikitext
     .replace(/<ref[^>]*>[\s\S]*?<\/ref>/gi, '')
     .replace(/<ref[^>]*\/>/gi, '');
@@ -30,7 +30,6 @@ function parseExamples(wikitext) {
       continue;
     }
 
-    // Düzeltme 2: Eksik bölüm sonlandırıcılar eklendi
     if (inBeispiele && line.match(
       /^\s*:?\{\{(Herkunft|Synonyme|Übersetzungen|Wortbildungen|Bedeutungen|Redewendungen|Charakteristische|Oberbegriffe|Unterbegriffe|Gegenwörter|Sprichwörter|Referenzen|Abgeleitete|Verkleinerungsformen|Steigerungsformen)/
     )) {
@@ -38,7 +37,6 @@ function parseExamples(wikitext) {
       continue;
     }
 
-    // Yeni bölüm başlığı (== Başlık ==) gelince Beispiele bitti
     if (inBeispiele && /^={2,}/.test(line)) {
       inBeispiele = false;
       continue;
@@ -56,7 +54,6 @@ function parseExamples(wikitext) {
           .replace(/'{2,3}/g, '')
           .replace(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/g, '$1')
           .replace(/<[^>]+>/g, '')
-          // Düzeltme 3: Satır içi atıf numaraları [1] [2] vb. sil
           .replace(/\[\d+\]/g, '')
           .replace(/&nbsp;/g, ' ')
           .replace(/[„""\u201C\u201D\u201E\u00AB\u00BB'']/g, '')
@@ -79,20 +76,43 @@ async function getTatoebaExamples(word) {
   const res = document.getElementById('results');
   const err = document.getElementById('error');
   res.innerHTML = '<p class="loading">🌍 Tatoeba cümleleri aranıyor...</p>';
+
   try {
-    const url = `https://api.tatoeba.org/v1/sentences?q=${encodeURIComponent(word)}&lang=deu&min_length=6`;
+    // Doğru endpoint: tatoeba.org/eng/api_v0/search
+    // min_length parametresi yok — filtreyi client tarafında yapıyoruz
+    const params = new URLSearchParams({
+      from: 'deu',
+      query: word,
+      orphans: 'no',
+      unapproved: 'no',
+      sort: 'relevance'
+    });
+    const url = `https://tatoeba.org/eng/api_v0/search?${params}`;
     const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
     const data = await response.json();
 
-    if (!data.data || data.data.length === 0) {
+    // api_v0 cevabı: { results: [ { text, id, ... }, ... ] }
+    const rawResults = data?.results ?? data?.data ?? [];
+
+    if (rawResults.length === 0) {
       err.textContent = "Tatoeba'da da cümle bulunamadı.";
       res.innerHTML = '';
       return;
     }
 
     const { min, max } = getWordRange();
-    const sentences = data.data
-      .filter(s => { const wc = wordCount(s.text); return wc >= min && wc <= max; })
+    const sentences = rawResults
+      .map(s => s.text ?? s)
+      .filter(text => typeof text === 'string' && text.trim().length > 0)
+      .filter(text => {
+        const wc = wordCount(text);
+        return wc >= min && wc <= max;
+      })
       .slice(0, 3);
 
     if (sentences.length === 0) {
@@ -101,13 +121,13 @@ async function getTatoebaExamples(word) {
       return;
     }
 
-    res.innerHTML = sentences.map(s =>
-      `<div class="result-item"><div class="de">🇩🇪 ${escHtml(s.text)}</div></div>`
+    res.innerHTML = sentences.map(text =>
+      `<div class="result-item"><div class="de">🇩🇪 ${escHtml(text)}</div></div>`
     ).join('') +
-    `<p class="source">Kaynak: <a href="https://tatoeba.org" target="_blank">tatoeba.org</a></p>`;
+    `<p class="source">Kaynak: <a href="https://tatoeba.org/tr/sentences/search?from=deu&query=${encodeURIComponent(word)}" target="_blank">tatoeba.org</a></p>`;
 
   } catch (e) {
-    err.textContent = 'Tatoeba API hatası.';
+    err.textContent = 'Tatoeba erişim hatası: ' + e.message;
     res.innerHTML = '';
   }
 }
