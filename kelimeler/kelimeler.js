@@ -674,8 +674,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setTimeout(() => overlay.querySelector("#exModalClose")?.focus(), 60);
 
-    const sents = await fetchExampleSentences(word);
-    const container = document.getElementById("exampleSentences");
+    const bareWord = word.replace(/^(der|die|das|ein|eine)\s+/i, "").trim();
+    const sents = await fetchExampleSentences(bareWord);    const container = document.getElementById("exampleSentences");
     if (!container) return;
 
     /* Vurgulama regex */
