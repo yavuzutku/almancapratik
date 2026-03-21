@@ -15,6 +15,11 @@ function escHtml(str) {
 }
 
 function parseExamples(wikitext) {
+  // Düzeltme 1: <ref>...</ref> etiketlerini içerikleriyle birlikte sil
+  wikitext = wikitext
+    .replace(/<ref[^>]*>[\s\S]*?<\/ref>/gi, '')
+    .replace(/<ref[^>]*\/>/gi, '');
+
   const lines = wikitext.split('\n');
   const examples = [];
   let inBeispiele = false;
@@ -24,10 +29,21 @@ function parseExamples(wikitext) {
       inBeispiele = true;
       continue;
     }
-    if (inBeispiele && line.match(/^\s*:?\{\{(Herkunft|Synonyme|Übersetzungen|Wortbildungen|Bedeutungen|Redewendungen)/)) {
+
+    // Düzeltme 2: Eksik bölüm sonlandırıcılar eklendi
+    if (inBeispiele && line.match(
+      /^\s*:?\{\{(Herkunft|Synonyme|Übersetzungen|Wortbildungen|Bedeutungen|Redewendungen|Charakteristische|Oberbegriffe|Unterbegriffe|Gegenwörter|Sprichwörter|Referenzen|Abgeleitete|Verkleinerungsformen|Steigerungsformen)/
+    )) {
       inBeispiele = false;
       continue;
     }
+
+    // Yeni bölüm başlığı (== Başlık ==) gelince Beispiele bitti
+    if (inBeispiele && /^={2,}/.test(line)) {
+      inBeispiele = false;
+      continue;
+    }
+
     if (inBeispiele && line.trim()) {
       const match = line.match(/^:+\s*(?:\[\d+\]\s*)?(.+)/);
       if (match) {
@@ -40,6 +56,8 @@ function parseExamples(wikitext) {
           .replace(/'{2,3}/g, '')
           .replace(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/g, '$1')
           .replace(/<[^>]+>/g, '')
+          // Düzeltme 3: Satır içi atıf numaraları [1] [2] vb. sil
+          .replace(/\[\d+\]/g, '')
           .replace(/&nbsp;/g, ' ')
           .replace(/[„""\u201C\u201D\u201E\u00AB\u00BB'']/g, '')
           .replace(/\s*[A-ZÄÖÜ][^.!?]*\d{4}\s*\.?\s*$/, '')
