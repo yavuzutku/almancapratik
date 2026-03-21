@@ -15,7 +15,7 @@ function escHtml(str) {
 }
 
 function parseExamples(wikitext) {
-  // <ref>...</ref> etiketlerini içerikleriyle birlikte sil
+  // 1. <ref>...</ref> etiketlerini içerikleriyle birlikte sil
   wikitext = wikitext
     .replace(/<ref[^>]*>[\s\S]*?<\/ref>/gi, '')
     .replace(/<ref[^>]*\/>/gi, '');
@@ -25,41 +25,58 @@ function parseExamples(wikitext) {
   let inBeispiele = false;
 
   for (const line of lines) {
-    if (line.includes('Beispiele')) {
+    const trimmed = line.trim();
+
+    // 2. Sadece gerçek {{Beispiele}} şablonu veya == Beispiele == başlığı tetiklesin.
+    //    Daha önce line.includes('Beispiele') kullanıyorduk; bu Bedeutungen açıklamalarında
+    //    geçen "Beispiele" kelimesini de yakalıyor ve yanlış bölümde okumaya başlıyordu.
+    if (
+      /^\{\{Beispiele/.test(trimmed) ||
+      /^={2,}\s*Beispiele\s*={2,}/.test(trimmed)
+    ) {
       inBeispiele = true;
       continue;
     }
 
-    if (inBeispiele && line.match(
-      /^\s*:?\{\{(Herkunft|Synonyme|Übersetzungen|Wortbildungen|Bedeutungen|Redewendungen|Charakteristische|Oberbegriffe|Unterbegriffe|Gegenwörter|Sprichwörter|Referenzen|Abgeleitete|Verkleinerungsformen|Steigerungsformen)/
-    )) {
-      inBeispiele = false;
-      continue;
+    // 3. Bölüm sonlandırıcılar: başka bir {{Şablon}} veya yeni başlık (== ... ==)
+    if (inBeispiele) {
+      if (
+        /^\{\{(Herkunft|Synonyme|Übersetzungen|Wortbildungen|Bedeutungen|
+         Redewendungen|Charakteristische|Oberbegriffe|Unterbegriffe|Gegenwörter|
+         Sprichwörter|Referenzen|Abgeleitete|Verkleinerungsformen|
+         Steigerungsformen|Leerzeile|Quellen)/x.test(trimmed) ||
+        /^={2,}/.test(trimmed)
+      ) {
+        inBeispiele = false;
+        continue;
+      }
     }
 
-    if (inBeispiele && /^={2,}/.test(line)) {
-      inBeispiele = false;
-      continue;
-    }
-
-    if (inBeispiele && line.trim()) {
+    if (inBeispiele && trimmed) {
       const match = line.match(/^:+\s*(?:\[\d+\]\s*)?(.+)/);
       if (match) {
         let text = match[1];
         text = text
+          // Nested template içerikleri
           .replace(/\{\{[^{}]*\}\}/g, '')
           .replace(/\{\{[^{}]*\}\}/g, '')
           .replace(/\}\}/g, '')
           .replace(/\{\{/g, '')
+          // Wiki biçimlendirme
           .replace(/'{2,3}/g, '')
           .replace(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/g, '$1')
+          // HTML etiketleri
           .replace(/<[^>]+>/g, '')
+          // Satır içi atıf numaraları [1] [2] ...
           .replace(/\[\d+\]/g, '')
+          // Özel karakterler
           .replace(/&nbsp;/g, ' ')
           .replace(/[„""\u201C\u201D\u201E\u00AB\u00BB'']/g, '')
+          // Sondaki kaynak metni (Yazar Yıl. formatı)
           .replace(/\s*[A-ZÄÖÜ][^.!?]*\d{4}\s*\.?\s*$/, '')
           .replace(/\s{2,}/g, ' ')
           .trim();
+
         if (text.length > 10) examples.push(text);
       }
     }
@@ -72,14 +89,26 @@ function parseExamples(wikitext) {
   }).slice(0, 3);
 }
 
+async function fetchWiktionary(pageTitle) {
+  const params = new URLSearchParams({
+    action: 'parse',
+    page: pageTitle,
+    prop: 'wikitext',
+    format: 'json',
+    origin: '*'
+  });
+  const response = await fetch('https://de.wiktionary.org/w/api.php?' + params);
+  const data = await response.json();
+  if (data.error) return null;
+  return data?.parse?.wikitext?.['*'] || null;
+}
+
 async function getTatoebaExamples(word) {
   const res = document.getElementById('results');
   const err = document.getElementById('error');
   res.innerHTML = '<p class="loading">🌍 Tatoeba cümleleri aranıyor...</p>';
 
   try {
-    // Doğru endpoint: tatoeba.org/eng/api_v0/search
-    // min_length parametresi yok — filtreyi client tarafında yapıyoruz
     const params = new URLSearchParams({
       from: 'deu',
       query: word,
@@ -90,13 +119,9 @@ async function getTatoebaExamples(word) {
     const url = `https://tatoeba.org/eng/api_v0/search?${params}`;
     const response = await fetch(url);
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const data = await response.json();
-
-    // api_v0 cevabı: { results: [ { text, id, ... }, ... ] }
     const rawResults = data?.results ?? data?.data ?? [];
 
     if (rawResults.length === 0) {
@@ -109,10 +134,7 @@ async function getTatoebaExamples(word) {
     const sentences = rawResults
       .map(s => s.text ?? s)
       .filter(text => typeof text === 'string' && text.trim().length > 0)
-      .filter(text => {
-        const wc = wordCount(text);
-        return wc >= min && wc <= max;
-      })
+      .filter(text => { const wc = wordCount(text); return wc >= min && wc <= max; })
       .slice(0, 3);
 
     if (sentences.length === 0) {
@@ -147,20 +169,28 @@ async function getExamples() {
   res.innerHTML = '<p class="loading">🔍 Wiktionary aranıyor...</p>';
 
   try {
+    // 4. Hem orijinal haliyle hem büyük harfle dene.
+    //    "immer" → önce "immer", bulamazsa "Immer"
+    //    "haus"  → önce "haus", bulamazsa "Haus"
     const capitalized = word.charAt(0).toUpperCase() + word.slice(1);
-    const params = new URLSearchParams({
-      action: 'parse', page: capitalized, prop: 'wikitext', format: 'json', origin: '*'
-    });
-    const response = await fetch('https://de.wiktionary.org/w/api.php?' + params);
-    const data = await response.json();
-    const wikitext = data?.parse?.wikitext?.['*'] || '';
-    const examples = parseExamples(wikitext);
+    const attempts = word === capitalized
+      ? [word]                    // zaten büyük harf, tek deneme
+      : [word, capitalized];      // küçük → önce orijinal, sonra büyük
+
+    let wikitext = null;
+    for (const title of attempts) {
+      wikitext = await fetchWiktionary(title);
+      if (wikitext) break;
+    }
+
+    const examples = wikitext ? parseExamples(wikitext) : [];
 
     if (examples.length > 0) {
+      const pageTitle = capitalized;
       res.innerHTML = examples.map(e =>
         `<div class="result-item"><div class="de">🇩🇪 ${escHtml(e)}</div></div>`
       ).join('') +
-      `<p class="source">Kaynak: <a href="https://de.wiktionary.org/wiki/${encodeURIComponent(capitalized)}" target="_blank">Wiktionary</a></p>`;
+      `<p class="source">Kaynak: <a href="https://de.wiktionary.org/wiki/${encodeURIComponent(pageTitle)}" target="_blank">Wiktionary</a></p>`;
     } else {
       await getTatoebaExamples(word);
     }
