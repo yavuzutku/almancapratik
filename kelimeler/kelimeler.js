@@ -1,6 +1,8 @@
 import { getWords, deleteWord, updateWord, onAuthChange } from "../js/firebase.js";
 import { showLemmaHintOnce } from '../src/components/lemmaHint.js';
-import { renderTagChips, getSelectedTags, extractAllTags } from "../js/tag.js";
+import { renderTagChips, getSelectedTags, extractAllTags, getAutoLevel } from "../js/tag.js";
+import { fetchWikiData } from "../src/services/wiktionary.js";
+
 
 /* ═══════════════════════════════════════════════════════════
    STATE
@@ -169,6 +171,41 @@ document.addEventListener("DOMContentLoaded", () => {
     wordCountBadge.textContent = "—";
     try {
       allWords = await getWords(userId);
+      // Seviye etiketi olmayan kelimelere otomatik ata ve kaydet
+      const levelTags = new Set(['A1','A2','B1','B2']);
+      const typeTags  = new Set(['isim','fiil','sıfat','zarf']);
+
+      for (const w of allWords) {
+        const currentTags = Array.isArray(w.tags) ? w.tags : [];
+        const hasLevel = currentTags.some(t => levelTags.has(t));
+        const hasType  = currentTags.some(t => typeTags.has(t));
+
+        let newTags = [...currentTags];
+        let changed = false;
+
+        if (!hasLevel) {
+          const auto = getAutoLevel(w.word);
+          if (auto) { newTags.push(auto); changed = true; }
+        }
+
+        if (!hasType) {
+          try {
+            const wiki = await fetchWikiData(w.word);
+            if (wiki?.autoTags?.length) {
+              wiki.autoTags
+                .filter(t => typeTags.has(t))
+                .forEach(t => { if (!newTags.includes(t)) { newTags.push(t); changed = true; } });
+            }
+          } catch(_) {}
+        }
+
+        if (changed) {
+          try {
+            await updateWord(userId, w.id, { tags: newTags });
+            w.tags = newTags;
+          } catch(_) {}
+        }
+      }
       buildFilterSidebar();
       renderFiltered();
     } catch (err) {
