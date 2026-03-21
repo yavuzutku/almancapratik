@@ -171,47 +171,55 @@ document.addEventListener("DOMContentLoaded", () => {
     wordCountBadge.textContent = "—";
     try {
       allWords = await getWords(userId);
-      // Seviye etiketi olmayan kelimelere otomatik ata ve kaydet
-      const levelTags = new Set(['A1','A2','B1','B2']);
-      const typeTags  = new Set(['isim','fiil','sıfat','zarf']);
-
-      for (const w of allWords) {
-        const currentTags = Array.isArray(w.tags) ? w.tags : [];
-        const hasLevel = currentTags.some(t => levelTags.has(t));
-        const hasType  = currentTags.some(t => typeTags.has(t));
-
-        let newTags = [...currentTags];
-        let changed = false;
-
-        if (!hasLevel) {
-          const auto = getAutoLevel(w.word);
-          if (auto) { newTags.push(auto); changed = true; }
-        }
-
-        if (!hasType) {
-          try {
-            const wiki = await fetchWikiData(w.word);
-            if (wiki?.autoTags?.length) {
-              wiki.autoTags
-                .filter(t => typeTags.has(t))
-                .forEach(t => { if (!newTags.includes(t)) { newTags.push(t); changed = true; } });
-            }
-          } catch(_) {}
-        }
-
-        if (changed) {
-          try {
-            await updateWord(userId, w.id, { tags: newTags });
-            w.tags = newTags;
-          } catch(_) {}
-        }
-      }
       buildFilterSidebar();
       renderFiltered();
+      enrichTagsInBackground(userId);
     } catch (err) {
       wordList.innerHTML = `<div style="padding:20px;color:#e05252;font-size:14px;text-align:center;">Kelimeler yüklenemedi: ${esc(err.message)}</div>`;
     }
   }
+
+  async function enrichTagsInBackground(userId) {
+    const levelTags = new Set(['A1','A2','B1','B2']);
+    const typeTags  = new Set(['isim','fiil','sıfat','zarf']);
+
+    for (const w of allWords) {
+      const currentTags = Array.isArray(w.tags) ? w.tags : [];
+      const hasLevel = currentTags.some(t => levelTags.has(t));
+      const hasType  = currentTags.some(t => typeTags.has(t));
+
+      let newTags = [...currentTags];
+      let changed = false;
+
+      if (!hasLevel) {
+        const auto = getAutoLevel(w.word);
+        if (auto) { newTags.push(auto); changed = true; }
+      }
+
+      if (!hasType) {
+        try {
+          const wiki = await fetchWikiData(w.word);
+          if (wiki?.autoTags?.length) {
+            wiki.autoTags
+              .filter(t => typeTags.has(t))
+              .forEach(t => { if (!newTags.includes(t)) { newTags.push(t); changed = true; } });
+          }
+        } catch(_) {}
+      }
+
+      if (changed) {
+        try {
+          await updateWord(userId, w.id, { tags: newTags });
+          w.tags = newTags;
+        } catch(_) {}
+      }
+
+      await new Promise(r => setTimeout(r, 150));
+    }
+
+    buildFilterSidebar();
+    renderFiltered();
+}
 
   /* ─── Filtre Sidebar ─────────────────────────────── */
   function buildFilterSidebar() {
