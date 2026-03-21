@@ -38,7 +38,6 @@
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Ana Sayfa", "item": "https://almancapratik.com/" },
     { "@type": "ListItem", "position": 2, "name": "Almanca Seviye Testi", "item": "https://almancapratik.com/seviyeler/seviyetespit/" }
   ]
 }
@@ -155,18 +154,7 @@ body.result-active .community-section {
   <div class="bg-g2"></div>
 </div>
 
-<nav class="nav">
-  <a class="nav-logo" href="/" aria-label="AlmancaPratik ana sayfa">
-    <div class="nav-logo-mark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-    </div>
-    <span class="nav-logo-name">AlmancaPratik</span>
-  </a>
-  <a class="nav-back" href="/pratik/">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-    <span>Ana Sayfa</span>
-  </a>
-</nav>
+
 
 <!-- ══════════════ INTRO ══════════════ -->
 <div class="screen active" id="screen-intro">
@@ -521,6 +509,9 @@ document.addEventListener('svt:start', function() {
   sessionStorage.removeItem('svt_result');
 });
 </script>
-
+<script type="module">
+  import "../../js/core.js";
+  window.loadNavbar();
+</script>
 </body>
 </html>
