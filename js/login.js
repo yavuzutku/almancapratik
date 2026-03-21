@@ -30,7 +30,7 @@ onAuthChange((user) => {
   setTimeout(() => {
     const params   = new URLSearchParams(window.location.search);
     const returnTo = params.get('returnTo');
-    window.location.href = returnTo ? decodeURIComponent(returnTo) : "anasayfa/";
+    window.location.href = returnTo ? decodeURIComponent(returnTo) : "pratik/";
   }, 700);
 });
 

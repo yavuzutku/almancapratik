@@ -1,6 +1,6 @@
-import { getWords, deleteWord, updateWord, onAuthChange } from "./firebase.js";
+import { getWords, deleteWord, updateWord, onAuthChange } from "../js/firebase.js";
 import { showLemmaHintOnce } from '../src/components/lemmaHint.js';
-import { renderTagChips, getSelectedTags, extractAllTags } from "./tag.js";
+import { renderTagChips, getSelectedTags, extractAllTags } from "../js/tag.js";
 
 let allWords        = [];
 let activeTagFilter = null;

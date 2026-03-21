@@ -7,10 +7,10 @@
    - Auth değişince geçmiş otomatik güncellenir
    ═══════════════════════════════════════════════════════════ */
 
-import { saveMetin, getMetinler } from "./firebase.js";
+import { saveMetin, getMetinler } from "../js/firebase.js";
 import { showToast } from "../src/components/toast.js";
 import { showAuthGate, isLoggedIn } from '../src/components/authGate.js';
-import { onAuthChange } from "./firebase.js";
+import { onAuthChange } from "../js/firebase.js";
 
 /* ─────────────────────────────────────────────────────────
    YARDIMCI: tek bir regex test fonksiyonu

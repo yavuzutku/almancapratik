@@ -1,4 +1,4 @@
-import { getMetinler, deleteMetin, onAuthChange } from "./firebase.js";
+import { getMetinler, deleteMetin, onAuthChange } from "../js/firebase.js";
 
 let allMetinler = [];
 let activeId    = null;

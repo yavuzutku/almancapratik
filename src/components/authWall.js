@@ -175,7 +175,7 @@ export function initAuthWall({
   title    = 'Bu sayfa için giriş yap',
   desc     = 'Devam etmek için ücretsiz hesabına giriş yap.',
   features = [],
-  backHref = '../anasayfa/'
+  backHref = '../pratik/'
 } = {}) {
   injectStyle();
 

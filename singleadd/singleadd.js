@@ -1,10 +1,10 @@
-import { auth, getWords, saveWord } from "./firebase.js";
+import { auth, getWords, saveWord } from "../js/firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { renderTagChips, getSelectedTags, extractAllTags, getAutoLevel } from "./tag.js";
+import { renderTagChips, getSelectedTags, extractAllTags, getAutoLevel } from "../js/tag.js";
 import {
   fetchWikiData, fetchTranslate, normalizeGermanWord,
   artikelBadgeHtml, capitalize, escapeHtml, ARTIKEL_COLORS
-} from "./german.js";
+} from "../js/german.js";
 
 /* ══════════════════════════════════════════════
    STATE

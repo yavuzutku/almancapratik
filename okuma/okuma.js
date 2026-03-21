@@ -11,15 +11,15 @@
       yatayda da viewport'tan taşmaz. Scroll'da popup kaybolmaz.
    ═══════════════════════════════════════════════════════════ */
 
-import { saveWord, getWords } from "./firebase.js";
-import { renderTagChips, getSelectedTags, extractAllTags, getAutoLevel } from "./tag.js";
+import { saveWord, getWords } from "../js/firebase.js";
+import { renderTagChips, getSelectedTags, extractAllTags, getAutoLevel } from "../js/tag.js";
 import {
   fetchWikiData,
   fetchTranslate,
   normalizeGermanWord,
   artikelBadgeHtml,
   escapeHtml,
-} from "./german.js";
+} from "../js/german.js";
 import { showToast } from "../src/components/toast.js";
 import { showLemmaHintOnce } from '../src/components/lemmaHint.js';
 

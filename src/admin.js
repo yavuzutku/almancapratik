@@ -17,7 +17,7 @@
  *   });
  *
  *   // Sayfayı tamamen koru (admin değilse yönlendir):
- *   requireAdmin({ redirectTo: '../anasayfa/' });
+ *   
  */
 
 import { onAuthChange } from '../js/firebase.js';
