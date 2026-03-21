@@ -60,7 +60,7 @@ export function onAuthChange(callback) {
 
 
 /* ============================
-   AUTH — EMAIL / ŞİFRE  ← YENİ
+   AUTH — EMAIL / ŞİFRE
 ============================= */
 
 export async function registerWithEmail(email, password, displayName) {
@@ -144,21 +144,34 @@ export async function deleteMetin(userId, id) {
 
 /* ============================
    KELİME KAYDET
+   meanings dizisi destekler — geriye dönük uyumluluk için
+   meaning alanı da her zaman kaydedilir.
 ============================= */
 
-export async function saveWord(userId, word, meaning, tags = []) {
+export async function saveWord(userId, word, meaning, tags = [], meanings = []) {
   if (!userId) throw new Error("Kullanıcı kimliği bulunamadı.");
   if (!word || !meaning) throw new Error("Kelime ve anlam boş olamaz.");
+
+  /* meanings dizisini normalleştir:
+     - Boş geçildiyse tek elemanlı liste oluştur
+     - meaning her zaman ilk eleman olarak garantilenir */
+  const normalizedMeanings = meanings.length > 0
+    ? meanings
+    : [meaning.trim()];
+
+  /* İlk anlam ile meaning alanını senkron tut */
+  const primaryMeaning = normalizedMeanings[0];
 
   try {
     await addDoc(
       collection(db, "users", userId, "words"),
       {
-        word:    word.trim(),
-        meaning: meaning.trim(),
-        tags:    Array.isArray(tags) ? tags : [],
-        date:    new Date().toISOString(),
-        created: Date.now()
+        word:     word.trim(),
+        meaning:  primaryMeaning,
+        meanings: normalizedMeanings,
+        tags:     Array.isArray(tags) ? tags : [],
+        date:     new Date().toISOString(),
+        created:  Date.now()
       }
     );
   } catch (err) {
@@ -181,7 +194,14 @@ export async function getWords(userId) {
       orderBy("created", "desc")
     );
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    return snapshot.docs.map(d => {
+      const data = d.data();
+      /* Geriye dönük uyumluluk: eski kayıtlarda meanings yoksa meaning'den üret */
+      if (!Array.isArray(data.meanings) || data.meanings.length === 0) {
+        data.meanings = data.meaning ? [data.meaning] : [];
+      }
+      return { id: d.id, ...data };
+    });
   } catch (err) {
     console.error("[getWords] Firestore hatası:", err);
     throw new Error("Kelimeler yüklenemedi. Lütfen sayfayı yenile.");
@@ -207,13 +227,26 @@ export async function deleteWord(userId, wordId) {
 
 /* ============================
    KELİME GÜNCELLE
+   meanings dizisi destekler — meaning alanını otomatik senkronlar.
 ============================= */
 
 export async function updateWord(userId, wordId, data) {
   if (!userId || !wordId) throw new Error("Geçersiz parametre.");
 
+  const payload = { ...data };
+
+  /* meanings güncellendiyse meaning alanını da ilk eleman ile senkronize et */
+  if (Array.isArray(payload.meanings) && payload.meanings.length > 0) {
+    payload.meaning = payload.meanings[0];
+  }
+
+  /* meaning güncellendiyse ve meanings yoksa meanings dizisini de güncelle */
+  if (payload.meaning && !payload.meanings) {
+    payload.meanings = [payload.meaning];
+  }
+
   try {
-    await updateDoc(doc(db, "users", userId, "words", wordId), data);
+    await updateDoc(doc(db, "users", userId, "words", wordId), payload);
   } catch (err) {
     console.error("[updateWord] Firestore hatası:", err);
     throw new Error("Kelime güncellenemedi. Lütfen tekrar dene.");

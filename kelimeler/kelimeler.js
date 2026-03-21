@@ -6,12 +6,9 @@ let allWords        = [];
 let activeTagFilter = null;
 const exampleCache  = new Map();
 
-/* ============================
+/* ═══════════════════════════════════════════════════════════
    GÜVENLİK: HTML ESCAPE
-   Kullanıcıdan gelen her veriyi
-   innerHTML'e koymadan önce
-   mutlaka bu fonksiyondan geçir.
-============================= */
+   ═══════════════════════════════════════════════════════════ */
 function escapeHtml(str) {
   return String(str ?? "")
     .replace(/&/g, "&amp;")
@@ -21,18 +18,31 @@ function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
-/* ── Kelime sayısı ─────────────────────────────────────────────────────────── */
-function wordCount(text) {
-  return text.trim().split(/\s+/).length;
+/* ═══════════════════════════════════════════════════════════
+   ÇOKLU ANLAM YARDIMCILARI
+   meanings dizisi yoksa meaning string'inden oluştur (geriye dönük uyumluluk)
+   ═══════════════════════════════════════════════════════════ */
+function getMeanings(item) {
+  if (Array.isArray(item.meanings) && item.meanings.length > 0) return item.meanings;
+  if (item.meaning) return [item.meaning];
+  return [];
 }
 
-/* ── Wikitext temizleyici ───────────────────────────────────────────────────── */
+function primaryMeaning(item) {
+  return getMeanings(item)[0] || "";
+}
+
+function extraMeanings(item) {
+  return getMeanings(item).slice(1);
+}
+
+/* ─── Wikitext temizleyici ─────────────────────────────── */
+function wordCount(text) { return text.trim().split(/\s+/).length; }
+
 function cleanWikitext(text) {
   return text
     .replace(/\{\{[^{}]*\}\}/g, "")
-    .replace(/\{\{[^{}]*\}\}/g, "")
-    .replace(/\}\}/g, "")
-    .replace(/\{\{/g, "")
+    .replace(/\}\}/g, "").replace(/\{\{/g, "")
     .replace(/'{2,3}/g, "")
     .replace(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/g, "$1")
     .replace(/<[^>]+>/g, "")
@@ -43,27 +53,19 @@ function cleanWikitext(text) {
     .trim();
 }
 
-/* ── Wiktionary'den örnek cümleler ─────────────────────────────────────────── */
+/* ─── Wiktionary örnek cümleler ───────────────────────── */
 async function fetchFromWiktionary(word) {
   const capitalized = word.charAt(0).toUpperCase() + word.slice(1);
-  const params = new URLSearchParams({
-    action: "parse", page: capitalized, prop: "wikitext", format: "json", origin: "*"
-  });
+  const params = new URLSearchParams({ action: "parse", page: capitalized, prop: "wikitext", format: "json", origin: "*" });
   const res  = await fetch("https://de.wiktionary.org/w/api.php?" + params);
   const data = await res.json();
   const wikitext = data?.parse?.wikitext?.["*"] || "";
-
   const lines = wikitext.split("\n");
   const sentences = [];
   let inBeispiele = false;
-
   for (const line of lines) {
-    if (line.includes("Beispiele}}") || line.includes("Beispiele:")) {
-      inBeispiele = true; continue;
-    }
-    if (inBeispiele && line.match(/^\s*:?\{\{(Herkunft|Synonyme|Übersetzungen|Wortbildungen|Bedeutungen|Redewendungen)/)) {
-      inBeispiele = false; continue;
-    }
+    if (line.includes("Beispiele}}") || line.includes("Beispiele:")) { inBeispiele = true; continue; }
+    if (inBeispiele && line.match(/^\s*:?\{\{(Herkunft|Synonyme|Übersetzungen|Wortbildungen|Bedeutungen|Redewendungen)/)) { inBeispiele = false; continue; }
     if (inBeispiele && line.trim()) {
       const match = line.match(/^::?\[\d+\]\s*(.+)/);
       if (match) {
@@ -72,54 +74,35 @@ async function fetchFromWiktionary(word) {
       }
     }
   }
-
-  return sentences
-    .sort((a, b) => wordCount(a) - wordCount(b))
-    .slice(0, 2)
-    .map(s => ({ original: s, turkish: null }));
+  return sentences.sort((a, b) => wordCount(a) - wordCount(b)).slice(0, 2).map(s => ({ original: s, turkish: null }));
 }
 
-/* ── Tatoeba'dan örnek cümleler ─────────────────────────────────────────────── */
 async function fetchFromTatoeba(word) {
   const url = `https://api.tatoeba.org/v1/sentences?q=${encodeURIComponent(word)}&lang=deu&min_length=6`;
   const res  = await fetch(url);
   const data = await res.json();
-
   if (!data.data || data.data.length === 0) return [];
-
-  return data.data
-    .filter(s => wordCount(s.text) > 5)
-    .sort((a, b) => wordCount(a.text) - wordCount(b.text))
-    .slice(0, 2)
-    .map(s => ({ original: s.text, turkish: null }));
+  return data.data.filter(s => wordCount(s.text) > 5).sort((a, b) => wordCount(a.text) - wordCount(b.text)).slice(0, 2).map(s => ({ original: s.text, turkish: null }));
 }
 
-/* ── Ana fetch: Wiktionary → Tatoeba ──────────────────────────────────────── */
 async function fetchExampleSentences(word) {
   if (exampleCache.has(word)) return exampleCache.get(word);
-
   let sentences = [];
-
   try { sentences = await fetchFromWiktionary(word); } catch (_) {}
-
   if (sentences.length < 2) {
     try {
       const tatoeba = await fetchFromTatoeba(word);
-      const needed = 2 - sentences.length;
-      sentences = [...sentences, ...tatoeba.slice(0, needed)];
+      sentences = [...sentences, ...tatoeba.slice(0, 2 - sentences.length)];
     } catch (_) {}
   }
-
-  if (sentences.length === 0) {
-    sentences = [{ original: "Cümle bulunamadı.", turkish: "Bu kelime için örnek yok." }];
-  }
-
+  if (sentences.length === 0) sentences = [{ original: "Cümle bulunamadı.", turkish: "Bu kelime için örnek yok." }];
   exampleCache.set(word, sentences);
   return sentences;
 }
 
-/* ════════════════════════════════════════════════════════════════════════════ */
-
+/* ════════════════════════════════════════════════════════════
+   INIT
+   ════════════════════════════════════════════════════════════ */
 document.addEventListener("DOMContentLoaded", () => {
 
   const wordList       = document.getElementById("wordList");
@@ -128,17 +111,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput    = document.getElementById("searchInput");
   const filterTagList  = document.getElementById("filterTagList");
 
-  /* ── Hata gösterici ────────────────────────────────────────────────────── */
   function showError(msg) {
     wordCountBadge.textContent = "Hata";
-    wordList.innerHTML = `
-      <div style="
-        padding:24px;border-radius:12px;
-        background:rgba(224,82,82,0.08);
-        border:1px solid rgba(224,82,82,0.2);
-        color:#e05252;font-size:14px;text-align:center;
-      ">⚠️ ${escapeHtml(msg)}</div>
-    `;
+    wordList.innerHTML = `<div style="padding:24px;border-radius:12px;background:rgba(224,82,82,0.08);border:1px solid rgba(224,82,82,0.2);color:#e05252;font-size:14px;text-align:center;">⚠️ ${escapeHtml(msg)}</div>`;
   }
 
   onAuthChange(async (user) => {
@@ -156,14 +131,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ── Filtre Sidebar ──────────────────────────────────────────────────────── */
-
+  /* ─── Filtre Sidebar ─────────────────────────────────── */
   function buildFilterSidebar() {
     const tagMap = new Map();
     allWords.forEach(w => {
       if (Array.isArray(w.tags)) w.tags.forEach(t => tagMap.set(t, (tagMap.get(t) || 0) + 1));
     });
-
     filterTagList.innerHTML = "";
 
     const allItem = document.createElement("button");
@@ -176,7 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
       [...tagMap.entries()].sort((a, b) => b[1] - a[1]).forEach(([tag, count]) => {
         const item = document.createElement("button");
         item.className = "filter-tag-item" + (activeTagFilter === tag ? " active" : "");
-        // escapeHtml: tag kullanıcı girdisidir
         item.innerHTML = `<span>${escapeHtml(tag)}</span><span class="filter-count-badge">${count}</span>`;
         item.addEventListener("click", () => {
           activeTagFilter = (activeTagFilter === tag) ? null : tag;
@@ -205,26 +177,22 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderFiltered() {
     const q = searchInput.value.toLowerCase();
     let list = allWords;
-
     if (activeTagFilter === "__untagged__") {
       list = list.filter(w => !Array.isArray(w.tags) || w.tags.length === 0);
     } else if (activeTagFilter) {
       list = list.filter(w => Array.isArray(w.tags) && w.tags.includes(activeTagFilter));
     }
-
-    if (q) list = list.filter(w =>
-      w.word.toLowerCase().includes(q) || w.meaning.toLowerCase().includes(q)
-    );
-
+    if (q) list = list.filter(w => {
+      const allM = getMeanings(w).join(" ").toLowerCase();
+      return w.word.toLowerCase().includes(q) || allM.includes(q);
+    });
     render(list);
   }
 
-  /* ── Render ──────────────────────────────────────────────────────────────── */
-
+  /* ─── Render ─────────────────────────────────────────── */
   function render(list) {
     [...wordList.querySelectorAll(".word-card")].forEach(el => el.remove());
     wordCountBadge.textContent = allWords.length + " kelime";
-
     if (list.length === 0) { emptyState.style.display = "block"; return; }
     emptyState.style.display = "none";
 
@@ -233,61 +201,72 @@ document.addEventListener("DOMContentLoaded", () => {
       card.className = "word-card";
       card.style.animationDelay = (idx * 30) + "ms";
 
-      /* ── Üst satır: kelime + anlam ── */
+      /* Sol: kelime + anlamlar */
       const leftDiv = document.createElement("div");
       leftDiv.className = "word-left";
 
+      /* Almanca kelime → örnek cümle modali */
       const germanEl = document.createElement("div");
       germanEl.className = "word-german";
-      germanEl.textContent = item.word;           // ← textContent: güvenli
+      germanEl.textContent = item.word;
       germanEl.style.cursor = "pointer";
       germanEl.title = "Örnek cümleleri gör";
-      germanEl.addEventListener("click", (e) => {
-        e.stopPropagation();
-        openExampleModal(item.word, item.meaning);
-      });
+      germanEl.addEventListener("click", e => { e.stopPropagation(); openExampleModal(item.word, primaryMeaning(item)); });
 
+      /* Ana anlam */
       const turkishEl = document.createElement("div");
       turkishEl.className = "word-turkish";
-      turkishEl.textContent = item.meaning;       // ← textContent: güvenli
+      turkishEl.textContent = primaryMeaning(item);
 
-      /* ── Etiket satırı ── */
+      /* Ek anlamlar */
+      const extrasDiv = buildExtraMeaningsRow(item);
+
+      /* Etiketler */
       const tagsDiv = document.createElement("div");
       tagsDiv.className = "word-tags";
-
       const hasTags = Array.isArray(item.tags) && item.tags.length > 0;
       if (hasTags) {
         item.tags.forEach(t => {
           const badge = document.createElement("span");
           badge.className = "word-tag-badge";
-          badge.textContent = t;                  // ← textContent: güvenli
+          badge.textContent = t;
           tagsDiv.appendChild(badge);
         });
       }
-
       const addTagBtn = document.createElement("button");
       addTagBtn.className = "add-tag-inline";
-      addTagBtn.dataset.id = item.id;
       addTagBtn.textContent = hasTags ? "+ etiket" : "+ etiket ekle";
       addTagBtn.addEventListener("click", () => {
         const userId = window.getUserId();
         if (!userId) return;
-        openEditModal(userId, item, true);
+        openEditModal(userId, item, "tags");
       });
       tagsDiv.appendChild(addTagBtn);
 
       const dateEl = document.createElement("div");
       dateEl.className = "word-date";
-      dateEl.textContent = formatDate(item.date);  // ← textContent: güvenli
+      dateEl.textContent = formatDate(item.date);
 
       leftDiv.appendChild(germanEl);
       leftDiv.appendChild(turkishEl);
+      leftDiv.appendChild(extrasDiv);
       leftDiv.appendChild(tagsDiv);
       leftDiv.appendChild(dateEl);
 
-      /* ── Sağ: butonlar ── */
+      /* Sağ: butonlar */
       const rightDiv = document.createElement("div");
       rightDiv.className = "word-right";
+
+      /* Anlam ekle butonu */
+      const addMeaningBtn = document.createElement("button");
+      addMeaningBtn.className = "word-meaning-btn";
+      addMeaningBtn.textContent = "+ Anlam";
+      addMeaningBtn.title = "Ek anlam ekle";
+      addMeaningBtn.addEventListener("click", () => {
+        const userId = window.getUserId();
+        if (!userId) return;
+        openEditModal(userId, item, "meanings");
+      });
 
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "word-delete-btn";
@@ -300,9 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
           await deleteWord(userId, item.id);
           allWords = allWords.filter(w => w.id !== item.id);
           buildFilterSidebar(); renderFiltered();
-        } catch (err) {
-          alert("Silme hatası: " + err.message);
-        }
+        } catch (err) { alert("Silme hatası: " + err.message); }
       });
 
       const editBtn = document.createElement("button");
@@ -311,11 +288,12 @@ document.addEventListener("DOMContentLoaded", () => {
       editBtn.addEventListener("click", () => {
         const userId = window.getUserId();
         if (!userId) return;
-        openEditModal(userId, item, false);
+        openEditModal(userId, item, "word");
       });
 
-      rightDiv.appendChild(deleteBtn);
+      rightDiv.appendChild(addMeaningBtn);
       rightDiv.appendChild(editBtn);
+      rightDiv.appendChild(deleteBtn);
 
       card.appendChild(leftDiv);
       card.appendChild(rightDiv);
@@ -323,126 +301,215 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ── Düzenleme Modali ──────────────────────────────────────────────────────
-     ÖNEMLİ: input.value ile değer set ediyoruz, innerHTML'e kullanıcı verisi
-     asla doğrudan yazılmıyor.
-  ─────────────────────────────────────────────────────────────────────────── */
+  /* ─── Ek anlamlar satırı ───────────────────────────── */
+  function buildExtraMeaningsRow(item) {
+    const extras = extraMeanings(item);
+    const row = document.createElement("div");
+    row.className = "word-extra-meanings";
+    if (!extras.length) return row;
 
-  function openEditModal(userId, item, tagFocused = false) {
+    extras.forEach(m => {
+      const chip = document.createElement("span");
+      chip.className = "meaning-chip";
+      chip.textContent = m;
+      row.appendChild(chip);
+    });
+    return row;
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     DÜZENLEME MODALİ
+     mode: "word" | "tags" | "meanings"
+     ═══════════════════════════════════════════════════════ */
+  function openEditModal(userId, item, mode = "word") {
     document.getElementById("editModalOverlay")?.remove();
 
     const overlay = document.createElement("div");
     overlay.id = "editModalOverlay";
-    overlay.style.cssText = `
-      position:fixed;inset:0;background:rgba(0,0,0,0.65);
-      backdrop-filter:blur(4px);z-index:10000;
-      display:flex;align-items:center;justify-content:center;
-    `;
+    overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);z-index:10000;display:flex;align-items:center;justify-content:center;";
 
-    /* Modal iskeletini statik HTML ile kur — kullanıcı verisi YOK */
     overlay.innerHTML = `
-      <div style="
-        background:#1a1a26;border:1px solid rgba(201,168,76,0.3);
-        border-radius:20px;padding:28px 32px;width:380px;max-width:90vw;
-        box-shadow:0 24px 60px rgba(0,0,0,0.7);
-      ">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-          <span id="_modalTitle" style="font-size:16px;font-weight:600;color:#c9a84c;"></span>
-          <button id="editModalClose" style="background:none;border:none;color:#666;font-size:18px;cursor:pointer;">✕</button>
+      <div class="edit-modal-box">
+        <div class="edit-modal-header">
+          <span id="_modalTitle"></span>
+          <button id="editModalClose" class="edit-modal-close">✕</button>
         </div>
 
-        <div id="_wordFields">
-          <label style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;">Kelime</label>
-          <input id="editWordInput" style="
-            <div id="editLemmaMount"></div>
-            width:100%;box-sizing:border-box;margin:6px 0 14px;
-            background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
-            border-radius:10px;color:white;font-size:15px;font-family:inherit;
-            padding:11px 14px;outline:none;
-          "/>
-          <label style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;">Anlam</label>
-          <input id="editMeaningInput" style="
-            width:100%;box-sizing:border-box;margin:6px 0 14px;
-            background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
-            border-radius:10px;color:white;font-size:15px;font-family:inherit;
-            padding:11px 14px;outline:none;
-          "/>
+        <!-- WORD MODE -->
+        <div id="_wordFields" style="display:none">
+          <label class="edit-label">Kelime</label>
+          <div id="editLemmaMount"></div>
+          <input id="editWordInput" class="edit-input" spellcheck="false"/>
+          <label class="edit-label" style="margin-top:12px">Anlam</label>
+          <input id="editMeaningInput" class="edit-input" spellcheck="false"/>
         </div>
 
-        <div id="_tagPreview" style="display:none;">
-          <div id="_tagPreviewWord" style="
-            font-size:20px;font-weight:700;color:#e2e8f0;
-            padding:12px 16px;background:rgba(255,255,255,0.04);
-            border-radius:10px;margin-bottom:18px;
-          "></div>
+        <!-- MEANINGS MODE -->
+        <div id="_meaningsFields" style="display:none">
+          <div class="edit-modal-word-preview" id="_meaningsWordPreview"></div>
+          <div class="meanings-section-label">Anlamlar</div>
+          <div id="meaningsList" class="meanings-list"></div>
+          <div class="meanings-add-row">
+            <input id="newMeaningInput" class="edit-input meanings-new-input" placeholder="Yeni anlam ekle…" spellcheck="false"/>
+            <button id="addMeaningBtn" class="meanings-add-btn">+ Ekle</button>
+          </div>
         </div>
 
-        <label style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;">Etiketler</label>
-        <div id="editTagChips" style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 22px;"></div>
+        <!-- TAGS MODE -->
+        <div id="_tagPreview" style="display:none">
+          <div id="_tagPreviewWord" class="edit-modal-word-preview"></div>
+        </div>
 
-        <div style="display:flex;gap:10px;">
-          <button id="editCancelBtn" style="
-            flex:1;padding:11px;background:rgba(255,255,255,0.05);
-            border:1px solid rgba(255,255,255,0.1);border-radius:10px;
-            color:#aaa;font-size:14px;font-family:inherit;cursor:pointer;
-          ">İptal</button>
-          <button id="editSaveBtn" style="
-            flex:2;padding:11px;background:#c9a84c;border:none;
-            border-radius:10px;color:#0a0a0f;font-size:14px;font-weight:700;
-            font-family:inherit;cursor:pointer;
-          ">Kaydet ✓</button>
+        <label class="edit-label" style="margin-top:16px">Etiketler</label>
+        <div id="editTagChips" class="edit-tag-chips"></div>
+
+        <div class="edit-modal-actions">
+          <button id="editCancelBtn" class="edit-cancel-btn">İptal</button>
+          <button id="editSaveBtn" class="edit-save-btn">Kaydet ✓</button>
         </div>
       </div>
     `;
-
     document.body.appendChild(overlay);
 
-    /* Kullanıcı verisini DOM'a güvenli şekilde set et */
-    overlay.querySelector("#_modalTitle").textContent =
-      tagFocused ? "🏷️ Etiket Ekle" : "✏️ Kelimeyi Düzenle";
+    /* ── Başlık ve mode ── */
+    const titleMap = { word: "✏️ Kelimeyi Düzenle", tags: "🏷️ Etiket Düzenle", meanings: "📖 Anlamları Düzenle" };
+    overlay.querySelector("#_modalTitle").textContent = titleMap[mode] || "✏️ Düzenle";
 
-    if (tagFocused) {
-      overlay.querySelector("#_wordFields").style.display = "none";
-      const preview = overlay.querySelector("#_tagPreview");
-      preview.style.display = "block";
-      /* Kullanıcı verisi: textContent ile — innerHTML değil */
-      const wordSpan = document.createElement("span");
-      wordSpan.textContent = item.word;
-      const meaningSpan = document.createElement("span");
-      meaningSpan.style.cssText = "font-size:14px;font-weight:400;color:#c9a84c;margin-left:8px;";
-      meaningSpan.textContent = "— " + item.meaning;
-      const previewWord = overlay.querySelector("#_tagPreviewWord");
-      previewWord.appendChild(wordSpan);
-      previewWord.appendChild(meaningSpan);
-    } else {
-      overlay.querySelector("#_tagPreview").style.display = "none";
-      /* .value ile set etmek tamamen güvenlidir */
+    /* ── Anlamlar state ── */
+    let currentMeanings = getMeanings(item).slice();
+
+    if (mode === "word") {
+      overlay.querySelector("#_wordFields").style.display = "block";
       overlay.querySelector("#editWordInput").value    = item.word;
-      const editMountEl = overlay.querySelector('#editLemmaMount');
-      if (editMountEl && item.word) {
-        showLemmaHintOnce({
-          word: item.word,
-          mountEl: editMountEl,
-          onApply: (lemma) => {
-            overlay.querySelector('#editWordInput').value = lemma;
-            editMountEl.innerHTML = '';
-          }
-        });
+      overlay.querySelector("#editMeaningInput").value = primaryMeaning(item);
+      const mountEl = overlay.querySelector("#editLemmaMount");
+      if (mountEl && item.word) {
+        showLemmaHintOnce({ word: item.word, mountEl, onApply: lemma => {
+          overlay.querySelector("#editWordInput").value = lemma;
+          mountEl.innerHTML = "";
+        }});
       }
-      overlay.querySelector("#editMeaningInput").value = item.meaning;
+    } else if (mode === "meanings") {
+      overlay.querySelector("#_meaningsFields").style.display = "block";
+      const preview = overlay.querySelector("#_meaningsWordPreview");
+      preview.textContent = item.word;
+      renderMeaningsList();
+    } else if (mode === "tags") {
+      overlay.querySelector("#_tagPreview").style.display = "block";
+      const previewWord = overlay.querySelector("#_tagPreviewWord");
+      previewWord.textContent = `${item.word}  —  ${primaryMeaning(item)}`;
     }
 
     renderTagChips("editTagChips", item.tags || [], extractAllTags(allWords));
 
+    /* ── Anlamlar listesini render ── */
+    function renderMeaningsList() {
+      const container = overlay.querySelector("#meaningsList");
+      if (!container) return;
+      container.innerHTML = "";
+      currentMeanings.forEach((m, i) => {
+        const row = document.createElement("div");
+        row.className = "meaning-row" + (i === 0 ? " meaning-row--primary" : "");
+
+        const badge = document.createElement("span");
+        badge.className = "meaning-index-badge";
+        badge.textContent = i === 0 ? "Ana" : `${i + 1}.`;
+
+        const text = document.createElement("span");
+        text.className = "meaning-row-text";
+        text.textContent = m;
+
+        const actions = document.createElement("div");
+        actions.className = "meaning-row-actions";
+
+        /* Yukarı taşı */
+        if (i > 0) {
+          const upBtn = document.createElement("button");
+          upBtn.className = "meaning-action-btn";
+          upBtn.title = "Ana anlam yap";
+          upBtn.textContent = "↑";
+          upBtn.addEventListener("click", () => {
+            currentMeanings.splice(i, 1);
+            currentMeanings.unshift(m);
+            renderMeaningsList();
+          });
+          actions.appendChild(upBtn);
+        }
+
+        /* Düzenle */
+        const editBtn = document.createElement("button");
+        editBtn.className = "meaning-action-btn";
+        editBtn.title = "Düzenle";
+        editBtn.textContent = "✎";
+        editBtn.addEventListener("click", () => {
+          const newVal = prompt("Anlamı düzenle:", m);
+          if (newVal && newVal.trim()) {
+            currentMeanings[i] = newVal.trim();
+            renderMeaningsList();
+          }
+        });
+        actions.appendChild(editBtn);
+
+        /* Sil */
+        if (currentMeanings.length > 1) {
+          const delBtn = document.createElement("button");
+          delBtn.className = "meaning-action-btn meaning-action-btn--del";
+          delBtn.title = "Kaldır";
+          delBtn.textContent = "✕";
+          delBtn.addEventListener("click", () => {
+            currentMeanings.splice(i, 1);
+            renderMeaningsList();
+          });
+          actions.appendChild(delBtn);
+        }
+
+        row.appendChild(badge);
+        row.appendChild(text);
+        row.appendChild(actions);
+        container.appendChild(row);
+      });
+    }
+
+    /* ── Yeni anlam ekle ── */
+    overlay.querySelector("#addMeaningBtn")?.addEventListener("click", () => {
+      const inp = overlay.querySelector("#newMeaningInput");
+      const val = inp?.value.trim();
+      if (!val) { inp?.focus(); return; }
+      if (!currentMeanings.includes(val)) {
+        currentMeanings.push(val);
+        renderMeaningsList();
+      }
+      if (inp) inp.value = "";
+    });
+    overlay.querySelector("#newMeaningInput")?.addEventListener("keydown", e => {
+      if (e.key === "Enter") overlay.querySelector("#addMeaningBtn")?.click();
+    });
+
+    /* ── Kapat ── */
     const close = () => overlay.remove();
     overlay.querySelector("#editModalClose").addEventListener("click", close);
     overlay.querySelector("#editCancelBtn").addEventListener("click", close);
     overlay.addEventListener("click", e => { if (e.target === overlay) close(); });
 
+    /* ── Kaydet ── */
     overlay.querySelector("#editSaveBtn").addEventListener("click", async () => {
-      const newWord    = tagFocused ? item.word    : overlay.querySelector("#editWordInput").value.trim();
-      const newMeaning = tagFocused ? item.meaning : overlay.querySelector("#editMeaningInput").value.trim();
-      if (!newWord || !newMeaning) return;
+      let newWord, newMeaning;
+
+      if (mode === "word") {
+        newWord    = overlay.querySelector("#editWordInput").value.trim();
+        newMeaning = overlay.querySelector("#editMeaningInput").value.trim();
+        if (!newWord || !newMeaning) return;
+        /* word modunda sadece ilk anlamı güncelle */
+        currentMeanings = getMeanings(item).slice();
+        currentMeanings[0] = newMeaning;
+      } else if (mode === "meanings") {
+        newWord    = item.word;
+        newMeaning = currentMeanings[0] || item.meaning;
+      } else {
+        newWord    = item.word;
+        newMeaning = primaryMeaning(item);
+        currentMeanings = getMeanings(item).slice();
+      }
 
       const newTags = getSelectedTags("editTagChips");
       const saveBtn = overlay.querySelector("#editSaveBtn");
@@ -450,10 +517,16 @@ document.addEventListener("DOMContentLoaded", () => {
       saveBtn.textContent = "Kaydediliyor...";
 
       try {
-        await updateWord(userId, item.id, { word: newWord, meaning: newMeaning, tags: newTags });
-        item.word    = newWord;
-        item.meaning = newMeaning;
-        item.tags    = newTags;
+        await updateWord(userId, item.id, {
+          word:     newWord,
+          meaning:  currentMeanings[0] || newMeaning,
+          meanings: currentMeanings,
+          tags:     newTags,
+        });
+        item.word     = newWord;
+        item.meaning  = currentMeanings[0] || newMeaning;
+        item.meanings = currentMeanings;
+        item.tags     = newTags;
         close();
         buildFilterSidebar();
         renderFiltered();
@@ -463,10 +536,15 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Güncelleme hatası: " + err.message);
       }
     });
+
+    /* Odak */
+    setTimeout(() => {
+      const first = overlay.querySelector(".edit-input, #newMeaningInput");
+      first?.focus();
+    }, 60);
   }
 
-  /* ── Arama ───────────────────────────────────────────────────────────────── */
-
+  /* ─── Arama ──────────────────────────────────────────── */
   searchInput.addEventListener("input", renderFiltered);
 
   function formatDate(iso) {
@@ -474,27 +552,18 @@ document.addEventListener("DOMContentLoaded", () => {
     return new Date(iso).toLocaleDateString("tr-TR", { day: "2-digit", month: "long", year: "numeric" });
   }
 
-  /* ── Örnek Cümle Modali ──────────────────────────────────────────────────── */
-
+  /* ═══════════════════════════════════════════════════════
+     ÖRNEK CÜMLE MODALİ
+     ═══════════════════════════════════════════════════════ */
   async function openExampleModal(word, meaning) {
     document.getElementById("exampleModalOverlay")?.remove();
 
     const overlay = document.createElement("div");
     overlay.id = "exampleModalOverlay";
-    overlay.style.cssText = `
-      position:fixed;inset:0;background:rgba(0,0,0,0.65);
-      backdrop-filter:blur(4px);z-index:10000;
-      display:flex;align-items:center;justify-content:center;
-      padding:20px;box-sizing:border-box;
-    `;
+    overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;";
 
-    /* İskelet — kullanıcı verisi YOK */
     overlay.innerHTML = `
-      <div style="
-        background:#1a1a26;border:1px solid rgba(201,168,76,0.3);
-        border-radius:20px;padding:28px 32px;width:480px;max-width:100%;
-        box-shadow:0 24px 60px rgba(0,0,0,0.7);
-      ">
+      <div style="background:#1a1a26;border:1px solid rgba(201,168,76,0.3);border-radius:20px;padding:28px 32px;width:480px;max-width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.7);">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
           <div>
             <div id="_exWord" style="font-size:20px;font-weight:700;color:#e2e8f0;"></div>
@@ -502,46 +571,25 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
           <button id="exampleModalClose" style="background:none;border:none;color:#666;font-size:18px;cursor:pointer;padding:0 0 0 12px;">✕</button>
         </div>
-
-        <div style="font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">
-          💬 Örnek Cümleler
-        </div>
-
+        <div style="font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">💬 Örnek Cümleler</div>
         <div id="exampleSentences" style="display:flex;flex-direction:column;gap:10px;">
-          <div style="
-            padding:14px 16px;border-radius:12px;
-            background:rgba(255,255,255,0.03);
-            border:1px solid rgba(255,255,255,0.06);
-            color:#888;font-size:14px;text-align:center;
-          ">⏳ Yükleniyor...</div>
+          <div style="padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);color:#888;font-size:14px;text-align:center;">⏳ Yükleniyor...</div>
         </div>
-
-        <div style="margin-top:14px;font-size:11px;color:#3a3a3a;text-align:right;">
-          Kaynak: Wiktionary · Tatoeba
-        </div>
+        <div style="margin-top:14px;font-size:11px;color:#3a3a3a;text-align:right;">Kaynak: Wiktionary · Tatoeba</div>
       </div>
     `;
-
     document.body.appendChild(overlay);
 
-    /* Kullanıcı verisi: textContent ile */
     overlay.querySelector("#_exWord").textContent    = word;
     overlay.querySelector("#_exMeaning").textContent = meaning;
-
     overlay.querySelector("#exampleModalClose").addEventListener("click", () => overlay.remove());
     overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
 
     const sentences = await fetchExampleSentences(word);
     const container = document.getElementById("exampleSentences");
     if (!container) return;
-
-    /* Cümleler dış kaynaklardan gelir — yine de escapeHtml ile güvende tut */
     container.innerHTML = sentences.map((s, i) => `
-      <div style="
-        padding:14px 16px;border-radius:12px;
-        background:rgba(255,255,255,0.03);
-        border:1px solid rgba(255,255,255,0.07);
-      ">
+      <div style="padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);">
         <div style="font-size:11px;color:#c9a84c;font-weight:700;margin-bottom:6px;">${i + 1}. Cümle</div>
         <div style="font-size:15px;color:#e2e8f0;line-height:1.6;">${escapeHtml(s.original)}</div>
       </div>
