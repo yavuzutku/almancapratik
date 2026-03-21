@@ -155,19 +155,13 @@ function stripTrailingPunct(s) {
   return s.replace(/[.,;:!?。、…]+$/, '').trim();
 }
 
-function normalizeCaps(s) {
-  if (!s || s.length < 2) return s;
-  if (!/[a-zäöüß]/.test(s) && /[A-ZÜÖÄ]{2,}/.test(s))
-    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
-  return s;
-}
+
 
 function cleanPart(s) {
   if (!s) return '';
   s = s.trim();
   s = stripQuotes(s);
   s = stripTrailingPunct(s);
-  s = normalizeCaps(s);
   return s.trim();
 }
 
@@ -188,7 +182,6 @@ function looksLikeGerman(s) {
 }
 
 function maybeSwap(de, tr) {
-  if (de && tr && looksLikeTurkish(de) && looksLikeGerman(tr)) return { de: tr, tr: de };
   return { de, tr };
 }
 
@@ -299,13 +292,7 @@ const SEPS_ORDERED = [
   { re: /\s*:\s*/,                      name: ':'   },
 ];
 
-function tryFlashcard(line) {
-  const m = line.match(
-    /^(?:q|f|frage|soru|question|s)\s*[:.)]\s*(.+?)\s*[|\/\-]\s*(?:a|c|answer|antwort|cevap)\s*[:.)]\s*(.+)$/i
-  );
-  if (m) { const de = m[1].trim(), tr = m[2].trim(); if (de && tr) return { de, tr, method: 'Q/A' }; }
-  return null;
-}
+
 
 function tryQuoted(line) {
   const b = line.match(/^(["'„\u201c\u201d❝`])(.+?)\1\s*[=:→\-|]?\s*(["'„\u201c\u201d❝`])(.+?)\3\s*$/);
@@ -347,8 +334,7 @@ function tryDblSpace(line) {
 function parseSingleLine(line) {
   if (!line.trim()) return null;
 
-  const fc = tryFlashcard(line);
-  if (fc) return fc;
+ 
 
   const q = tryQuoted(line);
   if (q) { const r = maybeSwap(cleanPart(q.de), cleanPart(q.tr)); return { de: r.de, tr: r.tr, method: '""' }; }
