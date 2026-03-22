@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (blocks) {
-    $body.innerHTML = renderBlocks(blocks);
+    $body.innerHTML = blocksToHtml(blocks, { mode: "reader" });
   } else {
     $body.classList.add("ok-plain");
     $body.textContent = raw;
@@ -73,21 +73,7 @@ function tryParse(json) {
   if (!json) return null;
   try { return JSON.parse(json); } catch { return null; }
 }
-
-function renderBlocks(blocks) {
-  const e = s => String(s)
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  return blocks.map(b => {
-    switch (b.type) {
-      case "title":   return `<h2 class="ok-title">${e(b.text)}</h2>`;
-      case "dialog":  return `<p class="ok-dialog">${e(b.text)}</p>`;
-      case "quote":   return `<p class="ok-quote">${e(b.text)}</p>`;
-      case "section": return `<div class="ok-section">&#x2726; &emsp; &#x2726; &emsp; &#x2726;</div>`;
-      case "para":    return `<p class="ok-para">${b.lines.map(e).join("<br>")}</p>`;
-      default:        return "";
-    }
-  }).join("");
-}
+import { blocksToHtml } from "../metin/parseText.js";
 
 function updateMeta(text) {
   const words = text.trim().split(/\s+/).filter(Boolean).length;

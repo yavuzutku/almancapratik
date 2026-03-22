@@ -11,6 +11,7 @@ import { saveMetin, getMetinler } from "../js/firebase.js";
 import { showToast } from "../src/components/toast.js";
 import { showAuthGate, isLoggedIn } from '../src/components/authGate.js';
 import { onAuthChange } from "../js/firebase.js";
+import { parseText, blocksToHtml, blocksToLegacy } from "./parseText.js";
 
 /* ─────────────────────────────────────────────────────────
    YARDIMCI: tek bir regex test fonksiyonu
@@ -20,94 +21,10 @@ const test = (re, s) => re.test(s);
 /* ═══════════════════════════════════════════════════════════
    parseText  —  Almanca metin yapı çözümleyici
    ═══════════════════════════════════════════════════════════ */
-export function parseText(raw) {
-  if (!raw || !raw.trim()) return [];
-
-  const lines  = raw.split("\n");
-  const blocks = [];
-  let   buf    = [];
-
-  const flush = () => {
-    if (buf.length) {
-      blocks.push({ type: "para", lines: [...buf] });
-      buf = [];
-    }
-  };
-
-  const isSectionBreak = t =>
-    test(/^(\*\s*){3,}\s*$/, t) ||
-    test(/^-{3,}\s*$/, t)       ||
-    test(/^_{3,}\s*$/, t)       ||
-    test(/^={3,}\s*$/, t)       ||
-    test(/^~{3,}\s*$/, t)       ||
-    test(/^(#\s*){3,}\s*$/, t)  ||
-    test(/^(\.+\s*){3,}\s*$/, t)||
-    test(/^(\xB7\s*){3,}\s*$/, t);
-
-  const isTitle = (t, idx, arr) => {
-    if (!t || t.length > 90) return false;
-    if (test(/^#{1,3}\s+\S/, t)) return true;
-    if (test(/^(Kapitel|Kap\.|Teil|Abschnitt|Buch|Band|Prolog|Epilog|Einleitung|Nachwort|Chapter|Part|Section|Introduction|Conclusion)\s+[\dIVXivx]/i, t)) return true;
-    if (test(/^[IVXLCDM]+\.?\s*$/i, t) && t.replace(/\s/g,"").length <= 8) return true;
-    if (test(/^\d{1,3}[.)]\s*$/, t)) return true;
-    if (t === t.toUpperCase() && test(/[A-ZÜÖÄ]{3,}/, t) && !test(/[.!?,;:\u201E\u201C\u2018\u201A\u2013\u2014]/, t)) return true;
-    if (idx === 0 && t.length <= 65 && !test(/[.!?,;:\u201E\u201C\u2013\u2014]/, t) && !test(/^[-\u2013\u2014]/, t)) return true;
-    const prev2 = (arr[idx - 2] || "").trim();
-    const prev1 = (arr[idx - 1] || "").trim();
-    const next1 = (arr[idx + 1] || "").trim();
-    const next2 = (arr[idx + 2] || "").trim();
-    const isolatedByDouble = prev1 === "" && prev2 === "" && next1 === "" && next2 === "";
-    const isolatedBySingle = idx > 0 && prev1 === "" && next1 === "";
-    if ((isolatedByDouble || isolatedBySingle) && t.length <= 60 && !test(/[.!?,;:\u201E\u201C\u2018\u201A\u2013\u2014\u2015]/, t) && !test(/^[-\u2013\u2014]/, t)) return true;
-    return false;
-  };
-
-  const isDialog = t => {
-    if (test(/^[\u201E\u201C\u201A\u2018]/, t)) return true;
-    if (test(/^["']/, t)) return true;
-    if (test(/^[\u2013\u2014]\s[A-Za-zÄÖÜäöüß\d]/, t)) return true;
-    if (test(/^-\s[A-ZÜÖÄ]/, t)) return true;
-    return false;
-  };
-
-  const isQuote = (raw_line) => {
-    if (test(/^>\s/, raw_line.trimStart())) return true;
-    if (test(/^(\t|    )/, raw_line)) return true;
-    return false;
-  };
-
-  for (let i = 0; i < lines.length; i++) {
-    const rawLine = lines[i];
-    const t       = rawLine.trim();
-    if (!t) { flush(); continue; }
-    if (isSectionBreak(t)) { flush(); blocks.push({ type: "section" }); continue; }
-    if (isTitle(t, i, lines)) { flush(); blocks.push({ type: "title", text: t.replace(/^#{1,3}\s*/, "") }); continue; }
-    if (isDialog(t)) { flush(); blocks.push({ type: "dialog", text: t }); continue; }
-    if (isQuote(rawLine)) { flush(); blocks.push({ type: "quote", text: t.replace(/^>\s*/, "") }); continue; }
-    buf.push(t);
-  }
-  flush();
-  return blocks;
-}
 
 /* ═══════════════════════════════════════════════════════════
    Blokları HTML'e çevir (önizleme)
    ═══════════════════════════════════════════════════════════ */
-function blocksToHtml(blocks) {
-  const esc = s => String(s)
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-  return blocks.map(b => {
-    switch (b.type) {
-      case "title":   return `<div class="pv-title">${esc(b.text)}</div>`;
-      case "dialog":  return `<div class="pv-dialog">${esc(b.text)}</div>`;
-      case "quote":   return `<div class="pv-quote">${esc(b.text)}</div>`;
-      case "section": return `<div class="pv-section">\u2726 &nbsp; \u2726 &nbsp; \u2726</div>`;
-      case "para":    return `<div class="pv-para">${b.lines.map(esc).join("<br>")}</div>`;
-      default:        return "";
-    }
-  }).join("") || `<span style="color:var(--muted);font-style:italic">Metin boş.</span>`;
-}
 
 /* ═══════════════════════════════════════════════════════════
    Canlı istatistik
@@ -402,7 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!isLoggedIn()) {
       const blocks = parseText(text);
       sessionStorage.setItem("savedText",    text);
-      sessionStorage.setItem("parsedBlocks", JSON.stringify(blocks));
+      sessionStorage.setItem("parsedBlocks", JSON.stringify(blocksToLegacy(blocks)));
       sessionStorage.setItem("returnPage",   "../metin/");
       window.location.href = "../okuma/";
       return;
