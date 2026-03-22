@@ -137,7 +137,17 @@ export async function deleteMetin(userId, id) {
     throw new Error("Metin silinemedi. Lütfen tekrar dene.");
   }
 }
-
+export async function updateMetinTimestamp(userId, id) {
+  if (!userId || !id) throw new Error("Geçersiz parametre.");
+  try {
+    await updateDoc(doc(db, "users", userId, "texts", id), {
+      created: Date.now()
+    });
+  } catch (err) {
+    console.error("[updateMetinTimestamp] Firestore hatası:", err);
+    throw new Error("Tarih güncellenemedi.");
+  }
+}
 
 /* ============================
    YARDIMCI: KELİMEYİ BUL

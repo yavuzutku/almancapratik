@@ -1,30 +1,13 @@
 /* ═══════════════════════════════════════════════════════════
-   metin.js  —  AlmancaPratik Metin Editörü  v3
-   ═══════════════════════════════════════════════════════════
-   v3 eklemeleri:
-   - Sidebar'da "Geçmiş Metinler" paneli
-   - Geçmiş metne tıklayınca editöre yükle
-   - Auth değişince geçmiş otomatik güncellenir
+   metin.js  —  AlmancaPratik Metin Editörü  v4
    ═══════════════════════════════════════════════════════════ */
 
-import { saveMetin, getMetinler } from "../js/firebase.js";
+import { saveMetin, getMetinler, updateMetinTimestamp } from "../js/firebase.js";
 import { showToast } from "../src/components/toast.js";
 import { showAuthGate, isLoggedIn } from '../src/components/authGate.js';
 import { onAuthChange } from "../js/firebase.js";
 import { parseText, blocksToHtml, blocksToLegacy } from "./parseText.js";
 import { clean } from "./cleanRawText.js";
-/* ─────────────────────────────────────────────────────────
-   YARDIMCI: tek bir regex test fonksiyonu
-   ───────────────────────────────────────────────────────── */
-const test = (re, s) => re.test(s);
-
-/* ═══════════════════════════════════════════════════════════
-   parseText  —  Almanca metin yapı çözümleyici
-   ═══════════════════════════════════════════════════════════ */
-
-/* ═══════════════════════════════════════════════════════════
-   Blokları HTML'e çevir (önizleme)
-   ═══════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════
    Canlı istatistik
@@ -44,10 +27,7 @@ function updateStats(text) {
 
 function updateStructure(blocks) {
   const count = type => blocks.filter(b => b.type === type).length;
-  const set = (id, val) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = val;
-  };
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
   set("structTitles",   count("title"));
   set("structDialogs",  count("dialog"));
   set("structParas",    count("para"));
@@ -64,8 +44,31 @@ function setAutoSaveState(state) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   Metin araçları
+   DUPLICATE KONTROLÜ + KAYIT
+   Aynı metin zaten varsa sadece timestamp güncellenir.
    ═══════════════════════════════════════════════════════════ */
+async function upsertMetin(userId, text) {
+  const normalized = text.trim();
+
+  try {
+    const existing = await getMetinler(userId);
+    const duplicate = existing.find(m => m.text.trim() === normalized);
+
+    if (duplicate) {
+      // Aynı metin var → sadece timestamp güncelle
+      if (typeof updateMetinTimestamp === "function") {
+        await updateMetinTimestamp(userId, duplicate.id);
+      }
+      // updateMetinTimestamp yoksa sessizce geç — zaten kayıtlı
+      return { isDuplicate: true, id: duplicate.id };
+    }
+  } catch {
+    // getMetinler başarısız olursa yeni kayıt oluştur
+  }
+
+  await saveMetin(userId, text);
+  return { isDuplicate: false };
+}
 
 /* ═══════════════════════════════════════════════════════════
    GEÇMİŞ SIDEBAR
@@ -86,11 +89,6 @@ function wordCount(text) {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-/**
- * Sidebar geçmiş listesini render eder.
- * @param {Array} items  — Firebase'den gelen metin nesneleri dizisi
- * @param {HTMLElement} editor — contenteditable div
- */
 function renderSidebarHistory(items, editor) {
   const container = document.getElementById("sidebarHistory");
   if (!container) return;
@@ -102,23 +100,19 @@ function renderSidebarHistory(items, editor) {
 
   container.innerHTML = "";
 
-  /* En fazla 8 metin göster */
   items.slice(0, 8).forEach((item, idx) => {
     const el = document.createElement("button");
     el.className = "sidebar-history-item";
     el.style.animationDelay = (idx * 35) + "ms";
 
-    /* Tarih */
     const date = document.createElement("span");
     date.className = "shi-date";
     date.textContent = formatRelativeDate(item.created);
 
-    /* Önizleme */
     const preview = document.createElement("span");
     preview.className = "shi-preview";
     preview.textContent = item.text.trim().slice(0, 80);
 
-    /* Kelime sayısı */
     const wc = document.createElement("span");
     wc.className = "shi-wc";
     wc.textContent = wordCount(item.text) + " kelime";
@@ -132,10 +126,6 @@ function renderSidebarHistory(items, editor) {
   });
 }
 
-/**
- * Seçilen geçmiş metni editöre yükler.
- * Mevcut içerik varsa onay ister.
- */
 function loadHistoryItem(item, editor) {
   const current = editor.innerText.trim();
   if (current && !confirm("Editördeki mevcut metin silinecek. Devam etmek istiyor musunuz?")) return;
@@ -145,15 +135,10 @@ function loadHistoryItem(item, editor) {
   updateStructure(parseText(item.text));
   setAutoSaveState("saved");
   sessionStorage.setItem("savedText", item.text);
-
-  /* Editöre scroll */
   editor.scrollIntoView({ behavior: "smooth", block: "start" });
   showToast("Metin editöre yüklendi", "ok");
 }
 
-/**
- * Geçmişi Firebase'den çeker ve sidebar'ı günceller.
- */
 async function loadSidebarHistory(editor) {
   const container = document.getElementById("sidebarHistory");
   if (!container) return;
@@ -185,6 +170,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const readBtn = document.getElementById("goReadBtn");
   if (!editor) return;
 
+  /* ── Geri butonu → ../pratik/ ── */
+  document.querySelector(".toolbar-back-btn")?.addEventListener("click", () => {
+    window.location.href = "../pratik/";
+  });
+
   /* URL parametresinden metin yükle */
   const urlParams = new URLSearchParams(window.location.search);
   const urlText   = urlParams.get("text");
@@ -209,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
   editor.addEventListener("paste", e => {
     e.preventDefault();
     let text = (e.clipboardData || window.clipboardData).getData("text");
-    text = clean(text);   // ← tek satır, hepsini halleder
+    text = clean(text);
     document.execCommand("insertText", false, text);
   });
 
@@ -233,11 +223,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2000);
   });
 
-  /* ── Araç butonları ── */
-  // YENİ:
-  
-
-
   /* ── Önizleme modal ── */
   const modal      = document.getElementById("previewModal");
   const modalClose = document.getElementById("previewClose");
@@ -252,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const closeModal = () => modal.classList.remove("open");
   modalClose?.addEventListener("click", closeModal);
-  backdrop?.addEventListener("click",  closeModal);
+  backdrop?.addEventListener("click", closeModal);
   document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
 
   /* ── Okuma moduna geç ── */
@@ -271,20 +256,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     readBtn.disabled    = true;
     readBtn.textContent = "Kaydediliyor…";
+
     try {
       const blocks = parseText(text);
-      await saveMetin(window.getUserId(), text);
-      /* Kayıt sonrası sidebar'ı güncelle */
+      const userId = window.getUserId();
+
+      const { isDuplicate } = await upsertMetin(userId, text);
+
       loadSidebarHistory(editor);
       sessionStorage.setItem("savedText",    text);
-      sessionStorage.setItem("parsedBlocks", JSON.stringify(blocks));
+      sessionStorage.setItem("parsedBlocks", JSON.stringify(isDuplicate ? blocksToLegacy(blocks) : blocks));
       sessionStorage.setItem("returnPage",   "../metin/");
       window.location.href = "../okuma/";
+
     } catch (err) {
       showToast("Kayıt sırasında bir hata oluştu", "err");
-      readBtn.disabled    = false;
-      readBtn.innerHTML   = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Okuma Moduna Geç`;
+      readBtn.disabled  = false;
+      readBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Okuma Moduna Geç`;
     }
   });
-
 });
