@@ -146,8 +146,15 @@ function parseWikitext(wt, originalWord) {
 function findGrundform(wt) {
   const lines = wt.split("\n");
   for (const line of lines) {
-    const m = line.match(/\{\{Grundformverweis[^|]*\|([^|}]+)/i);
-    if (m) return clean(m[1]);
+    const m = line.match(/\{\{Grundformverweis[^}]*\}\}/i);
+    if (!m) continue;
+    // Template'i pipe'a göre böl, template adını (ilk parça) atla
+    const parts = m[0].split("|").slice(1);
+    for (const part of parts) {
+      const cleaned = clean(part.replace(/\}\}.*$/, ""));
+      // Named parametreleri (Abschnitt=Verb gibi) atla
+      if (cleaned && !cleaned.includes("=")) return cleaned;
+    }
   }
   return null;
 }
