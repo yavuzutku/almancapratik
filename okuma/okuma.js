@@ -23,6 +23,8 @@ import {
 
 /* ── State ─────────────────────────────────────────────── */
 let _word            = "";
+let _savedSelection = "";
+
 let _wiki            = null;
 let _tr              = "";
 let _userWords       = [];
@@ -242,14 +244,16 @@ function bindTTS() {
   /* ── Durdur / Sıfırla ── */
   stopBtn?.addEventListener("click", () => ttsStop());
 
-  /* ── Seçili metni oku ── */
+  selBtn?.addEventListener("mousedown", () => {
+    _savedSelection = window.getSelection()?.toString().trim() || "";
+  });
   selBtn?.addEventListener("click", () => {
-    const selected = window.getSelection()?.toString().trim();
-    if (!selected) {
+    if (!_savedSelection) {
       showToast("Önce metinden bir bölüm seçin.", false);
       return;
     }
-    speak(selected);
+    speak(_savedSelection);
+    _savedSelection = "";
   });
 
   /* ── Hız butonları ── */
@@ -263,18 +267,16 @@ function bindTTS() {
 
   /* Sayfa kapatılınca veya navigasyonda okumayı durdur */
   window.addEventListener("beforeunload", ttsStop);
+  $readBtn?.addEventListener("mousedown", () => {
+    _savedSelection = window.getSelection()?.toString().trim() || "";
+  });
   $readBtn?.addEventListener("click", () => {
-    const selected = window.getSelection()?.toString().trim();
-    if (!selected) return;
- 
-    // Ses kapalı mı? Uyarı ver.
+    if (!_savedSelection) return;
     checkMuted().then(muted => {
-      if (muted) {
-        showToast("⚠ Sesin açık olduğundan emin ol!", false);
-      }
+      if (muted) showToast("⚠ Sesin açık olduğundan emin ol!", false);
     });
- 
-    speak(selected);
+    speak(_savedSelection);
+    _savedSelection = "";
     hideMeaning();
   });
   document.addEventListener("visibilitychange", () => {
@@ -332,16 +334,25 @@ function onBodyMouseUp() {
  
   /* ── "Oku" butonu — anlam butonunun hemen yanına ── */
   if ($readBtn && ttsSupported) {
-    // Anlam butonunun sağına konumlandır (tahmini genişlik: 90px)
-    $readBtn.style.top  = (rect.bottom + 10) + "px";
-    $readBtn.style.left = (rect.left + 96) + "px";
+    $readBtn.style.top     = (rect.bottom + 10) + "px";
     $readBtn.style.display = "inline-flex";
     $readBtn.classList.remove("pop");
   }
  
   requestAnimationFrame(() => {
     $meaning.classList.add("pop");
-    $readBtn?.classList.add("pop");
+
+    if ($readBtn && ttsSupported) {
+      const meaningW = $meaning.offsetWidth || 88;
+      let readLeft   = rect.left + meaningW + 8;
+      const readW    = $readBtn.offsetWidth || 60;
+      if (readLeft + readW > window.innerWidth - 10) {
+        readLeft = rect.left;
+        $readBtn.style.top = (rect.bottom + 46) + "px";
+      }
+      $readBtn.style.left = readLeft + "px";
+      $readBtn.classList.add("pop");
+    }
   });
 }
  
