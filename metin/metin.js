@@ -12,7 +12,7 @@ import { showToast } from "../src/components/toast.js";
 import { showAuthGate, isLoggedIn } from '../src/components/authGate.js';
 import { onAuthChange } from "../js/firebase.js";
 import { parseText, blocksToHtml, blocksToLegacy } from "./parseText.js";
-
+import { clean } from "./cleanRawText.js";
 /* ─────────────────────────────────────────────────────────
    YARDIMCI: tek bir regex test fonksiyonu
    ───────────────────────────────────────────────────────── */
@@ -66,26 +66,6 @@ function setAutoSaveState(state) {
 /* ═══════════════════════════════════════════════════════════
    Metin araçları
    ═══════════════════════════════════════════════════════════ */
-function cleanText(raw) {
-  return raw
-    .replace(/[ \t]+/g, " ")
-    .replace(/\n{3,}/g, "\n\n")
-    .replace(/^[ \t]+|[ \t]+$/gm, "")
-    .trim();
-}
-
-function fixDashes(raw) {
-  return raw
-    .replace(/\s*--\s*/g, " \u2014 ")
-    .replace(/ - /g,       " \u2013 ")
-    .replace(/^- /gm,      "\u2014 ");
-}
-
-function fixQuotes(raw) {
-  return raw
-    .replace(/"([^"]+)"/g, "\u201E$1\u201C")
-    .replace(/'([^']+)'/g, "\u201A$1\u2018");
-}
 
 /* ═══════════════════════════════════════════════════════════
    GEÇMİŞ SIDEBAR
@@ -229,11 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
   editor.addEventListener("paste", e => {
     e.preventDefault();
     let text = (e.clipboardData || window.clipboardData).getData("text");
-    text = text
-      .replace(/[ \t]+/g, " ")
-      .replace(/\r\n/g, "\n")
-      .replace(/\r/g, "\n")
-      .trim();
+    text = clean(text);   // ← tek satır, hepsini halleder
     document.execCommand("insertText", false, text);
   });
 
@@ -258,41 +234,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ── Araç butonları ── */
-  document.getElementById("btnClean")?.addEventListener("click", () => {
-    const cleaned = cleanText(editor.innerText);
-    editor.innerText = cleaned;
-    updateStats(cleaned);
-    updateStructure(parseText(cleaned));
-    showToast("Metin temizlendi", "ok");
-  });
+  // YENİ:
+  
 
-  document.getElementById("btnFixDashes")?.addEventListener("click", () => {
-    const fixed = fixDashes(editor.innerText);
-    editor.innerText = fixed;
-    updateStats(fixed);
-    updateStructure(parseText(fixed));
-    showToast("Tireler düzeldi (\u2013 ve \u2014)", "ok");
-  });
-
-  document.getElementById("btnFixQuotes")?.addEventListener("click", () => {
-    const fixed = fixQuotes(editor.innerText);
-    editor.innerText = fixed;
-    updateStats(fixed);
-    updateStructure(parseText(fixed));
-    showToast("Tırnaklar Almanca formatına dönüştürüldü", "ok");
-  });
-
-  document.getElementById("btnClear")?.addEventListener("click", () => {
-    if (!editor.innerText.trim()) return;
-    if (confirm("Editördeki metni silmek istediğinize emin misiniz?")) {
-      editor.innerText = "";
-      updateStats("");
-      updateStructure([]);
-      sessionStorage.removeItem("savedText");
-      setAutoSaveState("unsaved");
-      showToast("Metin silindi");
-    }
-  });
 
   /* ── Önizleme modal ── */
   const modal      = document.getElementById("previewModal");
