@@ -2,13 +2,15 @@ import { getWords, deleteWord, updateWord, onAuthChange } from "../js/firebase.j
 import { showLemmaHintOnce } from '../src/components/lemmaHint.js';
 import { renderTagChips, getSelectedTags, extractAllTags, getAutoLevel } from "../js/tag.js";
 import { fetchWikiData } from "../src/services/wiktionary.js";
-import { saveListe } from "../js/listeler-firebase.js";
+import { saveListe, getListeler } from "../js/listeler-firebase.js";
 import { openListeModal } from "../src/components/listeModal.js";
 
 /* ═══════════════════════════════════════════════════════════
    STATE
    ═══════════════════════════════════════════════════════════ */
 let allWords        = [];
+let allLists        = [];
+
 let activeTagFilter = null;
 let sortMode        = "newest";   // newest | oldest | az | za | level
 let viewMode        = "list";     // list | grid
@@ -258,6 +260,10 @@ function injectBulkBar() {
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         Listele
       </button>
+      <button class="bulk-delete-btn" id="bulkDeleteBtn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        Sil
+      </button>
       <button class="bulk-cancel-btn" id="bulkCancel">İptal</button>
     </div>
   `;
@@ -284,7 +290,24 @@ function injectBulkBar() {
       }
     });
   });
-
+  bar.querySelector("#bulkDeleteBtn").addEventListener("click", async () => {
+    if (!currentUserId || !selectedIds.size) return;
+    const count = selectedIds.size;
+    if (!confirm(`Seçili ${count} kelime silinsin mi? Bu işlem geri alınamaz.`)) return;
+    const ids = [...selectedIds];
+    try {
+      for (const id of ids) {
+        await deleteWord(currentUserId, id);
+        allWords = allWords.filter(w => w.id !== id);
+      }
+      exitSelectMode();
+      buildFilterSidebar();
+      renderFiltered();
+      showToast(`${count} kelime silindi.`, "success");
+    } catch(err) {
+      alert("Silme hatası: " + err.message);
+    }
+  });
   bar.querySelector("#bulkCancel").addEventListener("click", exitSelectMode);
 }
 
@@ -379,8 +402,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function loadWords(userId) {
     wordCountBadge.textContent = "—";
+    showSkeleton();
     try {
-      allWords = await getWords(userId);
+      [allWords, allLists] = await Promise.all([
+        getWords(userId),
+        getListeler(userId).catch(() => [])
+      ]);
       buildFilterSidebar();
       renderFiltered();
       enrichTagsInBackground(userId);
@@ -388,7 +415,28 @@ document.addEventListener("DOMContentLoaded", () => {
       wordList.innerHTML = `<div style="padding:20px;color:#e05252;font-size:14px;text-align:center;">Kelimeler yüklenemedi: ${esc(err.message)}</div>`;
     }
   }
-
+  function showSkeleton() {
+    [...wordList.querySelectorAll(".word-card, .skeleton-card")].forEach(el => el.remove());
+    emptyState.style.display = "none";
+    wordList.className = "word-list";
+    for (let i = 0; i < 5; i++) {
+      const el = document.createElement("div");
+      el.className = "skeleton-card";
+      el.style.animationDelay = (i * 80) + "ms";
+      el.innerHTML = `
+        <div class="skeleton-inner">
+          <div class="skeleton-line sk-word"></div>
+          <div class="skeleton-line sk-meaning"></div>
+          <div class="skeleton-footer">
+            <div class="skeleton-line sk-tag"></div>
+            <div class="skeleton-line sk-tag"></div>
+            <div class="skeleton-line sk-tag"></div>
+          </div>
+        </div>
+      `;
+      wordList.appendChild(el);
+    }
+  }
   async function enrichTagsInBackground(userId) {
     const levelTags = new Set(['A1','A2','B1','B2']);
     const typeTags  = new Set(['isim','fiil','sıfat','zarf']);
@@ -467,17 +515,42 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* Listelerim bağlantısı */
-    const listelerLink = document.createElement("a");
-    listelerLink.href = "../listeler/";
-    listelerLink.className = "sidebar-listeler-link";
-    listelerLink.innerHTML = `
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-      Listelerim
-    `;
     const sep2 = document.createElement("div");
     sep2.style.cssText = "margin:10px 0 6px;border-top:1px solid rgba(255,255,255,0.05);padding-top:8px;";
     filterTagList.appendChild(sep2);
-    filterTagList.appendChild(listelerLink);
+
+    const listelerHeader = document.createElement("div");
+    listelerHeader.className = "sidebar-section-title";
+    listelerHeader.innerHTML = `
+      <span>Listelerim</span>
+      <a href="../listeler/" class="sidebar-listeler-all">Tümü →</a>
+    `;
+    filterTagList.appendChild(listelerHeader);
+
+    if (!allLists.length) {
+      const noList = document.createElement("div");
+      noList.className = "sidebar-no-list";
+      noList.textContent = "Henüz liste yok";
+      filterTagList.appendChild(noList);
+    } else {
+      allLists.slice(0, 5).forEach(liste => {
+        const item = document.createElement("a");
+        item.href = "../listeler/";
+        item.className = "sidebar-liste-item";
+        item.innerHTML = `
+          <span class="sidebar-liste-name">${esc(liste.name)}</span>
+          <span class="sidebar-liste-count">${liste.wordCount || 0}</span>
+        `;
+        filterTagList.appendChild(item);
+      });
+      if (allLists.length > 5) {
+        const more = document.createElement("a");
+        more.href = "../listeler/";
+        more.className = "sidebar-liste-more";
+        more.textContent = `+${allLists.length - 5} liste daha`;
+        filterTagList.appendChild(more);
+      }
+    }
   }
 
   function getFilteredList() {
@@ -508,7 +581,7 @@ document.addEventListener("DOMContentLoaded", () => {
      RENDER
      ═══════════════════════════════════════ */
   function render(list) {
-    [...wordList.querySelectorAll(".word-card")].forEach(el => el.remove());
+    [...wordList.querySelectorAll(".word-card, .skeleton-card")].forEach(el => el.remove());
 
     const total = allWords.length;
     wordCountBadge.textContent = total === 1 ? "1 kelime" : `${total} kelime`;
