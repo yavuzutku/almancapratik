@@ -96,27 +96,6 @@
       <div class="card-tag">Ekle</div>
     </button>
 
-    <button class="action-card action-card--artikel" id="artikelBtn" role="listitem">
-      <div class="card-glow" aria-hidden="true"></div>
-      <div class="card-top">
-        <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-        <div class="card-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
-      </div>
-      <div class="card-title">Artikel Bul</div>
-      <div class="card-desc">Almanca bir kelimenin der / die / das artikelini anında öğren.</div>
-      <div class="card-tag">der / die / das</div>
-    </button>
-
-    <button class="action-card action-card--cumle" id="cumlebulBtn" role="listitem">
-      <div class="card-glow" aria-hidden="true"></div>
-      <div class="card-top">
-        <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-        <div class="card-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
-      </div>
-      <div class="card-title">Cümle Bul</div>
-      <div class="card-desc">Wiktionary ve Tatoeba'dan gerçek kullanım örneklerini anında gör.</div>
-      <div class="card-tag">Bağlam</div>
-    </button>
 
     <button class="action-card action-card--quiz" id="quizBtn" role="listitem">
       <div class="card-glow" aria-hidden="true"></div>
@@ -129,27 +108,6 @@
       <div class="card-tag">Test</div>
     </button>
 
-    <button class="action-card action-card--ceviri" id="ceviriBtn" role="listitem">
-      <div class="card-glow" aria-hidden="true"></div>
-      <div class="card-top">
-        <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg></div>
-        <div class="card-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
-      </div>
-      <div class="card-title">Çeviri</div>
-      <div class="card-desc">Almanca kelimeleri çevir, artikel ve örnek cümlelerini gör, sözlüğüne ekle.</div>
-      <div class="card-tag">Wiktionary</div>
-    </button>
-
-    <button class="action-card action-card--sponsor" id="sponsorBtn" role="listitem">
-      <div class="card-glow" aria-hidden="true"></div>
-      <div class="card-top">
-        <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-        <div class="card-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
-      </div>
-      <div class="card-title">Sponsorlar</div>
-      <div class="card-desc">Projeyi destekleyen sponsorlarımıza göz at ve katkılarını gör.</div>
-      <div class="card-tag">Destek</div>
-    </button>
 
     <button class="action-card action-card--ai hidden" id="aiBtn" role="listitem">
       <div class="card-glow" aria-hidden="true"></div>
@@ -182,10 +140,6 @@ document.addEventListener("DOMContentLoaded", () => {
   go("newTextBtn",    "../metin/");
   go("kelimelerBtn",  "../kelimeler/");
   go("kelimeEkleBtn", "../wordsadd/");
-  go("artikelBtn",    "../artikel/");
-  go("cumlebulBtn",   "../cumlebul/");
-  go("ceviriBtn",     "../ceviri/");
-  go("sponsorBtn",    "../sponsorlar/");
 });
 </script>
 
