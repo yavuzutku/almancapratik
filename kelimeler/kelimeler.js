@@ -378,6 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /* Toolbar + bulk bar */
   injectToolbar();
   injectBulkBar();
+  showSkeleton();
 
   /* ─── Arama temizle butonu ────────────────────────── */
   searchInput?.addEventListener("input", () => {
@@ -415,28 +416,7 @@ document.addEventListener("DOMContentLoaded", () => {
       wordList.innerHTML = `<div style="padding:20px;color:#e05252;font-size:14px;text-align:center;">Kelimeler yüklenemedi: ${esc(err.message)}</div>`;
     }
   }
-  function showSkeleton() {
-    [...wordList.querySelectorAll(".word-card, .skeleton-card")].forEach(el => el.remove());
-    emptyState.style.display = "none";
-    wordList.className = "word-list";
-    for (let i = 0; i < 5; i++) {
-      const el = document.createElement("div");
-      el.className = "skeleton-card";
-      el.style.animationDelay = (i * 80) + "ms";
-      el.innerHTML = `
-        <div class="skeleton-inner">
-          <div class="skeleton-line sk-word"></div>
-          <div class="skeleton-line sk-meaning"></div>
-          <div class="skeleton-footer">
-            <div class="skeleton-line sk-tag"></div>
-            <div class="skeleton-line sk-tag"></div>
-            <div class="skeleton-line sk-tag"></div>
-          </div>
-        </div>
-      `;
-      wordList.appendChild(el);
-    }
-  }
+  
   async function enrichTagsInBackground(userId) {
     const levelTags = new Set(['A1','A2','B1','B2']);
     const typeTags  = new Set(['isim','fiil','sıfat','zarf']);
@@ -576,7 +556,28 @@ document.addEventListener("DOMContentLoaded", () => {
     updateBulkBar();
     render(filtered);
   }
-
+  function showSkeleton() {
+    [...wordList.querySelectorAll(".word-card, .skeleton-card")].forEach(el => el.remove());
+    emptyState.style.display = "none";
+    wordList.className = "word-list";
+    for (let i = 0; i < 5; i++) {
+      const el = document.createElement("div");
+      el.className = "skeleton-card";
+      el.style.animationDelay = (i * 80) + "ms";
+      el.innerHTML = `
+        <div class="skeleton-inner">
+          <div class="skeleton-line sk-word"></div>
+          <div class="skeleton-line sk-meaning"></div>
+          <div class="skeleton-footer">
+            <div class="skeleton-line sk-tag"></div>
+            <div class="skeleton-line sk-tag"></div>
+            <div class="skeleton-line sk-tag"></div>
+          </div>
+        </div>
+      `;
+      wordList.appendChild(el);
+    }
+  }
   /* ═══════════════════════════════════════
      RENDER
      ═══════════════════════════════════════ */
