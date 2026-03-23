@@ -18,7 +18,8 @@ import { blocksToHtml }     from "../metin/parseText.js";
 import {
   ttsSupported, speak, stop as ttsStop,
   togglePause, setRate, onStateChange as ttsOnStateChange,
-  isPlaying, isPaused,
+  isPlaying, isPaused, onWordBoundary,   // ← sadece bu satır değişti
+
 } from "../metin/tts.js";
 
 /* ── State ─────────────────────────────────────────────── */
@@ -34,6 +35,8 @@ let _serifMode       = true;
 let _modalOpen       = false;
 let _prefetchWord    = "";
 let _prefetchPromise = null;
+let _ttsSpans = [];
+let _ttsWrapped = false;
 
 const THEMES      = ["", "ok-sepia", "ok-light"];
 const THEME_ICONS = ["☀", "📜", "🌙"];
@@ -193,6 +196,35 @@ function bindTTS() {
     if (bar) bar.innerHTML = `<span class="tts-unsupported">⚠ Bu tarayıcı sesli okumayı desteklemiyor.</span>`;
     return;
   }
+function buildTtsSpans() {
+  if (_ttsWrapped) return;
+  _ttsSpans = [];
+  let offset = 0;
+  const walker = document.createTreeWalker($body, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  let n;
+  while ((n = walker.nextNode())) nodes.push(n);
+  for (const textNode of nodes) {
+    const text = textNode.textContent;
+    const frag = document.createDocumentFragment();
+    const regex = /\S+/g;
+    let m, last = 0;
+    while ((m = regex.exec(text)) !== null) {
+      if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+      const mark = document.createElement("mark");
+      mark.className = "tts-w";
+      mark.dataset.s = String(offset + m.index);
+      mark.textContent = m[0];
+      _ttsSpans.push({ start: offset + m.index, el: mark });
+      frag.appendChild(mark);
+      last = m.index + m[0].length;
+    }
+    if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+    offset += text.length;
+    textNode.parentNode.replaceChild(frag, textNode);
+  }
+  _ttsWrapped = true;
+}
 
   /* ── Durum değişimi → UI güncelle ── */
   ttsOnStateChange(({ playing, paused }) => {
@@ -228,7 +260,16 @@ function bindTTS() {
       if (wave)      { wave.classList.remove("active"); wave.classList.remove("paused"); }
     }
   });
-
+onWordBoundary(({ charIndex }) => {
+    document.querySelectorAll("mark.tts-w.tts-active")
+      .forEach(m => m.classList.remove("tts-active"));
+    if (charIndex < 0) return;
+    const span = _ttsSpans.findLast(s => s.start <= charIndex);
+    if (span?.el) {
+      span.el.classList.add("tts-active");
+      span.el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  });
   /* ── Oynat / Duraklat ── */
   playBtn?.addEventListener("click", () => {
     if (isPlaying()) {
@@ -237,6 +278,7 @@ function bindTTS() {
       // Tüm metni oku — $body'den düz metin al
       const text = $body?.innerText?.trim() || sessionStorage.getItem("savedText") || "";
       if (!text) { showToast("Okunacak metin yok.", false); return; }
+      buildTtsSpans();
       speak(text);
     }
   });

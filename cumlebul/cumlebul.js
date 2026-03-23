@@ -139,7 +139,7 @@ async function getTatoebaExamples(word) {
 }
 
 async function getExamples() {
-  const word = document.getElementById('wordInput').value.trim();
+  const word = document.getElementById('wordInput').value.trim().toLowerCase();
   const btn  = document.getElementById('btn');
   const res  = document.getElementById('results');
   const err  = document.getElementById('error');

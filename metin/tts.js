@@ -23,6 +23,7 @@ const state = {
   pitch:      1.0,
   voice:      null,       // SpeechSynthesisVoice
   onStateChange: null,    // (state) => void — dışarıdan bağlanır
+  onWordBoundary: null,
 };
 
 /* Durum değişince UI'ı bildir */
@@ -110,6 +111,7 @@ export async function speak(text, opts = {}) {
     state.playing = false;
     state.paused  = false;
     state.utterance = null;
+    state.onWordBoundary?.({ charIndex: -1 });
     notify();
   };
 
@@ -130,6 +132,10 @@ export async function speak(text, opts = {}) {
   utt.onresume = () => {
     state.paused = false;
     notify();
+  };
+  utt.onboundary = (e) => {
+    if (e.name !== "word") return;
+    state.onWordBoundary?.({ charIndex: e.charIndex, charLength: e.charLength });
   };
 
   state.utterance = utt;
@@ -176,3 +182,4 @@ export function getRate()   { return state.rate; }
  * @param {Function} cb - ({ playing, paused, text }) => void
  */
 export function onStateChange(cb) { state.onStateChange = cb; }
+export function onWordBoundary(cb) { state.onWordBoundary = cb; }

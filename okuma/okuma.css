@@ -861,3 +861,5 @@ body.ok-focus .tts-bar { opacity: 0; pointer-events: none; }
   padding: 0 8px;
   font-style: italic;
 }
+mark.tts-w           { background: none; color: inherit; }
+mark.tts-w.tts-active { background: rgba(255, 200, 0, 0.35); border-radius: 3px; transition: background .1s; }
