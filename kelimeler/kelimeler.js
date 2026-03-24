@@ -540,8 +540,37 @@ document.addEventListener("DOMContentLoaded", () => {
         activeTagFilter = (activeTagFilter === "__untagged__") ? null : "__untagged__";
         buildFilterSidebar(); renderFiltered();
       });
+
+      const untaggedRow = document.createElement("div");
+      untaggedRow.className = "filter-tag-row";
+
+      const deleteUntaggedBtn = document.createElement("button");
+      deleteUntaggedBtn.className = "filter-tag-list-btn filter-tag-del-btn";
+      deleteUntaggedBtn.title = `Etiketsiz ${untagged} kelimeyi sil`;
+      deleteUntaggedBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
+      deleteUntaggedBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (!currentUserId) return;
+        const untaggedWords = allWords.filter(w => !Array.isArray(w.tags) || !w.tags.length);
+        if (!untaggedWords.length) { showToast("Etiketsiz kelime yok.", "error"); return; }
+        if (!confirm(`Etiketsiz ${untaggedWords.length} kelime kalıcı olarak silinsin mi?\nBu işlem geri alınamaz.`)) return;
+        try {
+          await Promise.allSettled(untaggedWords.map(w => deleteWord(currentUserId, w.id)));
+          const deletedIds = new Set(untaggedWords.map(w => w.id));
+          allWords = allWords.filter(x => !deletedIds.has(x.id));
+          if (activeTagFilter === "__untagged__") activeTagFilter = null;
+          buildFilterSidebar();
+          renderFiltered();
+          showToast(`${untaggedWords.length} kelime silindi.`, "success");
+        } catch(err) {
+          showToast("Silme hatası: " + err.message, "error");
+        }
+      });
+
+      untaggedRow.appendChild(ui);
+      untaggedRow.appendChild(deleteUntaggedBtn);
       filterTagList.appendChild(sep);
-      filterTagList.appendChild(ui);
+      filterTagList.appendChild(untaggedRow);
     }
 
     /* Listelerim bağlantısı */
