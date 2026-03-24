@@ -1,5 +1,5 @@
 1. ab - aşağı, -den itibaren
-2. abbiegen - dönmek (yolda)
+2. abbiegen - dönmek 
 3. die Abbildung - şekil, resim, illüstrasyon
 4. das Abenteuer - macera
 5. aber - ama, fakat
@@ -26,7 +26,7 @@
 26. absolut - kesinlikle, mutlak
 27. abstimmen - oy vermek, oylamak
 28. die Abteilung - bölüm, departman
-29. der Abwart - kapıcı, bakıcı (İsviçre)
+29. der Abwart - kapıcı, bakıcı 
 30. abwärts - aşağıya doğru
 31. abwaschen - yıkamak, bulaşık yıkamak
 32. abwesend - yok, bulunmayan
@@ -48,7 +48,7 @@
 48. das Altersheim - huzurevi
 49. alternativ - alternatif
 50. allein - yalnız, tek başına
-51. aller- - en- (üstünlük)
+51. aller- 
 52. allerdings - tabii ki, ancak
 53. allgemein - genel, genel olarak
 54. der Alltag - günlük yaşam
@@ -301,7 +301,6 @@
 301. das Billett - bilet (İsviçre)
 302. die Biologie - biyoloji
 303. bio(logisch) - organik, biyolojik
-304. die Birne - armut; ampul
 305. bis - -e kadar
 306. bisher - şimdiye kadar
 307. der Bleistift - kurşun kalem
@@ -495,7 +494,6 @@
 495. endlich - sonunda, nihayet
 496. die Energie - enerji
 497. eng - dar, sıkı
-498. das Eis - buz; dondurma
 499. die Eisenbahn - demiryolu
 500. der Enkel - torun (erkek)
 501. elegant - zarif, şık
@@ -750,7 +748,6 @@
 750. genug - yeterli, yeter
 751. genügen - yetmek, yeterli olmak
 752. das Gepäck - bagaj
-753. gerade - düz; tam, şu an
 754. geradeaus - düz, doğruca
 755. das Gerät - cihaz, alet
 756. gerecht - adil, hakkaniyetli
@@ -837,7 +834,6 @@
 837. hässlich - çirkin
 838. häufig - sık, sık sık
 839. der Handel - ticaret, alışveriş
-840. halt - dur; sadece, işte
 841. halten - tutmak, durmak
 842. handeln - hareket etmek, ticaret yapmak
 843. die Hand - el
@@ -1138,7 +1134,6 @@
 1138. leben - yaşamak
 1139. die Langeweile - sıkıntı, can sıkıntısı
 1140. lassen - bırakmak, izin vermek
-1141. der Laster - kamyon; kötü alışkanlık
 1142. das Leder - deri
 1143. ledig - bekar
 1144. leer - boş
@@ -1163,7 +1158,6 @@
 1163. lieb - sevgili, tatlı
 1164. lernen - öğrenmek
 1165. letzt- - son-
-1166. die Leiter - merdiven; lider
 1167. der Leser - okuyucu
 1168. die Leitung - yönetim, hat
 1169. der Lerner - öğrenci, öğrenen
@@ -1423,7 +1417,6 @@
 1423. das Pflaster - yara bandı, bant
 1424. die Pflaume - erik
 1425. pflegen - bakmak, bakım yapmak
-1426. die Pension - emeklilik; pansiyon
 1427. der Pfleger - bakıcı, hemşire (erkek)
 1428. die Pflicht - yükümlülük, görev
 1429. die Phantasie/Fantasie - hayal gücü, fantezi
@@ -1779,7 +1772,6 @@
 1779. der Stempel - mühür, damga
 1780. sterben - ölmek
 1781. der Stern - yıldız
-1782. die Steuer - vergi; direksiyon
 1783. der Steward - hostes (erkek), uçak görevlisi
 1784. der Stift - kalem
 1785. stechen - sokmak, iğnelemek
@@ -1874,7 +1866,6 @@
 1874. das Theater - tiyatro
 1875. das Thema - konu
 1876. theoretisch - teorik
-1877. der Teil - -
 1878. die Terrasse - teras
 1879. der Test - sınav, test
 1880. die Theorie - teori

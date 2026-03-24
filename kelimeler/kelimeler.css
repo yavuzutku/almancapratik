@@ -588,3 +588,8 @@ body { background: #0c0c12; font-family: 'DM Sans', system-ui, sans-serif; }
 @media (max-width: 700px) {
   .filter-tag-list-btn { opacity: 1; }
 }
+.filter-tag-del-btn:hover {
+  background: rgba(239,68,68,0.1);
+  border-color: rgba(239,68,68,0.25);
+  color: #ef4444;
+}

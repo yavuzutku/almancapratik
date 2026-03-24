@@ -550,14 +550,16 @@ async function saveSelected() {
   const results = await Promise.allSettled(
     toSave.map(async entry => {
       const normalizedDe = normalizeGermanWord(entry.de, null);
+      const meanings = entry.tr.split(',').map(m => m.trim()).filter(Boolean);
+      const primaryMeaning = meanings[0] || entry.tr.trim();
       const dup = existingWords.find(w =>
         (w.word||'').toLowerCase().trim() === normalizedDe.toLowerCase().trim() &&
-        (w.meaning||'').toLowerCase().trim() === entry.tr.toLowerCase().trim()
+        (w.meaning||'').toLowerCase().trim() === primaryMeaning.toLowerCase().trim()
       );
       if (dup) { entry.status = 'duplicate'; return { type: 'skip', entry }; }
-      await saveWord(currentUser.uid, normalizedDe, entry.tr, tags);
+      await saveWord(currentUser.uid, normalizedDe, primaryMeaning, tags, meanings);
       entry.status = 'saved';
-      existingWords.push({ word: normalizedDe, meaning: entry.tr });
+      existingWords.push({ word: normalizedDe, meaning: primaryMeaning });
       return { type: 'ok', entry, normalizedDe };
     })
   );
@@ -608,7 +610,7 @@ function renderTable() {
       <td class="td-check"><label class="cb-wrap"><input type="checkbox" class="row-check" ${e.selected?'checked':''}><span class="cb-box"></span></label></td>
       <td class="td-de"><input class="cell-input de-input" value="${escHtml(e.de)}" placeholder="Almanca kelime…" spellcheck="false"></td>
       <td class="td-arrow"><span class="method-badge">${METHOD_LABELS[e.method]||e.method}</span></td>
-      <td class="td-tr"><input class="cell-input tr-input" value="${escHtml(e.tr)}" placeholder="Türkçe anlam…" spellcheck="false"></td>
+      <td class="td-tr"><input class="cell-input tr-input" value="${escHtml(e.tr)}" placeholder="anlam1, anlam2, …" spellcheck="false"></td>
       <td class="td-status"><span class="status-badge status-badge--${e.status}">${STATUS_LABELS[e.status]}</span></td>
       <td class="td-del"><button class="del-btn" title="Sil">✕</button></td>
     `;

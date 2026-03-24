@@ -502,8 +502,33 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
 
+      const deleteTagBtn = document.createElement("button");
+      deleteTagBtn.className = "filter-tag-list-btn filter-tag-del-btn";
+      deleteTagBtn.title = `"${tag}" etiketli tüm kelimeleri sil`;
+      deleteTagBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
+      deleteTagBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (!currentUserId) return;
+        const tagWords = allWords.filter(w => Array.isArray(w.tags) && w.tags.includes(tag));
+        if (!tagWords.length) { showToast("Bu etikette kelime yok.", "error"); return; }
+        if (!confirm(`"${tag}" etiketli ${tagWords.length} kelime kalıcı olarak silinsin mi?\nBu işlem geri alınamaz.`)) return;
+        try {
+          for (const w of tagWords) {
+            await deleteWord(currentUserId, w.id);
+            allWords = allWords.filter(x => x.id !== w.id);
+          }
+          if (activeTagFilter === tag) activeTagFilter = null;
+          buildFilterSidebar();
+          renderFiltered();
+          showToast(`${tagWords.length} kelime silindi.`, "success");
+        } catch(err) {
+          showToast("Silme hatası: " + err.message, "error");
+        }
+      });
+
       row.appendChild(item);
       row.appendChild(addToListBtn);
+      row.appendChild(deleteTagBtn);
       filterTagList.appendChild(row);
     });
 
