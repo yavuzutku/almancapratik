@@ -5,7 +5,7 @@
 import { auth, getWords, saveWord } from "../js/firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { fetchTranslate, normalizeGermanWord } from "../js/german.js";
-
+import { renderTagChips, getSelectedTags, extractAllTags } from "../js/tag.js";
 /* ─── STATE ─────────────────────────────────────────────── */
 let currentUser   = null;
 let existingWords = [];
@@ -541,30 +541,37 @@ async function saveSelected() {
   const toSave = entries.filter(e => e.selected && e.de && e.tr && e.status !== 'saved');
   if (!toSave.length) { showToast("Kaydedilecek kelime yok!", "err"); return; }
 
-  const btn = document.getElementById("btnSave");
+  const tags = getSelectedTags('bulkTagChips');
+  const btn  = document.getElementById("btnSave");
   if (btn) { btn.disabled = true; btn.textContent = "Kaydediliyor…"; }
 
   let saved = 0, skipped = 0, errors = 0;
-  for (const entry of toSave) {
-    const normalizedDe = normalizeGermanWord(entry.de, null);
-    try {
+
+  const results = await Promise.allSettled(
+    toSave.map(async entry => {
+      const normalizedDe = normalizeGermanWord(entry.de, null);
       const dup = existingWords.find(w =>
         (w.word||'').toLowerCase().trim() === normalizedDe.toLowerCase().trim() &&
         (w.meaning||'').toLowerCase().trim() === entry.tr.toLowerCase().trim()
       );
-      if (dup) { entry.status = 'duplicate'; skipped++; continue; }
-      await saveWord(currentUser.uid, normalizedDe, entry.tr, []);
+      if (dup) { entry.status = 'duplicate'; return { type: 'skip', entry }; }
+      await saveWord(currentUser.uid, normalizedDe, entry.tr, tags);
       entry.status = 'saved';
       existingWords.push({ word: normalizedDe, meaning: entry.tr });
-      updateRowStatus(entry.id, 'saved');
-      saved++;
-    } catch {
-      entry.status = 'error';
-      updateRowStatus(entry.id, 'error');
-      errors++;
+      return { type: 'ok', entry, normalizedDe };
+    })
+  );
+
+  results.forEach(r => {
+    if (r.status === 'fulfilled') {
+      const { type, entry } = r.value;
+      if (type === 'ok')   { updateRowStatus(entry.id, 'saved');     saved++;   }
+      if (type === 'skip') { updateRowStatus(entry.id, 'duplicate'); skipped++; }
+    } else {
+      const entry = toSave[results.indexOf(r)];
+      if (entry) { entry.status = 'error'; updateRowStatus(entry.id, 'error'); errors++; }
     }
-    await sleep(60);
-  }
+  });
 
   if (btn) { btn.disabled = false; btn.textContent = `Seçilileri Kaydet (${getSelectCount()})`; }
   showSummary(saved, skipped, errors);
@@ -730,6 +737,7 @@ function openPreviewModal(parsed) {
   modal.classList.add('open');
   document.getElementById('previewConfirm').onclick = () => {
     closePreviewModal(); entries = parsed; reCheckDuplicates(); renderTable(); showPhase(2);
+    renderTagChips('bulkTagChips', [], extractAllTags(existingWords));
   };
 }
 

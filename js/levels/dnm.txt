@@ -1,0 +1,2278 @@
+1. ab - aşağı, -den itibaren
+2. abbiegen - dönmek (yolda)
+3. die Abbildung - şekil, resim, illüstrasyon
+4. das Abenteuer - macera
+5. aber - ama, fakat
+6. abfahren - hareket etmek, kalkmak
+7. die Abfahrt - kalkış, hareket
+8. der Abfall - çöp, atık
+9. der Abfalleimer - çöp kovası
+10. Abgase - egzoz gazları
+11. abgeben - teslim etmek, vermek
+12. abhängen - bağlı olmak, asmak
+13. abheben - para çekmek, kaldırmak
+14. abholen - almak, teslim almak
+15. abhängig - bağımlı, bağlı
+16. abschreiben - kopya etmek, silmek
+17. das Abitur - lise mezuniyet sınavı
+18. ablehnen - reddetmek
+19. abmachen - çıkarmak, anlaşmak
+20. abnehmen - kilo vermek, almak
+21. absagen - iptal etmek
+22. der Abschluss - bitiş, kapanış, diploma
+23. der Abschnitt - bölüm, kesim, paragraf
+24. der Absender - gönderen
+25. die Absicht - niyet, amaç
+26. absolut - kesinlikle, mutlak
+27. abstimmen - oy vermek, oylamak
+28. die Abteilung - bölüm, departman
+29. der Abwart - kapıcı, bakıcı (İsviçre)
+30. abwärts - aşağıya doğru
+31. abwaschen - yıkamak, bulaşık yıkamak
+32. abwesend - yok, bulunmayan
+33. achten - dikkat etmek, saygı göstermek
+34. die Ahnung - fikir, his, sezgi
+35. die Aktion - aksiyon, eylem, kampanya
+36. aktiv - aktif, etkin
+37. das Alphabet - alfabe
+38. als - olarak, -den, -ken
+39. also - yani, demek ki
+40. aktuell - güncel, şimdiki
+41. akzeptieren - kabul etmek
+42. alt - yaşlı, eski
+43. der Alarm - alarm
+44. das Alter - yaş
+45. der Alkohol - alkol
+46. all- - tüm-, hepsi-
+47. das Altenheim - huzurevi
+48. das Altersheim - huzurevi
+49. alternativ - alternatif
+50. allein - yalnız, tek başına
+51. aller- - en- (üstünlük)
+52. allerdings - tabii ki, ancak
+53. allgemein - genel, genel olarak
+54. der Alltag - günlük yaşam
+55. die Ampel - trafik lambası
+56. das Amt - resmi makam, daire
+57. sich amüsieren - eğlenmek
+58. an - yanında, -de/-da
+59. analysieren - analiz etmek
+60. anbieten - teklif etmek, sunmak
+61. der Anbieter - sağlayıcı, tedarikçi
+62. die Angst - korku, endişe
+63. das Angebot - teklif, fırsat
+64. andererseits - öte yandan
+65. ändern - değiştirmek
+66. die Änderung - değişiklik
+67. ängstlich - korkak, endişeli
+68. anhaben - üzerinde olmak, giymek
+69. anklicken - tıklamak
+70. ankommen - gelmek, varmak
+71. die Ankunft - varış, geliş
+72. ankündigen - duyurmak, haber vermek
+73. anerkennen - tanımak, kabul etmek
+74. anfangen - başlamak
+75. die Anleitung - kullanım kılavuzu, talimat
+76. anmelden - kaydettirmek, kayıt olmak
+77. die Anmeldung - kayıt, başvuru
+78. die Anrede - hitap, seslenme
+79. anrufen - aramak, telefon etmek
+80. angenehm - hoş, keyifli
+81. der Anruf - telefon araması
+82. der Anrufbeantworter - telesekreter
+83. die Ansage - anons, duyuru
+84. der Angehörige - aile üyesi, yakın
+85. anschaffen - satın almak, temin etmek
+86. der Anwalt - avukat
+87. anschließen - bağlamak, eklemek
+88. anzeigen - bildirmek, şikayet etmek
+89. der Anschluss - bağlantı
+90. anschnallen - emniyet kemeri takmak
+91. der Anspruch - hak, talep
+92. anstellen - işe almak, yapmak
+93. der Angestellte - çalışan, memur
+94. der Antrag - başvuru, talep
+95. anwenden - uygulamak, kullanmak
+96. anwesend - mevcut, hazır
+97. antworten - cevaplamak
+98. die Antwort - cevap, yanıt
+99. die Anzeige - ilan, şikayet
+100. der Anzug - takım elbise
+101. das Apartment - daire, apartman
+102. der Apfel - elma
+103. die Apotheke - eczane
+104. der Apparat - cihaz, aparat
+105. der Appetit - iştah
+106. die Arbeitserlaubnis - çalışma izni
+107. arbeitslos - işsiz
+108. die Arbeitslosigkeit - işsizlik
+109. der Arbeitsplatz - işyeri, çalışma yeri
+110. die Arbeitsstelle - iş yeri, pozisyon
+111. der Architekt - mimar
+112. der Ärger - sinirlilik, kızgınlık, sorun
+113. ärgerlich - sinir bozucu, kızgın
+114. arm - fakir
+115. der Arm - kol
+116. die Art - tür, çeşit, yöntem
+117. der Artikel - makale, nesne, artikel
+118. der Arzt - doktor, hekim
+119. das Asyl - sığınma, iltica
+120. atmen - nefes almak
+121. der Atem - nefes
+122. auch - de, da, ayrıca
+123. auf - üzerinde, -e, açık
+124. auffallen - dikkat çekmek, göze çarpmak
+125. auffordern - davet etmek, istemek
+126. die Aufforderung - davet, talep
+127. aufführen - sergilemek, sahnelemek
+128. die Aufgabe - görev, ödev
+129. aufgeben - vazgeçmek, teslim etmek
+130. aufhalten - durdurmak, oyalamak
+131. aufheben - kaldırmak, iptal etmek
+132. aufhören - durmak, bırakmak
+133. aufladen - şarj etmek, yüklemek
+134. auflösen - çözmek, dağıtmak
+135. aufmerksam - dikkatli, özenli
+136. aufnehmen - kaydetmek, kabul etmek
+137. die Aufnahme - kayıt, kabul
+138. aufpassen - dikkat etmek
+139. aufräumen - toplamak, düzenlemek
+140. aufregen - heyecanlandırmak, sinir etmek
+141. aufstehen - kalkmak, ayağa kalkmak
+142. der Auftrag - sipariş, görev
+143. auftreten - ortaya çıkmak, davranmak
+144. ausdrucken - yazdırmak, baskı almak
+145. der Ausdruck - ifade, baskı
+146. ausfallen - iptal olmak, düşmek
+147. der Ausflug - gezi, kır gezisi
+148. ausfüllen - doldurmak (form)
+149. die Ausgabe - harcama, baskı, sayı
+150. das Auge - göz
+151. aus - dışarı, -den
+152. ausgebildet - eğitimli
+153. der Aufzug - asansör
+154. der Augenblick - an, lahza
+155. die Ausbildung - eğitim, meslek eğitimi
+156. der Ausgang - çıkış
+157. ausgeben - harcamak, dağıtmak
+158. ausgehen - dışarı çıkmak
+159. ausgezeichnet - mükemmel, olağanüstü
+160. die Aushilfe - geçici çalışan, yardım
+161. die Auskunft - bilgi, danışma
+162. das Ausland - yurt dışı
+163. der Ausländer - yabancı
+164. ausmachen - söndürmek, kapatmak
+165. die Ausnahme - istisna
+166. aussehen - görünmek, görünüş olmak
+167. aussprechen - telaffuz etmek, ifade etmek
+168. außerhalb - dışında
+169. äußerlich - dışsal, görünürde
+170. außer - dışında, hariç
+171. außerdem - bunun yanı sıra, ayrıca
+172. die Ausstellung - sergi
+173. auswählen - seçmek
+174. die Auswahl - seçim, seçenek
+175. die Autobahn - otoyol
+176. außen - dışarıda, dışta
+177. die Aussicht - manzara, olasılık
+178. der Automat - otomat, makine
+179. bar - nakit
+180. baden - banyo yapmak, yüzmek
+181. die Bar - bar
+182. der Basketball - basketbol
+183. basteln - el işi yapmak
+184. der Bauch - karın, göbek
+185. bauen - inşa etmek, yapmak
+186. die Bahn - tren, yol, hat
+187. die Straßenbahn - tramvay
+188. die U-Bahn - metro
+189. der Bahnhof - tren istasyonu
+190. der Bahnsteig - peron
+191. bald - yakında
+192. der Balkon - balkon
+193. der Ball - top
+194. das Ballett - bale
+195. der Bauer - çiftçi
+196. der Baum - ağaç
+197. beachten - dikkate almak, uygulamak
+198. der Beamte - memur, devlet görevlisi
+199. beantragen - başvurmak, talep etmek
+200. die Banane - muz
+201. beantworten - cevaplamak
+202. die Bank - banka, sıra
+203. sich bedanken - teşekkür etmek
+204. der Bedarf - ihtiyaç, gereksinim
+205. der Bancomat/Bankomat - ATM, bankamatik
+206. die Bankleitzahl - banka kodu
+207. die Bankomat-Karte - banka kartı
+208. bedeuten - anlamına gelmek
+209. die Bedeutung - anlam, önem
+210. bedienen - hizmet etmek, kullanmak
+211. die Bedienungsanleitung - kullanım kılavuzu
+212. sich beeilen - acele etmek
+213. beenden - bitirmek, sonlandırmak
+214. sich befinden - bulunmak
+215. befreit - özgür, kurtarılmış
+216. befriedigend - tatmin edici
+217. begegnen - karşılaşmak
+218. begeistert - heyecanlı, coşkulu
+219. beginnen - başlamak
+220. behaupten - iddia etmek
+221. behindern - engellemek
+222. bei - yanında, -de/-da
+223. beid- - her iki-
+224. das Bein - bacak
+225. beinahe - neredeyse
+226. das Beispiel - örnek
+227. beißen - ısırmak
+228. begleiten - eşlik etmek
+229. der Beitrag - katkı, üyelik ücreti
+230. begrenzt - sınırlı
+231. begründen - gerekçelendirmek
+232. der Beginn - başlangıç
+233. die Begründung - gerekçe, açıklama
+234. behalten - tutmak, akılda tutmak
+235. behandeln - muamele etmek, tedavi etmek
+236. begrüßen - selamlamak, karşılamak
+237. der Bekannte - tanıdık
+238. beleidigen - hakaret etmek, aşağılamak
+239. beliebt - sevilen, popüler
+240. sich bemühen - çaba göstermek
+241. benötigen - ihtiyaç duymak
+242. benutzen - kullanmak
+243. das Benzin - benzin
+244. beobachten - gözlemlemek, izlemek
+245. beruflich - mesleki, iş ile ilgili
+246. beraten - danışmak, tavsiye vermek
+247. berechnen - hesaplamak
+248. der Bereich - alan, bölge
+249. bereit - hazır
+250. bereits - zaten, hali hazırda
+251. beschädigen - hasar vermek
+252. der Bescheid - bildirim, karar
+253. beschließen - karar vermek
+254. beschränken - kısıtlamak, sınırlamak
+255. beschreiben - tanımlamak, açıklamak
+256. die Beschreibung - açıklama, tanım
+257. die Beratung - danışmanlık
+258. berühmt - ünlü, meşhur
+259. die Beschäftigung - meşguliyet, iş
+260. bequem - rahat
+261. bemerken - fark etmek
+262. der Berg - dağ
+263. sich beschweren - şikayet etmek
+264. besetzen - işgal etmek, doldurmak
+265. besichtigen - gezmek, ziyaret etmek
+266. besonder- - özel, hususi
+267. sich beteiligen - katılmak
+268. der Betrag - miktar, tutar
+269. betreuen - bakmak, ilgilenmek
+270. der Betreuer - bakıcı, gözetici
+271. besprechen - görüşmek, tartışmak
+272. die Besprechung - toplantı, görüşme
+273. die Besserung - iyileşme
+274. der Betrieb - işletme, fabrika
+275. der Betriebsrat - işçi konseyi
+276. betrunken - sarhoş
+277. das Bett - yatak
+278. bestimmt - kesinlikle, belirli
+279. die Bevölkerung - nüfus
+280. bevor - önce
+281. bewegen - hareket ettirmek
+282. die Bewegung - hareket
+283. bestellen - sipariş vermek
+284. besuchen - ziyaret etmek
+285. bestehen - geçmek (sınav), mevcut olmak
+286. bestrafen - cezalandırmak
+287. beweisen - kanıtlamak
+288. die Bewerbung - başvuru, iş başvurusu
+289. der Bewohner - sakin, oturan
+290. bezahlen - ödemek
+291. die Beziehung - ilişki
+292. die Bibliothek - kütüphane
+293. das Bier - bira
+294. die Bitte - rica, lütfen
+295. blass - soluk, renksiz
+296. bieten - sunmak, teklif etmek
+297. das Bild - resim, fotoğraf
+298. das Blatt - yaprak, sayfa
+299. bleiben - kalmak
+300. der Bildschirm - ekran
+301. das Billett - bilet (İsviçre)
+302. die Biologie - biyoloji
+303. bio(logisch) - organik, biyolojik
+304. die Birne - armut; ampul
+305. bis - -e kadar
+306. bisher - şimdiye kadar
+307. der Bleistift - kurşun kalem
+308. der Blick - bakış, manzara
+309. blind - kör
+310. billig - ucuz
+311. Bio- - organik-
+312. blitzen - şimşek çakmak
+313. blond - sarışın
+314. bloß - sadece, yalnızca
+315. blühen - çiçek açmak
+316. die Blume - çiçek
+317. die Bluse - bluz
+318. bluten - kanamak
+319. das Blut - kan
+320. der Boden - zemin, yer, taban
+321. der Bogen - yay, kavis, kağıt
+322. die Bohne - fasulye
+323. der Brief - mektup
+324. der Briefträger - postacı
+325. der Briefumschlag - zarf
+326. die Brieftasche - cüzdan
+327. die Brille - gözlük
+328. bringen - getirmek
+329. der Braten - kızartma, et yemeği
+330. brechen - kırmak
+331. breit - geniş
+332. die Broschüre - broşür
+333. das Brot - ekmek
+334. das Brötchen - küçük ekmek, sandviç ekmeği
+335. der Bruder - erkek kardeş
+336. die Brust - göğüs
+337. der Bub - erkek çocuk (Avusturya)
+338. das Buch - kitap
+339. die Brücke - köprü
+340. die Bremse - fren
+341. brennen - yanmak
+342. die Buchhandlung - kitapçı
+343. buchen - rezervasyon yapmak
+344. buchstabieren - harf harf söylemek
+345. die Couch - kanepe
+346. die Creme - krem, losyon
+347. der Cousin - kuzen (erkek)
+348. die Büchse - kutu, teneke
+349. das Couvert - zarf (İsviçre)
+350. die Bühne - sahne
+351. bunt - renkli, çok renkli
+352. die Burg - kale, şato
+353. der Bürger - vatandaş
+354. das Büro - ofis, büro
+355. die Bürste - fırça
+356. die Zahnbürste - diş fırçası
+357. der Bus - otobüs
+358. die Butter - tereyağı
+359. dabei - bu sırada, yanında
+360. das Dach - çatı
+361. dafür - bunun için, bunun yerine
+362. dagegen - buna karşı
+363. die Cafeteria - kafeterya
+364. die Chance - şans, fırsat
+365. der Chef - patron, şef
+366. daher - bu yüzden, buradan
+367. dahin - oraya, o yana
+368. der Coiffeur - kuaför (İsviçre)
+369. damals - o zamanlar
+370. die Dame - hanımefendi, bayan
+371. damit - bununla, böylece
+372. danach - ondan sonra
+373. daneben - yanında, yanı sıra
+374. danken - teşekkür etmek
+375. dauern - sürmek
+376. die Decke - tavan, battaniye
+377. dekorieren - süslemek, dekore etmek
+378. denken - düşünmek
+379. darstellen - temsil etmek, göstermek
+380. die Datei - dosya (bilgisayar)
+381. das Datum - tarih
+382. die Daten (Plural) - veriler
+383. der Gedanke - düşünce, fikir
+384. denn - çünkü, zira
+385. dass - ki, -diği
+386. derselbe - aynısı
+387. deshalb - bu yüzden
+388. das Dessert - tatlı
+389. deswegen - bu yüzden, bu nedenle
+390. das Detail - ayrıntı, detay
+391. diskutieren - tartışmak
+392. deutlich - açık, belirgin
+393. die Diät - diyet
+394. die Distanz - mesafe, uzaklık
+395. der Dialekt - lehçe, diyalekt
+396. doch - ama, gene de, hâlâ
+397. der Dialog - diyalog, diyalog
+398. dicht - yoğun, sık
+399. dick - kalın, şişman
+400. der Doktor - doktor
+401. das Dokument - belge
+402. donnern - gürlemek
+403. der Dieb - hırsız
+404. dienen - hizmet etmek
+405. der Donner - gök gürültüsü
+406. doppelt - çift, iki kat
+407. diesmal - bu sefer
+408. das Dorf - köy
+409. dort - orada
+410. das Ding - nesne, şey
+411. das Diplom - diploma
+412. direkt - doğrudan, direkt
+413. der Direktor - müdür, direktör
+414. die Diskothek - diskotek
+415. dies- - bu-
+416. die Dose - kutu, teneke
+417. draußen - dışarıda
+418. der Dreck - pislik, çamur
+419. drehen - döndürmek, çevirmek
+420. dringend - acil
+421. drin - içinde, içeride
+422. die Droge - uyuşturucu, ilaç
+423. die Drogerie - kişisel bakım ürünleri mağazası
+424. drüben - orada, karşı tarafta
+425. die Durchsage - anons, yayın
+426. der Durchschnitt - ortalama
+427. durchschnittlich - ortalama olarak
+428. drucken - basmak, yazdırmak
+429. der Drucker - yazıcı
+430. drücken - basmak, sıkmak
+431. der Durst - susuzluk
+432. dürfen - izin verilmek, -ebilmek
+433. durstig - susuz, susamış
+434. die Dusche - duş
+435. dunkel - karanlık, koyu
+436. dünn - ince, zayıf
+437. ebenfalls - aynı şekilde, de
+438. ebenso - aynı şekilde
+439. durch - aracılığıyla, boyunca
+440. eben - düz, tam, işte
+441. die e-card - e-kart, sağlık kartı
+442. eilen - acele etmek
+443. eilig - acil, aceleden
+444. die Ecke - köşe
+445. das Eck - köşe (Avusturya)
+446. eckig - köşeli, köşe şeklinde
+447. egal - farketmez, eşit
+448. die Einbahnstraße - tek yönlü yol
+449. einbrechen - zorla girmek, gece soygunculuğu yapmak
+450. der Einbrecher - hırsız, soyguncu
+451. der Einbruch - hırsızlık, soygun
+452. die Ehefrau - eş (kadın), karı
+453. eher - daha ziyade, önce
+454. ehrlich - dürüst, namuslu
+455. der Eindruck - izlenim
+456. das Ei - yumurta
+457. eigen- - kendi-, öz-
+458. eigentlich - aslında, gerçekte
+459. sich eignen - uygun olmak
+460. eindeutig - açık, kesin
+461. die Ehe - evlilik
+462. ein- - bir-, içeri-
+463. einerseits - bir yandan
+464. einfach - kolay, basit
+465. die Einfahrt - giriş
+466. einfallen - aklına gelmek
+467. der Einfluss - etki, nüfuz
+468. beeinflussen - etkilemek
+469. einfügen - eklemek, yerleştirmek
+470. einführen - tanıtmak, başlatmak
+471. die Einnahme - gelir, kazanç
+472. einpacken - paketlemek
+473. der Eingang - giriş
+474. einheitlich - tekdüze, birörnek
+475. einig- - bazı-, birkaç-
+476. sich einigen - uzlaşmak, anlaşmak
+477. einkaufen - alışveriş yapmak
+478. der Einkauf - alışveriş
+479. einladen - davet etmek
+480. einnehmen - almak, içmek (ilaç)
+481. einsam - yalnız, ıssız
+482. einschalten - açmak (cihaz)
+483. einschließlich - dahil
+484. das Einschreiben - taahhütlü mektup
+485. einsetzen - yerleştirmek, kullanmak
+486. einsteigen - binmek (araca)
+487. einstellen - ayarlamak, işe almak
+488. eintreten - girmek, üye olmak
+489. einmal - bir kez, bir kere
+490. einzahlen - para yatırmak
+491. einzeln - tek tek, ayrı ayrı
+492. die Einzelheit - ayrıntı, detay
+493. einziehen - taşınmak, çekmek
+494. Einzel- - tek-, bireysel-
+495. endlich - sonunda, nihayet
+496. die Energie - enerji
+497. eng - dar, sıkı
+498. das Eis - buz; dondurma
+499. die Eisenbahn - demiryolu
+500. der Enkel - torun (erkek)
+501. elegant - zarif, şık
+502. entdecken - keşfetmek
+503. elektrisch - elektrikli
+504. entfernen - çıkarmak, uzaklaştırmak
+505. Elektro- - elektro-
+506. elektronisch - elektronik
+507. die Eltern - anne baba, ebeveynler
+508. empfehlen - tavsiye etmek
+509. enden - bitmek, sona ermek
+510. die Entfernung - mesafe, uzaklık
+511. entgegenkommen - karşılamak, uzlaşmak
+512. enthalten - içermek
+513. entlang - boyunca
+514. entlassen - serbest bırakmak, işten çıkarmak
+515. entschuldigen - özür dilemek
+516. entsorgen - elden çıkarmak, imha etmek
+517. entspannend - rahatlatıcı
+518. sich ereignen - olmak, meydana gelmek
+519. enttäuschen - hayal kırıklığı yaratmak
+520. die Enttäuschung - hayal kırıklığı
+521. entweder ... oder - ya ... ya da
+522. entwickeln - geliştirmek
+523. die Entwicklung - gelişme, gelişim
+524. die Erde - toprak, dünya
+525. die Erfahrung - deneyim, tecrübe
+526. die Erfindung - icat, buluş
+527. der Erfolg - başarı
+528. entstehen - oluşmak, meydana gelmek
+529. erforderlich - gerekli, zorunlu
+530. erfordern - gerektirmek
+531. erfüllen - yerine getirmek, doldurmak
+532. ergänzen - tamamlamak, eklemek
+533. das Ergebnis - sonuç
+534. erhalten - almak, elde etmek
+535. die Erholung - dinlenme, iyileşme
+536. erinnern - hatırlatmak, hatırlamak
+537. die Erinnerung - hatıra, anı
+538. sich erkälten - soğuk almak, üşütmek
+539. erledigen - halletmek, tamamlamak
+540. erleichtern - kolaylaştırmak
+541. die Ermäßigung - indirim
+542. ernähren - beslemek, geçindirmek
+543. die Ernährung - beslenme, gıda
+544. ernst - ciddi
+545. eröffnen - açmak, başlatmak
+546. die Eröffnung - açılış
+547. erreichen - ulaşmak, erişmek
+548. erschöpft - bitkin, yorgun
+549. das Erlebnis - deneyim, yaşantı
+550. erschrecken - korkmak, korkutmak
+551. erst - ilk önce, ancak
+552. der Ersatz - yedek, ikame
+553. erst- - ilk-
+554. erstellen - oluşturmak, hazırlamak
+555. der Erwachsene - yetişkin
+556. erwarten - beklemek, ummak
+557. erzählen - anlatmak
+558. die Erzählung - hikaye, anlatı
+559. erziehen - yetiştirmek, terbiye etmek
+560. es - o (evcil cinsiyet)
+561. eventuell - olası, muhtemelen
+562. ewig - sonsuz, ebedi
+563. der Experte - uzman
+564. der Export - ihracat
+565. extra - ekstra, ayrıca
+566. extrem - aşırı, son derece
+567. essen - yemek yemek
+568. der Fachmann - uzman, profesyonel
+569. die Fachleute - uzmanlar
+570. die Fähigkeit - yetenek, beceri
+571. die Etage - kat
+572. etwa - yaklaşık, belki
+573. die Fahrbahn - şerit, yol
+574. fantastisch - harika, müthiş
+575. der Fahrer - sürücü
+576. farbig - renkli
+577. das Faschierte - kıyma (Avusturya)
+578. der Fasching - karnaval (Avusturya)
+579. die Fasnacht - karnaval (İsviçre)
+580. fassen - yakalamak, kavramak
+581. fair - adil
+582. fast - neredeyse
+583. der Faktor - faktör, etken
+584. faul - tembel, çürük
+585. der Fall - durum, olay, dava
+586. fallen - düşmek
+587. fällig - vadesi gelmiş, gerekli
+588. falls - eğer, -se/-sa
+589. falsch - yanlış, hatalı
+590. die Familie - aile
+591. fangen - yakalamak
+592. faulenzen - tembellik etmek
+593. der Fauteuil - koltuk, berjer (Avusturya/İsviçre)
+594. fehlen - eksik olmak, özlemek
+595. der Fehler - hata
+596. feiern - kutlamak
+597. die Feier - kutlama, tören
+598. der Feierabend - mesai bitişi, iş çıkışı
+599. das Fenster - pencere
+600. die Ferien - tatil
+601. feucht - nemli, ıslak
+602. die Fernbedienung - uzaktan kumanda
+603. das Feuer - ateş
+604. fernsehen - televizyon izlemek
+605. das Fernsehen - televizyon
+606. der Fernseher - televizyon seti
+607. das Fett - yağ
+608. das Feuerzeug - çakmak
+609. die Feuerwehr - itfaiye
+610. fertig - hazır, bitmiş
+611. fest - sağlam, sabit
+612. das Fest - bayram, tören, şenlik
+613. die Festplatte - sabit disk
+614. die Figur - figür, form, karakter
+615. der Film - film
+616. finanzieren - finanse etmek
+617. finanziell - finansal, mali
+618. finden - bulmak
+619. festsetzen - belirlemek, kararlaştırmak
+620. feststehen - kesin olmak
+621. feststellen - tespit etmek
+622. fett - yağlı, şişman
+623. der Finger - parmak
+624. die Firma - şirket, firma
+625. flach - düz, sığ
+626. die Fläche - alan, yüzey
+627. die Flasche - şişe
+628. der Fleck - leke
+629. das Fleisch - et
+630. der Fleischhauer - kasap (Avusturya)
+631. fleißig - çalışkan
+632. flexibel - esnek
+633. das Formular - form, belge
+634. die Forschung - araştırma
+635. die Fortbildung - mesleki gelişim, ileri eğitim
+636. der Fortschritt - ilerleme, gelişme
+637. fortsetzen - sürdürmek, devam etmek
+638. die Fortsetzung - devam
+639. fliegen - uçmak
+640. fliehen - kaçmak
+641. fließen - akmak
+642. der Flug - uçuş
+643. das Forum - forum
+644. fotografieren - fotoğraf çekmek
+645. das Foto - fotoğraf
+646. der Flughafen - havalimanı
+647. das Flugzeug - uçak
+648. der Flur - koridor, hol
+649. der Fluss - nehir
+650. die Flüssigkeit - sıvı
+651. folgen - takip etmek, izlemek
+652. der Fotograf - fotoğrafçı
+653. die Fotografie - fotoğrafçılık, fotoğraf
+654. fragen - sormak
+655. fordern - talep etmek, istemek
+656. frech - küstah, terbiyesiz
+657. frei - serbest, özgür
+658. die Forderung - talep, istek
+659. fördern - desteklemek, teşvik etmek
+660. die Förderung - destek, teşvik
+661. im Freien - açık havada
+662. die Freiheit - özgürlük
+663. die Freizeit - serbest zaman, boş zaman
+664. die Form - form, biçim
+665. die Frage - soru
+666. der Fotoapparat - fotoğraf makinesi
+667. die Frau - kadın, hanım, eş
+668. freiwillig - gönüllü
+669. fremd - yabancı
+670. fressen - yemek (hayvanlar için)
+671. sich freuen - sevinmek
+672. die Freude - sevinç, mutluluk
+673. die Freundschaft - arkadaşlık, dostluk
+674. der Friede - barış
+675. fühlen - hissetmek
+676. führen - yönetmek, götürmek
+677. frieren - donmak, üşümek
+678. frisch - taze, serin
+679. der Friseur - kuaför, berber
+680. früh - erken, sabah
+681. froh - mutlu, neşeli
+682. der Führerausweis - ehliyet (İsviçre)
+683. die Frist - süre, vade
+684. frühstücken - kahvaltı yapmak
+685. funktionieren - çalışmak, işlemek
+686. für - için
+687. furchtbar - korkunç, berbat
+688. der Gast - misafir, konuk
+689. die Fußgängerzone - yaya bölgesi
+690. füttern - beslemek, yemek vermek
+691. das Gasthaus - pansiyon, han
+692. die Gaststätte - restoran, lokanta
+693. das Gebäude - bina
+694. geben - vermek
+695. die Galerie - galeri
+696. der Gang - koridor, vites, yürüyüş
+697. das Gebiet - alan, bölge
+698. ganz - bütün, tamamen
+699. gar - hiç, pişmiş
+700. die Garage - garaj
+701. garantieren - garanti etmek
+702. die Garantie - garanti
+703. das Gebirge - dağ silsilesi
+704. geboren werden - doğmak
+705. gebrauchen - kullanmak
+706. die Gebühr - ücret, harç
+707. die Geburt - doğum
+708. der Geburtstag - doğum günü
+709. die Garderobe - vestiyer, elbise dolabı
+710. das Gedicht - şiir
+711. die Geduld - sabır
+712. geehrt - sayın, değerli
+713. geeignet - uygun, elverişli
+714. die Gefahr - tehlike
+715. gegenüber - karşısında, karşı tarafta
+716. das Gehalt - maaş
+717. das Geheimnis - sır, gizem
+718. gefallen - hoşa gitmek, beğenmek
+719. sich etwas gefallen lassen - bir şeye katlanmak
+720. das Gefängnis - hapishane
+721. das Gefühl - his, duygu
+722. gegen - karşı, -e doğru
+723. die Gegend - bölge, çevre
+724. der Gegensatz - karşıtlık, zıtlık
+725. der Gegenstand - nesne, konu
+726. das Gegenteil - karşıtı, zıddı
+727. gehen - gitmek, yürümek
+728. gehören - ait olmak
+729. der Gehsteig - kaldırım
+730. das Geld - para
+731. der Geldautomat - ATM, bankamatik
+732. die Geldbörse - cüzdan
+733. die Gelegenheit - fırsat, imkan
+734. gelingen - başarmak, başarılı olmak
+735. gelten - geçerli olmak
+736. das Gericht - mahkeme, yemek
+737. gemeinsam - birlikte, ortaklaşa
+738. gering - az, küçük, önemsiz
+739. gern/gerne - memnuniyetle, isteyerek
+740. gesamt-/Gesamt- - toplam-, genel-
+741. das Geschäft - dükkan, iş
+742. die Gemeinschaft - topluluk, birlik
+743. das Gemüse - sebze
+744. gemütlich - rahat, keyifli
+745. genau - tam, kesin, doğru
+746. genauso - tıpkı, aynı şekilde
+747. genehmigen - onaylamak, izin vermek
+748. die Generation - nesil, kuşak
+749. genießen - tadını çıkarmak, zevk almak
+750. genug - yeterli, yeter
+751. genügen - yetmek, yeterli olmak
+752. das Gepäck - bagaj
+753. gerade - düz; tam, şu an
+754. geradeaus - düz, doğruca
+755. das Gerät - cihaz, alet
+756. gerecht - adil, hakkaniyetli
+757. geschehen - olmak, meydana gelmek
+758. das Geschenk - hediye
+759. die Geschichte - tarih, hikaye
+760. geschieden - boşanmış
+761. das Geschirr - mutfak takımı, tabak çanak
+762. das Geschlecht - cinsiyet
+763. der Geschmack - tat, zevk
+764. die Geschwindigkeit - hız
+765. die Geschwindigkeitsbeschränkung - hız sınırı
+766. das Gesetz - yasa, kanun
+767. das Gesicht - yüz
+768. gespannt - meraklı, heyecanlı
+769. das Gespräch - konuşma, sohbet
+770. gestern - dün
+771. gesund - sağlıklı
+772. das Getränk - içecek
+773. die Gewalt - şiddet, güç, kuvvet
+774. das Gewürz - baharat
+775. gießen - dökmek, sulamak
+776. das Gift - zehir
+777. die Gitarre - gitar
+778. die/das Glace/Glacé - dondurma (İsviçre)
+779. glatt - düz, kaygan
+780. die Gewerkschaft - sendika
+781. gewinnen - kazanmak
+782. der Gewinn - kazanç, kâr
+783. das Gewitter - fırtına, gök gürültüsü
+784. gewöhnen - alışmak, alıştırmak
+785. die Gewohnheit - alışkanlık
+786. glauben - inanmak, düşünmek
+787. gleich - aynı, hemen, eşit
+788. gleichberechtigt - eşit haklara sahip
+789. das Gewissen - vicdan
+790. gleichzeitig - aynı anda, eşzamanlı
+791. das Glück - şans, mutluluk
+792. der Glückwunsch - tebrik
+793. gewöhnlich - genellikle, olağan
+794. das Gleis - demiryolu hattı, ray
+795. gewohnt - alışmış
+796. das Gewicht - ağırlık, kilo
+797. das Gold - altın
+798. Golf - golf
+799. der Gott - tanrı
+800. die Grafik - grafik, illüstrasyon
+801. das Gras - çimen, ot
+802. gratulieren - tebrik etmek
+803. die Gratulation - tebrik
+804. gratis - ücretsiz, bedava
+805. greifen - kavramak, tutmak
+806. die Grenze - sınır
+807. grillen - ızgara yapmak
+808. grillieren - ızgara yapmak (İsviçre)
+809. der Grill - ızgara
+810. die Grippe - grip
+811. das Grundstück - arsa, arazi
+812. die Gruppe - grup
+813. grüßen - selamlamak
+814. Groß- - büyük-
+815. gründen - kurmak, tesis etmek
+816. gültig - geçerli
+817. günstig - uygun fiyatlı, elverişli
+818. gut - iyi
+819. groß - büyük, uzun
+820. gründlich - titiz, kapsamlı
+821. die Gymnastik - jimnastik
+822. das Hackfleisch - kıyma
+823. der Hafen - liman
+824. hageln - dolu yağmak
+825. das Hähnchen/Hühnchen - tavuk
+826. der Hammer - çekiç
+827. halbtags - yarım gün
+828. die Hälfte - yarı
+829. die Halle - salon, hol
+830. der Hals - boyun, boğaz
+831. haltbar - dayanıklı, uzun ömürlü
+832. der Händler - satıcı, tüccar
+833. das Handy - cep telefonu
+834. hängen - asmak, asılı olmak
+835. hart - sert, zor
+836. hassen - nefret etmek
+837. hässlich - çirkin
+838. häufig - sık, sık sık
+839. der Handel - ticaret, alışveriş
+840. halt - dur; sadece, işte
+841. halten - tutmak, durmak
+842. handeln - hareket etmek, ticaret yapmak
+843. die Hand - el
+844. die Hauptstadt - başşehir, başkent
+845. der Hauptbahnhof - ana tren istasyonu
+846. die Hausaufgabe - ev ödevi
+847. die Hausfrau/der Hausmann - ev hanımı / ev erkeği
+848. der Haushalt - hane, ev idaresi
+849. der Hausmeister - kapıcı, bina yöneticisi
+850. heben - kaldırmak
+851. die Heizung - kalorifer, ısıtma
+852. der Held - kahraman
+853. helfen - yardım etmek
+854. hell - aydınlık, açık
+855. das Heft - defter, dergi
+856. heim - eve
+857. das Heim - yurt, ev
+858. die Heimat - vatan, memleket
+859. heimlich - gizli, gizlice
+860. das Heimweh - sıla hasreti, vatan özlemi
+861. heiraten - evlenmek
+862. heiß - sıcak, ateşli
+863. heißen - adı olmak, anlamına gelmek
+864. das Hemd - gömlek
+865. das Hendl - tavuk (Avusturya)
+866. her/her- - buraya, -den beri
+867. heraus- - dışarıya-
+868. die Herausforderung - meydan okuma, zorluk
+869. der Herd - ocak, sobası
+870. herein- - içeri-
+871. die Herkunft - köken, menşe
+872. der Herr - bay, efendi, Tanrı
+873. herstellen - üretmek, imal etmek
+874. heizen - ısıtmak
+875. herunter- - aşağıya-
+876. herzlich - içten, samimi
+877. hier/hier- - burada-
+878. der Hinweis - ipucu, yönlendirme
+879. hierher - buraya
+880. der Himmel - gökyüzü, cennet
+881. historisch - tarihsel
+882. die Hitze - sıcak, sıcaklık
+883. das Hobby - hobi
+884. hoch - yüksek
+885. die Höhe - yükseklik
+886. hochladen - yüklemek (internet)
+887. höchstens - en fazla
+888. die Hochzeit - düğün
+889. der Hof - avlu, çiftlik
+890. hoffen - ummak, umut etmek
+891. hoffentlich - umarım, inşallah
+892. hinter/hinter- - arkasında, geri-
+893. hinterlassen - bırakmak, geride bırakmak
+894. hinweisen - işaret etmek, göstermek
+895. der Bauernhof - çiftlik
+896. hinten - arkada
+897. die Hoffnung - umut
+898. holen - almak, getirmek
+899. das Holz - tahta, odun
+900. der Honig - bal
+901. hören - duymak, dinlemek
+902. der Hörer - alıcı (telefon), dinleyici
+903. die Hose - pantolon
+904. das Hotel - otel
+905. hübsch - güzel, hoş
+906. der Hügel - tepe
+907. der Humor - mizah, espri
+908. der Hunger - açlık
+909. husten - öksürmek
+910. der Hut - şapka
+911. die Hütte - kulübe, dağ evi
+912. der Import - ithalat
+913. in - içinde, -de/-da
+914. indem - -erek, -arak
+915. individuell - bireysel
+916. die Industrie - sanayi, endüstri
+917. die Infektion - enfeksiyon
+918. hupen - korna çalmak
+919. der Husten - öksürük
+920. immer - her zaman, daima
+921. informieren - bilgilendirmek
+922. die Information - bilgi
+923. der Ingenieur - mühendis
+924. der Inhalt - içerik
+925. inklusive - dahil
+926. innen - içeride
+927. die Idee - fikir, idea
+928. illegal - yasadışı
+929. der Imbiss - fast food, atıştırmalık
+930. inner- - iç-
+931. die Insel - ada
+932. das Inserat - ilan, reklam
+933. insgesamt - toplamda, hepsi
+934. installieren - kurmak, yüklemek
+935. das Institut - enstitü
+936. das Instrument - alet, enstrüman
+937. das Interview - mülakat, röportaj
+938. inzwischen - bu arada, o zamandan beri
+939. irgendirgendein - herhangi bir
+940. irgendwann - bir gün, bir zaman
+941. sich irren - yanılmak
+942. intensiv - yoğun
+943. ja - evet
+944. der Intensivkurs - yoğun kurs
+945. interessieren - ilgilendirmek
+946. interessiert - ilgili, meraklı
+947. international - uluslararası
+948. die Jause - atıştırmalık (Avusturya)
+949. je - her, ne kadar
+950. interkulturell - kültürlerarası
+951. die Jacke - ceket, mont
+952. je … desto … - ne kadar ... o kadar ...
+953. die Jeans - kot pantolon
+954. jeder - her, herkes
+955. jederzeit - her zaman
+956. jedes Mal - her seferinde
+957. das Kabel - kablo
+958. jedoch - ancak, bununla birlikte
+959. jemals - hiç, bir zamanlar
+960. jemand - biri, birisi
+961. jetzt - şimdi
+962. die Kabine - kabin
+963. der Kaffee - kahve
+964. jeweils - her seferinde, sırasıyla
+965. der Journalist - gazeteci
+966. die Jugend - gençlik
+967. der Jugendliche - genç
+968. die Jugendherberge - gençlik yurdu
+969. jung - genç
+970. der Junge - erkek çocuk
+971. das Kaffeehaus - kahvehane, kafeterya
+972. der Kakao - kakao, çikolata
+973. der Kalender - takvim
+974. kalt - soğuk
+975. die Kälte - soğuk, soğukluk
+976. die Kamera - kamera, fotoğraf makinesi
+977. kämpfen - savaşmak, mücadele etmek
+978. der Kampf - savaş, mücadele
+979. der Kanal - kanal
+980. der Kandidat - aday
+981. die Kanne - kap, sürahi
+982. die Kantine - kantin, yemekhane
+983. das Kapitel - bölüm, kısım
+984. kaputt - bozuk, kırık
+985. der Käufer - alıcı, müşteri
+986. kein- - hiç, hiçbir
+987. der Karneval - karnaval
+988. die Karotte - havuç
+989. der Keller - bodrum, kiler
+990. der Kellner - garson
+991. die Karriere - kariyer
+992. die Karte - kart, harita, bilet
+993. die Chipkarte - çipli kart
+994. die Fahrkarte - seyahat bileti
+995. kennen - tanımak, bilmek
+996. die Kartoffel - patates
+997. der Käse - peynir
+998. die Kasse - kasa
+999. die Kassette - kaset
+1000. das Kennzeichen - plaka, özellik
+1001. die Kerze - mum
+1002. die Kette - zincir, kolye
+1003. der Kasten - kutu, dolap
+1004. das Kind - çocuk
+1005. der Katalog - katalog
+1006. die Katastrophe - felaket, afet
+1007. die Kindheit - çocukluk
+1008. der Kauf - satın alma
+1009. das Kino - sinema
+1010. der Kiosk - büfe, kiosk
+1011. die Kirche - kilise
+1012. die Kiste - sandık, kutu
+1013. das Kissen - yastık
+1014. klagen - şikayet etmek, dava açmak
+1015. klappen - kapamak, işe yaramak
+1016. klar - açık, net
+1017. klären - açıklamak, çözmek
+1018. klasse - harika, süper
+1019. die Klasse - sınıf
+1020. klingeln - zil çalmak
+1021. das Klavier - piyano
+1022. kleben - yapıştırmak
+1023. das Kleid - elbise
+1024. die Kleidung - giysi, kıyafet
+1025. klein - küçük
+1026. klettern - tırmanmak
+1027. klicken - tıklamak
+1028. der Klick - tıklama
+1029. die Klinik - klinik, hastane
+1030. klopfen - çalmak (kapı), vurmak
+1031. der Kloß - köfte (Almanya)
+1032. die Klimaanlage - klima
+1033. klug - zeki, akıllı
+1034. knapp - az, kısa, sınırlı
+1035. die Kneipe - meyhane, bar
+1036. das Knie - diz
+1037. der Knochen - kemik
+1038. der Knödel - hamur topuğu (Avusturya)
+1039. der Knopf - düğme
+1040. kochen - pişirmek
+1041. der Koch - aşçı
+1042. das Klima - iklim, ortam
+1043. klingen - ses çıkarmak, kulağa gelmek
+1044. die Klassenarbeit - sınav, yazılı
+1045. der Kollege - meslektaş, iş arkadaşı
+1046. komisch - komik, tuhaf
+1047. kommen - gelmek
+1048. die Kommunikation - iletişim
+1049. komplett - tam, eksiksiz
+1050. der Kompromiss - uzlaşma, takas
+1051. die Konferenz - konferans, toplantı
+1052. die Konfitüre - reçel (İsviçre)
+1053. der Konflikt - çatışma, anlaşmazlık
+1054. der König - kral
+1055. können - -ebilmek, yapabilmek
+1056. konsumieren - tüketmek
+1057. der Konsum - tüketim
+1058. das Konto - banka hesabı
+1059. das Girokonto - vadesiz hesap
+1060. kompliziert - karmaşık, zor
+1061. die Konkurrenz - rekabet
+1062. das Konsulat - konsolosluk
+1063. die Kontrolle - denetim, kontrol
+1064. das Konzert - konser
+1065. der Kopf - baş, kafa
+1066. kopieren - fotokopi çekmek, kopyalamak
+1067. der Körper - vücut, beden
+1068. körperlich - fiziksel, bedensel
+1069. korrekt - doğru, düzgün
+1070. der Korridor - koridor
+1071. kosten - maliyeti olmak, tatmak
+1072. die Kosten - maliyet, gider
+1073. kostenlos - ücretsiz
+1074. der Kredit - kredi
+1075. das Kostüm - kostüm, kadın takım
+1076. die Kreditkarte - kredi kartı
+1077. das Kreuz - haç, çarpı
+1078. die Kraft - güç, kuvvet
+1079. die Kreuzung - kavşak, çarpraz
+1080. das Kraftwerk - elektrik santrali
+1081. krank - hasta
+1082. kriegen - almak, kavuşmak
+1083. die Krankenkasse - sağlık sigortası
+1084. der Krankenpfleger - erkek hemşire
+1085. die Krankenschwester - hemşire
+1086. der Krankenwagen - ambulans
+1087. die Kriminalpolizei - kriminal polis
+1088. der Krimi - polisiye roman/film
+1089. die Krise - kriz
+1090. kritisieren - eleştirmek
+1091. das Krankenhaus - hastane
+1092. die Kritik - eleştiri
+1093. der Kuchen - kek, pasta
+1094. der Kugelschreiber - tükenmez kalem
+1095. der Kuli - tükenmez kalem
+1096. kühl - serin
+1097. der Kühlschrank - buzdolabı
+1098. die Küche - mutfak
+1099. die Krankheit - hastalık
+1100. der Krieg - savaş
+1101. die Kultur - kültür
+1102. sich kümmern - ilgilenmek
+1103. der Kunde - müşteri
+1104. kündigen - feshetmek, işten ayrılmak
+1105. die Kündigung - fesih, ihtar
+1106. die Kunst - sanat
+1107. der Künstler - sanatçı
+1108. küssen - öpmek
+1109. der Kuss - öpücük
+1110. die Küste - kıyı, sahil
+1111. das Kuvert - zarf (Avusturya)
+1112. lachen - gülmek
+1113. der Laden - dükkan, mağaza
+1114. künstlich - yapay, suni
+1115. der Kunststoff - plastik
+1116. der Kursleiter - kurs eğitmenin
+1117. die Kurve - viraj, eğri
+1118. kurz - kısa
+1119. kürzlich - yakın zamanda
+1120. das Lager - depo, kamp
+1121. die Lampe - lamba
+1122. das Land - ülke, kırsal
+1123. die Landwirtschaft - tarım
+1124. die Landschaft - manzara, kır
+1125. die Landung - iniş
+1126. lang - uzun
+1127. laufen - koşmak, yürümek
+1128. das Laufwerk - sürücü (bilgisayar)
+1129. die Laune - ruh hali
+1130. lange - uzun süre
+1131. langsam - yavaş
+1132. längst - çoktan, uzun süredir
+1133. langweilig - sıkıcı
+1134. sich langweilen - sıkılmak
+1135. laut - yüksek sesle, gürültülü
+1136. der Lautsprecher - hoparlör
+1137. lecker - lezzetli
+1138. leben - yaşamak
+1139. die Langeweile - sıkıntı, can sıkıntısı
+1140. lassen - bırakmak, izin vermek
+1141. der Laster - kamyon; kötü alışkanlık
+1142. das Leder - deri
+1143. ledig - bekar
+1144. leer - boş
+1145. legen - koymak, yatırmak
+1146. die Lehre - meslek eğitimi, öğreti
+1147. der Lehrer - öğretmen
+1148. der Lehrling - çırak
+1149. leicht - hafif, kolay
+1150. lesen - okumak
+1151. leid tun - üzmek, üzgün olmak
+1152. leiden - acı çekmek
+1153. leider - maalesef
+1154. leihen - ödünç almak/vermek
+1155. leise - sessizce, yavaşça
+1156. leisten - başarmak, gerçekleştirmek
+1157. die Leistung - performans, başarı
+1158. leiten - yönetmek, iletmek
+1159. die Leute - insanlar
+1160. das Lexikon - ansiklopedi, sözlük
+1161. das Licht - ışık
+1162. lieben - sevmek
+1163. lieb - sevgili, tatlı
+1164. lernen - öğrenmek
+1165. letzt- - son-
+1166. die Leiter - merdiven; lider
+1167. der Leser - okuyucu
+1168. die Leitung - yönetim, hat
+1169. der Lerner - öğrenci, öğrenen
+1170. das Lied - şarkı, türkü
+1171. liefern - teslim etmek
+1172. die Lieferung - teslimat
+1173. die Limonade - limonata
+1174. die Linie - hat, çizgi
+1175. links - solda, sola
+1176. die Lösung - çözüm
+1177. die Luft - hava
+1178. lügen - yalan söylemek
+1179. die Lüge - yalan
+1180. die Lippe - dudak
+1181. die Lust - istek, arzu
+1182. die Liste - liste
+1183. lustig - komik, eğlenceli
+1184. die Literatur - edebiyat
+1185. loben - övmek
+1186. locker - gevşek, rahat
+1187. der Löffel - kaşık
+1188. der Lohn - ücret, maaş
+1189. sich lohnen - değmek, kârlı olmak
+1190. das Lokal - meyhane, restaurant, bar
+1191. los/los- - git-, başla-, serbest
+1192. losfahren - yola çıkmak
+1193. löschen - söndürmek, silmek
+1194. lösen - çözmek, çözdürmek
+1195. machen - yapmak
+1196. das Mädchen - kız çocuk
+1197. das Magazin - dergi
+1198. der Magen - mide
+1199. mager - zayıf, yağsız
+1200. die Mahlzeit - yemek, öğün
+1201. die Mahnung - uyarı, ihtar
+1202. mal - bir kez, -ebilir
+1203. das Mal - kez, defa
+1204. malen - resim yapmak, boyamak
+1205. der Maler - ressam, boyacı
+1206. manch- - bazı, kimi
+1207. manchmal - bazen
+1208. der Mangel - eksiklik, yetersizlik
+1209. der Mann - erkek, koca
+1210. die Marmelade - reçel (Almanya/Avusturya)
+1211. die Maschine - makine
+1212. das Material - malzeme, materyal
+1213. die Matura - lise bitirme sınavı (Avusturya)
+1214. die Mauer - duvar
+1215. maximal - en fazla, maksimum
+1216. der Mechaniker - tamirci, mekanikçi
+1217. die Medien - medya
+1218. das Medikament - ilaç
+1219. die Medizin - tıp, ilaç
+1220. die Mannschaft - takım
+1221. der Mantel - palto, manto
+1222. die Mappe - dosya, klasör
+1223. das Meer - deniz
+1224. das Märchen - masal
+1225. das Mehl - un
+1226. die Margarine - margarin
+1227. mehr - daha fazla
+1228. die Marille - kayısı (Avusturya)
+1229. die Marke - marka, pul
+1230. markieren - işaretlemek
+1231. der Markt - pazar
+1232. die Mehrwertsteuer - KDV
+1233. meinen - düşünmek, anlamak
+1234. meinetwegen - benim açımdan, tamam
+1235. die Meinung - görüş, düşünce
+1236. meist- - en çok-
+1237. meistens - çoğunlukla
+1238. der Meister - usta, şampiyon
+1239. messen - ölçmek
+1240. das Messer - bıçak
+1241. das Metall - metal
+1242. die Methode - yöntem
+1243. die Metropole - metropol, başşehir
+1244. der Metzger - kasap
+1245. mieten - kiralamak
+1246. melden - bildirmek, kayıt yaptırmak
+1247. die Meldung - haber, bildirim
+1248. die Migration - göç
+1249. die Milch - süt
+1250. mild - yumuşak, ılık
+1251. die Mensa - yemekhane (üniversite)
+1252. der Mensch - insan
+1253. menschlich - insani
+1254. merken - fark etmek, hatırlamak
+1255. mindestens - en az
+1256. merkwürdig - tuhaf, ilginç
+1257. die Messe - fuar, ayın
+1258. der Migrant - göçmen
+1259. die Menge - miktar, kalabalık
+1260. das Mineralwasser - maden suyu
+1261. minimal - en az, minimum
+1262. das Mobiltelefon - cep telefonu
+1263. der Mitarbeiter - çalışan, iş arkadaşı
+1264. miteinander - birlikte
+1265. das Mitglied - üye
+1266. die Mitte - orta
+1267. die Mode - moda
+1268. das Modell - model
+1269. modern - modern, çağdaş
+1270. mögen - sevmek, istemek
+1271. möglich - mümkün
+1272. die Möglichkeit - imkan, olasılık
+1273. die Möhre - havuç
+1274. der Moment - an, moment
+1275. der Mond - ay
+1276. mittler- - orta-
+1277. der Monitor - monitör, ekran
+1278. mittlerweile - bu arada, artık
+1279. der Motor - motor
+1280. das Motorrad - motosiklet
+1281. müde - yorgun, uykulu
+1282. mitten - ortasında
+1283. das Möbel - mobilya
+1284. die Mobilbox - sesli mesaj kutusu
+1285. die Mobilität - hareketlilik
+1286. die Mühe - çaba, zahmet
+1287. der Müll - çöp
+1288. die Müllabfuhr - çöp toplama
+1289. die Mülltonne - çöp bidonu
+1290. mündlich - sözlü
+1291. die Münze - madeni para
+1292. das Museum - müze
+1293. die Musik - müzik
+1294. nachdem - sonra
+1295. nachdenken - düşünmek, üzerinde düşünmek
+1296. die Nachfrage - talep, soru
+1297. nachher - sonra, daha sonra
+1298. die Nachhilfe - özel ders
+1299. die Nachricht - haber, mesaj
+1300. der Muskel - kas
+1301. das Müesli/Müsli - müsli
+1302. müssen - zorunda olmak, -meli/-malı
+1303. der Mut - cesaret
+1304. mutig - cesur
+1305. die Mutter - anne
+1306. der Nachbar - komşu
+1307. nachschlagen - araştırmak, sözlükte bakmak
+1308. der Nachteil - dezavantaj, olumsuzluk
+1309. der Nachwuchs - yeni nesil, genç çalışanlar
+1310. die Nadel - iğne
+1311. der Nagel - çivi, tırnak
+1312. nahe - yakın
+1313. nähen - dikmek
+1314. sich nähern - yaklaşmak
+1315. das Nahrungsmittel - gıda, yiyecek
+1316. der Name - isim, ad
+1317. die Nase - burun
+1318. nein - hayır
+1319. nennen - adlandırmak, saymak
+1320. der Nerv - sinir
+1321. nervös - sinirli, gergin
+1322. nett - kibar, güzel
+1323. das Netz - ağ, internet
+1324. das Netzwerk - ağ
+1325. neu - yeni
+1326. nass - ıslak
+1327. national - ulusal, milli
+1328. die Natur - doğa
+1329. natürlich - tabii ki, doğal
+1330. der Nebel - sis
+1331. neben - yanında
+1332. nebenan - yan tarafta
+1333. negativ - olumsuz, negatif
+1334. nehmen - almak
+1335. die Neuigkeit - yenilik, haber
+1336. neugierig - meraklı
+1337. neulich - geçenlerde, yakınlarda
+1338. der Neffe - yeğen (erkek)
+1339. nicht - değil
+1340. die Nichte - yeğen (kız)
+1341. der Nichtraucher - sigara içmeyen
+1342. nichts - hiçbir şey
+1343. nie - hiç, asla
+1344. niedrig - alçak, düşük
+1345. niemand - kimse, hiç kimse
+1346. der Notruf - acil arama
+1347. notieren - not almak
+1348. nötig - gerekli
+1349. die Notiz - not
+1350. notwendig - gerekli, zorunlu
+1351. nirgends - hiçbir yerde
+1352. die Nudel - makarna, erişte
+1353. nirgendwo - hiçbir yerde
+1354. die Nummer - numara
+1355. nun - şimdi, artık
+1356. nur - sadece, yalnızca
+1357. noch - hâlâ, daha
+1358. noch mal - bir kez daha
+1359. nochmals - bir kez daha
+1360. nutzen - kullanmak, yararlanmak
+1361. normal - normal
+1362. nützen - işe yaramak, fayda sağlamak
+1363. normalerweise - normalde
+1364. nützlich - kullanışlı, yararlı
+1365. die Notaufnahme - acil servis
+1366. der Notausgang - acil çıkış
+1367. der Notfall - acil durum
+1368. oben - yukarıda
+1369. der Ober - garson
+1370. öffnen - açmak
+1371. oft/öfter - sık sık
+1372. ohne - olmadan, -siz
+1373. das Ohr - kulak
+1374. das Obst - meyve
+1375. obwohl - her ne kadar, -e rağmen
+1376. oder - veya, ya da
+1377. Öko- - ekolojik-
+1378. das Öl - yağ
+1379. offen - açık
+1380. der Onkel - amca, dayı
+1381. der Opa - büyükbaba, dede
+1382. operieren - ameliyat yapmak
+1383. das Opfer - kurban, mağdur
+1384. optimistisch - iyimser
+1385. die Orange - portakal
+1386. das Orchester - orkestra
+1387. offiziell - resmi
+1388. die Oma - büyükanne, nine
+1389. die Oper - opera
+1390. ordentlich - düzenli, temiz
+1391. die Ordination - muayenehane (Avusturya)
+1392. ordnen - düzenlemek, sıralamak
+1393. der Ordner - klasör
+1394. der Ort - yer, bölge
+1395. packen - paketlemek, toplamak
+1396. das Paket - paket, koli
+1397. die Panne - arıza, bozulma
+1398. das Papier - kağıt
+1399. der Paradeiser - domates (Avusturya)
+1400. parallel - paralel
+1401. das Parfüm - parfüm
+1402. der Park - park
+1403. parken - park etmek
+1404. der Partner - partner, ortak
+1405. der Vorort - banliyö, dış mahalle
+1406. der Wohnort - ikamet yeri
+1407. der Ozean - okyanus
+1408. die Party - parti
+1409. der Pass - pasaport, geçit
+1410. der Passagier - yolcu
+1411. passen - uymak
+1412. passieren - olmak, meydana gelmek
+1413. das Paar - çift, ikili
+1414. passiv - pasif
+1415. der Patient - hasta
+1416. pauschal - götürü, toplu
+1417. die Pause - mola, ara
+1418. das Pech - şanssızlık
+1419. peinlich - utanç verici, garip
+1420. der Pfeffer - biber
+1421. pflanzen - dikmek (bitki)
+1422. die Pflanze - bitki
+1423. das Pflaster - yara bandı, bant
+1424. die Pflaume - erik
+1425. pflegen - bakmak, bakım yapmak
+1426. die Pension - emeklilik; pansiyon
+1427. der Pfleger - bakıcı, hemşire (erkek)
+1428. die Pflicht - yükümlülük, görev
+1429. die Phantasie/Fantasie - hayal gücü, fantezi
+1430. das Picknick - piknik
+1431. der Pilz - mantar
+1432. die Pizza - pizza
+1433. der Pensionist - emekli (Avusturya)
+1434. per - aracılığıyla
+1435. das Plakat - afiş
+1436. perfekt - mükemmel
+1437. planen - planlamak
+1438. der Perron - peron (İsviçre)
+1439. die Person - kişi, şahıs
+1440. die Planung - planlama
+1441. das Plastik - plastik
+1442. der Personenstand - medeni hal
+1443. der Platz - yer, meydan
+1444. das Personal - personel, çalışanlar
+1445. die Pfanne - tava
+1446. die Personalien - kişisel bilgiler
+1447. plötzlich - birdenbire, aniden
+1448. die Politik - politika, siyaset
+1449. die Präsentation - sunum
+1450. der Politiker - politikacı
+1451. die Praxis - pratik, muayenehane
+1452. der Preis - fiyat, ödül
+1453. der Polizist - polis memuru
+1454. populär - popüler
+1455. die Portion - porsiyon
+1456. der Pöstler - postacı (İsviçre)
+1457. das Poulet - tavuk (İsviçre)
+1458. das Praktikum - staj
+1459. prima - çok iyi, süper
+1460. privat - özel
+1461. pro - başına, için
+1462. probieren - denemek, tatmak
+1463. präsentieren - sunmak
+1464. das Problem - sorun, problem
+1465. produzieren - üretmek
+1466. das Produkt - ürün
+1467. praktisch - pratik
+1468. die Presse - basın, pres
+1469. die Postleitzahl - posta kodu
+1470. der Praktikant - stajyer
+1471. preiswert - uygun fiyatlı
+1472. die Post - posta
+1473. die Pommes frites - patates kızartması
+1474. positiv - olumlu, pozitif
+1475. der Professor - profesör
+1476. der Profi - profesyonel
+1477. der Profisportler - profesyonel sporcu
+1478. das Projekt - proje
+1479. der Prospekt - broşür, katalog
+1480. Prost - şerefe
+1481. protestieren - protesto etmek
+1482. das Quartier - konut, mahalle, çeyrek
+1483. quer - çapraz, enine
+1484. die Quittung - fiş, makbuz
+1485. das Quiz - bilgi yarışması
+1486. der Protest - protesto
+1487. prüfen - sınamak, kontrol etmek
+1488. das Publikum - seyirciler, izleyiciler
+1489. der Pullover - kazak
+1490. der Punkt - nokta
+1491. die Puppe - bebek
+1492. putzen - temizlemek
+1493. das Rad - bisiklet, tekerlek
+1494. der Prozess - süreç, dava
+1495. die Prüfung - sınav
+1496. der Rabatt - indirim
+1497. der Radfahrer - bisikletçi
+1498. der Rahm - krema (İsviçre)
+1499. der Rand - kenar, sınır
+1500. der Rasen - çim, çimen
+1501. raten - tahmin etmek, tavsiye etmek
+1502. der Ratschlag - tavsiye
+1503. das Rätsel - bulmaca, muamma
+1504. das Rathaus - belediye binası
+1505. die Qualität - kalite
+1506. rauchen - sigara içmek
+1507. die Qualifikation - nitelik, yeterlilik
+1508. rechtzeitig - zamanında
+1509. reden - konuşmak
+1510. die Rede - konuşma
+1511. reagieren - tepki vermek
+1512. die Reform - reform
+1513. das Regal - raf
+1514. die Regel - kural, ilke
+1515. die Realität - gerçeklik
+1516. realistisch - gerçekçi
+1517. die Recherche - araştırma
+1518. rechnen - hesaplamak
+1519. der Rechner - bilgisayar, hesap makinesi
+1520. regeln - düzenlemek
+1521. regnen - yağmur yağmak
+1522. der Regen - yağmur
+1523. rechts - sağda, sağa
+1524. recht - hak, doğru
+1525. das Referat - sunum, ödev
+1526. die Region - bölge
+1527. regional - bölgesel
+1528. reich - zengin
+1529. reichen - uzatmak, yetmek
+1530. reif - olgun
+1531. der Reifen - lastik, çember
+1532. die Reihe - sıra
+1533. die Reihenfolge - sıra, diziliş
+1534. die Reparatur - tamir, onarım
+1535. die Reportage - röportaj, haber
+1536. reinigen - temizlemek
+1537. die Reinigung - kuru temizleme, temizlik
+1538. reisen - seyahat etmek
+1539. der Reporter - muhabir
+1540. reservieren - rezervasyon yapmak
+1541. der Respekt - saygı
+1542. der Rest - geri kalan, artık
+1543. die Reise - seyahat, yolculuk
+1544. das Restaurant - restoran
+1545. retten - kurtarmak
+1546. reiten - ata binmek
+1547. die Reklame - reklam
+1548. der Rekord - rekor
+1549. die Rezeption - resepsiyon
+1550. relativ - göreceli, nispeten
+1551. der Richter - yargıç, hakim
+1552. die Religion - din
+1553. richtig - doğru, gerçek
+1554. rennen - koşmak
+1555. die Richtung - yön, istikamet
+1556. die Rente - emekli maaşı
+1557. riechen - koklamak
+1558. riesig - devasa, kocaman
+1559. das Rind - inek, sığır
+1560. der Ring - yüzük, halka
+1561. das Rezept - tarif, reçete
+1562. reparieren - tamir etmek
+1563. das Risiko - risk
+1564. der Rock - etek, rock müzik
+1565. roh - çiğ, ham
+1566. das Rohr - boru, tüp
+1567. die Rolle - rol
+1568. der Roman - roman
+1569. die Rose - gül
+1570. der Rucksack - sırt çantası
+1571. die Runde - tur, çevre
+1572. die Rundfahrt - tur, gezi
+1573. die Sache - şey, konu
+1574. der Sack - çuval, torba
+1575. die Rückfahrt - dönüş yolculuğu
+1576. die Rückkehr - dönüş
+1577. rückwärts - geriye doğru
+1578. der Rücken - sırt
+1579. die Rücksicht - saygı, düşünce
+1580. das Rüebli - havuç (İsviçre)
+1581. rufen - çağırmak, seslenmek
+1582. die Rufnummer - telefon numarası
+1583. die Ruhe - sessizlik, huzur
+1584. rund - yuvarlak
+1585. der Saft - meyve suyu
+1586. sagen - söylemek
+1587. die Sahne - krema, kaymak
+1588. die Saison - sezon
+1589. der Salat - salata
+1590. die Salbe - merhem
+1591. der Salon - salon, berber
+1592. das Salz - tuz
+1593. sammeln - toplamak, koleksiyon yapmak
+1594. der Sand - kum
+1595. der Sänger - şarkıcı
+1596. satt - tok, doymuş
+1597. der Satz - cümle, fiyat
+1598. sauber - temiz
+1599. sauer - ekşi, sinirli
+1600. die Schachtel - kutu
+1601. schade - ne yazık ki
+1602. schauen - bakmak
+1603. das Schaufenster - vitrin
+1604. der Schauspieler - aktör, oyuncu
+1605. der Schaden - hasar, zarar
+1606. sich scheiden lassen - boşanmak
+1607. schädlich - zararlı
+1608. schaffen - başarmak, yaratmak
+1609. der Schalter - gişe, düğme
+1610. scharf - keskin, acı
+1611. der Schatten - gölge
+1612. schätzen - tahmin etmek, değer vermek
+1613. die Scheidung - boşanma
+1614. schaden - zarar vermek
+1615. die Schere - makas
+1616. schief - eğri, yamuk
+1617. schießen - ateş etmek
+1618. das Schiff - gemi
+1619. das Schild - tabela, işaret
+1620. schlimm - kötü, ağır
+1621. das Schloss - kilit, şato
+1622. der Schluss - son, bitiş
+1623. schimpfen - bağırmak, azarlamak
+1624. der Schirm - şemsiye
+1625. die Schlange - yılan, kuyruk
+1626. schlank - ince, zayıf
+1627. schlecht - kötü
+1628. schließen - kapatmak
+1629. der Schlüssel - anahtar
+1630. schmal - dar, ince
+1631. schmecken - tadı olmak, lezzetli olmak
+1632. der Schmerz - ağrı, acı
+1633. das Schmerzmittel - ağrı kesici
+1634. schminken - makyaj yapmak
+1635. der Schmuck - mücevher, süs
+1636. der Schmutz - pislik, kir
+1637. verschmutzen - kirletmek
+1638. der Schnee - kar
+1639. schneien - kar yağmak
+1640. das Schreiben - yazı, mektup
+1641. das Schnitzel - şnitzel (et yemeği)
+1642. der Schnupfen - nezle
+1643. die Schokolade - çikolata
+1644. schon - zaten, çoktan
+1645. schön - güzel
+1646. der Schrank - dolap
+1647. der Schrecken - dehşet, korku
+1648. schreiben - yazmak
+1649. aufschreiben - not etmek, yazıya dökmek
+1650. schreien - bağırmak
+1651. die Schrift - yazı, el yazısı
+1652. der Schritt - adım
+1653. der Schuh - ayakkabı
+1654. die Schuld - suç, borç
+1655. die Schulden - borçlar
+1656. schuldig - suçlu, borçlu
+1657. die Schule - okul
+1658. die Schularbeit - ödev, sınav
+1659. die Schulter - omuz
+1660. die Schüssel - kase, kap
+1661. schütteln - sallamak
+1662. schützen - korumak
+1663. das Schwammerl - mantar (Avusturya)
+1664. die Schwangerschaft - hamilelik
+1665. schweigen - susmak
+1666. die Sehenswürdigkeit - turistik yer, görülecek yer
+1667. sehr - çok
+1668. die Schwester - kız kardeş, hemşire
+1669. Schwieger- - kayın-
+1670. die Seife - sabun
+1671. die Schwierigkeit - zorluk, güçlük
+1672. schwimmen - yüzmek
+1673. schwitzen - terlemek
+1674. der See - göl
+1675. die See - deniz
+1676. die Seite - sayfa, taraf
+1677. der Sekretär - sekreter
+1678. selb- - kendi-
+1679. selbst - kendisi, bizzat
+1680. schwer - ağır, zor
+1681. schwierig - zor, güç
+1682. selber - kendisi
+1683. selbstverständlich - elbette, tabii ki
+1684. selten - nadir, nadiren
+1685. seltsam - tuhaf, garip
+1686. das Semester - yarıyıl, sömestr
+1687. das Seminar - seminer
+1688. siegen - kazanmak, zafer kazanmak
+1689. der Sieg - zafer, galibiyet
+1690. senkrecht - dikey, dik
+1691. die Serie - seri, dizi
+1692. der Service - servis, hizmet
+1693. sichtbar - görünür, gözle görülür
+1694. der Serviceangestellte - servis görevlisi
+1695. der Sessel - koltuk
+1696. der Sieger - galip, kazanan
+1697. sichern - güvence altına almak
+1698. sinken - batmak, düşmek
+1699. der Sinn - anlam, duygu
+1700. sinnvoll - anlamlı, mantıklı
+1701. die Situation - durum, koşul
+1702. der Sitz - koltuk, merkez
+1703. der Ski/Schi - kayak
+1704. so - böyle, öyle
+1705. singen - şarkı söylemek
+1706. sobald - hemen, -er ermez
+1707. die Socke - çorap
+1708. das Souvenir - hatıra eşyası, hediyelik
+1709. sodass - böylece, dolayısıyla
+1710. soviel - bu kadar, -diği kadarıyla
+1711. so viel/so viel wie - çok, o kadar
+1712. das Sofa - kanepe, divan
+1713. sogenannt- - sözde, adı geçen
+1714. sogar - hatta, bile
+1715. der Sohn - oğul
+1716. solange - olduğu sürece
+1717. solch- - böyle, bu tür
+1718. sollen - yapması gerekir, -meli/-malı
+1719. das Sonderangebot - özel teklif, indirimli ürün
+1720. sondern - aksine, bilakis
+1721. die Sonne - güneş
+1722. sowohl ... als auch - hem ... hem de
+1723. sozial - sosyal
+1724. der Sozialarbeiter - sosyal çalışan
+1725. spannend - heyecan verici, gerilimli
+1726. sparen - tasarruf etmek
+1727. sorgen - endişelenmek, özen göstermek
+1728. die Sorge - endişe, kaygı
+1729. die Soße/Sauce - sos
+1730. der Spaß - eğlence, şaka
+1731. spät - geç
+1732. sonst - aksi takdirde, başka
+1733. sowieso - zaten, nasıl olsa
+1734. spätestens - en geç
+1735. spazieren gehen - yürüyüşe çıkmak
+1736. der Spaziergang - yürüyüş
+1737. speichern - kaydetmek (dosya)
+1738. die Speisekarte - menü
+1739. der Spezialist - uzman
+1740. der Spiegel - ayna
+1741. spielen - oynamak
+1742. das Spielzeug - oyuncak
+1743. die Sprechstunde - doktor muayene saati, ofis saati
+1744. spülen - durulamak, çalkalamak
+1745. die Spur - iz, şerit
+1746. spüren - hissetmek
+1747. das Stadion - stadyum
+1748. die Stadt - şehir
+1749. der Stadtplan - şehir planı, harita
+1750. spitz - sivri, keskin
+1751. der Sport - spor
+1752. die Sportart - spor türü
+1753. die Sprache - dil
+1754. die Muttersprache - ana dil
+1755. die Zweitsprache - ikinci dil
+1756. sprechen - konuşmak
+1757. ständig - sürekli, devamlı
+1758. der Standpunkt - görüş, bakış açısı
+1759. der Star - yıldız, ünlü
+1760. die Fremdsprache - yabancı dil
+1761. stammen - gelmek, köken olmak
+1762. stark - güçlü, kuvvetli
+1763. starten - başlatmak, harekete geçmek
+1764. der Start - başlangıç, kalkış
+1765. die Station - istasyon, durak
+1766. die Statistik - istatistik
+1767. steil - dik, sarp
+1768. der Stein - taş
+1769. die Stelle - yer, pozisyon
+1770. stellen - koymak, sormak
+1771. statt - yerine
+1772. stattfinden - gerçekleşmek
+1773. der Stau - trafik sıkışıklığı
+1774. der Staub - toz
+1775. stecken - sokmak, gizlemek
+1776. der Stecker - fiş
+1777. stehen - durmak, ayakta olmak
+1778. stehen bleiben - olduğu yerde durmak
+1779. der Stempel - mühür, damga
+1780. sterben - ölmek
+1781. der Stern - yıldız
+1782. die Steuer - vergi; direksiyon
+1783. der Steward - hostes (erkek), uçak görevlisi
+1784. der Stift - kalem
+1785. stechen - sokmak, iğnelemek
+1786. die Steckdose - priz
+1787. stehlen - çalmak, hırsızlık yapmak
+1788. steigen - çıkmak, tırmanmak
+1789. der Stil - tarz, stil
+1790. still - sessiz, sakin
+1791. der Stiefel - çizme
+1792. die Stimme - ses, oy
+1793. das Streichholz - kibrit
+1794. streiken - grev yapmak
+1795. stinken - pis kokmak
+1796. der Stock - kat, sopa
+1797. das Stockwerk - kat
+1798. stolz - gururlu
+1799. stoppen - durdurmak
+1800. die Störung - rahatsızlık, arıza
+1801. der Streit - kavga, tartışma
+1802. die Strafe - ceza
+1803. der Stress - stres
+1804. der Strom - elektrik, akım
+1805. der Strumpf - çorap
+1806. das Stück - parça
+1807. die Studie - çalışma, araştırma
+1808. studieren - üniversitede okumak
+1809. streng - sert, katı
+1810. strafbar - ceza gerektiren, suç
+1811. stören - rahatsız etmek
+1812. der Streik - grev
+1813. der Student - öğrenci (üniversite)
+1814. der Strand - plaj
+1815. der Studierende - öğrenci (üniversite)
+1816. die Straße - cadde, sokak
+1817. das Studium - üniversite eğitimi
+1818. der Strafzettel - ceza fişi
+1819. die Strecke - güzergah, mesafe
+1820. das Studio - stüdyo
+1821. die Stufe - basamak, adım
+1822. der Stuhl - sandalye
+1823. stumm - sessiz, dilsiz
+1824. die Stunde - saat (zaman)
+1825. der Sturm - fırtına
+1826. stürzen - düşmek, devirmek
+1827. suchen - aramak
+1828. die Sucht - bağımlılık
+1829. die Tablette - tablet, hap
+1830. die Tafel - tahta, levha
+1831. der Tagesablauf - günlük program
+1832. das Tal - vadi
+1833. das Talent - yetenek
+1834. tanken - yakıt almak
+1835. die Summe - toplam, miktar
+1836. die Tante - teyze, hala
+1837. tanzen - dans etmek
+1838. der Tanz - dans
+1839. der Supermarkt - süpermarket
+1840. die Suppe - çorba
+1841. das Taschengeld - harçlık
+1842. das Taschentuch - mendil
+1843. süß - tatlı
+1844. das Symbol - sembol, simge
+1845. sympathisch - sempatik, hoş
+1846. das System - sistem
+1847. die Szene - sahne, ortam
+1848. die Tasse - fincan
+1849. die Tastatur - klavye
+1850. die Taste - tuş, düğme
+1851. die Tat - eylem, fiil
+1852. der Täter - fail, suçlu
+1853. die Tätigkeit - faaliyet, uğraş
+1854. die Tatsache - gerçek, olgı
+1855. taub - sağır
+1856. die Temperatur - sıcaklık, ısı
+1857. das Tempo - hız
+1858. tauschen - takas etmek, değiştirmek
+1859. die Technik - teknik, teknoloji
+1860. das Tennis - tenis
+1861. die Technologie - teknoloji
+1862. der Tee - çay
+1863. der Teppich - halı
+1864. der Termin - randevu, tarih
+1865. der Terminkalender - ajanda
+1866. teilen - bölmek, paylaşmak
+1867. testen - test etmek
+1868. das Teil - parça, kısım
+1869. die Teilzeit - yarı zamanlı
+1870. der Teilnehmer - katılımcı
+1871. telefonieren - telefon etmek
+1872. teuer - pahalı
+1873. der Text - metin
+1874. das Theater - tiyatro
+1875. das Thema - konu
+1876. theoretisch - teorik
+1877. der Teil - -
+1878. die Terrasse - teras
+1879. der Test - sınav, test
+1880. die Theorie - teori
+1881. die Therapie - terapi
+1882. das Ticket - bilet
+1883. tief - derin
+1884. das Tier - hayvan
+1885. das Haustier - evcil hayvan
+1886. der Tierpark - hayvanat bahçesi
+1887. der Tipp - ipucu, tavsiye
+1888. tippen - yazmak (klavyede), tahmin etmek
+1889. der Tisch - masa
+1890. der Titel - başlık, unvan
+1891. die Tradition - gelenek
+1892. traditionell - geleneksel
+1893. die Tochter - kız çocuk
+1894. der Tod - ölüm
+1895. die Toilette - tuvalet
+1896. tolerant - hoşgörülü
+1897. der Trainer - antrenör
+1898. die Tomate - domates
+1899. der Topf - tencere
+1900. das Tor - kapı, gol
+1901. die Torte - kek, pasta
+1902. tot - ölü
+1903. das Tram - tramvay
+1904. Traum- - hayal-, rüya-
+1905. traurig - üzgün
+1906. treffen - buluşmak, vurmak
+1907. der Treffpunkt - buluşma noktası
+1908. treiben - sürmek, spor yapmak
+1909. total - tamamen, toplam
+1910. der Tourismus - turizm
+1911. der Tourist - turist
+1912. die Trennung - ayrılık, ayrışma
+1913. der Transport - taşımacılık, nakliye
+1914. toll - harika, muhteşem
+1915. trainieren - antrenman yapmak
+1916. tödlich - ölümcül
+1917. der Typ - tip, karakter
+1918. treu - sadık, vefalı
+1919. trinken - içmek
+1920. das Trinkgeld - bahşiş
+1921. die Tüte - torba, kese
+1922. trocknen - kurutmak
+1923. die Tropfen - damla, ilaç damlası
+1924. das Trottoir - kaldırım (İsviçre)
+1925. trotz - -e rağmen
+1926. trotzdem - buna rağmen
+1927. das Tuch - bez, örtü
+1928. üben - pratik yapmak, çalışmak
+1929. über - üzerinde, hakkında
+1930. überall - her yerde
+1931. überfahren - ezmek, çiğnemek
+1932. überhaupt - hiç, genel olarak
+1933. der Turm - kule
+1934. die Tür - kapı
+1935. überholen - geçmek, sollama yapmak
+1936. überlegen - düşünmek, üstün olmak
+1937. übermorgen - öbür gün
+1938. übernachten - gecelemek
+1939. die Übernachtung - geceleme
+1940. übrig - kalan, artan
+1941. übrigens - bu arada
+1942. das Ufer - kıyı, sahil
+1943. die Uhr - saat
+1944. um - saat -de/-da, etrafında, için
+1945. übernehmen - devralmak, üstlenmek
+1946. überprüfen - kontrol etmek
+1947. überqueren - geçmek, karşıya geçmek
+1948. überraschen - şaşırtmak
+1949. die Überschrift - başlık
+1950. übersetzen - çevirmek
+1951. der Übersetzer - çevirmen
+1952. die Übersetzung - çeviri
+1953. die Überstunde - fazla mesai
+1954. übertreiben - abartmak
+1955. die Umfrage - anket
+1956. die Umgebung - çevre, etraf
+1957. umgehen - ilgilenmek, kullanmak
+1958. umgekehrt - tam tersi, ters
+1959. die Umleitung - yol sapması, yönlendirme
+1960. umso - o kadar, -dıkça
+1961. umsonst - bedavaya, boşuna
+1962. die Überweisung - havale, sevk
+1963. die Uniform - üniform
+1964. die Universität - üniversite
+1965. unter - altında, arasında
+1966. der Umtausch - değişim
+1967. umziehen - taşınmak, değişmek
+1968. der Umzug - taşınma
+1969. die Unterhaltung - eğlence, konuşma
+1970. der Unfall - kaza
+1971. ungefähr - yaklaşık
+1972. ungewöhnlich - alışılmamış, sıradışı
+1973. unglaublich - inanılmaz
+1974. das Unglück - felaket, şanssızlık
+1975. die Unterlagen - belgeler, evraklar
+1976. unterlassen - yapmaktan kaçınmak
+1977. unternehmen - girişimde bulunmak
+1978. der Unternehmer - girişimci
+1979. unterrichten - ders vermek
+1980. der Unterricht - ders
+1981. unheimlich - ürkütücü, inanılmaz
+1982. die Unterkunft - konaklama, barınak
+1983. und - ve
+1984. unbedingt - mutlaka, kesinlikle
+1985. unter- - alt-, düşük-
+1986. untersagt - yasak
+1987. unterscheiden - ayırt etmek, farklı olmak
+1988. der Unterschied - fark, ayrım
+1989. unterschiedlich - farklı, çeşitli
+1990. der Vater - baba
+1991. vegetarisch - vejetaryen
+1992. unterschreiben - imzalamak
+1993. die Unterschrift - imza
+1994. unterstreichen - altını çizmek
+1995. das Velo - bisiklet (İsviçre)
+1996. unterstützen - desteklemek
+1997. die Unterstützung - destek
+1998. unterwegs - yolda, seyahatte
+1999. verabredet - randevulu
+2000. die Verabredung - randevu, buluşma
+2001. die Urkunde - belge, senet
+2002. der Urlaub - tatil, izin
+2003. die Ursache - neden, sebep
+2004. ursprünglich - aslen, başlangıçta
+2005. das Urteil - karar, yargı
+2006. die Veranstaltung - etkinlik, organizasyon
+2007. verantwortlich - sorumlu
+2008. verboten - yasak
+2009. verbinden - bağlamak, birleştirmek
+2010. die Verantwortung - sorumluluk
+2011. der Verbrecher - suçlu
+2012. verbringen - geçirmek (vakit)
+2013. das Vergnügen - zevk, eğlence
+2014. vergrößern - büyütmek
+2015. verhaften - tutuklamak
+2016. sich verhalten - davranmak
+2017. das Verhalten - davranış
+2018. das Verhältnis - ilişki, oran
+2019. verdienen - kazanmak, hak etmek
+2020. verheiratet - evli
+2021. verhindern - engellemek, önlemek
+2022. der Verein - dernek, kulüp
+2023. der Verkäufer - satıcı
+2024. vereinbaren - kararlaştırmak, anlaşmak
+2025. der Verkehr - trafik, ulaşım
+2026. die Vergangenheit - geçmiş
+2027. vergeblich - boşuna, beyhude
+2028. vergessen - unutmak
+2029. das Verkehrsmittel - ulaşım aracı
+2030. sich vergnügen - eğlenmek
+2031. der Verlag - yayınevi
+2032. verlangen - talep etmek, istemek
+2033. verlängern - uzatmak
+2034. verlassen - terk etmek
+2035. sich verlaufen - yolu şaşırmak
+2036. sich verlieben - aşık olmak
+2037. verpflegen - beslemek, bakmak
+2038. verpflichtet - yükümlü, zorunlu
+2039. verraten - ihanet etmek, sızdırmak
+2040. verreisen - seyahate çıkmak
+2041. verliebt - aşık
+2042. vermeiden - kaçınmak
+2043. die Vermietung - kiralama
+2044. vermissen - özlemek
+2045. die Vermittlung - arabuluculuk, aracılık
+2046. vernünftig - makul, mantıklı
+2047. verpacken - paketlemek
+2048. verpassen - kaçırmak
+2049. die Versammlung - toplantı, meclis
+2050. versäumen - kaçırmak, ihmal etmek
+2051. verschieben - ertelemek, kaydırmak
+2052. verschieden - farklı, çeşitli
+2053. der Vermieter - kiraya veren, ev sahibi
+2054. vermutlich - muhtemelen
+2055. vermuten - tahmin etmek, sanmak
+2056. verschreiben - reçete yazmak, yanlış yazmak
+2057. verschwinden - kaybolmak
+2058. versichern - sigorta etmek, güvence vermek
+2059. versprechen - söz vermek
+2060. verständlich - anlaşılır
+2061. das Verständnis - anlayış
+2062. der Vertrag - sözleşme
+2063. vertrauen - güvenmek
+2064. verwenden - kullanmak
+2065. verzeihen - affetmek
+2066. Verzeihung - özür dilerim, af edersiniz
+2067. verzichten - vazgeçmek, feragat etmek
+2068. viel/viele - çok
+2069. vielleicht - belki
+2070. das Viertel - çeyrek, mahalle
+2071. virtuell - sanal
+2072. der Virus - virüs
+2073. die Visitenkarte - kartvizit
+2074. das Visum - vize
+2075. das Vitamin - vitamin
+2076. die Vertretung - temsil, vekalet
+2077. verurteilen - mahkum etmek
+2078. die Verwaltung - yönetim, idare
+2079. verwandt - akraba
+2080. voll - dolu
+2081. verwechseln - karıştırmak
+2082. der Verwandte - akraba
+2083. der Vertreter - temsilci
+2084. Volleyball - voleybol
+2085. völlig - tamamen
+2086. von - dan, den, tarafından
+2087. vor - önünde, -den önce
+2088. voraus - önden, ileride
+2089. die Voraussetzung - ön koşul, gereklilik
+2090. vorläufig - geçici, şimdilik
+2091. vorlesen - yüksek sesle okumak
+2092. vorschlagen - önermek
+2093. der Vorschlag - öneri
+2094. voraussichtlich - muhtemelen, tahminlere göre
+2095. die Vorbereitung - hazırlık
+2096. vorder- - ön-
+2097. die Vorfahrt - yol önceliği, geçiş hakkı
+2098. vorgestern - önceki gün
+2099. vorhaben - planlamak, niyetinde olmak
+2100. vorher - önceden, önce
+2101. vorhin - az önce
+2102. vorkommen - meydana gelmek, var olmak
+2103. die Vorschrift - yönetmelik, talimat
+2104. die Vorsicht - dikkat, ihtiyat
+2105. das Vorstellungsgespräch - iş mülakatı
+2106. der Vorteil - avantaj, fayda
+2107. der Vortrag - sunum, konuşma
+2108. die Vorwahl - alan kodu
+2109. vorwärts - ileri
+2110. der Vorwurf - suçlama, kınama
+2111. wann - ne zaman
+2112. waagerecht - yatay
+2113. wach - uyanık
+2114. die Ware - ürün, mal
+2115. wachsen - büyümek
+2116. warm - sıcak, ılık
+2117. der Wagen - araba, vagon
+2118. wählen - seçmek, oy vermek
+2119. die Wahl - seçim
+2120. wahr - gerçek, doğru
+2121. die Wahrheit - gerçek, hakikat
+2122. während - sırasında, oysa
+2123. wahrscheinlich - muhtemelen
+2124. der Wald - orman
+2125. die Wand - duvar
+2126. wandern - doğa yürüyüşü yapmak
+2127. warten - beklemek
+2128. warum - neden, niçin
+2129. was - ne
+2130. das Wasser - su
+2131. wechseln - değişmek, değiştirmek
+2132. warnen - uyarmak
+2133. der Weg - yol
+2134. weg/weg- - gitti-, uzak-
+2135. wegen - yüzünden, nedeniyle
+2136. weich - yumuşak
+2137. sich weigern - reddetmek, direnmek
+2138. weil - çünkü
+2139. der Wein - şarap
+2140. weinen - ağlamak
+2141. weit - uzak, geniş
+2142. weiter/weiter- - devam et-, ileri-
+2143. die Weiterbildung - ileri eğitim
+2144. welcher - hangi
+2145. die Welt - dünya
+2146. wenigstens - en azından
+2147. wenn - eğer, -diğinde
+2148. wer - kim
+2149. die Werbung - reklam
+2150. werden - olmak
+2151. werfen - atmak, fırlatmak
+2152. das Werk - eser, fabrika
+2153. die Werkstatt - atölye
+2154. das Werkzeug - alet, araç
+2155. wert - değerli
+2156. der Wert - değer
+2157. weshalb - neden, niye
+2158. wertvoll - değerli, kıymetli
+2159. der Wettbewerb - yarışma, rekabet
+2160. wetten - bahse girmek
+2161. das Wetter - hava durumu
+2162. der Wetterbericht - hava raporu
+2163. die Wettervorhersage - hava tahmini
+2164. wie viel(e) - kaç tane, ne kadar
+2165. willkommen - hoş geldiniz
+2166. der Wind - rüzgar
+2167. widersprechen - itiraz etmek, çelişmek
+2168. wie - nasıl, gibi
+2169. wiederholen - tekrarlamak
+2170. wild - yabani, vahşi
+2171. wieso - neden, nasıl
+2172. die Wiese - çayır, mera
+2173. wirken - etki etmek, görünmek
+2174. die Wirkung - etki, sonuç
+2175. wirklich - gerçekten
+2176. die Wirtschaft - ekonomi
+2177. wissen - bilmek
+2178. der Wissenschaftler - bilim insanı
+2179. der Witz - şaka, fıkra
+2180. wiegen - tartmak, ağırlığında olmak
+2181. winken - el sallamak
+2182. wichtig - önemli
+2183. wieder/wieder- - yeniden-, tekrar-
+2184. windig - rüzgarlı
+2185. wo - nerede
+2186. woher - nereden
+2187. wohin - nereye
+2188. wohl - herhalde, iyi
+2189. wohnen - oturmak, yaşamak
+2190. der Wohnsitz - ikamet adresi
+2191. die Wohnung - daire, konut
+2192. das Wohnzimmer - oturma odası
+2193. die Wurst - sosis, salam
+2194. wütend - öfkeli, sinirli
+2195. die Wolke - bulut
+2196. wollen - istemek
+2197. das Wort - kelime, söz
+2198. das Wörterbuch - sözlük
+2199. die Anzahl - sayı, adet
+2200. zahlreich - çok sayıda
+2201. zahlen - ödemek
+2202. die Wunde - yara
+2203. das Wunder - mucize, harika
+2204. zählen - saymak
+2205. der Zahn - diş
+2206. die Zange - kerpeten, maşa
+2207. das Zeichen - işaret, sembol
+2208. das Verkehrszeichen - trafik işareti
+2209. zeichnen - çizmek, resim yapmak
+2210. die Zeile - satır, dize
+2211. das Zeugnis - belge, referans, karne
+2212. ziehen - çekmek, taşınmak
+2213. das Ziel - amaç, hedef
+2214. ziemlich - oldukça
+2215. die Zeit - zaman
+2216. der Zeitpunkt - an, zaman
+2217. die Zigarette - sigara
+2218. das Zimmer - oda
+2219. die Zinsen - faiz
+2220. der Zirkus - sirk
+2221. die Zitrone - limon
+2222. die Zeitschrift - dergi
+2223. die Zeitung - gazete
+2224. das Zelt - çadır
+2225. der Zivilstand - medeni hal (İsviçre)
+2226. zelten - çadırda kalmak, kamp yapmak
+2227. der Zoll - gümrük
+2228. zentral - merkezi
+2229. die Zone - bölge, alan
+2230. der Zoo - hayvanat bahçesi
+2231. das Zentrum - merkez
+2232. zerstören - yıkmak, tahrip etmek
+2233. das Zertifikat - sertifika
+2234. der Zettel - not kağıdı, fiş
+2235. das Zeug - eşya, alet
+2236. der Zeuge - tanık
+2237. zu - -e doğru, kapalı, çok
+2238. zubereiten - hazırlamak (yemek)
+2239. der Zucker - şeker
+2240. das Zündholz - kibrit (İsviçre)
+2241. zunehmen - kilo almak, artmak
+2242. zurechtkommen - başa çıkmak
+2243. zuerst - ilk önce, önce
+2244. der Zufall - tesadüf, rastlantı
+2245. zufrieden - memnun, tatmin olmuş
+2246. der Zugang - giriş, erişim
+2247. zurück/zurück- - geri-
+2248. zurzeit - şu an, şu sıralar
+2249. zusagen - kabul etmek, uymak
+2250. der Zug - tren, çekme
+2251. zugehen - kapanmak, gitmek
+2252. das Zuhause - ev, yuva
+2253. die Zusammenarbeit - işbirliği
+2254. zuhören - dinlemek
+2255. zusammenfassen - özetlemek
+2256. der Zuhörer - dinleyici
+2257. die Zukunft - gelecek
+2258. zukünftig - gelecekteki
+2259. zuletzt - en son, son olarak
+2260. zumachen - kapatmak
+2261. zumindest - en azından
+2262. zunächst - önce, başlangıçta
+2263. der Zusammenhang - bağlantı, ilişki
+2264. zusätzlich - ek olarak, ilave
+2265. zuschauen - izlemek, seyretmek
+2266. der Zuschauer - izleyici, seyirci
+2267. zu sein - kapalı olmak
+2268. der Zustand - durum, hal
+2269. zuständig - sorumlu, yetkili
+2270. zustimmen - onaylamak, kabul etmek
+2271. die Zutaten - malzemeler, içerikler
+2272. zweifeln - şüphe etmek, tereddüt etmek
+2273. der Zweifel - şüphe, kuşku
+2274. die Zwiebel - soğan
+2275. zuverlässig - güvenilir
+2276. zwar - gerçi, doğrudan
+2277. der Zweck - amaç, hedef
+2278. zwischen - arasında
