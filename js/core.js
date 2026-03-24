@@ -15,8 +15,13 @@ function loadNavbar(){
   const isDersler = path.includes("/dersler");
   const isBlog    = path.includes("/blog");
   const isRoot    = path === "/" || path === "/index.html";
-  const isPratik  = isRoot || ["/quiz/","/artikel/","/cumlebul/","/ceviri/","/metin/","/okuma/","/kelimeler/","/wordsadd/","/singleadd/","/gecmis/"].some(p => path.includes(p));
+  const isPratik = isRoot || ["/quiz/","/metin/","/kelimeler/","/wordsadd/","/singleadd/","/gecmis/"].some(p => path.includes(p));
+  const isCeviri  = path.includes("/ceviri/");
+  const isArtikel = path.includes("/artikel/");
+  const isCumle   = path.includes("/cumlebul/");
 
+  
+  
   navbar.innerHTML = `
     <a class="logo" href="/" aria-label="AlmancaPratik ana sayfa">
       <span class="logo__text">Almanca<span class="logo__accent">Pratik</span></span>
@@ -118,15 +123,18 @@ function loadNavbar(){
           </div>
         </div>
       </div>
-      <a class="nav-item" href="/ceviri/">
+      <a class="nav-item ${isCeviri ? 'nav-item--active' : ''}" href="/ceviri/">
+
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
         <span>Çeviri</span>
       </a>
-      <a class="nav-item" href="/artikel/">
+      <a class="nav-item ${isArtikel ? 'nav-item--active' : ''}" href="/artikel/">
+
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <span>Artikel</span>
       </a>
-      <a class="nav-item" href="/cumlebul/">
+      <a class="nav-item ${isCumle ? 'nav-item--active' : ''}" href="/cumlebul/">
+
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <span>Cümle</span>
       </a>
