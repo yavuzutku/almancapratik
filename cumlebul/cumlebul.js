@@ -113,7 +113,7 @@ function parseExamples(wikitext) {
   return examples.filter(e => {
     const wc = wordCount(e);
     return wc >= min && wc <= max;
-  }).slice(0, 3);
+}).slice(0, 5);
 }
 
 async function fetchWiktionary(pageTitle) {
@@ -161,8 +161,7 @@ async function getTatoebaExamples(word) {
       .map(s => s.text ?? s)
       .filter(text => typeof text === 'string' && text.trim().length > 0)
       .filter(text => { const wc = wordCount(text); return wc >= min && wc <= max; })
-      .slice(0, 3);
-
+      .slice(0, 5);
     if (sentences.length === 0) {
       err.textContent = `Tatoeba'da ${min}–${max} kelime aralığında cümle bulunamadı.`;
       res.innerHTML = '';
