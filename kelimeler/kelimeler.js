@@ -296,10 +296,8 @@ function injectBulkBar() {
     if (!confirm(`Seçili ${count} kelime silinsin mi? Bu işlem geri alınamaz.`)) return;
     const ids = [...selectedIds];
     try {
-      for (const id of ids) {
-        await deleteWord(currentUserId, id);
-        allWords = allWords.filter(w => w.id !== id);
-      }
+      await Promise.allSettled(ids.map(id => deleteWord(currentUserId, id)));
+      allWords = allWords.filter(w => !ids.includes(w.id));
       exitSelectMode();
       buildFilterSidebar();
       renderFiltered();
@@ -513,10 +511,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!tagWords.length) { showToast("Bu etikette kelime yok.", "error"); return; }
         if (!confirm(`"${tag}" etiketli ${tagWords.length} kelime kalıcı olarak silinsin mi?\nBu işlem geri alınamaz.`)) return;
         try {
-          for (const w of tagWords) {
-            await deleteWord(currentUserId, w.id);
-            allWords = allWords.filter(x => x.id !== w.id);
-          }
+          await Promise.allSettled(tagWords.map(w => deleteWord(currentUserId, w.id)));
+          const deletedIds = new Set(tagWords.map(w => w.id));
+          allWords = allWords.filter(x => !deletedIds.has(x.id));
           if (activeTagFilter === tag) activeTagFilter = null;
           buildFilterSidebar();
           renderFiltered();
