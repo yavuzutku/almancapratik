@@ -101,33 +101,7 @@ function loadNavbar(){
                     <div class="drop-item-sub">Metni oku ve analiz et</div>
                   </div>
                 </a>
-                <a class="drop-tool-item" href="/ceviri/">
-                  <span class="drop-tool-icon" style="background:rgba(56,189,248,0.1);border-color:rgba(56,189,248,0.2)">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
-                  </span>
-                  <div>
-                    <div class="drop-item-title">Çeviri</div>
-                    <div class="drop-item-sub">Almanca ↔ Türkçe</div>
-                  </div>
-                </a>
-                <a class="drop-tool-item" href="/artikel/">
-                  <span class="drop-tool-icon" style="background:rgba(255,210,80,0.1);border-color:rgba(255,210,80,0.2)">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffd250" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  </span>
-                  <div>
-                    <div class="drop-item-title">Artikel Bul</div>
-                    <div class="drop-item-sub">der / die / das</div>
-                  </div>
-                </a>
-                <a class="drop-tool-item" href="/cumlebul/">
-                  <span class="drop-tool-icon" style="background:rgba(96,200,240,0.1);border-color:rgba(96,200,240,0.18)">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60c8f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                  </span>
-                  <div>
-                    <div class="drop-item-title">Cümle Örnekleri</div>
-                    <div class="drop-item-sub">Wiktionary · Tatoeba</div>
-                  </div>
-                </a>
+    
               </div>
               <div class="drop-col">
                 <p class="drop-section-label">Çalışma</p>
@@ -171,7 +145,18 @@ function loadNavbar(){
           </div>
         </div>
       </div>
-
+      <a class="nav-item" href="/ceviri/">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+        <span>Çeviri</span>
+      </a>
+      <a class="nav-item" href="/artikel/">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>Artikel</span>
+      </a>
+      <a class="nav-item" href="/cumlebul/">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Cümle</span>
+      </a>
       <!-- Blog -->
       <a class="nav-item ${isBlog ? "nav-item--active" : ""}" href="/blog/">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
