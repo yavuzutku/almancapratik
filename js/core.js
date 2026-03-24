@@ -90,57 +90,30 @@ function loadNavbar(){
         <div class="nav-dropdown nav-dropdown--pratik" id="pratikDrop">
           <div class="nav-dropdown-inner">
             <div class="drop-two-col">
-              <div class="drop-col">
-                <p class="drop-section-label">Araçlar</p>
-                <a class="drop-tool-item" href="/metin/">
-                  <span class="drop-tool-icon" style="background:rgba(160,100,255,0.1);border-color:rgba(160,100,255,0.2)">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a064ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                  </span>
-                  <div>
-                    <div class="drop-item-title">Metin Analizi</div>
-                    <div class="drop-item-sub">Metni oku ve analiz et</div>
-                  </div>
-                </a>
-    
-              </div>
-              <div class="drop-col">
-                <p class="drop-section-label">Çalışma</p>
-                <a class="drop-tool-item" href="/quiz/">
-                  <span class="drop-tool-icon" style="background:rgba(160,100,255,0.1);border-color:rgba(160,100,255,0.18)">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a064ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                  </span>
-                  <div>
-                    <div class="drop-item-title">Kelime Quizi</div>
-                    <div class="drop-item-sub">Listenden test çöz</div>
-                  </div>
-                </a>
-                <a class="drop-tool-item" href="/kelimeler/">
-                  <span class="drop-tool-icon" style="background:rgba(79,214,156,0.1);border-color:rgba(79,214,156,0.18)">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4fd69c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                  </span>
-                  <div>
-                    <div class="drop-item-title">Kelimelerim</div>
-                    <div class="drop-item-sub">Kişisel sözlük</div>
-                  </div>
-                </a>
-                <a class="drop-tool-item" href="/wordsadd/">
-                  <span class="drop-tool-icon" style="background:rgba(240,112,104,0.1);border-color:rgba(240,112,104,0.18)">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f07068" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                  </span>
-                  <div>
-                    <div class="drop-item-title">Kelime Ekle</div>
-                    <div class="drop-item-sub">Sözlüğüne kaydet</div>
-                  </div>
-                </a>
-              </div>
-            </div>
-            <div class="drop-divider"></div>
-            <div class="drop-footer-banner">
-              <div class="drop-footer-left">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-                <span>Seviyeni bilmiyorsan</span>
-              </div>
-              <a href="/seviyeler/seviyetespit/" class="drop-footer-cta">Ücretsiz Test →</a>
+              <a class="drop-tool-item" href="/metin/">
+                <span class="drop-tool-icon" style="background:rgba(160,100,255,0.1);border-color:rgba(160,100,255,0.2)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a064ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </span>
+                <div class="drop-item-title">Metin Analizi</div>
+              </a>
+              <a class="drop-tool-item" href="/quiz/">
+                <span class="drop-tool-icon" style="background:rgba(160,100,255,0.1);border-color:rgba(160,100,255,0.18)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a064ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </span>
+                <div class="drop-item-title">Kelime Quizi</div>
+              </a>
+              <a class="drop-tool-item" href="/kelimeler/">
+                <span class="drop-tool-icon" style="background:rgba(79,214,156,0.1);border-color:rgba(79,214,156,0.18)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4fd69c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </span>
+                <div class="drop-item-title">Kelimelerim</div>
+              </a>
+              <a class="drop-tool-item" href="/wordsadd/">
+                <span class="drop-tool-icon" style="background:rgba(240,112,104,0.1);border-color:rgba(240,112,104,0.18)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f07068" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                </span>
+                <div class="drop-item-title">Kelime Ekle</div>
+              </a>
             </div>
           </div>
         </div>
@@ -394,7 +367,7 @@ function loadNavbar(){
       transform: translateX(-50%) translateY(0);
     }
     .nav-dropdown--pratik {
-      min-width: 520px;
+      min-width: 280px;
       left: 50%;
     }
 
@@ -497,7 +470,8 @@ function loadNavbar(){
     .drop-two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 6px;
+      gap: 4px;
+      padding: 2px;
     }
     .drop-col { padding: 0 2px; }
 
