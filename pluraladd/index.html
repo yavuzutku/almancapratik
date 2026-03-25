@@ -109,6 +109,21 @@
       <span class="wa-bulk-tags-label">Etiketler <span class="wa-bulk-tags-hint">(tüm kelimelere uygulanır)</span></span>
       <div id="bulkTagChips"></div>
     </div>
+    <!-- Hemen </div>  ↑ wa-bulk-tags kapanışından SONRA ekle -->
+    <div class="wa-filter-row" id="filterRow">
+      <button class="wa-filter-btn active" data-filter="all">
+        Tümü <span class="f-count" id="fCount-all">0</span>
+      </button>
+      <button class="wa-filter-btn" data-filter="new">
+        Yeni <span class="f-count" id="fCount-new">0</span>
+      </button>
+      <button class="wa-filter-btn" data-filter="missing">
+        Çevirisiz <span class="f-count" id="fCount-missing">0</span>
+      </button>
+      <button class="wa-filter-btn" data-filter="duplicate">
+        Mevcut <span class="f-count" id="fCount-duplicate">0</span>
+      </button>
+    </div>
     <div class="wa-translate-progress" id="translateProgress" style="display:none">
       <div class="wa-tprog-track"><div class="wa-tprog-bar" id="translateBar"></div></div>
       <span class="wa-tprog-text" id="translateText">0 / 0</span>

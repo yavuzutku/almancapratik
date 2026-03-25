@@ -35,10 +35,26 @@ body { background: var(--wa-bg); }
 /* ─── FAZA YÖNETİMİ ─────────────────────────────────────── */
 .phase {
   display: none;
-  min-height: calc(100vh - var(--navbar-h));
   animation: waFadeIn .22s ease both;
 }
+/* YENİ: */
 .phase--active { display: block; }
+
+#phase2.phase--active {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--navbar-h));
+  overflow: hidden;
+}
+
+#phase2 .wa-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  padding-bottom: 0;
+}
 
 @keyframes waFadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -387,9 +403,12 @@ body { background: var(--wa-bg); }
   background: var(--wa-surface);
   border: 1px solid var(--wa-border);
   border-radius: var(--radius);
-  overflow: hidden;
   margin-bottom: 16px;
   overflow-x: auto;
+  overflow-y: auto;   /* ← EKLE */
+  flex: 1;            /* ← EKLE */
+  min-height: 0;      /* ← EKLE */
+  margin-bottom: 0;
 }
 
 .wa-table {
@@ -540,6 +559,8 @@ tr[data-status="error"]     { border-left: 2px solid rgba(240,112,104,0.5); }
   display: flex;
   justify-content: flex-end;
   padding-bottom: 40px;
+  flex-shrink: 0;      /* ← EKLE */
+  padding-top: 14px;
 }
 
 .wa-save-btn {
@@ -816,4 +837,47 @@ tr[data-status="error"]     { border-left: 2px solid rgba(240,112,104,0.5); }
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+/* ─── FİLTRE BUTONLARI ───────────────────────────────── */
+.wa-filter-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.wa-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  background: var(--wa-surface);
+  border: 1px solid var(--wa-border);
+  border-radius: 8px;
+  color: var(--wa-text2);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--trans);
+}
+.wa-filter-btn:hover {
+  background: var(--wa-surface2);
+  border-color: var(--wa-border2);
+  color: var(--wa-text);
+}
+.wa-filter-btn.active {
+  background: rgba(201,168,76,0.1);
+  border-color: rgba(201,168,76,0.35);
+  color: var(--gold);
+}
+.wa-filter-btn .f-count {
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+.wa-filter-btn.active .f-count {
+  background: rgba(201,168,76,0.15);
 }

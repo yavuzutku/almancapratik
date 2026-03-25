@@ -12,6 +12,7 @@ let existingWords = [];
 let entries       = [];
 let uidCounter    = 0;
 let isTranslating = false;
+let currentFilter = 'all';
 
 /* ─── AUTH ──────────────────────────────────────────────── */
 onAuthStateChanged(auth, async (user) => {
@@ -652,8 +653,33 @@ function updateBar() {
   const missingTr = entries.filter(e => e.selected && !e.tr).length;
   const transBtn  = document.getElementById("btnAutoTranslate");
   if (transBtn) transBtn.textContent = `Eksikleri Otomatik Çevir${missingTr ? ` (${missingTr})` : ''}`;
+  // Filtre sayaçlarını güncelle
+  const fCounts = {
+    all:       entries.length,
+    new:       entries.filter(e => e.status === 'new').length,
+    missing:   entries.filter(e => !e.tr).length,
+    duplicate: entries.filter(e => e.status === 'duplicate').length,
+  };
+  for (const [key, val] of Object.entries(fCounts)) {
+    const el = document.getElementById(`fCount-${key}`);
+    if (el) el.textContent = val;
+  }
+  applyFilter();
 }
-
+function applyFilter() {
+  const rows = document.querySelectorAll('#entryTbody tr[data-id]');
+  rows.forEach(row => {
+    const id     = parseInt(row.dataset.id);
+    const entry  = entries.find(e => e.id === id);
+    if (!entry) return;
+    let show = false;
+    if (currentFilter === 'all')       show = true;
+    if (currentFilter === 'new')       show = entry.status === 'new';
+    if (currentFilter === 'missing')   show = !entry.tr;
+    if (currentFilter === 'duplicate') show = entry.status === 'duplicate';
+    row.style.display = show ? '' : 'none';
+  });
+}
 function getSelectCount() {
   return entries.filter(e => e.selected && e.de && e.tr && e.status !== 'saved').length;
 }
@@ -757,6 +783,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const charCount = document.getElementById('inputCharCount');
   const lineCount = document.getElementById('inputLineCount');
   const detBadge  = document.getElementById('detectedFormat');
+  // Filtre butonları
+  document.getElementById('filterRow')?.addEventListener('click', e => {
+    const btn = e.target.closest('.wa-filter-btn');
+    if (!btn) return;
+    currentFilter = btn.dataset.filter;
+    document.querySelectorAll('.wa-filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+    applyFilter();
+  });
 
   document.getElementById('previewClose')?.addEventListener('click', closePreviewModal);
   document.getElementById('previewCancel')?.addEventListener('click', closePreviewModal);
