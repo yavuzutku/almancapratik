@@ -36,20 +36,7 @@ function showError(html) {
 // CEVIRI
 // ================================================================
 
-// ================================================================
-// CEVIRI (backend üzerinden)
-// ================================================================
-async function fetchTranslate(text) {
-  try {
-    // Vercel backend endpoint çağrısı
-    const res = await fetch(`/api/translate?text=${encodeURIComponent(text)}`);
-    const data = await res.json();
-    return data.translated || '—';
-  } catch (err) {
-    console.error('Translation fetch error:', err);
-    return '—';
-  }
-}
+z
 
 // ================================================================
 // POPUP
