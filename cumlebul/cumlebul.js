@@ -1,4 +1,4 @@
-// ── js/cumlebul.js ──
+// ── cumlebul/cumlebul.js ──
 
 function getWordRange() {
   const min = parseInt(document.getElementById('minWords').value) || 1;
@@ -13,6 +13,7 @@ function wordCount(text) {
 function escHtml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+
 // ── Çeviri ──
 async function fetchTranslate(text) {
   try {
@@ -56,8 +57,9 @@ async function showTranslatePopup(selectedText, anchorX, anchorY) {
 function hidePopup() {
   getPopup().classList.remove('visible');
 }
+
+// ── Wiktionary örnek cümle ayrıştırıcı ──
 function parseExamples(wikitext) {
-  // <ref>...</ref> etiketlerini içerikleriyle birlikte sil
   wikitext = wikitext
     .replace(/<ref[^>]*>[\s\S]*?<\/ref>/gi, '')
     .replace(/<ref[^>]*\/>/gi, '');
@@ -66,20 +68,17 @@ function parseExamples(wikitext) {
   const examples = [];
   let inBeispiele = false;
 
-  // Bölüm sonlandırıcı şablonlar
   const SECTION_END = /^\{\{(Herkunft|Synonyme|Übersetzungen|Wortbildungen|Bedeutungen|Redewendungen|Charakteristische|Oberbegriffe|Unterbegriffe|Gegenwörter|Sprichwörter|Referenzen|Abgeleitete|Verkleinerungsformen|Steigerungsformen|Leerzeile|Quellen)/;
 
   for (const line of lines) {
     const trimmed = line.trim();
 
-    // Sadece gerçek {{Beispiele}} şablonu veya == Beispiele == başlığı tetiklesin
     if (/^\{\{Beispiele/.test(trimmed) || /^={2,}\s*Beispiele\s*={2,}/.test(trimmed)) {
       inBeispiele = true;
       continue;
     }
 
     if (inBeispiele) {
-      // Başka bir şablon bölümü veya yeni başlık → Beispiele bitti
       if (SECTION_END.test(trimmed) || /^={2,}/.test(trimmed)) {
         inBeispiele = false;
         continue;
@@ -113,7 +112,7 @@ function parseExamples(wikitext) {
   return examples.filter(e => {
     const wc = wordCount(e);
     return wc >= min && wc <= max;
-}).slice(0, 5);
+  }).slice(0, 5);
 }
 
 async function fetchWiktionary(pageTitle) {
@@ -130,63 +129,64 @@ async function fetchWiktionary(pageTitle) {
   return data?.parse?.wikitext?.['*'] || null;
 }
 
-async function getTatoebaExamples(word) {
-  const res = document.getElementById('results');
-  const err = document.getElementById('error');
-  res.innerHTML = '<p class="loading">🌍 Tatoeba cümleleri aranıyor...</p>';
+// ── Lokal Tatoeba JSON tarayıcı ──
+// sentences_1.json → sentences_96.json sırayla taranır,
+// toplam 5 cümle bulununca durulur.
+// Her cümlenin hangi dosyadan geldiği console'a yazılır.
+async function getLocalExamples(word) {
+  const { min, max } = getWordRange();
+  const needle = word.toLowerCase();
 
-  try {
-    const params = new URLSearchParams({
-      from: 'deu',
-      query: word,
-      orphans: 'no',
-      unapproved: 'no',
-      sort: 'relevance'
-    });
-    const response = await fetch(`https://tatoeba.org/eng/api_v0/search?${params}`);
+  // Kelimeyi tam kelime olarak ara (büyük/küçük harf duyarsız)
+  const wordRegex = new RegExp(`(?<![a-zA-ZäöüÄÖÜß])${needle}(?![a-zA-ZäöüÄÖÜß])`, 'i');
 
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const collected = []; // { text, file }
 
-    const data = await response.json();
-    const rawResults = data?.results ?? data?.data ?? [];
+  for (let n = 1; n <= 96; n++) {
+    if (collected.length >= 5) break;
 
-    if (rawResults.length === 0) {
-      err.textContent = "Tatoeba'da da cümle bulunamadı.";
-      res.innerHTML = '';
-      return;
+    let sentences;
+    try {
+      const res = await fetch(`./datalar/sentences_${n}.json`);
+      if (!res.ok) continue;
+      sentences = await res.json();
+    } catch {
+      continue;
     }
 
-    const { min, max } = getWordRange();
-    const sentences = rawResults
-      .map(s => s.text ?? s)
-      .filter(text => typeof text === 'string' && text.trim().length > 0)
-      .filter(text => { const wc = wordCount(text); return wc >= min && wc <= max; })
-      .slice(0, 5);
-    if (sentences.length === 0) {
-      err.textContent = `Tatoeba'da ${min}–${max} kelime aralığında cümle bulunamadı.`;
-      res.innerHTML = '';
-      return;
+    for (const s of sentences) {
+      if (collected.length >= 5) break;
+      const text = s.t || '';
+      const wc = wordCount(text);
+      if (wc < min || wc > max) continue;
+      if (wordRegex.test(text)) {
+        collected.push({ text, file: `sentences_${n}.json` });
+      }
     }
-
-    res.innerHTML = sentences.map((text, i) =>
-      `<div class="result-item">
-        <div class="de selectable" data-i="tatoeba-${i}">🇩🇪 ${escHtml(text)}</div>
-        <div class="tr-line" id="tr-tatoeba-${i}"><span class="tr-loading">çevriliyor…</span></div>
-      </div>`
-    ).join('') +
-    `<p class="source">Kaynak: <a href="https://tatoeba.org/tr/sentences/search?from=deu&query=${encodeURIComponent(word)}" target="_blank">tatoeba.org</a></p>`;
-
-    sentences.forEach(async (text, i) => {
-      const tr = await fetchTranslate(text);
-      const el = document.getElementById(`tr-tatoeba-${i}`);
-      if (el) el.innerHTML = `<span class="tr-text">🇹🇷 ${escHtml(tr)}</span>`;
-    });
-  } catch (e) {
-    err.textContent = 'Tatoeba erişim hatası: ' + e.message;
-    res.innerHTML = '';
   }
+
+  // Console çıktısı: hangi dosyalardan kaç cümle alındı
+  if (collected.length > 0) {
+    const byFile = {};
+    collected.forEach(({ file }) => {
+      byFile[file] = (byFile[file] || 0) + 1;
+    });
+    console.group(`📂 "${word}" için lokal cümleler (${collected.length} adet):`);
+    collected.forEach(({ text, file }, i) => {
+      console.log(`[${i + 1}] [${file}] ${text}`);
+    });
+    console.groupEnd();
+    console.table(
+      Object.entries(byFile).map(([file, count]) => ({ Dosya: file, Adet: count }))
+    );
+  } else {
+    console.log(`❌ "${word}" için lokal JSON'larda cümle bulunamadı.`);
+  }
+
+  return collected.map(c => c.text);
 }
 
+// ── Ana arama fonksiyonu ──
 async function getExamples() {
   const word = document.getElementById('wordInput').value.trim().toLowerCase();
   const btn  = document.getElementById('btn');
@@ -203,7 +203,6 @@ async function getExamples() {
 
   try {
     const capitalized = word.charAt(0).toUpperCase() + word.slice(1);
-    // Önce orijinal haliyle dene (immer, nicht...), bulamazsa büyük harfle (Haus, Baum...)
     const attempts = word === capitalized ? [word] : [word, capitalized];
 
     let wikitext = null;
@@ -215,6 +214,7 @@ async function getExamples() {
     const examples = wikitext ? parseExamples(wikitext) : [];
 
     if (examples.length > 0) {
+      // Wiktionary'den cümleler bulundu
       res.innerHTML = examples.map((e, i) =>
         `<div class="result-item">
           <div class="de selectable" data-i="wiki-${i}">🇩🇪 ${escHtml(e)}</div>
@@ -228,16 +228,43 @@ async function getExamples() {
         const el = document.getElementById(`tr-wiki-${i}`);
         if (el) el.innerHTML = `<span class="tr-text">🇹🇷 ${escHtml(tr)}</span>`;
       });
+
     } else {
-      await getTatoebaExamples(word);
+      // Wiktionary'de bulunamadı → lokal JSON tarama
+      res.innerHTML = '<p class="loading">📂 Lokal cümleler taranıyor...</p>';
+      const localSentences = await getLocalExamples(word);
+
+      if (localSentences.length > 0) {
+        res.innerHTML = localSentences.map((text, i) =>
+          `<div class="result-item">
+            <div class="de selectable" data-i="local-${i}">🇩🇪 ${escHtml(text)}</div>
+            <div class="tr-line" id="tr-local-${i}"><span class="tr-loading">çevriliyor…</span></div>
+          </div>`
+        ).join('') +
+        `<p class="source">Kaynak: Lokal Tatoeba verisi</p>`;
+
+        localSentences.forEach(async (text, i) => {
+          const tr = await fetchTranslate(text);
+          const el = document.getElementById(`tr-local-${i}`);
+          if (el) el.innerHTML = `<span class="tr-text">🇹🇷 ${escHtml(tr)}</span>`;
+        });
+
+      } else {
+        err.textContent = `"${word}" için ne Wiktionary'de ne de lokal veride cümle bulunamadı.`;
+        res.innerHTML = '';
+      }
     }
+
   } catch (e) {
-    await getTatoebaExamples(word);
+    console.error('Arama hatası:', e);
+    err.textContent = 'Bir hata oluştu: ' + e.message;
+    res.innerHTML = '';
   } finally {
     btn.disabled = false;
   }
 }
 
+// ── Event Listeners ──
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn').addEventListener('click', getExamples);
   document.getElementById('wordInput').addEventListener('keydown', e => {
@@ -263,8 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const target = e.target.closest('.selectable');
     if (!target) { hidePopup(); return; }
     const sel = window.getSelection()?.toString().trim();
-    if (sel && sel.length > 1) return; // seçim varsa mouseup halleder
-    // en yakın kelimeyi al
+    if (sel && sel.length > 1) return;
     const range = document.caretRangeFromPoint?.(e.clientX, e.clientY);
     if (!range) return;
     range.expand('word');
