@@ -25,7 +25,6 @@ import {
   orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-
 const firebaseConfig = {
   apiKey: "AIzaSyCGpRMUNNSx4Kla2YrmDOBHlLSt4rOM1wQ",
   authDomain: "lernen-deutsch-bea69.firebaseapp.com",
@@ -41,7 +40,6 @@ export const auth = getAuth(app);
 export const db   = getFirestore(app);
 
 const provider = new GoogleAuthProvider();
-
 
 /* ============================
    AUTH — GOOGLE
@@ -59,7 +57,6 @@ export function onAuthChange(callback) {
   return onAuthStateChanged(auth, callback);
 }
 
-
 /* ============================
    AUTH — EMAIL / ŞİFRE
 ============================= */
@@ -71,12 +68,9 @@ export async function registerWithEmail(email, password, displayName) {
     throw new Error("Şifre en az 6 karakter olmalıdır.");
 
   const cred = await createUserWithEmailAndPassword(auth, email, password);
-
   await updateProfile(cred.user, { displayName });
-
-  // 🔥 KRİTİK: doğrulama maili gönder
   await sendEmailVerification(cred.user);
-
+  await signOut(auth); // Kayıt sonrası oturumu kapat — doğrulama zorunlu
   return cred;
 }
 
@@ -85,8 +79,6 @@ export async function loginWithEmail(email, password) {
     throw new Error("E-posta ve şifre zorunludur.");
 
   const cred = await signInWithEmailAndPassword(auth, email, password);
-
-  // 🔥 kullanıcıyı yenile (verify güncel olsun)
   await cred.user.reload();
 
   if (!cred.user.emailVerified) {
@@ -102,6 +94,11 @@ export async function resetPassword(email) {
   return sendPasswordResetEmail(auth, email);
 }
 
+export async function sendVerificationEmail(email, password) {
+  const cred = await signInWithEmailAndPassword(auth, email, password);
+  await sendEmailVerification(cred.user);
+  await signOut(auth); // Mail gönder ama oturumu açma
+}
 
 /* ============================
    METİN KAYDET
@@ -120,7 +117,6 @@ export async function saveMetin(userId, text) {
     throw new Error("Metin kaydedilemedi. Lütfen tekrar dene.");
   }
 }
-
 
 /* ============================
    METİNLERİ GETİR
@@ -141,7 +137,6 @@ export async function getMetinler(userId) {
   }
 }
 
-
 /* ============================
    METİN SİL
 ============================= */
@@ -155,6 +150,7 @@ export async function deleteMetin(userId, id) {
     throw new Error("Metin silinemedi. Lütfen tekrar dene.");
   }
 }
+
 export async function updateMetinTimestamp(userId, id) {
   if (!userId || !id) throw new Error("Geçersiz parametre.");
   try {
@@ -169,8 +165,6 @@ export async function updateMetinTimestamp(userId, id) {
 
 /* ============================
    YARDIMCI: KELİMEYİ BUL
-   Büyük/küçük harf ve artikel farkını
-   (der/die/das/ein/eine) görmezden gelir.
 ============================= */
 
 function normalizeForMatch(word) {
@@ -185,21 +179,8 @@ export function findExistingWord(wordList, germanWord) {
   return wordList.find(w => normalizeForMatch(w.word) === needle) || null;
 }
 
-
 /* ============================
-   AKILLI KAYDET  ← ANA FONKSİYON
-   ─────────────────────────────
-   Aynı Almanca kelime sözlükte zaten
-   varsa yeni anlam mevcut kelimeye eklenir.
-   Yoksa yeni belge oluşturulur.
-
-   Dönüş değeri:
-   {
-     merged:  boolean,  // true → ek anlam olarak eklendi
-     already: boolean,  // true → hem kelime hem anlam zaten vardı
-     word:    string,   // kaydedilen kelime adı
-     meaning: string,   // kaydedilen anlam
-   }
+   AKILLI KAYDET
 ============================= */
 
 export async function saveWordOrAddMeaning(userId, word, meaning, tags = []) {
@@ -213,13 +194,11 @@ export async function saveWordOrAddMeaning(userId, word, meaning, tags = []) {
   const existing = await getWords(userId);
   const match    = findExistingWord(existing, wordTrimmed);
 
-  /* ── Kelime zaten var ── */
   if (match) {
     const currentMeanings = Array.isArray(match.meanings) && match.meanings.length
       ? match.meanings
       : [match.meaning];
 
-    /* Anlam da zaten ekli mi? (büyük/küçük harf farkı yok) */
     const alreadyHas = currentMeanings.some(
       m => m.trim().toLowerCase() === meaningTrimmed.toLowerCase()
     );
@@ -227,17 +206,14 @@ export async function saveWordOrAddMeaning(userId, word, meaning, tags = []) {
       return { merged: false, already: true, word: match.word, meaning: meaningTrimmed };
     }
 
-    /* Yeni anlamı diziye ekle */
     const updatedMeanings = [...currentMeanings, meaningTrimmed];
-
-    /* Etiketleri birleştir */
-    const existingTags = Array.isArray(match.tags) ? match.tags : [];
-    const mergedTags   = [...new Set([...existingTags, ...tags])];
+    const existingTags    = Array.isArray(match.tags) ? match.tags : [];
+    const mergedTags      = [...new Set([...existingTags, ...tags])];
 
     try {
       await updateDoc(doc(db, "users", userId, "words", match.id), {
         meanings: updatedMeanings,
-        meaning:  updatedMeanings[0],  /* ana anlam değişmez */
+        meaning:  updatedMeanings[0],
         tags:     mergedTags,
       });
     } catch (err) {
@@ -248,7 +224,6 @@ export async function saveWordOrAddMeaning(userId, word, meaning, tags = []) {
     return { merged: true, already: false, word: match.word, meaning: meaningTrimmed };
   }
 
-  /* ── Kelime yok → yeni belge ── */
   try {
     await addDoc(
       collection(db, "users", userId, "words"),
@@ -269,11 +244,8 @@ export async function saveWordOrAddMeaning(userId, word, meaning, tags = []) {
   return { merged: false, already: false, word: wordTrimmed, meaning: meaningTrimmed };
 }
 
-
 /* ============================
    KELİME KAYDET (eski API)
-   Geriye dönük uyumluluk.
-   Yeni kodlarda saveWordOrAddMeaning kullan.
 ============================= */
 
 export async function saveWord(userId, word, meaning, tags = [], meanings = []) {
@@ -301,7 +273,6 @@ export async function saveWord(userId, word, meaning, tags = [], meanings = []) 
   }
 }
 
-
 /* ============================
    KELİMELERİ GETİR
 ============================= */
@@ -327,7 +298,6 @@ export async function getWords(userId) {
   }
 }
 
-
 /* ============================
    KELİME SİL
 ============================= */
@@ -341,7 +311,6 @@ export async function deleteWord(userId, wordId) {
     throw new Error("Kelime silinemedi. Lütfen tekrar dene.");
   }
 }
-
 
 /* ============================
    KELİME GÜNCELLE
@@ -362,12 +331,4 @@ export async function updateWord(userId, wordId, data) {
     console.error("[updateWord] Firestore hatası:", err);
     throw new Error("Kelime güncellenemedi. Lütfen tekrar dene.");
   }
-}
-
-// firebase.js — export olarak ekle:
-
-export async function sendVerificationEmail(email, password) {
-  const cred = await signInWithEmailAndPassword(auth, email, password);
-  await sendEmailVerification(cred.user);
-  await signOut(auth); // tekrar çıkış yaptır, giriş açılmasın
 }
