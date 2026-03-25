@@ -38,23 +38,11 @@ function showError(html) {
 
 async function fetchTranslate(text) {
   try {
-    const res = await fetch("/api/translate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        text: text,
-        target: "tr"
-      }),
-    });
-
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=de&tl=tr&dt=t&q=${encodeURIComponent(text)}`;
+    const res  = await fetch(url);
     const data = await res.json();
-
-    return data.data?.translations?.[0]?.translatedText || "—";
-  } catch {
-    return "—";
-  }
+    return data[0]?.map(t => t?.[0]).filter(Boolean).join('') || '—';
+  } catch { return '—'; }
 }
 
 // ================================================================
