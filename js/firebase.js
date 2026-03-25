@@ -9,7 +9,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendEmailVerification
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
@@ -68,15 +69,32 @@ export async function registerWithEmail(email, password, displayName) {
     throw new Error("Ad, e-posta ve şifre zorunludur.");
   if (password.length < 6)
     throw new Error("Şifre en az 6 karakter olmalıdır.");
+
   const cred = await createUserWithEmailAndPassword(auth, email, password);
+
   await updateProfile(cred.user, { displayName });
+
+  // 🔥 KRİTİK: doğrulama maili gönder
+  await sendEmailVerification(cred.user);
+
   return cred;
 }
 
 export async function loginWithEmail(email, password) {
   if (!email || !password)
     throw new Error("E-posta ve şifre zorunludur.");
-  return signInWithEmailAndPassword(auth, email, password);
+
+  const cred = await signInWithEmailAndPassword(auth, email, password);
+
+  // 🔥 kullanıcıyı yenile (verify güncel olsun)
+  await cred.user.reload();
+
+  if (!cred.user.emailVerified) {
+    await signOut(auth);
+    throw new Error("Lütfen e-posta adresini doğrula!");
+  }
+
+  return cred;
 }
 
 export async function resetPassword(email) {
