@@ -36,7 +36,23 @@ function showError(html) {
 // CEVIRI
 // ================================================================
 
-z
+async function fetchTranslate(text) {
+  if (!text || !text.trim()) return '';
+  try {
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=de|tr`;
+    const res  = await fetch(url);
+    if (!res.ok) return text;
+    const data = await res.json();
+    const translated = data?.responseData?.translatedText;
+    // MyMemory bazen orijinali geri döndürür; kontrol et
+    if (translated && translated.toLowerCase() !== text.toLowerCase()) {
+      return translated;
+    }
+    return text;
+  } catch {
+    return text;
+  }
+}
 
 // ================================================================
 // POPUP
@@ -64,6 +80,7 @@ async function showTranslatePopup(selectedText, anchorX, anchorY) {
   let left  = anchorX + 10;
   let top   = anchorY - 52 + window.scrollY;
   if (left + 240 > vw - 8) left = anchorX - 250;
+  if (left < 8) left = 8;
   if (top < window.scrollY + 8) top = anchorY + 18 + window.scrollY;
   popup.style.left = left + 'px';
   popup.style.top  = top  + 'px';
@@ -172,14 +189,11 @@ function parseExamples(wikitext) {
 
 // ================================================================
 // ORNEK CUMLE — LOKAL TATOEBA
-// Once "artikel + kelime" (tum cekim halleri), yeterli bulunmazsa
-// sadece kelime kokunü arar.
 // ================================================================
 
 async function getLocalExamples(word, artikel) {
   const capitalized = word.charAt(0).toUpperCase() + word.slice(1);
 
-  // Artikelin tüm çekim halleri
   const artikelVariants = { der: '(?:der|dem|den|des)', die: '(?:die|der)', das: '(?:das|dem|des)' };
   const artikelPattern  = artikelVariants[artikel] || artikel;
 
@@ -197,7 +211,6 @@ async function getLocalExamples(word, artikel) {
     if (collected.length >= 5) break;
     let sentences;
     try {
-      // artikel/ dizininden cumlebul/datalar/ yolu
       const res = await fetch(`../cumlebul/datalar/sentences_${n}.json`);
       if (!res.ok) continue;
       sentences = await res.json();
@@ -215,7 +228,6 @@ async function getLocalExamples(word, artikel) {
     }
   }
 
-  // Yeterli bulunamazsa geri dönüş listesinden tamamla
   if (collected.length < 3) {
     for (const t of fallbackBuf) {
       if (collected.length >= 5) break;
@@ -255,8 +267,11 @@ async function loadExampleSentences(word, artikel, cachedWikitext) {
       return;
     }
 
-    section.querySelector('.sentence-loading').innerHTML =
-      '<span class="sdots"><span></span><span></span><span></span></span> Lokal veriler taranıyor…';
+    const loadingEl = section.querySelector('.sentence-loading');
+    if (loadingEl) {
+      loadingEl.innerHTML =
+        '<span class="sdots"><span></span><span></span><span></span></span> Lokal veriler taranıyor…';
+    }
 
     const local = await getLocalExamples(word, artikel);
 
@@ -379,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
   searchBtn.addEventListener('click', searchArtikel);
   input.addEventListener('keydown', e => { if (e.key === 'Enter') searchArtikel(); });
 
-  // Seçim ile popup
+  // Seçim ile popup (masaüstü)
   document.addEventListener('mouseup', async (e) => {
     if (e.target.closest('#tr-popup')) return;
     const sel      = window.getSelection();
@@ -392,7 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hidePopup();
   });
 
-  // Tek kelime tıklama
+  // Tek kelime tıklama (masaüstü)
   document.addEventListener('click', async (e) => {
     if (e.target.closest('#tr-popup')) return;
     const target = e.target.closest('.selectable');
@@ -406,4 +421,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if (word.length < 2) return;
     await showTranslatePopup(word, e.clientX, e.clientY);
   });
+
+  // Mobil: uzun basış ile kelime çevirisi
+  let longPressTimer = null;
+  document.addEventListener('touchstart', (e) => {
+    const target = e.target.closest('.selectable');
+    if (!target) return;
+    const touch = e.touches[0];
+    longPressTimer = setTimeout(async () => {
+      const range = document.caretRangeFromPoint?.(touch.clientX, touch.clientY);
+      if (!range) return;
+      range.expand('word');
+      const word = range.toString().trim().replace(/[^a-zA-ZäöüÄÖÜß]/g, '');
+      if (word.length < 2) return;
+      await showTranslatePopup(word, touch.clientX, touch.clientY);
+    }, 500);
+  }, { passive: true });
+
+  document.addEventListener('touchend', () => {
+    clearTimeout(longPressTimer);
+  }, { passive: true });
+
+  document.addEventListener('touchmove', () => {
+    clearTimeout(longPressTimer);
+  }, { passive: true });
 });
