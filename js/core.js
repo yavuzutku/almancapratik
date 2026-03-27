@@ -26,6 +26,10 @@ function loadNavbar(){
     <a class="logo" href="/" aria-label="AlmancaPratik ana sayfa">
       <span class="logo__text">Almanca<span class="logo__accent">Pratik</span></span>
     </a>
+    <!-- Mobil hamburger -->
+    <button class="nav-hamburger" id="navHamburger" aria-label="Menüyü aç" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
 
     <nav class="nav-links" role="navigation">
 
@@ -145,6 +149,7 @@ function loadNavbar(){
       </a>
 
     </nav>
+    
 
     <div class="nav-right">
 
@@ -639,11 +644,56 @@ function loadNavbar(){
     }
 
     /* ══ RESPONSIVE ══ */
+    
+    
+    /* ── Hamburger butonu (masaüstünde gizli) ── */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 40px; height: 40px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.2s;
+      flex-shrink: 0;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 18px; height: 1.5px;
+      background: rgba(240,238,232,0.7);
+      border-radius: 2px;
+      transition: all 0.25s ease;
+      transform-origin: center;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+    .nav-hamburger:hover { border-color: rgba(255,255,255,0.25); }
+
+    /* ── Mobil overlay ── */
+    .nav-mobile-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 998;
+      backdrop-filter: blur(2px);
+    }
+    .nav-mobile-overlay.visible { display: block; }
+
+    /* ── Tablet (≤1000px) ── */
     @media (max-width: 1000px) {
       .navbar { padding: 0 28px; }
       .drop-item-sub { display: none; }
-      .nav-dropdown--pratik { min-width: 400px; }
     }
+
+    /* ── Küçük tablet (≤820px) ── */
     @media (max-width: 820px) {
       .navbar { padding: 0 20px; height: 62px; }
       .nav-item span { display: none; }
@@ -657,10 +707,63 @@ function loadNavbar(){
       .nav-item-wrap.open .nav-dropdown--pratik { transform: translateX(0) translateY(0); }
       .drop-two-col { grid-template-columns: 1fr; }
     }
-    @media (max-width: 600px) {
+    
+
+    /* ── Mobil (≤620px): hamburger slide-in panel ── */
+    @media (max-width: 620px) {
+      .navbar { padding: 0 16px; gap: 12px; }
+      .nav-hamburger { display: flex; }
       .nav-vr { display: none; }
       .nav-cta { display: none; }
-      .nav-dropdown--pratik { min-width: 280px; }
+
+      /* Nav linkleri panel haline gelir */
+      .nav-links {
+        position: fixed;
+        top: 0; right: 0;
+        width: min(300px, 85vw);
+        height: 100dvh;
+        background: #0d0d14;
+        border-left: 1px solid rgba(255,255,255,0.09);
+        box-shadow: -16px 0 48px rgba(0,0,0,0.7);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 80px 12px 32px;
+        z-index: 999;
+        overflow-y: auto;
+        transform: translateX(100%);
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .nav-links.mobile-open { transform: translateX(0); }
+
+      /* Panelde nav-item tam genişlikte */
+      .nav-item {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 14px;
+      }
+      .nav-item span { display: inline; } /* metinleri geri göster */
+      .nav-chevron { display: inline; }
+
+      /* Dropdown panelde statik açılır */
+      .nav-item-wrap { flex-direction: column; width: 100%; }
+      .nav-dropdown {
+        position: static;
+        transform: none !important;
+        opacity: 1;
+        pointer-events: all;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.25s ease;
+        min-width: 0;
+      }
+      .nav-item-wrap.open .nav-dropdown { max-height: 600px; }
+      .nav-dropdown-inner {
+        margin: 4px 0 4px 8px;
+        border-radius: 10px;
+      }
+      .drop-two-col { grid-template-columns: 1fr; }
     }
   `;
 
@@ -671,7 +774,43 @@ function loadNavbar(){
 
   document.head.appendChild(style);
   document.body.prepend(navbar);
+  // Overlay'i body'ye doğrudan ekle, navbar'a değil
+  const overlayEl = document.createElement("div");
+  overlayEl.className = "nav-mobile-overlay";
+  overlayEl.id = "navOverlay";
+  document.body.appendChild(overlayEl);
+  /* ── Mobil hamburger ── */
+  const hamburger = document.getElementById("navHamburger");
+  const navLinks  = document.querySelector(".nav-links");
+  const overlay   = document.getElementById("navOverlay");
 
+  function openMobileMenu() {
+    hamburger.classList.add("open");
+    navLinks.classList.add("mobile-open");
+    overlay.classList.add("visible");
+    hamburger.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden"; // scroll kilidi
+  }
+
+  function closeMobileMenu() {
+    hamburger.classList.remove("open");
+    navLinks.classList.remove("mobile-open");
+    overlay.classList.remove("visible");
+    hamburger.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
+  }
+
+  hamburger.addEventListener("click", () => {
+    hamburger.classList.contains("open") ? closeMobileMenu() : openMobileMenu();
+  });
+  overlay.addEventListener("click", closeMobileMenu);
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeMobileMenu(); });
+
+  // Paneldeki bir bağlantıya tıklanınca kapat (dropdown değilse)
+  navLinks.addEventListener("click", e => {
+    const link = e.target.closest("a:not(.nav-item[id])");
+    if (link && !e.target.closest(".nav-item-wrap")) closeMobileMenu();
+  });
   /* ── Dropdown hover ── */
   const DELAY = 200;
   document.querySelectorAll(".nav-item-wrap").forEach(wrap => {
@@ -680,6 +819,19 @@ function loadNavbar(){
     const close = () => { timer = setTimeout(() => wrap.classList.remove("open"), DELAY); };
     wrap.addEventListener("mouseenter", open);
     wrap.addEventListener("mouseleave", close);
+
+    // Mobil: dokunuşla aç/kapat
+    wrap.querySelector(".nav-item").addEventListener("click", e => {
+      const isTouchDevice = window.matchMedia("(hover: none)").matches;
+      if (!isTouchDevice) return; // masaüstünde hover zaten çalışıyor
+      if (wrap.querySelector(".nav-dropdown")) {
+        e.preventDefault();
+        const isOpen = wrap.classList.contains("open");
+        document.querySelectorAll(".nav-item-wrap").forEach(w => w.classList.remove("open"));
+        if (!isOpen) wrap.classList.add("open");
+      }
+    });
+
     document.addEventListener("click", e => { if (!wrap.contains(e.target)) wrap.classList.remove("open"); });
   });
 
