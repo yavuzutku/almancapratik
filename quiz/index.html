@@ -372,8 +372,13 @@ onAuthChange(async (user) => {
         getListeler(user.uid)
       ]);
 
-      allWords = data.map(d => ({ id: d.id, word: d.word, meaning: d.meaning }))
-                     .filter(d => d.word && d.meaning);
+      // YENİ
+      allWords = data.map(d => ({
+        id: d.id,
+        word: d.word,
+        meaning: d.meaning,
+        meanings: Array.isArray(d.meanings) && d.meanings.length ? d.meanings : [d.meaning]
+      })).filter(d => d.word && d.meaning);
       allLists = lists;
 
       updatePersonalWordInfo();
@@ -620,7 +625,10 @@ function buildQuestions() {
       ).slice(0,3);
       choices = shuffle([answer,...wrongs]);
     }
-    questions.push({ question, answer, direction, mode, choices });
+    const answers = direction === "de-tr"
+      ? (item.meanings?.length ? item.meanings : [item.meaning])
+      : [item.word];
+    questions.push({ question, answer, answers, direction, mode, choices });
   }
 }
 
@@ -678,7 +686,7 @@ function checkTyping() {
   const inp = document.getElementById("typeInput");
   const val = inp.value.trim();
   if (!val) return;
-  const ok = norm(val) === norm(q.answer);
+  const ok = (q.answers || [q.answer]).some(a => norm(a) === norm(val));
   inp.disabled = true;
   document.getElementById("checkBtn").disabled = true;
   inp.classList.add(ok ? "correct" : "wrong");
