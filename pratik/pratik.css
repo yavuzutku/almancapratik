@@ -553,3 +553,7 @@ body {
   .action-cards { gap: 6px; }
   .action-card { padding: 14px 12px 10px; }
 }
+.action-card--notlar .card-glow  { background: #c9a84c; }
+.action-card--notlar:hover       { border-color:rgba(201,168,76,0.35); box-shadow:0 20px 40px -10px rgba(201,168,76,0.15); }
+.action-card--notlar:hover .card-icon { color:#c9a84c; border-color:rgba(201,168,76,0.3); }
+.action-card--notlar:hover .card-tag  { color:#c9a84c; border-color:rgba(201,168,76,0.3); }

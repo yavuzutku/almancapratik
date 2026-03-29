@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notlarım — AlmancaPratik</title>
+  <meta name="description" content="Kişisel not defteriniz. Almanca öğrenirken notlar alın, düzenleyin ve organize edin.">
+  <link rel="icon" href="../favicon.ico">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="./notlar.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<script type="module">
+  import "../js/core.js";
+  window.loadNavbar();
+</script>
+
+<!-- APP SHELL -->
+<div class="notes-app" id="notesApp">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__header">
+      <div class="sidebar__title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <span>Notlarım</span>
+      </div>
+      <button class="btn-new-note" id="btnNewNote" title="Yeni not (Ctrl+N)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="sidebar__search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="Notlarda ara..." autocomplete="off" spellcheck="false">
+      <button class="search-clear hidden" id="searchClear" title="Temizle">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="sidebar__filters">
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">Tümü</button>
+        <button class="filter-tab" data-filter="pinned">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
+          Sabitli
+        </button>
+        <button class="filter-tab" data-filter="archived">Arşiv</button>
+      </div>
+
+      <div class="sort-wrap">
+        <select id="sortSelect" class="sort-select">
+          <option value="updated">Son düzenleme</option>
+          <option value="created">Oluşturma</option>
+          <option value="title">Başlık A–Z</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- TAG FILTER BAR -->
+    <div class="tag-filter-bar" id="tagFilterBar"></div>
+
+    <!-- NOTE LIST -->
+    <div class="note-list" id="noteList">
+      <div class="note-list__loading" id="noteListLoading">
+        <div class="spinner"></div>
+        <span>Notlar yükleniyor…</span>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="sidebar__stats" id="sidebarStats"></div>
+  </aside>
+
+  <!-- SIDEBAR TOGGLE (mobile) -->
+  <button class="sidebar-toggle" id="sidebarToggle" title="Kenar çubuğu">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+
+  <!-- MAIN EDITOR AREA -->
+  <main class="editor-area" id="editorArea">
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-state__icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <h2 class="empty-state__title">Henüz not seçilmedi</h2>
+      <p class="empty-state__desc">Soldaki listeden bir not seç veya yeni bir not oluştur.</p>
+      <button class="btn-create-first" id="btnCreateFirst">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        İlk Notunu Oluştur
+      </button>
+    </div>
+
+    <!-- EDITOR PANEL -->
+    <div class="editor-panel hidden" id="editorPanel">
+
+      <!-- EDITOR HEADER -->
+      <div class="editor-header">
+        <div class="editor-header__left">
+          <!-- Color dot -->
+          <div class="color-picker-wrap">
+            <button class="note-color-btn" id="noteColorBtn" title="Renk seç">
+              <span class="color-dot" id="colorDot"></span>
+            </button>
+            <div class="color-picker-dropdown hidden" id="colorPickerDropdown">
+              <div class="color-grid">
+                <button class="color-opt" data-color="default" title="Varsayılan"></button>
+                <button class="color-opt" data-color="#c9a84c" title="Altın" style="background:#c9a84c"></button>
+                <button class="color-opt" data-color="#60c8f0" title="Mavi" style="background:#60c8f0"></button>
+                <button class="color-opt" data-color="#4fd69c" title="Yeşil" style="background:#4fd69c"></button>
+                <button class="color-opt" data-color="#f07068" title="Kırmızı" style="background:#f07068"></button>
+                <button class="color-opt" data-color="#a064ff" title="Mor" style="background:#a064ff"></button>
+                <button class="color-opt" data-color="#f97316" title="Turuncu" style="background:#f97316"></button>
+                <button class="color-opt" data-color="#ec4899" title="Pembe" style="background:#ec4899"></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Title input -->
+          <input
+            type="text"
+            class="note-title-input"
+            id="noteTitleInput"
+            placeholder="Başlık yaz…"
+            spellcheck="false"
+            maxlength="200"
+          >
+        </div>
+
+        <div class="editor-header__right">
+          <!-- Pin -->
+          <button class="header-action-btn" id="btnPin" title="Sabitle">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
+          </button>
+          <!-- Archive -->
+          <button class="header-action-btn" id="btnArchive" title="Arşivle">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+          </button>
+          <!-- Word count -->
+          <div class="word-count" id="wordCount">0 kelime</div>
+          <!-- Save status -->
+          <div class="save-status" id="saveStatus">
+            <span class="save-dot"></span>
+            <span class="save-label">Kaydedildi</span>
+          </div>
+          <!-- Delete -->
+          <button class="header-action-btn header-action-btn--danger" id="btnDelete" title="Notu sil">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- TAGS ROW -->
+      <div class="tags-row" id="tagsRow">
+        <div class="tags-list" id="tagsList"></div>
+        <button class="btn-add-tag" id="btnAddTag">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Etiket ekle
+        </button>
+        <input type="text" class="tag-input hidden" id="tagInput" placeholder="Etiket adı…" maxlength="30">
+      </div>
+
+      <!-- TOOLBAR -->
+      <div class="toolbar" id="toolbar">
+        <div class="toolbar-group">
+          <button class="tool-btn" data-cmd="bold" title="Kalın (Ctrl+B)"><b>B</b></button>
+          <button class="tool-btn" data-cmd="italic" title="İtalik (Ctrl+I)"><i>I</i></button>
+          <button class="tool-btn" data-cmd="underline" title="Altı çizili (Ctrl+U)"><u>U</u></button>
+          <button class="tool-btn" data-cmd="strikeThrough" title="Üstü çizili">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><path d="M16 6C16 6 14.5 4 12 4C9.5 4 7 5.5 7 8C7 10 8.5 11.2 10 12"/><path d="M8 18C8 18 9.5 20 12 20C14.5 20 17 18.5 17 16C17 14 15.5 12.8 14 12"/></svg>
+          </button>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-group">
+          <button class="tool-btn" data-cmd="formatBlock" data-val="h1" title="Başlık 1">H1</button>
+          <button class="tool-btn" data-cmd="formatBlock" data-val="h2" title="Başlık 2">H2</button>
+          <button class="tool-btn" data-cmd="formatBlock" data-val="h3" title="Başlık 3">H3</button>
+          <button class="tool-btn" data-cmd="formatBlock" data-val="p" title="Normal metin">¶</button>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-group">
+          <button class="tool-btn" data-cmd="insertUnorderedList" title="Madde listesi">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>
+          </button>
+          <button class="tool-btn" data-cmd="insertOrderedList" title="Numaralı liste">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+          </button>
+          <button class="tool-btn" id="btnCheckList" title="Onay kutusu listesi">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </button>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-group">
+          <button class="tool-btn" data-cmd="justifyLeft" title="Sola hizala">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
+          </button>
+          <button class="tool-btn" data-cmd="justifyCenter" title="Ortala">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+          </button>
+          <button class="tool-btn" data-cmd="justifyRight" title="Sağa hizala">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="6" y1="18" x2="21" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-group">
+          <button class="tool-btn" id="btnInsertCode" title="Kod bloğu">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </button>
+          <button class="tool-btn" id="btnInsertLink" title="Bağlantı ekle">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <button class="tool-btn" id="btnInsertHr" title="Yatay çizgi">—</button>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-group">
+          <button class="tool-btn" data-cmd="undo" title="Geri al (Ctrl+Z)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+          </button>
+          <button class="tool-btn" data-cmd="redo" title="Yinele (Ctrl+Shift+Z)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+          </button>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-group">
+          <button class="tool-btn" id="btnClearFormat" title="Biçimlendirmeyi temizle">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M10 11l-2 8"/><path d="M14 11l2 8"/><path d="M17 7l-2.5 2.5"/><path d="M7 7l9 9"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div
+        class="note-content"
+        id="noteContent"
+        contenteditable="true"
+        spellcheck="true"
+        data-placeholder="Notunu buraya yazmaya başla…"
+      ></div>
+
+      <!-- EDITOR FOOTER -->
+      <div class="editor-footer">
+        <div class="editor-footer__left">
+          <span id="charCount">0 karakter</span>
+          <span class="footer-sep">·</span>
+          <span id="noteDate"></span>
+        </div>
+        <div class="editor-footer__right">
+          <button class="btn-export" id="btnExport" title="Dışa aktar">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Dışa aktar
+          </button>
+          <button class="btn-copy" id="btnCopy" title="Metni kopyala">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Kopyala
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay hidden" id="deleteModal">
+  <div class="modal">
+    <div class="modal__icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+    </div>
+    <h3 class="modal__title">Notu sil?</h3>
+    <p class="modal__desc">Bu not kalıcı olarak silinecek. Bu işlem geri alınamaz.</p>
+    <div class="modal__actions">
+      <button class="btn-modal-cancel" id="btnDeleteCancel">İptal</button>
+      <button class="btn-modal-confirm" id="btnDeleteConfirm">Evet, Sil</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- LINK MODAL -->
+<div class="modal-overlay hidden" id="linkModal">
+  <div class="modal modal--sm">
+    <h3 class="modal__title">Bağlantı Ekle</h3>
+    <input type="url" id="linkInput" class="modal-input" placeholder="https://…">
+    <div class="modal__actions">
+      <button class="btn-modal-cancel" id="btnLinkCancel">İptal</button>
+      <button class="btn-modal-confirm" id="btnLinkConfirm">Ekle</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH GATE -->
+<div class="auth-gate hidden" id="authGate">
+  <div class="auth-gate__box">
+    <div class="auth-gate__icon">🔒</div>
+    <h2>Giriş Yapman Gerekiyor</h2>
+    <p>Notlarını kaydetmek ve erişmek için giriş yap.</p>
+    <a href="/login.html" class="btn-login-gate">Giriş Yap</a>
+  </div>
+</div>
+
+<script type="module" src="./notlar.js"></script>
+</body>
+</html>
