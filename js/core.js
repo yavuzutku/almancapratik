@@ -104,12 +104,6 @@ function loadNavbar() {
       min-width: 0;
       overflow: hidden;
     }
-    .sn-favicon {
-      width: 34px; height: 34px;
-      border-radius: 8px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
     .sn-brand-text {
       min-width: 0;
       overflow: hidden;
@@ -162,8 +156,13 @@ function loadNavbar() {
 
     /* Daraltılmışta logo alanını ortala */
     #sideNav.sn-col .sn-logo-wrap {
-      justify-content: space-between;
+      justify-content: center;
       padding: 14px 10px 13px;
+    }
+
+    /* Daraltılmışta logo linkini gizle, sadece toggle btn göster */
+    #sideNav.sn-col .sn-logo {
+      display: none;
     }
 
     /* ── SCROLL ── */
@@ -348,17 +347,28 @@ function loadNavbar() {
       background: transparent; border: 1px solid var(--sn-border);
       border-radius: 10px; cursor: pointer; width: 100%;
       overflow: hidden;
-      transition: background var(--sn-tr);
+      transition: background var(--sn-tr), gap var(--sn-slide), padding var(--sn-slide);
     }
     .sn-profile-trigger:hover { background: var(--sn-surf); }
-    .sn-avatar { width:30px; height:30px; border-radius:50%; object-fit:cover; flex-shrink:0; border:1.5px solid rgba(180,197,255,0.2); }
+    .sn-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1.5px solid rgba(180,197,255,0.2);
+      display: block;
+    }
     .sn-profile-info {
       flex: 1; min-width: 0; text-align: left;
       overflow: hidden; max-width: 140px;
       transition: max-width var(--sn-slide), opacity 0.14s ease;
     }
     #sideNav.sn-col .sn-profile-info { max-width: 0; opacity: 0; }
-    #sideNav.sn-col .sn-profile-trigger { padding: 7px; justify-content: center; }
+    #sideNav.sn-col .sn-profile-trigger {
+      padding: 7px;
+      justify-content: center;
+      gap: 0;
+    }
     .sn-profile-lbl { display:block; font-family:'Space Grotesk',monospace; font-size:9px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--sn-muted); white-space:nowrap; }
     .sn-profile-email { display:block; font-size:11.5px; font-weight:500; color:rgba(195,198,215,0.7); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .sn-profile-caret { flex-shrink:0; opacity:0.3; max-width:16px; overflow:hidden; transition:max-width var(--sn-slide); }
@@ -491,7 +501,6 @@ function loadNavbar() {
   sidenav.innerHTML = `
     <div class="sn-logo-wrap">
       <a class="sn-logo" href="/" aria-label="AlmancaPratik ana sayfa">
-        <img class="sn-favicon" src="/favicon.png" alt="" aria-hidden="true">
         <div class="sn-brand-text">
           <span class="sn-brand-name">Almanca<span class="sn-brand-accent">Pratik</span></span>
           <span class="sn-brand-tag">Türkçe · Ücretsiz · A1–C1</span>
@@ -594,7 +603,6 @@ function loadNavbar() {
   mobileBar.id = "snMobileBar";
   mobileBar.innerHTML = `
     <a href="/" style="display:flex;align-items:center;gap:9px;text-decoration:none;">
-      <img src="/favicon.png" alt="" aria-hidden="true" style="width:28px;height:28px;border-radius:7px;object-fit:contain;">
       <span class="sn-brand-name" style="font-size:14px;">Almanca<span class="sn-brand-accent">Pratik</span></span>
     </a>
     <button class="sn-hamburger" id="snHamburger" aria-label="Menüyü aç" aria-expanded="false">
