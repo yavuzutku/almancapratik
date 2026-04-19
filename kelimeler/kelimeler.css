@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   kelimeler.css  —  AlmancaPratik Kelime Bankası (v2)
+   kelimeler.css  —  AlmancaPratik Kelime Bankası (v3)
    ═══════════════════════════════════════════════════════════ */
 
 /* ── Erişilebilirlik ─────────────────────────────────────── */
@@ -209,9 +209,22 @@ body { background: #0c0c12; font-family: 'DM Sans', system-ui, sans-serif; }
   font-weight:500; color:#9ca3af;
   border-bottom:1px solid rgba(255,255,255,0.05); border-radius:0;
   background:none !important; border-left:none; border-right:none; border-top:none;
-  margin-bottom:6px; padding-bottom:10px;
+  margin-bottom:3px; padding-bottom:10px;
 }
 .filter-tag-item.all-item.active { color:#c9a84c; border-bottom-color:rgba(201,168,76,0.3); }
+
+/* ── ÖNEMLİLER (starred) filtresi ──────────────────────── */
+.filter-tag-item.starred-item {
+  font-weight:500; color:#9ca3af;
+  border-bottom:1px solid rgba(255,255,255,0.05); border-radius:0;
+  background:none !important; border-left:none; border-right:none; border-top:none;
+  margin-bottom:6px; padding-bottom:10px;
+}
+.filter-tag-item.starred-item:hover { color:#d1d5db; background:none !important; }
+.filter-tag-item.starred-item.active { color:#c9a84c; border-bottom-color:rgba(201,168,76,0.3); }
+.starred-item-label {
+  display:flex; align-items:center; gap:5px;
+}
 
 .filter-count-badge {
   font-size:11px; font-weight:600; padding:1px 6px;
@@ -312,6 +325,10 @@ body { background: #0c0c12; font-family: 'DM Sans', system-ui, sans-serif; }
 .grid-btn:hover { background:rgba(255,255,255,0.06); color:#d1d5db; border-color:rgba(255,255,255,0.14); }
 .grid-btn.delete-btn:hover { background:rgba(239,68,68,0.08); border-color:rgba(239,68,68,0.2); color:#ef4444; }
 .grid-btn.example-btn:hover { background:rgba(201,168,76,0.08); border-color:rgba(201,168,76,0.2); color:#c9a84c; }
+.grid-btn.volume-btn:hover { background:rgba(125,211,252,0.08); border-color:rgba(125,211,252,0.2); color:#7dd3fc; }
+.grid-btn.bookmark-btn:hover { background:rgba(201,168,76,0.08); border-color:rgba(201,168,76,0.2); color:#c9a84c; }
+.grid-btn.bookmark-btn.starred-active { color:#c9a84c; border-color:rgba(201,168,76,0.3); background:rgba(201,168,76,0.06); }
+.grid-btn.bookmark-btn.starred-active:hover { background:rgba(239,68,68,0.08); border-color:rgba(239,68,68,0.2); color:#ef4444; }
 
 /* Grid checkbox */
 .grid-checkbox {
@@ -338,6 +355,30 @@ body { background: #0c0c12; font-family: 'DM Sans', system-ui, sans-serif; }
   border-radius:12px 0 0 12px; transition:background 0.2s;
 }
 .word-card:hover { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.1); transform:translateY(-1px); }
+
+/* ── STARRED (favori) KARTI ──────────────────────────────── */
+.word-card--starred {
+  background:rgba(201,168,76,0.05) !important;
+  border-color:rgba(201,168,76,0.28) !important;
+}
+.word-card--starred::before {
+  background:#c9a84c !important;
+}
+/* Köşe parıltısı */
+.word-card--starred::after {
+  content:'';
+  position:absolute;
+  top:0; right:0;
+  width:60px; height:60px;
+  background:linear-gradient(225deg, rgba(201,168,76,0.14) 0%, transparent 68%);
+  border-radius:0 12px 0 0;
+  pointer-events:none;
+}
+.word-card--starred:hover {
+  background:rgba(201,168,76,0.08) !important;
+  border-color:rgba(201,168,76,0.4) !important;
+  box-shadow:0 4px 20px rgba(201,168,76,0.08);
+}
 
 /* Select mode */
 .word-card.select-mode { cursor:pointer; }
@@ -428,11 +469,36 @@ body { background: #0c0c12; font-family: 'DM Sans', system-ui, sans-serif; }
 .add-tag-inline:hover { border-color:rgba(201,168,76,0.3); color:#c9a84c; }
 .word-date { font-size:11px; color:#374151; white-space:nowrap; margin-left:auto; flex-shrink:0; }
 
-/* Card butonları */
-.card-btn { display:flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:7px; border:1px solid rgba(255,255,255,0.07); background:transparent; color:#4b5563; cursor:pointer; transition:0.15s; flex-shrink:0; }
+/* ── Card butonları ──────────────────────────────────────── */
+.card-btn {
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:7px;
+  border:1px solid rgba(255,255,255,0.07); background:transparent;
+  color:#4b5563; cursor:pointer; transition:0.15s; flex-shrink:0;
+}
 .card-btn:hover { background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); color:#d1d5db; }
+
+/* Sil */
 .card-btn.delete:hover { background:rgba(239,68,68,0.08); border-color:rgba(239,68,68,0.2); color:#ef4444; }
+
+/* Örnek cümle */
 .card-btn.example:hover { background:rgba(201,168,76,0.08); border-color:rgba(201,168,76,0.2); color:#c9a84c; }
+
+/* Telaffuz (ses) */
+.card-btn.volume:hover { background:rgba(125,211,252,0.08); border-color:rgba(125,211,252,0.2); color:#7dd3fc; }
+
+/* Favori / Bookmark */
+.card-btn.bookmark:hover { background:rgba(201,168,76,0.08); border-color:rgba(201,168,76,0.2); color:#c9a84c; }
+.card-btn.bookmark.starred-active {
+  color:#c9a84c;
+  border-color:rgba(201,168,76,0.35);
+  background:rgba(201,168,76,0.08);
+}
+.card-btn.bookmark.starred-active:hover {
+  background:rgba(239,68,68,0.08);
+  border-color:rgba(239,68,68,0.2);
+  color:#ef4444;
+}
 
 /* ── TAG CHIP (modal) ────────────────────────────────────── */
 .tag-chip { padding:4px 12px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03); color:#6b7280; font-size:12px; font-family:inherit; cursor:pointer; transition:0.15s; font-weight:500; }
@@ -538,8 +604,13 @@ body { background: #0c0c12; font-family: 'DM Sans', system-ui, sans-serif; }
   .filter-sidebar { width:100%; position:static; }
   .filter-tag-list { flex-direction:row; flex-wrap:wrap; gap:5px; }
   .filter-tag-item { width:auto; padding:5px 10px; }
-  .filter-tag-item.all-item { border-bottom:none; margin-bottom:0; border-radius:7px; border:1px solid transparent; padding-bottom:5px; }
-  .filter-tag-item.all-item.active { border-color:rgba(201,168,76,0.25); }
+  .filter-tag-item.all-item,
+  .filter-tag-item.starred-item {
+    border-bottom:none; margin-bottom:0; border-radius:7px;
+    border:1px solid transparent; padding-bottom:5px;
+  }
+  .filter-tag-item.all-item.active,
+  .filter-tag-item.starred-item.active { border-color:rgba(201,168,76,0.25); }
   .card-actions { opacity:1; flex-direction:row; }
   .word-card { padding:14px 16px; }
   .word-toolbar { gap:8px; }
@@ -553,6 +624,7 @@ body { background: #0c0c12; font-family: 'DM Sans', system-ui, sans-serif; }
   .page-intro { display:none; }
   .toolbar-right { flex-wrap:wrap; }
 }
+
 /* ── ETİKET SATIRI (liste butonu ile) ─────────────────── */
 .filter-tag-row {
   display: flex;
@@ -593,6 +665,7 @@ body { background: #0c0c12; font-family: 'DM Sans', system-ui, sans-serif; }
   border-color: rgba(239,68,68,0.25);
   color: #ef4444;
 }
+
 /* ── Delete Progress Bar ────────────────────────────────── */
 #deleteProgressBar {
   background: linear-gradient(90deg, #c9a84c, #d4b055);

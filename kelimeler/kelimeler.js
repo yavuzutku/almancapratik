@@ -63,6 +63,47 @@ function applySort(list) {
   }
 }
 
+/* ─── TTS — Web Speech API ──────────────────────────────── */
+function speakWord(word) {
+  if (!('speechSynthesis' in window)) {
+    showToast("Tarayıcınız ses özelliğini desteklemiyor.", "error");
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(word.replace(/^(der|die|das|ein|eine)\s+/i, "").trim());
+  utter.lang  = "de-DE";
+  utter.rate  = 0.85;
+  utter.pitch = 1;
+  window.speechSynthesis.speak(utter);
+}
+
+/* ─── Favori toggle ─────────────────────────────────────── */
+async function toggleStarred(userId, item, btn) {
+  const newVal = !item.starred;
+  try {
+    await updateWord(userId, item.id, { starred: newVal });
+    item.starred = newVal;
+
+    /* Buton ikonunu güncelle */
+    btn.classList.toggle("starred-active", newVal);
+    btn.title = newVal ? "Favorilerden çıkar" : "Favorilere ekle";
+    btn.innerHTML = newVal
+      ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`
+      : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`;
+
+    /* Kartın vurgu stilini güncelle */
+    const card = btn.closest(".word-card");
+    if (card) card.classList.toggle("word-card--starred", newVal);
+
+    /* Sidebar sayacını güncelle */
+    window.buildFilterSidebar?.();
+
+    showToast(newVal ? "Favorilere eklendi ⭐" : "Favorilerden çıkarıldı", "success");
+  } catch(err) {
+    showToast("Favori güncellenemedi: " + err.message, "error");
+  }
+}
+
 /* ─── Wikitext temizleyici ──────────────────────────────── */
 function cleanWikitext(text) {
   return text
@@ -466,6 +507,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     filterTagList.innerHTML = "";
 
+    /* ── Tüm Kelimeler ── */
     const allItem = document.createElement("button");
     allItem.className = "filter-tag-item all-item" + (activeTagFilter === null ? " active" : "");
     allItem.setAttribute("aria-pressed", activeTagFilter === null);
@@ -473,6 +515,25 @@ document.addEventListener("DOMContentLoaded", () => {
     allItem.addEventListener("click", () => { activeTagFilter = null; buildFilterSidebar(); renderFiltered(); });
     filterTagList.appendChild(allItem);
 
+    /* ── Önemliler (starred) ── */
+    const starredCount = allWords.filter(w => w.starred === true).length;
+    const starItem = document.createElement("button");
+    starItem.className = "filter-tag-item starred-item" + (activeTagFilter === "__starred__" ? " active" : "");
+    starItem.setAttribute("aria-pressed", activeTagFilter === "__starred__");
+    starItem.innerHTML = `
+      <span class="starred-item-label">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="${activeTagFilter === "__starred__" ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Önemliler
+      </span>
+      <span class="filter-count-badge">${starredCount}</span>
+    `;
+    starItem.addEventListener("click", () => {
+      activeTagFilter = (activeTagFilter === "__starred__") ? null : "__starred__";
+      buildFilterSidebar(); renderFiltered();
+    });
+    filterTagList.appendChild(starItem);
+
+    /* ── Etiketler ── */
     [...tagMap.entries()].sort((a,b)=>b[1]-a[1]).forEach(([tag, count]) => {
       const row = document.createElement("div");
       row.className = "filter-tag-row";
@@ -623,7 +684,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function getFilteredList() {
     const q = (searchInput?.value||"").toLowerCase();
     let list = allWords;
-    if (activeTagFilter === "__untagged__") {
+    if (activeTagFilter === "__starred__") {
+      list = list.filter(w => w.starred === true);
+    } else if (activeTagFilter === "__untagged__") {
       list = list.filter(w => !Array.isArray(w.tags)||!w.tags.length);
     } else if (activeTagFilter) {
       list = list.filter(w => Array.isArray(w.tags) && w.tags.includes(activeTagFilter));
@@ -635,7 +698,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return list;
   }
 
-  window.getFilteredList = getFilteredList;  /* bulk bar erişimi için */
+  window.getFilteredList = getFilteredList;
 
   function renderFiltered() {
     const filtered = applySort(getFilteredList());
@@ -665,6 +728,7 @@ document.addEventListener("DOMContentLoaded", () => {
       wordList.appendChild(el);
     }
   }
+
   /* ═══════════════════════════════════════
      RENDER
      ═══════════════════════════════════════ */
@@ -674,7 +738,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const total = allWords.length;
     wordCountBadge.textContent = total === 1 ? "1 kelime" : `${total} kelime`;
 
-    /* Grid/list class */
     wordList.className = viewMode === "grid" ? "word-list word-list--grid" : "word-list";
 
     if (!list.length) { emptyState.style.display = "block"; return; }
@@ -697,6 +760,7 @@ document.addEventListener("DOMContentLoaded", () => {
     card.style.animationDelay = (idx * 18) + "ms";
     if (selectMode) card.classList.add("select-mode");
     if (selectedIds.has(item.id)) card.classList.add("selected");
+    if (item.starred) card.classList.add("word-card--starred");
 
     const artikel = extractArtikel(item.word);
     if (artikel) card.classList.add(`artikel-${artikel}`);
@@ -719,6 +783,14 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="grid-meaning">${esc(primaryMeaning(item))}</div>
         ${tags.filter(t=>!["A1","A2","B1","B2","C1","C2"].includes(t)).slice(0,2).map(t=>`<span class="word-tag-badge" style="margin:2px 2px 0 0">${esc(t)}</span>`).join("")}
         <div class="grid-actions">
+          <button class="grid-btn volume-btn" title="Telaffuz et">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          </button>
+          <button class="grid-btn bookmark-btn ${item.starred ? "starred-active" : ""}" title="${item.starred ? "Favorilerden çıkar" : "Favorilere ekle"}">
+            ${item.starred
+              ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`
+              : `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`}
+          </button>
           <button class="grid-btn example-btn" title="Örnek cümle">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </button>
@@ -732,7 +804,6 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
-    /* Select mode click */
     if (selectMode) {
       card.addEventListener("click", () => {
         if (selectedIds.has(item.id)) selectedIds.delete(item.id);
@@ -743,6 +814,12 @@ document.addEventListener("DOMContentLoaded", () => {
         updateBulkBar();
       });
     } else {
+      card.querySelector(".volume-btn")?.addEventListener("click", (e) => { e.stopPropagation(); speakWord(item.word); });
+      card.querySelector(".bookmark-btn")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (!userId) return;
+        toggleStarred(userId, item, card.querySelector(".bookmark-btn"));
+      });
       card.querySelector(".example-btn")?.addEventListener("click", () => openExampleModal(item.word, primaryMeaning(item)));
       card.querySelector(".edit-btn")?.addEventListener("click", () => userId && openEditModal(userId, item, "word"));
       card.querySelector(".delete-btn")?.addEventListener("click", async () => {
@@ -770,6 +847,7 @@ document.addEventListener("DOMContentLoaded", () => {
     card.setAttribute("aria-label", `${item.word}: ${primaryMeaning(item)}`);
     if (selectMode) card.classList.add("select-mode");
     if (selectedIds.has(item.id)) card.classList.add("selected");
+    if (item.starred) card.classList.add("word-card--starred");
 
     const artikel = extractArtikel(item.word);
     if (artikel) card.classList.add(`artikel-${artikel}`);
@@ -853,6 +931,27 @@ document.addEventListener("DOMContentLoaded", () => {
       const actions = document.createElement("div");
       actions.className = "card-actions";
 
+      /* Telaffuz butonu */
+      const audioBtn = document.createElement("button");
+      audioBtn.className = "card-btn volume";
+      audioBtn.title = "Telaffuz et";
+      audioBtn.setAttribute("aria-label", `${item.word} telaffuzu`);
+      audioBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+      audioBtn.addEventListener("click", () => speakWord(item.word));
+      actions.appendChild(audioBtn);
+
+      /* Favori butonu */
+      const bookmarkBtn = document.createElement("button");
+      bookmarkBtn.className = "card-btn bookmark" + (item.starred ? " starred-active" : "");
+      bookmarkBtn.title = item.starred ? "Favorilerden çıkar" : "Favorilere ekle";
+      bookmarkBtn.setAttribute("aria-label", `${item.word} ${item.starred ? "favoriden çıkar" : "favoriye ekle"}`);
+      bookmarkBtn.innerHTML = item.starred
+        ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`
+        : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`;
+      bookmarkBtn.addEventListener("click", () => userId && toggleStarred(userId, item, bookmarkBtn));
+      actions.appendChild(bookmarkBtn);
+
+      /* Düzenle butonu */
       const editBtn = document.createElement("button");
       editBtn.className = "card-btn"; editBtn.title = "Kelimeyi düzenle";
       editBtn.setAttribute("aria-label", `${item.word} kelimesini düzenle`);
@@ -860,6 +959,7 @@ document.addEventListener("DOMContentLoaded", () => {
       editBtn.addEventListener("click", () => userId && openEditModal(userId, item, "word"));
       actions.appendChild(editBtn);
 
+      /* Örnek cümle butonu */
       const exBtn = document.createElement("button");
       exBtn.className = "card-btn example"; exBtn.title = "Örnek cümleler";
       exBtn.setAttribute("aria-label", `${item.word} için örnek cümleler`);
@@ -867,12 +967,14 @@ document.addEventListener("DOMContentLoaded", () => {
       exBtn.addEventListener("click", () => openExampleModal(item.word, primaryMeaning(item)));
       actions.appendChild(exBtn);
 
+      /* Etiket butonu */
       const tagBtn = document.createElement("button");
       tagBtn.className = "card-btn"; tagBtn.title = "Etiket düzenle";
       tagBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`;
       tagBtn.addEventListener("click", () => userId && openEditModal(userId, item, "tags"));
       actions.appendChild(tagBtn);
 
+      /* Sil butonu */
       const delBtn = document.createElement("button");
       delBtn.className = "card-btn delete"; delBtn.title = "Sil";
       delBtn.setAttribute("aria-label", `${item.word} kelimesini sil`);
@@ -1139,7 +1241,12 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="example-modal-word" id="exModalWord"></div>
             <div class="example-modal-meaning" id="exModalMeaning"></div>
           </div>
-          <button id="exModalClose" class="edit-modal-close" aria-label="Kapat">×</button>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button id="exModalSpeak" class="card-btn volume" title="Telaffuz et" style="opacity:1;width:32px;height:32px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            </button>
+            <button id="exModalClose" class="edit-modal-close" aria-label="Kapat">×</button>
+          </div>
         </div>
         <div class="example-source-label">Örnek Cümleler</div>
         <div id="exampleSentences">
@@ -1155,6 +1262,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const close = () => overlay.remove();
     overlay.querySelector("#exModalClose").addEventListener("click", close);
+    overlay.querySelector("#exModalSpeak").addEventListener("click", () => speakWord(word));
     overlay.addEventListener("click", e => { if (e.target === overlay) close(); });
     document.addEventListener("keydown", function h(e) {
       if (e.key === "Escape") { close(); document.removeEventListener("keydown", h); }
@@ -1186,7 +1294,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.renderFiltered = renderFiltered;
-  window.buildFilterSidebar = buildFilterSidebar;  // ← EKLENDİ
+  window.buildFilterSidebar = buildFilterSidebar;
 });
 
 /* ── Progress Modal ─────────────────────────────────────── */
