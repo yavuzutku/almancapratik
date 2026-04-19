@@ -22,14 +22,11 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"EducationalApplication","name":"AlmancaPratik","url":"https://almancapratik.com","applicationCategory":"EducationalApplication","inLanguage":"tr","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"educationalLevel":["A1","A2","B1","B2","C1"],"teaches":"Almanca dil becerileri"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"AlmancaPratik ücretsiz mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Artikel bulucu, cümle örnekleri, çeviri ve seviye testi hesap gerektirmez. Kişisel sözlük ve quiz için ücretsiz kayıt yeterli."}},{"@type":"Question","name":"Der die das artikel bulucu nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Wiktionary verileri kullanılarak girilen Almanca kelimenin der, die veya das artikeli anında gösterilir."}},{"@type":"Question","name":"Almanca seviye testi ücretsiz mi?","acceptedAnswer":{"@type":"Answer","text":"Evet, 25 soruluk Almanca seviye testi tamamen ücretsiz ve kayıt gerektirmez."}}]}</script>
 
-<!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-<!-- Global CSS -->
 <link rel="stylesheet" href="css/global.css">
 
 <script id="tailwind-config">
@@ -64,32 +61,6 @@ tailwind.config = {
   .faq-item { transition: background 0.18s ease; }
   .lv-card { transition: background 0.18s ease, transform 0.18s ease; }
   .lv-card:hover { transform: translateY(-2px); }
-
-  /* Hero nav card image */
-  .hero-nav-image {
-    width: 100%;
-    aspect-ratio: 16 / 7;
-    object-fit: cover;
-    display: block;
-    border-bottom: 1px solid rgba(67,70,85,0.15);
-  }
-  /* Placeholder görünümü — resim eklenene kadar */
-  .hero-nav-image-placeholder {
-    width: 100%;
-    aspect-ratio: 16 / 7;
-    background: linear-gradient(135deg, #131b2e 0%, #1a2540 50%, #131b2e 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-bottom: 1px solid rgba(67,70,85,0.15);
-    color: rgba(180,197,255,0.25);
-    font-family: 'Space Grotesk', monospace;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    gap: 8px;
-  }
 </style>
 </head>
 <body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col">
@@ -99,75 +70,93 @@ tailwind.config = {
   window.loadNavbar();
 </script>
 
-<!-- ANA İÇERİK — body.has-sidenav padding-left'i halleder, top padding gerekmez -->
 <main class="flex-grow pb-24 px-5 w-full flex flex-col gap-20 max-w-screen-xl mx-auto">
 
-  <!-- HERO -->
-  <section class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-14 pt-14 pb-10 border-b border-outline-variant/20">
-    <div class="lg:w-1/2 flex flex-col items-start gap-7">
-      <div class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-primary-container"></span>
-        <span class="font-mono-label text-xs font-semibold tracking-widest uppercase text-on-surface-variant">Türkçe · Ücretsiz · A1–C1</span>
+  <!-- ═══════════════════════════════
+       HERO
+  ═══════════════════════════════ -->
+  <section class="flex flex-col gap-8 pt-14 pb-10 border-b border-outline-variant/20">
+
+    <!-- SATIR 1: Sol başlık  |  Sağ görsel -->
+    <div class="flex flex-col lg:flex-row items-center gap-10">
+
+      <!-- Sol: başlık + açıklama -->
+      <div class="lg:w-1/2 flex flex-col items-start gap-6">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-primary-container"></span>
+          <span class="font-mono-label text-xs font-semibold tracking-widest uppercase text-on-surface-variant">Türkçe · Ücretsiz · A1–C1</span>
+        </div>
+        <h1 class="text-5xl lg:text-6xl font-bold font-headline leading-tight tracking-tight text-on-surface">
+          Almancayı<br>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-container to-primary">pratikle öğren.</span>
+        </h1>
+        <p class="text-base text-on-surface-variant leading-relaxed max-w-lg">
+          <a class="prose-link" href="/artikel/">Artikel bulucu</a>,
+          <a class="prose-link" href="/quiz/">kelime quizleri</a>,
+          <a class="prose-link" href="/metin/">metin analizi</a> ile
+          Almancanda hızla ilerle. Araçların büyük kısmı giriş gerektirmez.
+        </p>
       </div>
-      <h1 class="text-5xl lg:text-6xl font-bold font-headline leading-tight tracking-tight text-on-surface">
-        Almancayı<br>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-container to-primary">pratikle öğren.</span>
-      </h1>
-      <p class="text-base text-on-surface-variant leading-relaxed max-w-lg">
-        <a class="prose-link" href="/artikel/">Artikel bulucu</a>,
-        <a class="prose-link" href="/quiz/">kelime quizleri</a>,
-        <a class="prose-link" href="/metin/">metin analizi</a> ile
-        Almancanda hızla ilerle. Araçların büyük kısmı giriş gerektirmez.
-      </p>
-      <div class="flex gap-3 flex-wrap">
-        <a href="/pratik/" class="inline-flex items-center gap-2 bg-primary-container text-on-primary-container px-7 py-3.5 rounded-xl font-headline font-bold text-sm hover:brightness-110 transition-all">
-          <span class="material-symbols-outlined" style="font-size:17px">grid_view</span>
-          Tüm Araçlar
-        </a>
-        <a href="/seviyeler/seviyetespit/" class="inline-flex items-center gap-2 border border-outline-variant bg-surface-container-low text-primary px-7 py-3.5 rounded-xl font-headline font-bold text-sm hover:bg-surface-container transition-all">
-          Seviyemi Öğren →
-        </a>
+
+      <!-- Sağ: görsel -->
+      <div class="lg:w-1/2 w-full">
+        <img
+          src="images/almancapratik.jpg"
+          alt="Almanca pratik öğrenme görseli"
+          class="w-full object-cover rounded-2xl shadow-xl"
+          style="max-height:320px;"
+        >
       </div>
     </div>
-    <div class="lg:w-5/12 w-full">
-      <img 
-        src="images/almancapratik.jpg" 
-        alt="Almanca pratik öğrenme görseli"
-        class="w-full h-full object-cover rounded-2xl shadow-xl"
-      >
-    </div>
 
-    <!-- Hero Nav Kartı: üstte görsel, altta linkler -->
-    <nav class="w-full mt-10 lg:mt-20 bg-surface-container-low border border-outline-variant/15 rounded-2xl overflow-hidden shadow-xl" aria-label="Platform araçları">
+    <!-- SATIR 2: 5'li araç linkleri — tam genişlik, ikisinin altına hizalı -->
+    <nav class="w-full bg-surface-container-low border border-outline-variant/15 rounded-2xl overflow-hidden shadow-xl" aria-label="Platform araçları">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-outline-variant/10">
 
-      <!-- GÖRSEL ALANI — src'yi kendi resminizle değiştirin -->
-      <!-- Resminiz hazır olduğunda aşağıdaki placeholder div'i kaldırıp
-           <img> etiketini yorum satırından çıkarın:
-           <img src="/img/hero-banner.jpg" alt="AlmancaPratik platform görseli" class="hero-nav-image"> -->
-     
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group" href="/artikel/">
+          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">search_check</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">Der Die Das<br class="hidden lg:block"> Artikel Bulucu</span>
+          <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors ml-auto lg:hidden">→</span>
+        </a>
 
-      <!-- ARAÇ LİNKLERİ -->
-      <a class="flex items-center justify-between px-5 py-3.5 border-b border-outline-variant/10 hover:bg-surface-container transition-colors group" href="/artikel/">
-        <div class="flex items-center gap-3"><span class="material-symbols-outlined text-primary" style="font-size:18px">search_check</span><span class="text-on-surface text-sm font-medium">Der Die Das Artikel Bulucu</span></div>
-        <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors">→</span>
-      </a>
-      <a class="flex items-center justify-between px-5 py-3.5 border-b border-outline-variant/10 hover:bg-surface-container transition-colors group" href="/quiz/">
-        <div class="flex items-center gap-3"><span class="material-symbols-outlined text-primary" style="font-size:18px">quiz</span><span class="text-on-surface text-sm font-medium">Almanca Kelime Quizi</span></div>
-        <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors">→</span>
-      </a>
-      <a class="flex items-center justify-between px-5 py-3.5 border-b border-outline-variant/10 hover:bg-surface-container transition-colors group" href="/metin/">
-        <div class="flex items-center gap-3"><span class="material-symbols-outlined text-primary" style="font-size:18px">analytics</span><span class="text-on-surface text-sm font-medium">Metin Analizi &amp; Okuma</span></div>
-        <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors">→</span>
-      </a>
-      <a class="flex items-center justify-between px-5 py-3.5 border-b border-outline-variant/10 hover:bg-surface-container transition-colors group" href="/cumlebul/">
-        <div class="flex items-center gap-3"><span class="material-symbols-outlined text-primary" style="font-size:18px">segment</span><span class="text-on-surface text-sm font-medium">Cümle Örnekleri</span></div>
-        <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors">→</span>
-      </a>
-      <a class="flex items-center justify-between px-5 py-3.5 hover:bg-surface-container transition-colors group" href="/seviyeler/seviyetespit/">
-        <div class="flex items-center gap-3"><span class="material-symbols-outlined text-primary" style="font-size:18px">school</span><span class="text-on-surface text-sm font-medium">Seviye Testi</span></div>
-        <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors">→</span>
-      </a>
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group" href="/quiz/">
+          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">quiz</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">Almanca<br class="hidden lg:block"> Kelime Quizi</span>
+          <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors ml-auto lg:hidden">→</span>
+        </a>
+
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group" href="/metin/">
+          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">analytics</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">Metin Analizi<br class="hidden lg:block"> &amp; Okuma</span>
+          <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors ml-auto lg:hidden">→</span>
+        </a>
+
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group" href="/cumlebul/">
+          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">segment</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">Cümle<br class="hidden lg:block"> Örnekleri</span>
+          <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors ml-auto lg:hidden">→</span>
+        </a>
+
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group" href="/seviyeler/seviyetespit/">
+          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">school</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">Seviye<br class="hidden lg:block"> Testi</span>
+          <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors ml-auto lg:hidden">→</span>
+        </a>
+
+      </div>
     </nav>
+
+    <!-- SATIR 3: CTA butonlar -->
+    <div class="flex gap-3 flex-wrap">
+      <a href="/pratik/" class="inline-flex items-center gap-2 bg-primary-container text-on-primary-container px-7 py-3.5 rounded-xl font-headline font-bold text-sm hover:brightness-110 transition-all">
+        <span class="material-symbols-outlined" style="font-size:17px">grid_view</span>
+        Tüm Araçlar
+      </a>
+      <a href="/seviyeler/seviyetespit/" class="inline-flex items-center gap-2 border border-outline-variant bg-surface-container-low text-primary px-7 py-3.5 rounded-xl font-headline font-bold text-sm hover:bg-surface-container transition-all">
+        Seviyemi Öğren →
+      </a>
+    </div>
+
   </section>
 
   <!-- ARAÇLAR BENTO GRID -->
