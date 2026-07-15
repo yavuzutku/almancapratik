@@ -27,6 +27,7 @@ let coverMode        = "file"; /* "file" | "url" */
 let deleteTargetId   = null;
 let wordTimer        = null;
 let activeCatFilter  = "all";
+let searchTerm       = "";
 let allLessons       = [];
 let _currentLessonId = null;
 
@@ -55,6 +56,10 @@ onAdminChange((adminStatus, user) => {
 /* ══════════════════════════════════════════════
    VIEW YÖNETİMİ + URL ROUTING
 ══════════════════════════════════════════════ */
+/* Ders sayfası artık /dersler/ders-adi şeklinde GERÇEK bir yol (path) kullanır,
+   ?ders= gibi bir sorgu parametresi değil. Bu hem link olarak daha temiz görünür
+   hem de Google'ın dersleri ayrı birer sayfa olarak algılamasına yardımcı olur.
+   Eski ?ders= / ?id= linkleri de geriye dönük çalışmaya devam eder (aşağıda). */
 function showView(id, urlParams = {}) {
   ["viewList","viewLesson","viewEditor"].forEach(v => {
     document.getElementById(v).classList.toggle("active", v === id);
@@ -62,23 +67,40 @@ function showView(id, urlParams = {}) {
   window.scrollTo(0, 0);
   const url = new URL(window.location.href);
   url.search = "";
-  if (id === "viewLesson" && urlParams.slug)              url.searchParams.set("ders", urlParams.slug);
-  if (id === "viewLesson" && !urlParams.slug && urlParams.id) url.searchParams.set("id", urlParams.id);
-  if (id === "viewEditor" && urlParams.edit)              url.searchParams.set("edit", urlParams.edit);
-  if (id === "viewEditor" && !urlParams.edit)             url.searchParams.set("edit", "new");
+  url.pathname = "/dersler/";
+
+  if (id === "viewLesson" && urlParams.slug) {
+    url.pathname = "/dersler/" + encodeURIComponent(urlParams.slug);
+  } else if (id === "viewLesson" && !urlParams.slug && urlParams.id) {
+    url.searchParams.set("id", urlParams.id);
+  } else if (id === "viewEditor" && urlParams.edit) {
+    url.searchParams.set("edit", urlParams.edit);
+  } else if (id === "viewEditor" && !urlParams.edit) {
+    url.searchParams.set("edit", "new");
+  }
   history.pushState({ view: id, ...urlParams }, "", url.toString());
 }
 
+function getSlugFromPath() {
+  const m = window.location.pathname.match(/^\/dersler\/([^\/?#]+)\/?$/);
+  if (!m) return null;
+  const decoded = decodeURIComponent(m[1]);
+  /* index.html ya da boş segment gibi durumları göz ardı et */
+  if (!decoded || decoded === "index.html") return null;
+  return decoded;
+}
+
 window.addEventListener("popstate", () => {
-  const p    = new URLSearchParams(window.location.search);
-  const slug = p.get("ders");
-  const id   = p.get("id");
-  const edit = p.get("edit");
+  const p        = new URLSearchParams(window.location.search);
+  const pathSlug = getSlugFromPath();
+  const slug     = pathSlug || p.get("ders");
+  const id       = p.get("id");
+  const edit     = p.get("edit");
   if (edit === "new")  openEditor(null);
   else if (edit)       editLesson(edit);
   else if (slug)       loadLessonBySlug(slug);
   else if (id)         loadLessonById(id);
-  else { showViewOnly("viewList"); loadLessons(); }
+  else { showViewOnly("viewList"); loadLessons(); resetSeoTags(); }
 });
 
 function showViewOnly(id) {
@@ -120,13 +142,34 @@ function setCatFilter(cat) {
   document.querySelectorAll(".cat-filter-btn").forEach(b =>
     b.classList.toggle("active", b.dataset.cat === cat)
   );
-  renderLessons(filterLessons(allLessons));
+  const filtered = filterLessons(allLessons);
+  updateLessonsCount(filtered.length);
+  renderLessons(filtered);
 }
 
 function filterLessons(lessons) {
-  if (activeCatFilter === "all") return lessons;
-  return lessons.filter(l => l.category === activeCatFilter);
+  let out = activeCatFilter === "all" ? lessons : lessons.filter(l => l.category === activeCatFilter);
+  if (searchTerm) {
+    const q = searchTerm.toLocaleLowerCase("tr");
+    out = out.filter(l =>
+      (l.title || "").toLocaleLowerCase("tr").includes(q) ||
+      (l.excerpt || "").toLocaleLowerCase("tr").includes(q)
+    );
+  }
+  return out;
 }
+
+function updateLessonsCount(n) {
+  const el = document.getElementById("lessonsCount");
+  if (el) el.textContent = n ? `${n} ders` : "";
+}
+
+document.getElementById("lessonSearchInput")?.addEventListener("input", (e) => {
+  searchTerm = e.target.value.trim();
+  const filtered = filterLessons(allLessons);
+  updateLessonsCount(filtered.length);
+  renderLessons(filtered);
+});
 
 /* ══════════════════════════════════════════════
    LIST
@@ -139,6 +182,7 @@ async function loadLessons() {
     allLessons  = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     const visible = isAdmin ? allLessons : allLessons.filter(l => l.published);
     buildCatFilters(visible);
+    updateLessonsCount(visible.length);
     renderLessons(filterLessons(visible), visible.length);
   } catch(e) {
     document.getElementById("lessonsGrid").innerHTML =
@@ -190,7 +234,9 @@ function renderLessons(list, totalVisible = list.length) {
     const card = document.createElement("a");
     card.className = "lesson-card";
     card.style.animationDelay = (i * 50) + "ms";
-    card.href = `/dersler/?ders=${encodeURIComponent(lesson.slug || lesson.id)}`;
+    card.href = lesson.slug
+      ? `/dersler/${encodeURIComponent(lesson.slug)}`
+      : `/dersler/?id=${encodeURIComponent(lesson.id)}`;
 
     const cat     = lesson.category || "";
     const date    = lesson.createdAt?.toDate
@@ -293,10 +339,161 @@ function openLesson(lesson, pushUrl = true) {
   document.getElementById("lessonBody").innerHTML        = lesson.content || "";
   document.getElementById("lessonAdminActions").style.display = isAdmin ? "flex" : "none";
 
+  updateSeoTags(lesson);
+  buildBreadcrumb(lesson);
+  buildPrevNext(lesson);
+  buildRelated(lesson);
+
   if (pushUrl) {
     showView("viewLesson", lesson.slug ? { slug: lesson.slug } : { id: lesson.id });
   } else { showViewOnly("viewLesson"); }
 }
+
+/* ══════════════════════════════════════════════
+   SEO — her ders için sayfa başlığı, açıklama,
+   canonical link, Open Graph ve yapılandırılmış
+   veri (JSON-LD) etiketlerini günceller.
+══════════════════════════════════════════════ */
+function updateSeoTags(lesson) {
+  const title = (lesson.title || "Ders") + " — AlmancaPratik";
+  const desc  = (lesson.excerpt || stripHtml(lesson.content || "").slice(0, 155) || "AlmancaPratik Almanca dersi.").trim();
+  const slugOrId = lesson.slug || lesson.id;
+  const url   = `https://almancapratik.com/dersler/${encodeURIComponent(slugOrId)}`;
+
+  setMeta("metaDescriptionTag", desc);
+  setMeta("canonicalTag", url, "href");
+  setMeta("ogTitleTag", title);
+  setMeta("ogDescTag", desc);
+  setMeta("ogUrlTag", url);
+  if (lesson.coverUrl && lesson.coverUrl.startsWith("http")) setMeta("ogImageTag", lesson.coverUrl);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LearningResource",
+    "name": lesson.title || "Ders",
+    "description": desc,
+    "url": url,
+    "inLanguage": "de",
+    "educationalLevel": lesson.category || undefined,
+    "datePublished": lesson.createdAt?.toDate ? lesson.createdAt.toDate().toISOString() : undefined,
+    "publisher": { "@type": "Organization", "name": "AlmancaPratik", "url": "https://almancapratik.com" }
+  };
+  const ld = document.getElementById("jsonLdTag");
+  if (ld) ld.textContent = JSON.stringify(jsonLd);
+}
+
+function resetSeoTags() {
+  document.title = "Dersler — AlmancaPratik";
+  setMeta("metaDescriptionTag", "AlmancaPratik Almanca dersleri. A1'den C1'e kategorilere göre yapılandırılmış Almanca ders içerikleri.");
+  setMeta("canonicalTag", "https://almancapratik.com/dersler/", "href");
+  setMeta("ogTitleTag", "Dersler — AlmancaPratik");
+  setMeta("ogDescTag", "A1'den C1'e kategorilere göre yapılandırılmış Almanca ders içerikleri.");
+  setMeta("ogUrlTag", "https://almancapratik.com/dersler/");
+  const ld = document.getElementById("jsonLdTag");
+  if (ld) ld.textContent = "{}";
+}
+
+function setMeta(id, value, attr = "content") {
+  const el = document.getElementById(id);
+  if (el) el.setAttribute(attr, value);
+}
+
+function stripHtml(html) {
+  const d = document.createElement("div");
+  d.innerHTML = html;
+  return (d.textContent || "").replace(/\s+/g, " ").trim();
+}
+
+/* ── Breadcrumb ── */
+function buildBreadcrumb(lesson) {
+  const el = document.getElementById("lessonBreadcrumb");
+  if (!el) return;
+  el.innerHTML = `
+    <a href="/">Anasayfa</a>
+    <span>/</span>
+    <a href="/dersler/">Dersler</a>
+    ${lesson.category ? `<span>/</span><a href="/dersler/?cat=${encodeURIComponent(lesson.category)}">${esc(lesson.category)}</a>` : ""}
+    <span>/</span>
+    <span class="lesson-breadcrumb-current">${esc(lesson.title || "Ders")}</span>
+  `;
+}
+
+/* ── Önceki / sonraki ders (aynı kategori öncelikli, sonra tüm liste) ── */
+function buildPrevNext(lesson) {
+  const el = document.getElementById("lessonPrevNextRow");
+  if (!el) return;
+  const visible = (isAdmin ? allLessons : allLessons.filter(l => l.published));
+  const idx = visible.findIndex(l => l.id === lesson.id);
+  if (idx === -1 || visible.length < 2) { el.innerHTML = ""; return; }
+
+  const prev = visible[idx + 1] || null; /* liste yeniden eskiye sıralı: bir sonraki eleman = daha eski ders */
+  const next = visible[idx - 1] || null;
+
+  const card = (l, dir) => l ? `
+    <a class="lesson-nav-card lesson-nav-card--${dir}" href="/dersler/${encodeURIComponent(l.slug || l.id)}">
+      <span class="lesson-nav-card-label">${dir === "prev" ? "← Önceki ders" : "Sonraki ders →"}</span>
+      <span class="lesson-nav-card-title">${esc(l.title || "Başlıksız")}</span>
+    </a>` : `<span></span>`;
+
+  el.innerHTML = card(prev, "prev") + card(next, "next");
+  el.querySelectorAll(".lesson-nav-card").forEach(a => {
+    a.addEventListener("click", e => {
+      e.preventDefault();
+      const target = visible.find(l => `/dersler/${encodeURIComponent(l.slug || l.id)}` === a.getAttribute("href"));
+      if (target) openLesson(target);
+    });
+  });
+}
+
+/* ── İlgili dersler (aynı kategori, farklı ders, en fazla 3) ── */
+function buildRelated(lesson) {
+  const el = document.getElementById("lessonRelated");
+  if (!el) return;
+  const visible = (isAdmin ? allLessons : allLessons.filter(l => l.published));
+  const related = visible.filter(l => l.id !== lesson.id && l.category === lesson.category).slice(0, 3);
+  if (!related.length) { el.innerHTML = ""; return; }
+
+  el.innerHTML = `
+    <div class="lesson-related-title">İlgili Dersler</div>
+    <div class="lesson-related-grid">
+      ${related.map(l => `
+        <a class="lesson-related-card" href="/dersler/${encodeURIComponent(l.slug || l.id)}">
+          <span class="lesson-related-cat" data-cat="${esc(l.category || "")}">${esc(l.category || "")}</span>
+          <span class="lesson-related-name">${esc(l.title || "Başlıksız")}</span>
+        </a>`).join("")}
+    </div>
+  `;
+  el.querySelectorAll(".lesson-related-card").forEach(a => {
+    a.addEventListener("click", e => {
+      e.preventDefault();
+      const target = related.find(l => `/dersler/${encodeURIComponent(l.slug || l.id)}` === a.getAttribute("href"));
+      if (target) openLesson(target);
+    });
+  });
+}
+
+/* ── Paylaş ── */
+document.getElementById("btnShareLesson")?.addEventListener("click", async () => {
+  const url = window.location.href;
+  const title = document.getElementById("lessonHeading")?.textContent || "AlmancaPratik";
+  if (navigator.share) {
+    try { await navigator.share({ title, url }); return; } catch { /* kullanıcı iptal etti */ }
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    toast("Link kopyalandı ✓", "ok");
+  } catch { toast("Link kopyalanamadı", "err"); }
+});
+
+/* ── Okuma ilerleme çubuğu ── */
+window.addEventListener("scroll", () => {
+  const bar = document.getElementById("readingProgressBar");
+  if (!bar || !document.getElementById("viewLesson").classList.contains("active")) return;
+  const h = document.documentElement;
+  const scrolled = h.scrollTop;
+  const max = h.scrollHeight - h.clientHeight;
+  bar.style.width = max > 0 ? Math.min(100, (scrolled / max) * 100) + "%" : "0%";
+}, { passive: true });
 
 document.getElementById("btnBackFromLesson").addEventListener("click", () => {
   document.title = "Dersler — AlmancaPratik";
@@ -811,11 +1008,12 @@ window.setCatFilter        = setCatFilter;
   /* Highlight paletini kur */
   buildHighlightPalette();
 
-  const p    = new URLSearchParams(window.location.search);
-  const slug = p.get("ders");
-  const id   = p.get("id");
-  const edit = p.get("edit");
-  const cat  = p.get("cat");
+  const p        = new URLSearchParams(window.location.search);
+  const pathSlug = getSlugFromPath();
+  const slug     = pathSlug || p.get("ders");
+  const id       = p.get("id");
+  const edit     = p.get("edit");
+  const cat      = p.get("cat");
 
   await loadLessons();
 
