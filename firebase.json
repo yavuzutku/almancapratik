@@ -1,6 +1,12 @@
 {
   "hosting": {
-    "public": "./",
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "auto_push.sh"
+    ],
     "rewrites": [
       {
         "source": "/dersler/**",
