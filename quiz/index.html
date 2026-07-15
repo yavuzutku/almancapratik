@@ -14,39 +14,39 @@
   <meta property="og:description" content="Flashcard, çoktan seçmeli veya yazarak cevaplama modlarında Almanca pratik yap. Tekrarlama algoritması ile kalıcı öğrenme.">
   <meta property="og:locale" content="tr_TR">
   <link rel="icon" href="../favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/global.css">
   <style>
 /* ══════════════════════════════════════════════════
    DESIGN TOKENS
 ══════════════════════════════════════════════════ */
 :root {
-  --bg:       #07070a;
-  --s1:       rgba(255,255,255,0.030);
-  --s2:       rgba(255,255,255,0.056);
-  --s3:       rgba(255,255,255,0.088);
-  --br:       rgba(255,255,255,0.068);
-  --br2:      rgba(255,255,255,0.14);
-  --t1:       #f2efe9;
-  --t2:       rgba(242,239,233,0.52);
-  --t3:       rgba(242,239,233,0.28);
-  --v:        #a064ff;
-  --vd:       #7040cc;
-  --vg:       rgba(160,100,255,0.22);
-  --g:        #c9a84c;
-  --gl:       #e8c97a;
-  --gg:       rgba(201,168,76,0.22);
-  --gr:       #4fd69c;
-  --grg:      rgba(79,214,156,0.22);
-  --re:       #f07068;
-  --reg:      rgba(240,112,104,0.18);
-  --bl:       #60c8f0;
-  --blg:      rgba(96,200,240,0.18);
-  --fd:       'Syne', sans-serif;
-  --fb:       'DM Sans', sans-serif;
-  --fm:       'DM Mono', monospace;
-  --ease:     0.22s cubic-bezier(0.4,0,0.2,1);
-  --spring:   0.44s cubic-bezier(0.22,1,0.36,1);
+  --bg:     #0b1326;                     /* anasayfa background */
+  --s1:     rgba(218,226,253,0.030);
+  --s2:     rgba(218,226,253,0.056);
+  --s3:     rgba(218,226,253,0.088);
+  --br:     rgba(218,226,253,0.068);
+  --br2:    rgba(218,226,253,0.15);
+  --t1:     #dae2fd;                     /* anasayfa on-surface */
+  --t2:     rgba(218,226,253,0.58);
+  --t3:     rgba(218,226,253,0.32);
+  --v:      #b4c5ff;                     /* anasayfa primary */
+  --vd:     #7e93e0;
+  --vg:     rgba(180,197,255,0.20);
+  --g:      #bcc7de;                     /* anasayfa secondary (eski altın yerine) */
+  --gl:     #d8e3fb;
+  --gg:     rgba(188,199,222,0.20);
+  --gr:     #4ade80;                     /* anasayfa yeşil (A1 rozeti ile aynı aile) */
+  --grg:    rgba(74,222,128,0.20);
+  --re:     #f07068;
+  --reg:    rgba(240,112,104,0.18);
+  --bl:     #93c5fd;
+  --blg:    rgba(147,197,253,0.18);
+  --fd:     'Manrope', sans-serif;       /* anasayfa headline fontu */
+  --fb:     'Manrope', sans-serif;       /* anasayfa body fontu */
+  --fm:     'Space Grotesk', monospace;  /* anasayfa label fontu */
+  --ease:   0.22s cubic-bezier(0.4,0,0.2,1);
+  --spring: 0.44s cubic-bezier(0.22,1,0.36,1);
 }
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
 body { font-family:var(--fb); background:var(--bg); color:var(--t1); -webkit-font-smoothing:antialiased; overflow-x:hidden; }
