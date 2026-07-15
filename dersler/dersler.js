@@ -139,7 +139,7 @@ async function loadLessons() {
     allLessons  = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     const visible = isAdmin ? allLessons : allLessons.filter(l => l.published);
     buildCatFilters(visible);
-    renderLessons(filterLessons(visible));
+    renderLessons(filterLessons(visible), visible.length);
   } catch(e) {
     document.getElementById("lessonsGrid").innerHTML =
       `<div class="grid-empty"><div class="grid-empty-text">Dersler yüklenirken hata oluştu.</div></div>`;
@@ -147,12 +147,41 @@ async function loadLessons() {
   }
 }
 
-function renderLessons(list) {
+function renderLessons(list, totalVisible = list.length) {
   const grid = document.getElementById("lessonsGrid");
   if (!list.length) {
+    /* Site genelinde hiç ders yoksa (admin için de) — yapım aşaması vitrini */
+    if (!totalVisible) {
+      if (isAdmin) {
+        grid.innerHTML = `<div class="grid-empty">
+          <div class="grid-empty-icon">📚</div>
+          <div class="grid-empty-text">Henüz ders yok. İlk dersi ekle!</div>
+        </div>`;
+      } else {
+        grid.innerHTML = `<div class="coming-soon">
+          <div class="coming-soon-icon">📖</div>
+          <div class="coming-soon-eyebrow"><span class="eyebrow-dot"></span>Yapım Aşamasında</div>
+          <h3 class="coming-soon-title">Dersler özenle hazırlanıyor</h3>
+          <p class="coming-soon-desc">
+            A1'den C1'e kadar her seviye için içerikler üzerinde çalışıyoruz.
+            İlk dersler yayınlandığında burada karşına çıkacak — takipte kal.
+          </p>
+          <div class="coming-soon-roadmap">
+            ${["A1","A2","B1","B2","C1"].map(cat => `
+              <div class="roadmap-chip" data-cat="${cat}">
+                <span class="roadmap-chip-level">${cat}</span>
+                <span class="roadmap-chip-status">Yakında</span>
+              </div>`).join("")}
+          </div>
+        </div>`;
+      }
+      return;
+    }
+    /* Sadece seçili kategoride ders yok, diğerlerinde var */
     grid.innerHTML = `<div class="grid-empty">
-      <div class="grid-empty-icon">📚</div>
-      <div class="grid-empty-text">${isAdmin ? "Henüz ders yok. İlk dersi ekle!" : "Bu kategoride henüz ders yayınlanmamış."}</div>
+      <div class="grid-empty-icon">🔍</div>
+      <div class="grid-empty-text">Bu kategoride henüz ders yayınlanmamış.</div>
+      <button class="grid-empty-link" onclick="setCatFilter('all')">Tüm dersleri göster</button>
     </div>`;
     return;
   }
@@ -773,6 +802,7 @@ async function ensureUniqueSlug(base, excludeId = null) {
 /* ── Globals (inline onclick için) ── */
 window.editLesson          = editLesson;
 window.confirmDeleteLesson = confirmDeleteLesson;
+window.setCatFilter        = setCatFilter;
 
 /* ══════════════════════════════════════════════
    INIT
