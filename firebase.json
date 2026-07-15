@@ -2,9 +2,9 @@
   "hosting": {
     "public": "./",
     "rewrites": [
-      { 
-        "source": "/dersler/**", 
-        "destination": "/index.html" 
+      {
+        "source": "/dersler/**",
+        "destination": "/dersler/index.html"
       }
     ]
   }
