@@ -85,6 +85,13 @@ button, input, select, textarea { font-family: inherit; }
 .btn-blue:hover { filter: brightness(1.07); box-shadow: 0 6px 26px var(--blue-glow), 0 0 0 3px rgba(59,130,246,0.16), inset 0 1px 0 rgba(255,255,255,0.4); transform: translateY(-1px); }
 .btn-danger-ghost:hover { border-color: rgba(240,112,104,0.4); color: var(--rose); box-shadow: 0 0 16px rgba(240,112,104,0.15); }
 .btn-sm { padding: 6px 12px; font-size: 12px; }
+.img-src-tab.active, .match-mode-btn.active { border-color: var(--blue); color: #fff; background: rgba(59,130,246,0.18); }
+.match-drag-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; padding: 6px; border-radius: 8px; border: 1px solid transparent; }
+.match-drag-row.dragging-row { opacity: 0.4; border-color: var(--border-hover); }
+.match-drag-handle { cursor: grab; color: var(--text-faint); flex-shrink: 0; padding: 4px; }
+.match-drag-handle:active { cursor: grabbing; }
+.match-img-thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; flex-shrink: 0; border: 1px solid var(--border); }
+.match-img-upload-btn { flex-shrink: 0; }
 .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 
 .workspace { flex: 1; display: flex; min-height: 0; }
@@ -377,6 +384,8 @@ button, input, select, textarea { font-family: inherit; }
       <button class="add-block-btn" data-type="fillblank"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></span>Boşluk Doldurma</button>
       <button class="add-block-btn" data-type="matching"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="12" r="2"/><path d="M8 6.6 16 11"/><path d="M8 17.4 16 13"/></svg></span>Eşleştirme</button>
       <button class="add-block-btn" data-type="sentorder"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span>Cümle Sıralama</button>
+      <button class="add-block-btn" data-type="wordorder"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="8.5" y="14" width="7" height="7" rx="1.5"/></svg></span>Kelime Sıralama</button>
+      <button class="add-block-btn" data-type="dialogue"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>Diyalog / Sohbet</button>
       <button class="add-block-btn" data-type="audio"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></span>Sesli Okuma (DE)</button>
       <button class="add-block-btn" data-type="accordion"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>Akordeon / SSS</button>
       <button class="add-block-btn" data-type="video"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>Video (YouTube/Vimeo)</button>
@@ -471,7 +480,7 @@ button, input, select, textarea { font-family: inherit; }
       case "paragraph":
         return Object.assign(base, { html: "Paragraf metnini buraya yazın. Doğrudan tıklayıp düzenleyebilirsiniz.", size: 17, align: "left", color: "#cbd5e1", font: "body", lineHeight: 178, letterSpacing: -1 });
       case "image":
-        return Object.assign(base, { url: "", alt: "", width: 100, radius: 16, align: "center" });
+        return Object.assign(base, { url: "", alt: "", caption: "", width: 100, height: "", radius: 16, align: "center", objectFit: "cover", shadow: "0", lazy: "1" });
       case "vocab":
         return Object.assign(base, { de: "das Beispiel", tr: "örnek", phon: "das bai-şpiil", example: "Das ist nur ein Beispiel.", tip: "", tipEnabled: false });
       case "callout":
@@ -483,9 +492,22 @@ button, input, select, textarea { font-family: inherit; }
       case "fillblank":
         return Object.assign(base, { instruction: "Boşlukları uygun kelimelerle doldurun.", text: "Ich {{gehe}} heute ins {{Kino}}." });
       case "matching":
-        return Object.assign(base, { instruction: "Sol taraftaki kelimeleri doğru anlamlarıyla eşleştirin.", pairs: [{ left: "das Haus", right: "ev" }, { left: "der Baum", right: "ağaç" }, { left: "die Katze", right: "kedi" }] });
+        return Object.assign(base, { instruction: "Sol taraftaki kelimeleri doğru anlamlarıyla eşleştirin.", mode: "text", pairs: [{ left: "das Haus", right: "ev", image: "" }, { left: "der Baum", right: "ağaç", image: "" }, { left: "die Katze", right: "kedi", image: "" }] });
       case "sentorder":
         return Object.assign(base, { instruction: "Cümleleri doğru sıraya dizin.", sentences: ["Ich stehe auf.", "Ich dusche mich.", "Ich frühstücke.", "Ich gehe zur Arbeit."] });
+      case "wordorder":
+        return Object.assign(base, { instruction: "Kelimelere doğru sırada tıklayın.", sentence: "Ich gehe heute ins Kino." });
+      case "dialogue":
+        return Object.assign(base, {
+          instruction: "Diyaloğu takip edin ve doğru cevabı seçin.",
+          speakerA: "Anna", speakerB: "Max",
+          lines: [
+            { speaker: "A", text: "Hallo! Wie geht's dir?", choice: false, distractors: [] },
+            { speaker: "B", text: "Mir geht es gut, danke! Und dir?", choice: true, distractors: ["Ich bin Lehrer von Beruf.", "Das Wetter ist heute schön."] },
+            { speaker: "A", text: "Auch gut, danke! Was machst du heute?", choice: false, distractors: [] },
+            { speaker: "B", text: "Ich gehe einkaufen.", choice: true, distractors: ["Ich schlafe den ganzen Tag.", "Ich weiß es noch nicht."] }
+          ]
+        });
       case "audio":
         return Object.assign(base, { text: "Guten Tag", caption: "Dinlemek için oynat tuşuna basın", lang: "de-DE" });
       case "accordion":
@@ -501,7 +523,7 @@ button, input, select, textarea { font-family: inherit; }
     }
   }
 
-  const TYPE_LABEL = { heading: "Başlık", paragraph: "Paragraf", image: "Görsel", vocab: "Kelime Kartı", callout: "Bilgi Kutusu", table: "Tablo", quiz: "Quiz / Sınav", fillblank: "Boşluk Doldurma", matching: "Eşleştirme", sentorder: "Cümle Sıralama", audio: "Sesli Okuma", accordion: "Akordeon / SSS", video: "Video", code: "Kod Bloğu", toc: "İçindekiler" };
+  const TYPE_LABEL = { heading: "Başlık", paragraph: "Paragraf", image: "Görsel", vocab: "Kelime Kartı", callout: "Bilgi Kutusu", table: "Tablo", quiz: "Quiz / Sınav", fillblank: "Boşluk Doldurma", matching: "Eşleştirme", sentorder: "Cümle Sıralama", wordorder: "Kelime Sıralama", dialogue: "Diyalog / Sohbet", audio: "Sesli Okuma", accordion: "Akordeon / SSS", video: "Video", code: "Kod Bloğu", toc: "İçindekiler" };
   const ICO = {
     up:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>',
     down:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>',
@@ -535,6 +557,8 @@ button, input, select, textarea { font-family: inherit; }
       case "fillblank":return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>';
       case "matching": return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="12" r="2"/><path d="M8 6.6 16 11"/><path d="M8 17.4 16 13"/></svg>';
       case "sentorder":return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>';
+      case "wordorder":return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="8.5" y="14" width="7" height="7" rx="1.5"/></svg>';
+      case "dialogue":return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>';
       case "audio":    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
       case "accordion":return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
       case "video":    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
@@ -742,7 +766,11 @@ button, input, select, textarea { font-family: inherit; }
       h += fg("Harf Aralığı (px)", rangeHtml("letterSpacing", -2, 4, block.letterSpacing));
     } else if (block.type === "image") {
       h += fg("Genişlik (%)", rangeHtml("width", 20, 100, block.width));
+      h += fg("Yükseklik (px, boş = otomatik)", '<input type="number" data-f="height" min="0" placeholder="auto" value="' + (block.height || "") + '" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">');
       h += fg("Köşe Yuvarlama (px)", rangeHtml("radius", 0, 40, block.radius));
+      h += fg("Nesne Sığdırma (Object Fit)", selectHtml("objectFit", [["cover","Kırp (Cover)"],["contain","Sığdır (Contain)"],["fill","Doldur (Fill)"],["none","Orijinal (None)"]], block.objectFit));
+      h += fg("Gölge", selectHtml("shadow", [["0","Kapalı"],["1","Açık"]], block.shadow));
+      h += fg("Lazy Loading", selectHtml("lazy", [["1","Açık (önerilen)"],["0","Kapalı"]], block.lazy));
       h += fg("Hizalama", alignBtnsHtml("align", block.align, true));
     } else if (block.type === "callout") {
       h += fg("Tema", themeBtnsHtml(block.theme));
@@ -768,7 +796,7 @@ button, input, select, textarea { font-family: inherit; }
   }
 
   function wireSettings(el, block) {
-    $all("select, input[type=color], input[type=range]", el).forEach(inp => {
+    $all("select, input[type=color], input[type=range], input[type=number]", el).forEach(inp => {
       const field = inp.dataset.f;
       inp.addEventListener("input", () => {
         let val = inp.value;
@@ -811,7 +839,13 @@ button, input, select, textarea { font-family: inherit; }
     } else if (block.type === "image") {
       const img = wrap.querySelector("img.preview-img");
       const holder = wrap.querySelector(".img-align-holder");
-      if (img) { img.style.width = block.width + "%"; img.style.borderRadius = block.radius + "px"; }
+      if (img) {
+        img.style.width = block.width + "%";
+        img.style.height = block.height ? (block.height + "px") : "auto";
+        img.style.borderRadius = block.radius + "px";
+        img.style.objectFit = block.objectFit || "cover";
+        img.style.boxShadow = (block.shadow === "1") ? "0 16px 40px rgba(0,0,0,.4)" : "none";
+      }
       if (holder) holder.style.textAlign = block.align;
     } else if (block.type === "callout") {
       const cbox = wrap.querySelector(".callout-prev");
@@ -842,16 +876,44 @@ button, input, select, textarea { font-family: inherit; }
       content.appendChild(div);
 
     } else if (block.type === "image") {
+      const srcTabs = document.createElement("div");
+      srcTabs.className = "img-src-tabs";
+      srcTabs.style.cssText = "display:flex; gap:6px; margin-bottom:8px;";
+      srcTabs.innerHTML =
+        '<button type="button" class="btn btn-sm img-src-tab" data-mode="url">URL</button>' +
+        '<button type="button" class="btn btn-sm img-src-tab" data-mode="upload">Bilgisayardan Yükle</button>';
+      content.appendChild(srcTabs);
+
       const urlRow = document.createElement("div");
       urlRow.className = "img-url-row";
-      urlRow.innerHTML = '<input type="url" placeholder="https://gorsel-url.jpg" value="' + esc(block.url) + '" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">';
+      urlRow.innerHTML = '<input type="url" placeholder="https://gorsel-url.jpg" value="' + esc(block.url && !block.url.startsWith("data:") ? block.url : "") + '" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">';
       const urlInput = urlRow.querySelector("input");
       content.appendChild(urlRow);
+
+      const uploadRow = document.createElement("div");
+      uploadRow.className = "img-upload-row";
+      uploadRow.style.display = "none";
+      uploadRow.innerHTML = '<input type="file" accept="image/*" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">';
+      const fileInput = uploadRow.querySelector("input");
+      content.appendChild(uploadRow);
+
+      function setSrcMode(mode) {
+        urlRow.style.display = mode === "url" ? "" : "none";
+        uploadRow.style.display = mode === "upload" ? "" : "none";
+        $all(".img-src-tab", srcTabs).forEach(b => b.classList.toggle("active", b.dataset.mode === mode));
+      }
+      setSrcMode(block.url && block.url.startsWith("data:") ? "upload" : "url");
+      srcTabs.querySelectorAll(".img-src-tab").forEach(b => b.addEventListener("click", () => setSrcMode(b.dataset.mode)));
 
       const altRow = document.createElement("div");
       altRow.className = "img-alt-row";
       altRow.innerHTML = '<input type="text" placeholder="Alternatif metin (alt)" value="' + esc(block.alt) + '" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; margin-top:6px;">';
       const altInput = altRow.querySelector("input");
+
+      const capRow = document.createElement("div");
+      capRow.className = "img-caption-row";
+      capRow.innerHTML = '<input type="text" placeholder="Alt yazı (caption, opsiyonel)" value="' + esc(block.caption || "") + '" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; margin-top:6px;">';
+      const capInput = capRow.querySelector("input");
 
       const holder = document.createElement("div");
       holder.className = "img-align-holder";
@@ -862,16 +924,33 @@ button, input, select, textarea { font-family: inherit; }
         if (block.url) {
           const img = document.createElement("img");
           img.className = "preview-img"; img.src = block.url; img.alt = block.alt;
-          img.style.width = block.width + "%"; img.style.borderRadius = block.radius + "px";
+          img.style.width = block.width + "%";
+          img.style.height = block.height ? (block.height + "px") : "auto";
+          img.style.borderRadius = block.radius + "px";
+          img.style.objectFit = block.objectFit || "cover";
+          img.style.boxShadow = (block.shadow === "1") ? "0 16px 40px rgba(0,0,0,.4)" : "none";
           holder.appendChild(img);
         } else {
-          holder.innerHTML = '<div class="img-block-empty" style="border:1.5px dashed var(--border); padding:20px; text-align:center; color:var(--text-faint);"><span>Görsel URL adresi girin</span></div>';
+          holder.innerHTML = '<div class="img-block-empty" style="border:1.5px dashed var(--border); padding:20px; text-align:center; color:var(--text-faint);"><span>Görsel URL girin veya bilgisayardan yükleyin</span></div>';
         }
       }
       urlInput.addEventListener("input", () => { block.url = urlInput.value.trim(); renderImgPreview(); });
+      fileInput.addEventListener("change", () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        if (file.size > 4 * 1024 * 1024) { toast("Görsel 4MB üzerinde, lütfen daha küçük bir dosya seçin.", "err"); return; }
+        const reader = new FileReader();
+        reader.onload = function (evt) {
+          block.url = evt.target.result;
+          renderImgPreview();
+          toast("Görsel yüklendi ve Base64'e dönüştürüldü ✓");
+        };
+        reader.readAsDataURL(file);
+      });
       altInput.addEventListener("input", () => { block.alt = altInput.value; });
+      capInput.addEventListener("input", () => { block.caption = capInput.value; });
       renderImgPreview();
-      content.appendChild(altRow); content.appendChild(holder);
+      content.appendChild(altRow); content.appendChild(capRow); content.appendChild(holder);
 
     } else if (block.type === "vocab") {
       const card = document.createElement("div");
@@ -998,28 +1077,110 @@ button, input, select, textarea { font-family: inherit; }
       const card = document.createElement("div");
       card.innerHTML = `<input type="text" class="match-instr" placeholder="Yönerge / talimat metni" value="${esc(block.instruction)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:600; margin-bottom:10px;">`;
       card.querySelector(".match-instr").addEventListener("input", function() { block.instruction = this.value; });
+
+      const modeRow = document.createElement("div");
+      modeRow.style.cssText = "display:flex; gap:6px; margin-bottom:12px;";
+      modeRow.innerHTML =
+        '<button type="button" class="btn btn-sm match-mode-btn" data-mode="text">Metin ↔ Metin</button>' +
+        '<button type="button" class="btn btn-sm match-mode-btn" data-mode="image">Görsel ↔ Metin</button>' +
+        '<button type="button" class="btn btn-sm match-mode-btn" data-mode="mixed">Metin ↔ Görsel</button>';
+      card.appendChild(modeRow);
+
       const pairsWrap = document.createElement("div");
+      let dragFromIdx = null;
+
+      function pairImgUploadBtn(p, i, rerender) {
+        const wrap2 = document.createElement("div");
+        wrap2.style.cssText = "display:flex; align-items:center; gap:6px; flex:1;";
+        const thumb = document.createElement("img");
+        thumb.className = "match-img-thumb";
+        thumb.style.display = p.image ? "" : "none";
+        thumb.src = p.image || "";
+        const fileBtn = document.createElement("input");
+        fileBtn.type = "file"; fileBtn.accept = "image/*"; fileBtn.className = "match-img-upload-btn";
+        fileBtn.style.cssText = "flex:1; padding:5px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-size:11px;";
+        fileBtn.addEventListener("change", () => {
+          const file = fileBtn.files[0];
+          if (!file) return;
+          if (file.size > 3 * 1024 * 1024) { toast("Görsel 3MB üzerinde.", "err"); return; }
+          const reader = new FileReader();
+          reader.onload = (evt) => { p.image = evt.target.result; rerender(); };
+          reader.readAsDataURL(file);
+        });
+        wrap2.appendChild(thumb); wrap2.appendChild(fileBtn);
+        return wrap2;
+      }
+
       function renderPairs() {
         pairsWrap.innerHTML = "";
+        $all(".match-mode-btn", modeRow).forEach(b => b.classList.toggle("active", b.dataset.mode === block.mode));
+
         block.pairs.forEach((p, i) => {
           const row = document.createElement("div");
-          row.style.cssText = "display:flex; align-items:center; gap:8px; margin-bottom:6px;";
-          row.innerHTML = `
-            <input type="text" value="${esc(p.left)}" placeholder="Sol (örn: das Haus)" style="flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
-            <span style="color:var(--text-faint);">↔</span>
-            <input type="text" value="${esc(p.right)}" placeholder="Sağ (örn: ev)" style="flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
-            <button class="del-pair" style="background:transparent; border:none; color:var(--rose); cursor:pointer;">×</button>
-          `;
-          row.querySelectorAll("input")[0].addEventListener("input", function() { p.left = this.value; });
-          row.querySelectorAll("input")[1].addEventListener("input", function() { p.right = this.value; });
-          row.querySelector(".del-pair").addEventListener("click", () => { if (block.pairs.length > 2) { block.pairs.splice(i,1); renderPairs(); } });
+          row.className = "match-drag-row";
+          row.draggable = true;
+          row.dataset.idx = i;
+
+          const handle = document.createElement("span");
+          handle.className = "match-drag-handle";
+          handle.title = "Sürükleyerek sırala";
+          handle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="1.6"/><circle cx="8" cy="12" r="1.6"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="6" r="1.6"/><circle cx="16" cy="12" r="1.6"/><circle cx="16" cy="18" r="1.6"/></svg>';
+          row.appendChild(handle);
+
+          // Sol taraf
+          if (block.mode === "image") {
+            row.appendChild(pairImgUploadBtn(p, i, renderPairs));
+          } else {
+            const leftInput = document.createElement("input");
+            leftInput.type = "text"; leftInput.value = p.left; leftInput.placeholder = "Sol (örn: das Haus)";
+            leftInput.style.cssText = "flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;";
+            leftInput.addEventListener("input", function() { p.left = this.value; });
+            row.appendChild(leftInput);
+          }
+
+          const arrow = document.createElement("span");
+          arrow.style.color = "var(--text-faint)"; arrow.textContent = "↔";
+          row.appendChild(arrow);
+
+          // Sağ taraf
+          if (block.mode === "mixed") {
+            row.appendChild(pairImgUploadBtn(p, i, renderPairs));
+          } else {
+            const rightInput = document.createElement("input");
+            rightInput.type = "text"; rightInput.value = p.right; rightInput.placeholder = "Sağ (örn: ev)";
+            rightInput.style.cssText = "flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;";
+            rightInput.addEventListener("input", function() { p.right = this.value; });
+            row.appendChild(rightInput);
+          }
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "del-pair"; delBtn.style.cssText = "background:transparent; border:none; color:var(--rose); cursor:pointer; flex-shrink:0;";
+          delBtn.innerHTML = "×";
+          delBtn.addEventListener("click", () => { if (block.pairs.length > 2) { block.pairs.splice(i, 1); renderPairs(); } else { toast("En az 2 eşleştirme çifti olmalı.", "err"); } });
+          row.appendChild(delBtn);
+
+          row.addEventListener("dragstart", () => { dragFromIdx = i; row.classList.add("dragging-row"); });
+          row.addEventListener("dragend", () => { row.classList.remove("dragging-row"); });
+          row.addEventListener("dragover", (e) => { e.preventDefault(); });
+          row.addEventListener("drop", (e) => {
+            e.preventDefault();
+            if (dragFromIdx === null || dragFromIdx === i) return;
+            const moved = block.pairs.splice(dragFromIdx, 1)[0];
+            block.pairs.splice(i, 0, moved);
+            dragFromIdx = null;
+            renderPairs();
+          });
+
           pairsWrap.appendChild(row);
         });
       }
       renderPairs();
+
+      $all(".match-mode-btn", modeRow).forEach(b => b.addEventListener("click", () => { block.mode = b.dataset.mode; renderPairs(); }));
+
       const addBtn = document.createElement("button");
       addBtn.className = "btn btn-sm"; addBtn.innerText = "+ Eşleştirme Çifti Ekle";
-      addBtn.addEventListener("click", () => { block.pairs.push({ left: "", right: "" }); renderPairs(); });
+      addBtn.addEventListener("click", () => { block.pairs.push({ left: "", right: "", image: "" }); renderPairs(); });
       card.appendChild(pairsWrap); card.appendChild(addBtn);
       content.appendChild(card);
 
@@ -1052,6 +1213,91 @@ button, input, select, textarea { font-family: inherit; }
       addBtn.className = "btn btn-sm"; addBtn.innerText = "+ Cümle Ekle";
       addBtn.addEventListener("click", () => { block.sentences.push("Yeni cümle"); renderSentences(); });
       card.appendChild(listWrap); card.appendChild(addBtn);
+      content.appendChild(card);
+
+    } else if (block.type === "wordorder") {
+      const card = document.createElement("div");
+      card.innerHTML = `
+        <input type="text" class="word-instr" placeholder="Yönerge / talimat metni" value="${esc(block.instruction)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:600; margin-bottom:10px;">
+        <input type="text" class="word-sentence" placeholder="Cümle (örn: Ich gehe heute ins Kino.)" value="${esc(block.sentence)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+        <div style="margin-top:8px; font-size:11.5px; color:var(--text-faint);">Öğrenciye bu cümlenin kelimeleri karışık sırada, tıklanabilir kutucuklar halinde gösterilir. Doğru sırayla tıklayınca onaylar.</div>
+      `;
+      card.querySelector(".word-instr").addEventListener("input", function() { block.instruction = this.value; });
+      card.querySelector(".word-sentence").addEventListener("input", function() { block.sentence = this.value; });
+      content.appendChild(card);
+
+    } else if (block.type === "dialogue") {
+      const card = document.createElement("div");
+      card.innerHTML = `
+        <input type="text" class="dlg-instr" placeholder="Yönerge / talimat metni" value="${esc(block.instruction)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:600; margin-bottom:10px;">
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <input type="text" class="dlg-speakerA" placeholder="A Konuşmacı adı" value="${esc(block.speakerA)}" style="flex:1; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:600;">
+          <input type="text" class="dlg-speakerB" placeholder="B Konuşmacı adı" value="${esc(block.speakerB)}" style="flex:1; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:600;">
+        </div>
+      `;
+      card.querySelector(".dlg-instr").addEventListener("input", function() { block.instruction = this.value; });
+      card.querySelector(".dlg-speakerA").addEventListener("input", function() { block.speakerA = this.value; renderLines(); });
+      card.querySelector(".dlg-speakerB").addEventListener("input", function() { block.speakerB = this.value; renderLines(); });
+
+      const linesWrap = document.createElement("div");
+      function renderLines() {
+        linesWrap.innerHTML = "";
+        block.lines.forEach((ln, i) => {
+          const row = document.createElement("div");
+          row.style.cssText = "border:1px solid var(--border); border-radius:8px; padding:10px; margin-bottom:8px; background:rgba(255,255,255,0.02);";
+          row.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+              <select class="dlg-speaker-sel" style="padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+                <option value="A" ${ln.speaker === "A" ? "selected" : ""}>A — ${esc(block.speakerA || "A")}</option>
+                <option value="B" ${ln.speaker === "B" ? "selected" : ""}>B — ${esc(block.speakerB || "B")}</option>
+              </select>
+              <input type="text" class="dlg-text" value="${esc(ln.text)}" placeholder="Konuşma metni" style="flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+              <button class="dlg-up" title="Yukarı" ${i === 0 ? "disabled" : ""} style="background:transparent; border:none; color:var(--text-faint); cursor:pointer;">↑</button>
+              <button class="dlg-down" title="Aşağı" ${i === block.lines.length - 1 ? "disabled" : ""} style="background:transparent; border:none; color:var(--text-faint); cursor:pointer;">↓</button>
+              <button class="dlg-del" style="background:transparent; border:none; color:var(--rose); cursor:pointer;">×</button>
+            </div>
+            <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim); cursor:pointer;">
+              <input type="checkbox" class="dlg-choice-toggle" ${ln.choice ? "checked" : ""}> Öğrenci bu repliği seçsin (çoktan seçmeli hale getir)
+            </label>
+            <div class="dlg-distractors-wrap" style="margin-top:8px; ${ln.choice ? "" : "display:none;"}"></div>
+          `;
+          row.querySelector(".dlg-speaker-sel").addEventListener("change", function() { ln.speaker = this.value; });
+          row.querySelector(".dlg-text").addEventListener("input", function() { ln.text = this.value; });
+          row.querySelector(".dlg-up").addEventListener("click", () => { if (i > 0) { const t = block.lines[i-1]; block.lines[i-1] = block.lines[i]; block.lines[i] = t; renderLines(); } });
+          row.querySelector(".dlg-down").addEventListener("click", () => { if (i < block.lines.length - 1) { const t = block.lines[i+1]; block.lines[i+1] = block.lines[i]; block.lines[i] = t; renderLines(); } });
+          row.querySelector(".dlg-del").addEventListener("click", () => { if (block.lines.length > 1) { block.lines.splice(i, 1); renderLines(); } });
+          row.querySelector(".dlg-choice-toggle").addEventListener("change", function() { ln.choice = this.checked; if (ln.choice && !ln.distractors) ln.distractors = []; renderLines(); });
+
+          const distWrap = row.querySelector(".dlg-distractors-wrap");
+          function renderDistractors() {
+            distWrap.innerHTML = "";
+            (ln.distractors || []).forEach((d, di) => {
+              const dRow = document.createElement("div");
+              dRow.style.cssText = "display:flex; align-items:center; gap:6px; margin-bottom:4px;";
+              dRow.innerHTML = `<input type="text" value="${esc(d)}" placeholder="Yanlış seçenek" style="flex:1; padding:5px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-size:12.5px;"><button style="background:transparent; border:none; color:var(--rose); cursor:pointer;">×</button>`;
+              dRow.querySelector("input").addEventListener("input", function() { ln.distractors[di] = this.value; });
+              dRow.querySelector("button").addEventListener("click", () => { ln.distractors.splice(di, 1); renderDistractors(); });
+              distWrap.appendChild(dRow);
+            });
+            const addDistBtn = document.createElement("button");
+            addDistBtn.className = "btn btn-sm"; addDistBtn.innerText = "+ Yanlış Seçenek Ekle"; addDistBtn.style.fontSize = "11.5px";
+            addDistBtn.addEventListener("click", () => { ln.distractors.push("Yanlış seçenek"); renderDistractors(); });
+            distWrap.appendChild(addDistBtn);
+          }
+          if (ln.choice) renderDistractors();
+
+          linesWrap.appendChild(row);
+        });
+      }
+      renderLines();
+      const addLineBtn = document.createElement("button");
+      addLineBtn.className = "btn btn-sm"; addLineBtn.innerText = "+ Repl Ekle";
+      addLineBtn.addEventListener("click", () => {
+        const last = block.lines[block.lines.length - 1];
+        block.lines.push({ speaker: last && last.speaker === "A" ? "B" : "A", text: "Yeni cümle", choice: false, distractors: [] });
+        renderLines();
+      });
+      card.appendChild(linesWrap); card.appendChild(addLineBtn);
       content.appendChild(card);
 
     } else if (block.type === "audio") {
@@ -1236,11 +1482,23 @@ function renderBlockExport(b) {
         // convertTooltips fonksiyonu ile satır içi ipuçlarını HTML elementine çeviriyoruz
         return wrapOpen + '<p style="font-family:' + fontStack(b.font) + ";font-size:" + b.size + "px;color:" + b.color + ";text-align:" + b.align + ";line-height:" + (b.lineHeight/100) + ";letter-spacing:" + b.letterSpacing + 'px;background:transparent;">' + convertTooltips(b.html) + "</p>" + wrapClose;
 
-      case "image":
+      case "image": {
         if (!b.url) return "";
-        return wrapOpen + '<div style="text-align:' + b.align + ';">' +
-          '<img src="' + esc(b.url) + '" alt="' + esc(b.alt) + '" style="width:' + b.width + '%;max-width:100%;height:auto;border-radius:' + b.radius + 'px;box-shadow:0 16px 40px rgba(0,0,0,.4);">' +
-          "</div>" + wrapClose;
+        const w = Number(b.width) || 100;
+        const heightStyle = b.height ? ("height:" + Number(b.height) + "px;") : "height:auto;";
+        const shadowStyle = (b.shadow === "1" || b.shadow === true) ? "box-shadow:0 16px 40px rgba(0,0,0,.4);" : "";
+        const fit = b.objectFit || "cover";
+        const lazyAttr = (b.lazy === "0" || b.lazy === false) ? "" : ' loading="lazy"';
+        const imgId = "img_" + b.id;
+        return wrapOpen + '<figure class="premium-image-figure" style="text-align:' + b.align + ';">' +
+          '<button type="button" class="lb-image-trigger" onclick="openLightbox(\'' + imgId + '\')" aria-label="Görseli büyüt: ' + esc(b.alt || "görsel") + '">' +
+          '<img id="' + imgId + '" class="premium-image-el" src="' + esc(b.url) + '" alt="' + esc(b.alt) + '"' + lazyAttr + ' decoding="async" ' +
+          'sizes="(max-width: 640px) 100vw, ' + w + 'vw" srcset="' + esc(b.url) + ' 1x" ' +
+          'style="width:' + w + '%;max-width:100%;' + heightStyle + 'object-fit:' + fit + ';border-radius:' + b.radius + 'px;' + shadowStyle + 'cursor:zoom-in;">' +
+          '</button>' +
+          (b.caption ? '<figcaption class="premium-image-caption">' + esc(b.caption) + '</figcaption>' : '') +
+          '</figure>' + wrapClose;
+      }
 
       case "vocab":
         return wrapOpen + '<div class="vocab-card">' +
@@ -1308,28 +1566,47 @@ function renderBlockExport(b) {
 
       case "matching": {
         const mId = "match_" + b.id;
-        const leftItems = b.pairs.map((p, i) => ({ text: p.left, idx: i }));
-        const rightShuffled = shuffleArr(b.pairs.map((p, i) => ({ text: p.right, idx: i })));
-        const correctArr = rightShuffled.map(r => r.idx);
-        let leftHtml = '<div class="matching-col-left">';
-        leftItems.forEach((it, i) => {
-          leftHtml += '<div class="matching-left-item"><span class="matching-num">' + (i + 1) + '</span>' + esc(it.text) + '</div>';
+        const mode = b.mode || "text";
+        const leftIsImage = mode === "image";
+        const rightIsImage = mode === "mixed";
+        function sideContent(p, isImage, fallbackLabel) {
+          if (isImage) {
+            return p.image ? '<img src="' + esc(p.image) + '" alt="" loading="lazy" decoding="async" class="matching-card-img">' : '<span class="matching-card-text">' + esc(fallbackLabel) + '</span>';
+          }
+          return '<span class="matching-card-text">' + esc(fallbackLabel) + '</span>';
+        }
+        const order = b.pairs.map((p, i) => i);
+        const shuffledOrder = shuffleArr(order.slice());
+
+        let leftHtml = '<div class="matching-col-left" role="list" aria-label="Sabit liste">';
+        b.pairs.forEach((p, i) => {
+          leftHtml += '<div class="matching-drop-zone" role="listitem" data-target-idx="' + i + '" tabindex="0" ' +
+            'aria-label="Hedef ' + (i + 1) + ': ' + esc(leftIsImage ? "görsel" : p.left) + '">' +
+            '<span class="matching-num">' + (i + 1) + '</span>' +
+            '<span class="matching-drop-fixed">' + sideContent(p, leftIsImage, p.left) + '</span>' +
+            '<span class="matching-drop-slot" data-slot></span>' +
+            '</div>';
         });
         leftHtml += '</div>';
-        let rightHtml = '<div class="matching-col-right">';
-        rightShuffled.forEach((it, i) => {
-          rightHtml += '<div class="matching-right-item">' +
-            '<select data-pos="' + i + '"><option value="">--</option>' +
-            leftItems.map((li, liIdx) => '<option value="' + liIdx + '">' + (liIdx + 1) + '</option>').join("") +
-            '</select><span class="matching-right-text">' + esc(it.text) + '</span>' +
+
+        let rightHtml = '<div class="matching-col-right" role="list" aria-label="Sürüklenebilir kartlar">';
+        shuffledOrder.forEach(idx => {
+          const p = b.pairs[idx];
+          rightHtml += '<div class="matching-card" role="button" draggable="true" tabindex="0" ' +
+            'data-pair-idx="' + idx + '" aria-label="Kart: ' + esc(rightIsImage ? "görsel" : p.right) + ', taşımak için Enter\'a basın">' +
+            sideContent(p, rightIsImage, p.right) +
             '</div>';
         });
         rightHtml += '</div>';
-        return wrapOpen + '<div class="premium-matching-card" id="' + mId + '" data-correct="' + esc(JSON.stringify(correctArr)) + '">' +
+
+        return wrapOpen + '<div class="premium-matching-card" id="' + mId + '" data-total="' + b.pairs.length + '" role="application" aria-label="Eşleştirme alıştırması">' +
           (b.instruction ? '<div class="matching-instruction">' + esc(b.instruction) + '</div>' : '') +
           '<div class="matching-columns">' + leftHtml + rightHtml + '</div>' +
-          '<button class="matching-action-btn" onclick="checkMatching(\'' + mId + '\')">Kontrol Et</button>' +
-          '<div class="matching-result-msg"></div>' +
+          '<div class="matching-btn-row">' +
+          '<button type="button" class="matching-action-btn" onclick="checkMatching(\'' + mId + '\')">Kontrol Et</button>' +
+          '<button type="button" class="matching-retry-btn" style="display:none;" onclick="retryMatching(\'' + mId + '\')">Tekrar Dene</button>' +
+          '</div>' +
+          '<div class="matching-result-msg" aria-live="polite"></div>' +
           '</div>' + wrapClose;
       }
 
@@ -1351,6 +1628,64 @@ function renderBlockExport(b) {
           '<div class="sentorder-list">' + itemsHtml + '</div>' +
           '<button class="sentorder-action-btn" onclick="checkSentOrder(\'' + soId + '\')">Sırayı Kontrol Et</button>' +
           '<div class="sentorder-result-msg"></div>' +
+          '</div>' + wrapClose;
+      }
+
+      case "wordorder": {
+        const woId = "word_" + b.id;
+        const words = (b.sentence || "").trim().split(/\s+/).filter(Boolean);
+        const shuffledW = shuffleArr(words.map((w, i) => ({ text: w, idx: i })));
+        let bankHtml = "";
+        shuffledW.forEach((w, i) => {
+          const chipId = woId + "_c" + i;
+          bankHtml += '<button type="button" class="wordorder-chip" id="' + chipId + '" data-word="' + esc(w.text) + '" data-orig="' + w.idx + '" onclick="selectWordOrderChip(this)">' + esc(w.text) + '</button>';
+        });
+        return wrapOpen + '<div class="premium-wordorder-card" id="' + woId + '" data-total="' + words.length + '">' +
+          (b.instruction ? '<div class="wordorder-instruction">' + esc(b.instruction) + '</div>' : '') +
+          '<div class="wordorder-answer-line"></div>' +
+          '<div class="wordorder-bank">' + bankHtml + '</div>' +
+          '<div class="wordorder-actions">' +
+            '<button type="button" class="wordorder-reset-btn" onclick="resetWordOrder(\'' + woId + '\')">Temizle</button>' +
+            '<button type="button" class="wordorder-action-btn" onclick="checkWordOrder(\'' + woId + '\')">Kontrol Et</button>' +
+          '</div>' +
+          '<div class="wordorder-result-msg"></div>' +
+          '</div>' + wrapClose;
+      }
+
+      case "dialogue": {
+        const dlgId = "dlg_" + b.id;
+        const firstChoiceIdx = b.lines.findIndex(ln => ln.choice);
+        let stepsHtml = "";
+        b.lines.forEach((ln, i) => {
+          const side = ln.speaker === "A" ? "left" : "right";
+          const name = ln.speaker === "A" ? (b.speakerA || "A") : (b.speakerB || "B");
+          const bubbleHtml = '<div class="dialogue-bubble dialogue-' + side + '">' +
+            '<div class="dialogue-avatar">' + esc((name || "?").charAt(0).toUpperCase()) + '</div>' +
+            '<div class="dialogue-bubble-body">' +
+              '<div class="dialogue-bubble-name">' + esc(name) + '</div>' +
+              '<div class="dialogue-bubble-text">' + esc(ln.text) + '</div>' +
+            '</div>' +
+          '</div>';
+          const lockedCls = (firstChoiceIdx !== -1 && i > firstChoiceIdx) ? " dialogue-locked" : "";
+          if (ln.choice) {
+            const opts = shuffleArr([ln.text].concat(ln.distractors || []).map(t => ({ text: t })));
+            let optsHtml = "";
+            opts.forEach(o => {
+              optsHtml += '<button type="button" class="dialogue-opt-btn" data-correct="' + (o.text === ln.text ? "true" : "false") + '" onclick="checkDialogueChoice(this)">' + esc(o.text) + '</button>';
+            });
+            stepsHtml += '<div class="dialogue-step dialogue-choice-step' + lockedCls + '" data-step="' + i + '" data-bubble-html="' + esc(bubbleHtml) + '">' +
+              '<div class="dialogue-options-wrap">' +
+                '<div class="dialogue-choice-label">' + esc(name) + ' ne diyor?</div>' +
+                optsHtml +
+              '</div>' +
+            '</div>';
+          } else {
+            stepsHtml += '<div class="dialogue-step dialogue-bubble-step' + lockedCls + '" data-step="' + i + '">' + bubbleHtml + '</div>';
+          }
+        });
+        return wrapOpen + '<div class="premium-dialogue-card" id="' + dlgId + '">' +
+          (b.instruction ? '<div class="dialogue-instruction">' + esc(b.instruction) + '</div>' : '') +
+          stepsHtml +
           '</div>' + wrapClose;
       }
 
@@ -1520,21 +1855,47 @@ function buildExportHtml(meta) {
 ".fib-action-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }",
 ".fib-result-msg { margin-top: 14px; font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600; text-align: center; }",
 
-"/* ── premium matching (eşleştirme) elements ── */",
+"/* ── premium matching (eşleştirme) elements — real drag & drop ── */",
 ".premium-matching-card { background: rgba(15,23,42,0.6); border: 1px solid rgba(59,130,246,0.2); border-radius: 14px; padding: 26px 28px; margin: 30px 0; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }",
 ".matching-instruction { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14.5px; font-weight: 700; color: var(--xblueb); margin-bottom: 18px; }",
-".matching-columns { display: flex; gap: 24px; flex-wrap: wrap; }",
-".matching-col-left, .matching-col-right { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 10px; }",
-".matching-left-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; color: #e2e8f0; }",
+".matching-columns { display: flex; gap: 24px; }",
+".matching-col-left, .matching-col-right { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }",
+".matching-drop-zone { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.02); border: 2px dashed rgba(255,255,255,0.14); border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; color: #e2e8f0; min-height: 52px; transition: all 0.18s ease; }",
+".matching-drop-zone:focus { outline: 2px solid var(--xblueb); outline-offset: 2px; }",
+".matching-drop-zone.drop-hover { border-color: var(--xblueb); background: rgba(59,130,246,0.1); }",
 ".matching-num { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--xblue); color: #071022; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; }",
-".matching-right-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; transition: all 0.2s ease; }",
-".matching-right-item select { flex-shrink: 0; padding: 5px 7px; background: var(--bg-elevated, rgba(255,255,255,0.06)); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: #fff; font-size: 13px; }",
-".matching-right-text { font-family: 'Inter', sans-serif; font-size: 14px; color: #e2e8f0; }",
-".matching-right-item.matching-correct { border-color: var(--xgreen); background: rgba(79,214,156,0.12); }",
-".matching-right-item.matching-wrong { border-color: var(--xrose); background: rgba(240,112,104,0.12); }",
-".matching-action-btn { display: block; width: 100%; margin-top: 22px; padding: 12px; background: linear-gradient(135deg, var(--xblue), var(--xblueb)); border: none; border-radius: 9px; color: #071022; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13.5px; cursor: pointer; transition: all 0.2s ease; }",
-".matching-action-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }",
+".matching-drop-fixed { flex-shrink: 0; display: flex; align-items: center; }",
+".matching-drop-slot { flex: 1; min-height: 34px; display: flex; align-items: center; }",
+".matching-drop-slot:empty::before { content: 'Buraya bırakın'; color: rgba(226,232,240,0.32); font-size: 12.5px; font-style: italic; }",
+".matching-card { display: flex; align-items: center; gap: 8px; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; cursor: grab; font-family: 'Inter', sans-serif; font-size: 14px; color: #e2e8f0; transition: all 0.18s ease; user-select: none; }",
+".matching-card:hover { border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.08); }",
+".matching-card:focus { outline: 2px solid var(--xblueb); outline-offset: 2px; }",
+".matching-card.kbd-selected { border-color: var(--xblueb); box-shadow: 0 0 0 2px rgba(96,165,250,0.35); }",
+".matching-card.dragging-card { opacity: 0.35; }",
+".matching-card.placed-card { cursor: default; width: 100%; }",
+".matching-card-img { max-width: 64px; max-height: 64px; border-radius: 6px; object-fit: cover; }",
+".matching-drop-zone.matching-correct { border-style: solid; border-color: var(--xgreen); background: rgba(79,214,156,0.12); }",
+".matching-drop-zone.matching-wrong { border-style: solid; border-color: var(--xrose); background: rgba(240,112,104,0.12); }",
+".matching-btn-row { display: flex; gap: 10px; margin-top: 22px; }",
+".matching-action-btn, .matching-retry-btn { display: block; flex: 1; padding: 12px; border: none; border-radius: 9px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13.5px; cursor: pointer; transition: all 0.2s ease; }",
+".matching-action-btn { background: linear-gradient(135deg, var(--xblue), var(--xblueb)); color: #071022; }",
+".matching-retry-btn { background: rgba(255,255,255,0.05); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.16); }",
+".matching-action-btn:hover, .matching-retry-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }",
 ".matching-result-msg { margin-top: 14px; font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600; text-align: center; }",
+"@media (max-width: 640px) { .matching-columns { flex-direction: column; } }",
+
+"/* ── premium image block: figure, caption, lightbox ── */",
+".premium-image-figure { margin: 0; }",
+".lb-image-trigger { display: inline-block; padding: 0; border: none; background: transparent; }",
+".premium-image-el { display: block; }",
+".premium-image-caption { margin-top: 10px; font-family: 'Inter', sans-serif; font-size: 12.5px; color: rgba(226,232,240,0.5); text-align: center; }",
+".lb-lightbox-overlay { position: fixed; inset: 0; background: rgba(4,8,16,0.92); z-index: 10000; display: none; align-items: center; justify-content: center; overflow: hidden; touch-action: none; }",
+".lb-lightbox-overlay.open { display: flex; }",
+".lb-lightbox-img { max-width: 92vw; max-height: 88vh; border-radius: 10px; box-shadow: 0 30px 80px rgba(0,0,0,0.6); cursor: zoom-in; transition: transform 0.12s ease-out; touch-action: none; }",
+".lb-lightbox-close { position: absolute; top: 18px; right: 22px; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: #fff; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }",
+".lb-lightbox-close:hover { background: rgba(255,255,255,0.16); }",
+".lb-lightbox-hint { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-family: 'Inter', sans-serif; font-size: 12px; color: rgba(255,255,255,0.45); }",
+"@media (max-width: 640px) { .premium-image-el { width: 100% !important; height: auto !important; } }",
 
 "/* ── premium sentence ordering (cümle sıralama) elements ── */",
 ".premium-sentorder-card { background: rgba(15,23,42,0.6); border: 1px solid rgba(59,130,246,0.2); border-radius: 14px; padding: 26px 28px; margin: 30px 0; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }",
@@ -1550,6 +1911,47 @@ function buildExportHtml(meta) {
 ".sentorder-action-btn { display: block; width: 100%; margin-top: 20px; padding: 12px; background: linear-gradient(135deg, var(--xblue), var(--xblueb)); border: none; border-radius: 9px; color: #071022; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13.5px; cursor: pointer; transition: all 0.2s ease; }",
 ".sentorder-action-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }",
 ".sentorder-result-msg { margin-top: 14px; font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600; text-align: center; }",
+
+"/* ── premium word-order (duolingo style) elements ── */",
+".premium-wordorder-card { background: rgba(15,23,42,0.6); border: 1px solid rgba(59,130,246,0.2); border-radius: 14px; padding: 26px 28px; margin: 30px 0; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }",
+".wordorder-instruction { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14.5px; font-weight: 700; color: var(--xblueb); margin-bottom: 16px; }",
+".wordorder-answer-line { display: flex; flex-wrap: wrap; gap: 8px; min-height: 46px; padding: 10px; margin-bottom: 18px; background: rgba(255,255,255,0.02); border: 2px dashed rgba(255,255,255,0.12); border-radius: 10px; }",
+".wordorder-bank { display: flex; flex-wrap: wrap; gap: 8px; }",
+".wordorder-chip, .wordorder-placed-chip { font-family: 'Inter', sans-serif; font-size: 14.5px; font-weight: 600; color: #e2e8f0; padding: 9px 15px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; cursor: pointer; transition: all 0.15s ease; }",
+".wordorder-chip:hover:not(:disabled) { background: rgba(59,130,246,0.14); border-color: rgba(59,130,246,0.4); transform: translateY(-1px); }",
+".wordorder-chip:disabled { opacity: 0.25; cursor: default; }",
+".wordorder-placed-chip { background: rgba(59,130,246,0.14); border-color: var(--xblueb); }",
+".wordorder-placed-chip:hover { background: rgba(240,112,104,0.14); border-color: var(--xrose); }",
+".wordorder-placed-chip.wordorder-correct { border-color: var(--xgreen) !important; background: rgba(79,214,156,0.16) !important; cursor: default; }",
+".wordorder-placed-chip.wordorder-wrong { border-color: var(--xrose) !important; background: rgba(240,112,104,0.16) !important; }",
+".wordorder-actions { display: flex; gap: 10px; margin-top: 20px; }",
+".wordorder-reset-btn { padding: 12px 18px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.14); border-radius: 9px; color: #cbd5e1; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 13.5px; cursor: pointer; transition: all 0.2s ease; }",
+".wordorder-reset-btn:hover { border-color: rgba(240,112,104,0.4); color: var(--xrose); }",
+".wordorder-action-btn { flex: 1; padding: 12px; background: linear-gradient(135deg, var(--xblue), var(--xblueb)); border: none; border-radius: 9px; color: #071022; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13.5px; cursor: pointer; transition: all 0.2s ease; }",
+".wordorder-action-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }",
+".wordorder-result-msg { margin-top: 14px; font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600; text-align: center; }",
+
+"/* ── premium dialogue / chat-bubble elements ── */",
+".premium-dialogue-card { background: rgba(15,23,42,0.6); border: 1px solid rgba(59,130,246,0.2); border-radius: 14px; padding: 26px 28px; margin: 30px 0; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }",
+".dialogue-instruction { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14.5px; font-weight: 700; color: var(--xblueb); margin-bottom: 18px; }",
+".dialogue-step { margin-bottom: 14px; }",
+".dialogue-step.dialogue-locked { display: none; }",
+".dialogue-bubble { display: flex; align-items: flex-end; gap: 10px; max-width: 78%; }",
+".dialogue-bubble.dialogue-right { margin-left: auto; flex-direction: row-reverse; }",
+".dialogue-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13px; color: #071022; background: linear-gradient(135deg, var(--xblue), var(--xblueb)); }",
+".dialogue-right .dialogue-avatar { background: linear-gradient(135deg, var(--xgreen), #38b98a); }",
+".dialogue-bubble-body { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 10px 14px; }",
+".dialogue-left .dialogue-bubble-body { border-bottom-left-radius: 3px; }",
+".dialogue-right .dialogue-bubble-body { border-bottom-right-radius: 3px; background: rgba(79,214,156,0.08); border-color: rgba(79,214,156,0.25); }",
+".dialogue-bubble-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; color: var(--xblueb); margin-bottom: 2px; }",
+".dialogue-right .dialogue-bubble-name { color: var(--xgreen); text-align: right; }",
+".dialogue-bubble-text { font-family: 'Inter', sans-serif; font-size: 14.5px; color: #e2e8f0; line-height: 1.5; }",
+".dialogue-options-wrap { max-width: 90%; }",
+".dialogue-choice-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px; font-weight: 700; color: rgba(226,232,240,0.55); margin-bottom: 8px; }",
+".dialogue-opt-btn { display: block; width: 100%; text-align: left; margin-bottom: 8px; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; color: #e2e8f0; font-family: 'Inter', sans-serif; font-size: 14px; cursor: pointer; transition: all 0.15s ease; }",
+".dialogue-opt-btn:hover { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.35); }",
+".dialogue-opt-btn.dialogue-opt-wrong { border-color: var(--xrose) !important; background: rgba(240,112,104,0.16) !important; animation: dlgShake 0.4s ease; }",
+"@keyframes dlgShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);} }",
 
 "/* ── premium audio elements ── */",
 ".premium-audio-card { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: rgba(59,130,246,0.05); border: 1px solid rgba(59,130,246,0.15); border-radius: 12px; margin: 24px 0; }",
@@ -1622,6 +2024,12 @@ function buildExportHtml(meta) {
 blocksHtml,
 "</article>",
 "</main>",
+
+'<div class="lb-lightbox-overlay" id="lbLightboxOverlay" role="dialog" aria-modal="true" aria-label="Görsel büyütme">',
+'<button type="button" class="lb-lightbox-close" onclick="closeLightbox()" aria-label="Kapat (ESC)">×</button>',
+'<img class="lb-lightbox-img" id="lbLightboxImg" src="" alt="" draggable="false">',
+'<div class="lb-lightbox-hint">Yakınlaştırmak için fare tekerleği veya iki parmakla sıkıştırın · Kapatmak için ESC</div>',
+"</div>",
 
 "<!-- Navbar + Radyal FAB (gerçek site altyapısı) -->",
 '<scr' + 'ipt type="module">',
@@ -1742,30 +2150,175 @@ blocksHtml,
 "  card.querySelector('.fib-action-btn').style.display = 'none';",
 "}",
 
-"/* 7. Eşleştirme (Matching) Engine */",
+"/* 7. Eşleştirme (Matching) Engine — gerçek sürükle-bırak + klavye desteği */",
+"document.addEventListener('DOMContentLoaded', () => { initMatchingBlocks(); });",
+"function initMatchingBlocks() {",
+"  document.querySelectorAll('.premium-matching-card').forEach(card => {",
+"    card.dataset.evaluated = 'false';",
+"    card.querySelectorAll('.matching-card').forEach(wireMatchingCard);",
+"    card.querySelectorAll('.matching-drop-zone').forEach(wireMatchingZone);",
+"  });",
+"}",
+"function wireMatchingCard(c) {",
+"  c.addEventListener('dragstart', (e) => {",
+"    if (c.closest('.premium-matching-card').dataset.evaluated === 'true') { e.preventDefault(); return; }",
+"    e.dataTransfer.setData('text/plain', c.dataset.pairIdx);",
+"    e.dataTransfer.effectAllowed = 'move';",
+"    c.classList.add('dragging-card');",
+"  });",
+"  c.addEventListener('dragend', () => c.classList.remove('dragging-card'));",
+"  c.addEventListener('click', () => {",
+"    const parent = c.closest('.premium-matching-card');",
+"    if (parent.dataset.evaluated === 'true') return;",
+"    if (c.classList.contains('placed-card')) { unplaceMatchingCard(c); return; }",
+"    parent.querySelectorAll('.matching-card.kbd-selected').forEach(x => x.classList.remove('kbd-selected'));",
+"    c.classList.toggle('kbd-selected');",
+"  });",
+"  c.addEventListener('keydown', (e) => {",
+"    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click(); }",
+"  });",
+"}",
+"function wireMatchingZone(z) {",
+"  z.addEventListener('dragenter', (e) => { e.preventDefault(); z.classList.add('drop-hover'); });",
+"  z.addEventListener('dragover', (e) => { e.preventDefault(); });",
+"  z.addEventListener('dragleave', () => z.classList.remove('drop-hover'));",
+"  z.addEventListener('drop', (e) => {",
+"    e.preventDefault();",
+"    z.classList.remove('drop-hover');",
+"    const parent = z.closest('.premium-matching-card');",
+"    if (parent.dataset.evaluated === 'true') return;",
+"    const idx = e.dataTransfer.getData('text/plain');",
+"    const cardEl = parent.querySelector('.matching-card[data-pair-idx=\"' + idx + '\"]');",
+"    if (cardEl) placeMatchingCard(cardEl, z);",
+"  });",
+"  z.addEventListener('click', () => {",
+"    const parent = z.closest('.premium-matching-card');",
+"    if (parent.dataset.evaluated === 'true') return;",
+"    const selected = parent.querySelector('.matching-card.kbd-selected');",
+"    if (selected) { placeMatchingCard(selected, z); selected.classList.remove('kbd-selected'); }",
+"  });",
+"  z.addEventListener('keydown', (e) => {",
+"    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); z.click(); }",
+"  });",
+"}",
+"function placeMatchingCard(cardEl, zone) {",
+"  const slot = zone.querySelector('[data-slot]');",
+"  const pool = zone.closest('.premium-matching-card').querySelector('.matching-col-right');",
+"  const existing = slot.querySelector('.matching-card');",
+"  if (existing) { existing.classList.remove('placed-card'); existing.draggable = true; pool.appendChild(existing); }",
+"  cardEl.classList.add('placed-card');",
+"  cardEl.classList.remove('kbd-selected');",
+"  cardEl.draggable = false;",
+"  slot.appendChild(cardEl);",
+"  zone.dataset.placed = cardEl.dataset.pairIdx;",
+"}",
+"function unplaceMatchingCard(cardEl) {",
+"  const zone = cardEl.closest('.matching-drop-zone');",
+"  if (zone) zone.dataset.placed = '';",
+"  cardEl.classList.remove('placed-card');",
+"  cardEl.draggable = true;",
+"  const pool = cardEl.closest('.premium-matching-card').querySelector('.matching-col-right');",
+"  pool.appendChild(cardEl);",
+"}",
 "function checkMatching(mId) {",
 "  const card = document.getElementById(mId);",
 "  if (!card) return;",
-"  let correctArr = [];",
-"  try { correctArr = JSON.parse(card.dataset.correct); } catch (e) { correctArr = []; }",
-"  const items = card.querySelectorAll('.matching-right-item');",
+"  const zones = card.querySelectorAll('.matching-drop-zone');",
 "  let correctCount = 0;",
-"  items.forEach(item => {",
-"    const select = item.querySelector('select');",
-"    const pos = parseInt(select.dataset.pos);",
-"    const chosen = select.value === '' ? -1 : parseInt(select.value);",
-"    item.classList.remove('matching-correct', 'matching-wrong');",
-"    if (chosen === correctArr[pos]) { item.classList.add('matching-correct'); correctCount++; }",
-"    else { item.classList.add('matching-wrong'); }",
-"    select.disabled = true;",
+"  let anyWrong = false;",
+"  zones.forEach(zone => {",
+"    zone.classList.remove('matching-correct', 'matching-wrong');",
+"    const target = zone.dataset.targetIdx;",
+"    const placed = zone.dataset.placed;",
+"    if (placed !== undefined && placed !== '' && placed === target) {",
+"      zone.classList.add('matching-correct'); correctCount++;",
+"    } else {",
+"      zone.classList.add('matching-wrong'); anyWrong = true;",
+"    }",
 "  });",
+"  card.dataset.evaluated = 'true';",
+"  card.querySelectorAll('.matching-card').forEach(c => { c.draggable = false; });",
 "  const msg = card.querySelector('.matching-result-msg');",
 "  if (msg) {",
-"    msg.textContent = correctCount + ' / ' + items.length + ' doğru eşleşme';",
-"    msg.style.color = correctCount === items.length ? '#4fd69c' : '#f07068';",
+"    msg.textContent = correctCount + ' / ' + zones.length + ' doğru eşleşme';",
+"    msg.style.color = correctCount === zones.length ? '#4fd69c' : '#f07068';",
 "  }",
 "  card.querySelector('.matching-action-btn').style.display = 'none';",
+"  const retryBtn = card.querySelector('.matching-retry-btn');",
+"  if (anyWrong && retryBtn) retryBtn.style.display = '';",
 "}",
+"function retryMatching(mId) {",
+"  const card = document.getElementById(mId);",
+"  if (!card) return;",
+"  const wrongZones = card.querySelectorAll('.matching-drop-zone.matching-wrong');",
+"  wrongZones.forEach(zone => {",
+"    const slot = zone.querySelector('[data-slot]');",
+"    const placedCard = slot.querySelector('.matching-card');",
+"    zone.classList.remove('matching-wrong');",
+"    zone.dataset.placed = '';",
+"    if (placedCard) {",
+"      placedCard.classList.remove('placed-card');",
+"      placedCard.draggable = true;",
+"      card.querySelector('.matching-col-right').appendChild(placedCard);",
+"    }",
+"  });",
+"  card.dataset.evaluated = 'false';",
+"  card.querySelectorAll('.matching-col-right .matching-card').forEach(c => { c.draggable = true; });",
+"  card.querySelector('.matching-retry-btn').style.display = 'none';",
+"  card.querySelector('.matching-action-btn').style.display = '';",
+"  const msg = card.querySelector('.matching-result-msg');",
+"  if (msg) msg.textContent = '';",
+"}",
+
+"/* 7b. Lightbox (görsel büyütme) Engine — zoom (wheel + pinch) + ESC */",
+"let lbScale = 1;",
+"function openLightbox(imgId) {",
+"  const srcImg = document.getElementById(imgId);",
+"  const overlay = document.getElementById('lbLightboxOverlay');",
+"  const lbImg = document.getElementById('lbLightboxImg');",
+"  if (!srcImg || !overlay || !lbImg) return;",
+"  lbImg.src = srcImg.src;",
+"  lbImg.alt = srcImg.alt || '';",
+"  lbScale = 1;",
+"  lbImg.style.transform = 'scale(1)';",
+"  overlay.classList.add('open');",
+"  document.body.style.overflow = 'hidden';",
+"}",
+"function closeLightbox() {",
+"  const overlay = document.getElementById('lbLightboxOverlay');",
+"  if (!overlay) return;",
+"  overlay.classList.remove('open');",
+"  document.body.style.overflow = '';",
+"}",
+"document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });",
+"document.addEventListener('DOMContentLoaded', () => {",
+"  const overlay = document.getElementById('lbLightboxOverlay');",
+"  if (!overlay) return;",
+"  const lbImg = document.getElementById('lbLightboxImg');",
+"  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeLightbox(); });",
+"  overlay.addEventListener('wheel', (e) => {",
+"    e.preventDefault();",
+"    lbScale += (e.deltaY < 0 ? 0.15 : -0.15);",
+"    lbScale = Math.min(Math.max(lbScale, 1), 4);",
+"    lbImg.style.transform = 'scale(' + lbScale + ')';",
+"  }, { passive: false });",
+"  let lastPinchDist = null;",
+"  overlay.addEventListener('touchmove', (e) => {",
+"    if (e.touches.length === 2) {",
+"      e.preventDefault();",
+"      const dx = e.touches[0].clientX - e.touches[1].clientX;",
+"      const dy = e.touches[0].clientY - e.touches[1].clientY;",
+"      const dist = Math.hypot(dx, dy);",
+"      if (lastPinchDist) {",
+"        lbScale += (dist - lastPinchDist) * 0.01;",
+"        lbScale = Math.min(Math.max(lbScale, 1), 4);",
+"        lbImg.style.transform = 'scale(' + lbScale + ')';",
+"      }",
+"      lastPinchDist = dist;",
+"    }",
+"  }, { passive: false });",
+"  overlay.addEventListener('touchend', () => { lastPinchDist = null; });",
+"});",
 
 "/* 8. Cümle Sıralama (Sentence Ordering) Engine */",
 "function moveSentOrderItem(btn, dir) {",
@@ -1795,6 +2348,99 @@ blocksHtml,
 "  }",
 "  card.querySelector('.sentorder-action-btn').style.display = 'none';",
 "}",
+
+"/* 8b. Kelime Sıralama (Duolingo-style Word Order) Engine */",
+"function selectWordOrderChip(chip) {",
+"  if (chip.disabled) return;",
+"  const card = chip.closest('.premium-wordorder-card');",
+"  const line = card.querySelector('.wordorder-answer-line');",
+"  chip.disabled = true;",
+"  const placed = document.createElement('button');",
+"  placed.type = 'button';",
+"  placed.className = 'wordorder-placed-chip';",
+"  placed.textContent = chip.dataset.word;",
+"  placed.dataset.orig = chip.dataset.orig;",
+"  placed.dataset.chipid = chip.id;",
+"  placed.setAttribute('onclick', 'unplaceWordOrderChip(this)');",
+"  line.appendChild(placed);",
+"}",
+"function unplaceWordOrderChip(el) {",
+"  const card = el.closest('.premium-wordorder-card');",
+"  if (el.classList.contains('wordorder-correct')) return;",
+"  const original = card.querySelector('#' + el.dataset.chipid);",
+"  if (original) { original.disabled = false; }",
+"  el.remove();",
+"  const msg = card.querySelector('.wordorder-result-msg');",
+"  if (msg) msg.textContent = '';",
+"}",
+"function checkWordOrder(woId) {",
+"  const card = document.getElementById(woId);",
+"  if (!card) return;",
+"  const line = card.querySelector('.wordorder-answer-line');",
+"  const placed = Array.from(line.querySelectorAll('.wordorder-placed-chip'));",
+"  const total = parseInt(card.dataset.total, 10);",
+"  const msg = card.querySelector('.wordorder-result-msg');",
+"  if (placed.length < total) {",
+"    if (msg) { msg.textContent = 'Önce tüm kelimeleri sıraya yerleştirin.'; msg.style.color = '#ffd250'; }",
+"    return;",
+"  }",
+"  let correct = true;",
+"  placed.forEach((chip, i) => { if (parseInt(chip.dataset.orig, 10) !== i) correct = false; });",
+"  placed.forEach(chip => {",
+"    chip.classList.remove('wordorder-correct', 'wordorder-wrong');",
+"    chip.classList.add(correct ? 'wordorder-correct' : 'wordorder-wrong');",
+"  });",
+"  if (msg) {",
+"    msg.textContent = correct ? 'Doğru! 🎉' : 'Yanlış sıra, kelimeleri çıkarıp tekrar deneyebilirsiniz.';",
+"    msg.style.color = correct ? '#4fd69c' : '#f07068';",
+"  }",
+"  const actionBtn = card.querySelector('.wordorder-action-btn');",
+"  if (correct && actionBtn) actionBtn.style.display = 'none';",
+"}",
+"function resetWordOrder(woId) {",
+"  const card = document.getElementById(woId);",
+"  if (!card) return;",
+"  const line = card.querySelector('.wordorder-answer-line');",
+"  Array.from(line.querySelectorAll('.wordorder-placed-chip')).forEach(chip => {",
+"    const original = card.querySelector('#' + chip.dataset.chipid);",
+"    if (original) { original.disabled = false; }",
+"  });",
+"  line.innerHTML = '';",
+"  const msg = card.querySelector('.wordorder-result-msg');",
+"  if (msg) msg.textContent = '';",
+"  const actionBtn = card.querySelector('.wordorder-action-btn');",
+"  if (actionBtn) actionBtn.style.display = '';",
+"}",
+
+"/* 8c. Diyalog / Sohbet Balonu (Chat Dialogue) Engine */",
+"function unlockDialogueCard(card) {",
+"  const steps = Array.from(card.querySelectorAll('.dialogue-step'));",
+"  let locking = false;",
+"  steps.forEach(step => {",
+"    if (locking) { step.classList.add('dialogue-locked'); return; }",
+"    step.classList.remove('dialogue-locked');",
+"    if (step.classList.contains('dialogue-choice-step') && !step.classList.contains('dialogue-resolved')) {",
+"      locking = true;",
+"    }",
+"  });",
+"}",
+"function checkDialogueChoice(btn) {",
+"  const step = btn.closest('.dialogue-choice-step');",
+"  const card = btn.closest('.premium-dialogue-card');",
+"  if (!step || !card || step.classList.contains('dialogue-resolved')) return;",
+"  if (btn.dataset.correct === 'true') {",
+"    step.classList.add('dialogue-resolved');",
+"    const wrap = step.querySelector('.dialogue-options-wrap');",
+"    if (wrap && step.dataset.bubbleHtml) { wrap.outerHTML = step.dataset.bubbleHtml; }",
+"    unlockDialogueCard(card);",
+"  } else {",
+"    btn.classList.add('dialogue-opt-wrong');",
+"    setTimeout(() => btn.classList.remove('dialogue-opt-wrong'), 450);",
+"  }",
+"}",
+"document.addEventListener('DOMContentLoaded', () => {",
+"  document.querySelectorAll('.premium-dialogue-card').forEach(unlockDialogueCard);",
+"});",
 
 "/* 9. Dynamic Auto-TOC (Table of Contents) Generator */",
 "document.addEventListener('DOMContentLoaded', () => {",
