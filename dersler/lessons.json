@@ -1,5 +1,15 @@
 [
   {
+    "slug": "5.ders",
+    "title": "cd",
+    "excerpt": "cd",
+    "category": "B1",
+    "published": true,
+    "cover": null,
+    "readTime": 1,
+    "date": "2026-07-18T01:45:10+03:00"
+  },
+  {
     "slug": "3._ders",
     "title": "Almanca fiil çekim",
     "excerpt": "fiil çekimleme almanca",
