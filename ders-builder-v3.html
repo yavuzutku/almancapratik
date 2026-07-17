@@ -286,6 +286,33 @@ button, input, select, textarea { font-family: inherit; }
 .form-hint { font-size: 11px; color: var(--text-faint); margin-top: 6px; }
 .modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 18px 24px; border-top: 1px solid var(--border); }
 
+.preview-overlay {
+  position: fixed; inset: 0; z-index: 250; background: rgba(3,6,14,0.86); backdrop-filter: blur(6px);
+  display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.preview-overlay.open { display: flex; }
+.preview-panel {
+  width: 100%; max-width: 1020px; height: 92vh;
+  background: #0b1120; border: 1px solid var(--border); border-radius: 16px;
+  overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(59,130,246,0.08);
+}
+.preview-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 18px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); flex-shrink: 0;
+}
+.preview-panel-header h2 {
+  margin: 0; display: flex; align-items: center; gap: 9px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14.5px; font-weight: 700; color: var(--text);
+}
+.preview-panel-header h2 svg { color: var(--blue-bright); flex-shrink: 0; }
+.preview-panel-actions { display: flex; align-items: center; gap: 8px; }
+.preview-iframe { flex: 1; width: 100%; border: 0; background: #070d19; }
+@media (max-width: 700px) {
+  .preview-panel { height: 96vh; border-radius: 12px; }
+  .preview-panel-actions .btn-sm span.psa-label { display: none; }
+}
+
 .dc-toast {
   position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%);
   background: rgba(11,17,32,0.94); backdrop-filter: blur(14px); border: 1px solid var(--border); color: var(--text);
@@ -326,6 +353,10 @@ button, input, select, textarea { font-family: inherit; }
     <div class="topbar-actions">
       <span class="block-count" id="blockCount">0 blok</span>
       <button class="btn btn-danger-ghost" id="btnClearAll">Tümünü Temizle</button>
+      <button class="btn" id="btnPreview">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Önizle
+      </button>
       <button class="btn btn-blue" id="btnExport">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
         HTML Oluştur
@@ -343,6 +374,9 @@ button, input, select, textarea { font-family: inherit; }
       <button class="add-block-btn" data-type="callout"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>Bilgi / Uyarı Kutusu</button>
       <button class="add-block-btn" data-type="table"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="3" x2="12" y2="21"/></svg></span>Tablo</button>
       <button class="add-block-btn" data-type="quiz"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>Quiz / Sınav</button>
+      <button class="add-block-btn" data-type="fillblank"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></span>Boşluk Doldurma</button>
+      <button class="add-block-btn" data-type="matching"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="12" r="2"/><path d="M8 6.6 16 11"/><path d="M8 17.4 16 13"/></svg></span>Eşleştirme</button>
+      <button class="add-block-btn" data-type="sentorder"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span>Cümle Sıralama</button>
       <button class="add-block-btn" data-type="audio"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></span>Sesli Okuma (DE)</button>
       <button class="add-block-btn" data-type="accordion"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>Akordeon / SSS</button>
       <button class="add-block-btn" data-type="video"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>Video (YouTube/Vimeo)</button>
@@ -378,18 +412,32 @@ button, input, select, textarea { font-family: inherit; }
       <div class="form-row"><label for="metaDesc">Meta Açıklaması (SEO)</label><textarea id="metaDesc" rows="3" placeholder="Arama motorlarında görünecek kısa açıklama"></textarea></div>
       <div class="form-row-split">
         <div class="form-row"><label for="metaLevel">Seviye</label><select id="metaLevel"><option value="A1">A1</option><option value="A2">A2</option><option value="B1" selected>B1</option><option value="B2">B2</option><option value="C1">C1</option></select></div>
-        <div class="form-row"><label for="metaDifficulty">Zorluk Derecesi</label><select id="metaDifficulty"><option value="Kolay">Kolay</option><option value="Orta" selected>Orta</option><option value="Zor">Zor</option></select></div>
+        <div class="form-row"><label for="metaType">Tür</label><select id="metaType"><option value="">— Seçilmedi —</option><option value="iletisim">İletişim</option><option value="kultur">Kültür</option><option value="gramer">Gramer</option></select></div>
       </div>
       <div class="form-row-split">
+        <div class="form-row"><label for="metaDifficulty">Zorluk Derecesi</label><select id="metaDifficulty"><option value="Kolay">Kolay</option><option value="Orta" selected>Orta</option><option value="Zor">Zor</option></select></div>
         <div class="form-row"><label for="metaReadTime">Okuma Süresi (dk)</label><input type="number" id="metaReadTime" min="1" max="60" value="5"></div>
-        <div class="form-row"><label for="metaAuthor">Yazar Adı</label><input type="text" id="metaAuthor" placeholder="örn. Çetin Hoca"></div>
       </div>
+      <div class="form-row"><label for="metaAuthor">Yazar Adı</label><input type="text" id="metaAuthor" placeholder="örn. Çetin Hoca"></div>
       <div class="form-row"><label for="metaCover">Kapak Görseli URL'si</label><input type="url" id="metaCover" placeholder="https://..."><div class="form-hint">Boş bırakılırsa kapak görseli olmadan üretilir.</div></div>
     </div>
     <div class="modal-footer">
       <button class="btn" id="cancelExport">Vazgeç</button>
       <button class="btn btn-blue" id="confirmExport"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>İndir (index.html)</button>
     </div>
+  </div>
+</div>
+
+<div class="preview-overlay" id="previewOverlay">
+  <div class="preview-panel">
+    <div class="preview-panel-header">
+      <h2><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Canlı Önizleme</h2>
+      <div class="preview-panel-actions">
+        <button class="btn btn-sm" id="previewOpenTab"><span class="psa-label">Yeni Sekmede Aç</span></button>
+        <button class="modal-close" id="closePreview"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <iframe class="preview-iframe" id="previewIframe" title="Ders önizlemesi"></iframe>
   </div>
 </div>
 
@@ -432,6 +480,12 @@ button, input, select, textarea { font-family: inherit; }
         return Object.assign(base, { headers: ["Sütun 1", "Sütun 2"], rows: [["", ""], ["", ""]] });
       case "quiz":
         return Object.assign(base, { question: "Soru metni buraya gelecek?", options: ["Seçenek A", "Seçenek B", "Seçenek C"], correctIndex: 0, explanation: "" });
+      case "fillblank":
+        return Object.assign(base, { instruction: "Boşlukları uygun kelimelerle doldurun.", text: "Ich {{gehe}} heute ins {{Kino}}." });
+      case "matching":
+        return Object.assign(base, { instruction: "Sol taraftaki kelimeleri doğru anlamlarıyla eşleştirin.", pairs: [{ left: "das Haus", right: "ev" }, { left: "der Baum", right: "ağaç" }, { left: "die Katze", right: "kedi" }] });
+      case "sentorder":
+        return Object.assign(base, { instruction: "Cümleleri doğru sıraya dizin.", sentences: ["Ich stehe auf.", "Ich dusche mich.", "Ich frühstücke.", "Ich gehe zur Arbeit."] });
       case "audio":
         return Object.assign(base, { text: "Guten Tag", caption: "Dinlemek için oynat tuşuna basın", lang: "de-DE" });
       case "accordion":
@@ -447,7 +501,7 @@ button, input, select, textarea { font-family: inherit; }
     }
   }
 
-  const TYPE_LABEL = { heading: "Başlık", paragraph: "Paragraf", image: "Görsel", vocab: "Kelime Kartı", callout: "Bilgi Kutusu", table: "Tablo", quiz: "Quiz / Sınav", audio: "Sesli Okuma", accordion: "Akordeon / SSS", video: "Video", code: "Kod Bloğu", toc: "İçindekiler" };
+  const TYPE_LABEL = { heading: "Başlık", paragraph: "Paragraf", image: "Görsel", vocab: "Kelime Kartı", callout: "Bilgi Kutusu", table: "Tablo", quiz: "Quiz / Sınav", fillblank: "Boşluk Doldurma", matching: "Eşleştirme", sentorder: "Cümle Sıralama", audio: "Sesli Okuma", accordion: "Akordeon / SSS", video: "Video", code: "Kod Bloğu", toc: "İçindekiler" };
   const ICO = {
     up:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>',
     down:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>',
@@ -478,6 +532,9 @@ button, input, select, textarea { font-family: inherit; }
       case "callout":  return ICO.warn;
       case "table":    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="3" x2="12" y2="21"/></svg>';
       case "quiz":     return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+      case "fillblank":return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>';
+      case "matching": return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="12" r="2"/><path d="M8 6.6 16 11"/><path d="M8 17.4 16 13"/></svg>';
+      case "sentorder":return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>';
       case "audio":    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
       case "accordion":return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
       case "video":    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
@@ -499,6 +556,28 @@ button, input, select, textarea { font-family: inherit; }
     return html.replace(/\[([^|\]]+)\|([^\]]+)\]/g, function(match, word, tip) {
       return '<span class="lb-tooltip">' + esc(word) + '<span class="lb-tooltip-bubble">' + esc(tip) + '</span></span>';
     });
+  }
+
+  // {{cevap}} sözdiziminden boşluk-doldurma parçalarını ayıklar
+  function parseFillBlank(text) {
+    const parts = [];
+    const re = /\{\{([^}]+)\}\}/g;
+    let last = 0, m;
+    while ((m = re.exec(text || "")) !== null) {
+      parts.push({ type: "text", value: text.slice(last, m.index) });
+      parts.push({ type: "blank", value: m[1].trim() });
+      last = re.lastIndex;
+    }
+    parts.push({ type: "text", value: (text || "").slice(last) });
+    return parts;
+  }
+  function shuffleArr(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
   }
 
   function parseVideoEmbed(url) {
@@ -749,7 +828,7 @@ button, input, select, textarea { font-family: inherit; }
       const div = document.createElement("div");
       div.className = "hp-editable"; div.contentEditable = "true"; div.dataset.placeholder = "Başlık metni...";
       div.textContent = block.text;
-      div.style.cssText = "font-family:" + fontStack(block.font) + ";font-size:" + block.size + "px;color:" + block.color + ";font-weight:" + block.weight + ";line-height:" + (block.lineHeight/100) + ";letter-spacing:" + block.letterSpacing + "px Paprika;";
+      div.style.cssText = "font-family:" + fontStack(block.font) + ";font-size:" + block.size + "px;color:" + block.color + ";font-weight:" + block.weight + ";line-height:" + (block.lineHeight/100) + ";letter-spacing:" + block.letterSpacing + "px;";
       div.addEventListener("input", () => { block.text = div.textContent; });
       div.addEventListener("keydown", e => { if (e.key === "Enter") e.preventDefault(); });
       content.appendChild(div);
@@ -903,6 +982,78 @@ button, input, select, textarea { font-family: inherit; }
       renderQuizOpts();
       content.appendChild(card);
 
+    } else if (block.type === "fillblank") {
+      const card = document.createElement("div");
+      card.style.cssText = "background:rgba(59,130,246,0.04); border:1px solid var(--border); padding:16px; border-radius:10px;";
+      card.innerHTML = `
+        <input type="text" class="fib-instr" placeholder="Yönerge / talimat metni" value="${esc(block.instruction)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:600;">
+        <textarea class="fib-text" placeholder="Metni yazın, boşluk yapılacak kelimeleri {{ }} içine alın. Örn: Ich {{gehe}} ins Kino." style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; min-height:80px; margin-top:8px; font-family:monospace; font-size:13px;">${esc(block.text)}</textarea>
+        <div style="margin-top:8px; font-size:11.5px; color:var(--text-faint);">İpucu: boşluğa dönüşecek kelimeyi çift süslü parantez içine yazın — <code>{{cevap}}</code></div>
+      `;
+      card.querySelector(".fib-instr").addEventListener("input", function() { block.instruction = this.value; });
+      card.querySelector(".fib-text").addEventListener("input", function() { block.text = this.value; });
+      content.appendChild(card);
+
+    } else if (block.type === "matching") {
+      const card = document.createElement("div");
+      card.innerHTML = `<input type="text" class="match-instr" placeholder="Yönerge / talimat metni" value="${esc(block.instruction)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:600; margin-bottom:10px;">`;
+      card.querySelector(".match-instr").addEventListener("input", function() { block.instruction = this.value; });
+      const pairsWrap = document.createElement("div");
+      function renderPairs() {
+        pairsWrap.innerHTML = "";
+        block.pairs.forEach((p, i) => {
+          const row = document.createElement("div");
+          row.style.cssText = "display:flex; align-items:center; gap:8px; margin-bottom:6px;";
+          row.innerHTML = `
+            <input type="text" value="${esc(p.left)}" placeholder="Sol (örn: das Haus)" style="flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+            <span style="color:var(--text-faint);">↔</span>
+            <input type="text" value="${esc(p.right)}" placeholder="Sağ (örn: ev)" style="flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+            <button class="del-pair" style="background:transparent; border:none; color:var(--rose); cursor:pointer;">×</button>
+          `;
+          row.querySelectorAll("input")[0].addEventListener("input", function() { p.left = this.value; });
+          row.querySelectorAll("input")[1].addEventListener("input", function() { p.right = this.value; });
+          row.querySelector(".del-pair").addEventListener("click", () => { if (block.pairs.length > 2) { block.pairs.splice(i,1); renderPairs(); } });
+          pairsWrap.appendChild(row);
+        });
+      }
+      renderPairs();
+      const addBtn = document.createElement("button");
+      addBtn.className = "btn btn-sm"; addBtn.innerText = "+ Eşleştirme Çifti Ekle";
+      addBtn.addEventListener("click", () => { block.pairs.push({ left: "", right: "" }); renderPairs(); });
+      card.appendChild(pairsWrap); card.appendChild(addBtn);
+      content.appendChild(card);
+
+    } else if (block.type === "sentorder") {
+      const card = document.createElement("div");
+      card.innerHTML = `<input type="text" class="sord-instr" placeholder="Yönerge / talimat metni" value="${esc(block.instruction)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:600; margin-bottom:10px;">`;
+      card.querySelector(".sord-instr").addEventListener("input", function() { block.instruction = this.value; });
+      const listWrap = document.createElement("div");
+      function renderSentences() {
+        listWrap.innerHTML = "";
+        block.sentences.forEach((s, i) => {
+          const row = document.createElement("div");
+          row.style.cssText = "display:flex; align-items:center; gap:8px; margin-bottom:6px;";
+          row.innerHTML = `
+            <span style="color:var(--text-faint); font-size:12px; width:16px; flex-shrink:0;">${i+1}.</span>
+            <input type="text" value="${esc(s)}" placeholder="Cümle" style="flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+            <button class="sord-up" title="Yukarı" ${i===0?"disabled":""} style="background:transparent; border:none; color:var(--text-faint); cursor:pointer;">↑</button>
+            <button class="sord-down" title="Aşağı" ${i===block.sentences.length-1?"disabled":""} style="background:transparent; border:none; color:var(--text-faint); cursor:pointer;">↓</button>
+            <button class="sord-del" style="background:transparent; border:none; color:var(--rose); cursor:pointer;">×</button>
+          `;
+          row.querySelector("input").addEventListener("input", function() { block.sentences[i] = this.value; });
+          row.querySelector(".sord-up").addEventListener("click", () => { if (i>0) { const t=block.sentences[i-1]; block.sentences[i-1]=block.sentences[i]; block.sentences[i]=t; renderSentences(); } });
+          row.querySelector(".sord-down").addEventListener("click", () => { if (i<block.sentences.length-1) { const t=block.sentences[i+1]; block.sentences[i+1]=block.sentences[i]; block.sentences[i]=t; renderSentences(); } });
+          row.querySelector(".sord-del").addEventListener("click", () => { if (block.sentences.length > 2) { block.sentences.splice(i,1); renderSentences(); } });
+          listWrap.appendChild(row);
+        });
+      }
+      renderSentences();
+      const addBtn = document.createElement("button");
+      addBtn.className = "btn btn-sm"; addBtn.innerText = "+ Cümle Ekle";
+      addBtn.addEventListener("click", () => { block.sentences.push("Yeni cümle"); renderSentences(); });
+      card.appendChild(listWrap); card.appendChild(addBtn);
+      content.appendChild(card);
+
     } else if (block.type === "audio") {
       const card = document.createElement("div");
       card.innerHTML = `
@@ -979,12 +1130,13 @@ button, input, select, textarea { font-family: inherit; }
     const title = $("#metaTitle").value.trim();
     const description = $("#metaDesc").value.trim();
     const level = $("#metaLevel").value;
+    const type = $("#metaType").value;
     const difficulty = $("#metaDifficulty").value;
     const readTime = $("#metaReadTime").value || "5";
     const author = $("#metaAuthor").value.trim();
     const cover = $("#metaCover").value.trim();
     if (!title) { toast("Sayfa başlığı boş olamaz.", "err"); return; }
-    const html = buildExportHtml({ title, description, level, difficulty, readTime, author, cover });
+    const html = buildExportHtml({ title, description, level, type, difficulty, readTime, author, cover });
     downloadHtml(html);
     overlay.classList.remove("open");
     toast("index.html indirildi ✓", "ok");
@@ -998,6 +1150,76 @@ button, input, select, textarea { font-family: inherit; }
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
+
+  /* ══════════════════════════════════════
+     YENİ: Canlı Önizleme (Preview)
+     ══════════════════════════════════════
+     Not: buildExportHtml() çıktısı, siteye ait ../../css/global.css,
+     ../../src/styles/tokens.css, ../lesson-static.css ve ../../js/core.js
+     gibi harici site dosyalarına bağlıdır. Bu dosyalar önizlemede
+     (site dışında) çözümlenemeyeceği için sayfa stilsiz görünür.
+     Önizleme için bu bağlantıları geçici olarak, aynı görünümü taklit eden
+     kendi kendine yeten bir CSS bloğuyla değiştiriyoruz. Gerçek "İndir"
+     çıktısı (buildExportHtml) bundan etkilenmez. */
+  const PREVIEW_FALLBACK_CSS = [
+    "body{margin:0;background:#070d19;color:#e2e8f0;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}",
+    ".bg-canvas{position:fixed;inset:0;z-index:-1;overflow:hidden;background:radial-gradient(ellipse 900px 500px at -10% -10%, rgba(59,130,246,0.14), transparent 60%),radial-gradient(ellipse 700px 500px at 110% 20%, rgba(96,165,250,0.08), transparent 60%);}",
+    ".bg-grid,.bg-glow{display:none;}",
+    ".lesson-nav-row{max-width:760px;margin:0 auto;padding:22px 24px 0;}",
+    ".lesson-back{display:inline-flex;align-items:center;gap:6px;color:#93c5fd;text-decoration:none;font-size:13px;font-weight:600;}",
+    ".lesson-back:hover{color:#fff;}",
+    ".lesson-wrap{max-width:760px;margin:0 auto;padding:22px 24px 140px;}",
+    ".lesson-hero-img{width:100%;height:auto;display:block;border-radius:16px;margin:20px 0 28px;box-shadow:0 20px 50px rgba(0,0,0,0.4);}",
+    ".lesson-meta-row{display:flex;align-items:center;gap:10px;margin:20px 0 14px;font-size:12.5px;color:rgba(226,232,240,0.55);}",
+    ".lesson-card-dot{width:3px;height:3px;border-radius:50%;background:rgba(226,232,240,0.3);flex-shrink:0;}",
+    ".lesson-heading{font-family:'Plus Jakarta Sans',sans-serif;font-size:36px;font-weight:800;line-height:1.2;letter-spacing:-0.02em;color:#fff;margin:0 0 22px;}",
+    ".lesson-body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.7;color:#cbd5e1;}",
+    ".lesson-body h1,.lesson-body h2,.lesson-body h3{font-family:'Plus Jakarta Sans',sans-serif;color:#fff;scroll-margin-top:20px;}",
+    ".preview-mode-banner{position:sticky;top:0;z-index:999;text-align:center;font-size:11.5px;font-weight:600;letter-spacing:.02em;color:#071022;background:linear-gradient(120deg,#ffd250,#ffb020);padding:7px 10px;}"
+  ].join("\n");
+
+  function getPreviewMeta() {
+    const firstHeading = blocks.find(b => b.type === "heading" && b.text && b.text.trim());
+    return {
+      title: $("#metaTitle").value.trim() || (firstHeading ? firstHeading.text.trim() : "Ders Önizleme"),
+      description: $("#metaDesc").value.trim(),
+      level: $("#metaLevel").value || "B1",
+      type: $("#metaType").value || "",
+      difficulty: $("#metaDifficulty").value || "Orta",
+      readTime: $("#metaReadTime").value || "5",
+      author: $("#metaAuthor").value.trim(),
+      cover: $("#metaCover").value.trim()
+    };
+  }
+
+  function buildPreviewHtml() {
+    let html = buildExportHtml(getPreviewMeta());
+    // Sadece önizlemede çözümlenemeyecek site-özel dosyaları çıkar
+    html = html.replace('<link rel="stylesheet" href="../../css/global.css">', "");
+    html = html.replace('<link rel="stylesheet" href="../../src/styles/tokens.css">', "");
+    html = html.replace('<link rel="stylesheet" href="../lesson-static.css">', "");
+    html = html.replace(/<!-- Navbar[\s\S]*?<\/script>/, "");
+    // Yerine önizlemeye özel, kendi kendine yeten yaklaşık stilleri ekle
+    html = html.replace("<" + "/style>", PREVIEW_FALLBACK_CSS + "\n<" + "/style>");
+    html = html.replace("<body>", '<body>\n<div class="preview-mode-banner">🔍 ÖNİZLEME MODU — gerçek sitede navbar ve bazı stiller farklı görünebilir</div>');
+    return html;
+  }
+
+  const previewOverlay = $("#previewOverlay");
+  const previewIframe = $("#previewIframe");
+  let previewBlobUrl = null;
+
+  $("#btnPreview").addEventListener("click", () => {
+    if (!blocks.length) { toast("Önizlemek için önce en az bir blok ekleyin.", "err"); return; }
+    if (previewBlobUrl) URL.revokeObjectURL(previewBlobUrl);
+    const blob = new Blob([buildPreviewHtml()], { type: "text/html;charset=utf-8" });
+    previewBlobUrl = URL.createObjectURL(blob);
+    previewIframe.src = previewBlobUrl;
+    previewOverlay.classList.add("open");
+  });
+  $("#closePreview").addEventListener("click", () => previewOverlay.classList.remove("open"));
+  previewOverlay.addEventListener("click", e => { if (e.target === previewOverlay) previewOverlay.classList.remove("open"); });
+  $("#previewOpenTab").addEventListener("click", () => { if (previewBlobUrl) window.open(previewBlobUrl, "_blank"); });
 
 function renderBlockExport(b) {
     const forceTransparent = b.type === "paragraph";
@@ -1062,6 +1284,74 @@ function renderBlockExport(b) {
           '</div>' +
           '</div>' + wrapClose;
         return qHtml;
+      }
+
+      case "fillblank": {
+        const fbId = "fib_" + b.id;
+        const parts = parseFillBlank(b.text);
+        let inner = "";
+        parts.forEach(p => {
+          if (p.type === "text") {
+            inner += esc(p.value).replace(/\n/g, "<br>");
+          } else {
+            const w = Math.max(3, p.value.length + 2);
+            inner += '<input type="text" class="fib-input" data-answer="' + esc(p.value) + '" style="width:' + w + 'ch;" autocomplete="off" spellcheck="false">';
+          }
+        });
+        return wrapOpen + '<div class="premium-fillblank-card" id="' + fbId + '">' +
+          (b.instruction ? '<div class="fib-instruction">' + esc(b.instruction) + '</div>' : '') +
+          '<div class="fib-text-body">' + inner + '</div>' +
+          '<button class="fib-action-btn" onclick="checkFillBlank(\'' + fbId + '\')">Cevapları Kontrol Et</button>' +
+          '<div class="fib-result-msg"></div>' +
+          '</div>' + wrapClose;
+      }
+
+      case "matching": {
+        const mId = "match_" + b.id;
+        const leftItems = b.pairs.map((p, i) => ({ text: p.left, idx: i }));
+        const rightShuffled = shuffleArr(b.pairs.map((p, i) => ({ text: p.right, idx: i })));
+        const correctArr = rightShuffled.map(r => r.idx);
+        let leftHtml = '<div class="matching-col-left">';
+        leftItems.forEach((it, i) => {
+          leftHtml += '<div class="matching-left-item"><span class="matching-num">' + (i + 1) + '</span>' + esc(it.text) + '</div>';
+        });
+        leftHtml += '</div>';
+        let rightHtml = '<div class="matching-col-right">';
+        rightShuffled.forEach((it, i) => {
+          rightHtml += '<div class="matching-right-item">' +
+            '<select data-pos="' + i + '"><option value="">--</option>' +
+            leftItems.map((li, liIdx) => '<option value="' + liIdx + '">' + (liIdx + 1) + '</option>').join("") +
+            '</select><span class="matching-right-text">' + esc(it.text) + '</span>' +
+            '</div>';
+        });
+        rightHtml += '</div>';
+        return wrapOpen + '<div class="premium-matching-card" id="' + mId + '" data-correct="' + esc(JSON.stringify(correctArr)) + '">' +
+          (b.instruction ? '<div class="matching-instruction">' + esc(b.instruction) + '</div>' : '') +
+          '<div class="matching-columns">' + leftHtml + rightHtml + '</div>' +
+          '<button class="matching-action-btn" onclick="checkMatching(\'' + mId + '\')">Kontrol Et</button>' +
+          '<div class="matching-result-msg"></div>' +
+          '</div>' + wrapClose;
+      }
+
+      case "sentorder": {
+        const soId = "sord_" + b.id;
+        const shuffled = shuffleArr(b.sentences.map((s, i) => ({ text: s, idx: i })));
+        let itemsHtml = "";
+        shuffled.forEach((it, i) => {
+          itemsHtml += '<div class="sentorder-item" data-orig="' + it.idx + '">' +
+            '<span class="sentorder-text">' + esc(it.text) + '</span>' +
+            '<span class="sentorder-btns">' +
+              '<button type="button" onclick="moveSentOrderItem(this,-1)">' + ICO.up + '</button>' +
+              '<button type="button" onclick="moveSentOrderItem(this,1)">' + ICO.down + '</button>' +
+            '</span>' +
+            '</div>';
+        });
+        return wrapOpen + '<div class="premium-sentorder-card" id="' + soId + '">' +
+          (b.instruction ? '<div class="sentorder-instruction">' + esc(b.instruction) + '</div>' : '') +
+          '<div class="sentorder-list">' + itemsHtml + '</div>' +
+          '<button class="sentorder-action-btn" onclick="checkSentOrder(\'' + soId + '\')">Sırayı Kontrol Et</button>' +
+          '<div class="sentorder-result-msg"></div>' +
+          '</div>' + wrapClose;
       }
 
       case "audio": {
@@ -1144,6 +1434,7 @@ function buildExportHtml(meta) {
 '<meta property="og:description" content="' + esc(meta.description) + '">',
 (meta.cover ? '<meta property="og:image" content="' + esc(meta.cover) + '">' : ""),
 '<meta name="twitter:card" content="summary_large_image">',
+(meta.type ? '<meta name="lesson-type" content="' + esc(meta.type) + '">' : ""),
 '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap">',
 '<link rel="stylesheet" href="../../css/global.css">',
 '<link rel="stylesheet" href="../../src/styles/tokens.css">',
@@ -1158,6 +1449,10 @@ function buildExportHtml(meta) {
 ".lb-byline { font-size: 12.5px; color: rgba(226,232,240,0.55); margin: -18px 0 24px; }",
 ".lb-byline b { color: var(--xblueb); font-weight: 600; }",
 '.lesson-diff-badge { padding: 2px 9px; border-radius: 5px; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: #93c5fd; }',
+'.lesson-type-tag { padding: 2px 9px; border-radius: 5px; font-size: 10px; font-weight: 700; letter-spacing: .06em; }',
+'.lesson-type-tag[data-type="iletisim"] { background: rgba(96,200,240,0.1); border: 1px solid rgba(96,200,240,0.25); color: #60c8f0; }',
+'.lesson-type-tag[data-type="kultur"] { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.25); color: #a78bfa; }',
+'.lesson-type-tag[data-type="gramer"] { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #22c55e; }',
 
 "/* ── vocab card premium ── */",
 ".vocab-card { background: linear-gradient(160deg, rgba(59,130,246,0.1), rgba(15,23,42,0.55)); border: 1px solid rgba(59,130,246,0.18); border-left: 4px solid var(--xblue); border-radius: 14px; padding: 26px 30px 24px; margin: 30px 0; position: relative; box-shadow: 0 18px 40px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.03); }",
@@ -1212,6 +1507,49 @@ function buildExportHtml(meta) {
 ".quiz-option-item.wrong-reveal { border-color: var(--xrose) !important; background: rgba(240,112,104,0.12) !important; }",
 ".quiz-option-item.wrong-reveal .quiz-indicator { border-color: var(--xrose) !important; background: var(--xrose) !important; }",
 ".quiz-explain-panel { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; margin-top: 16px; padding: 0 16px; background: rgba(255,255,255,0.02); border-left: 3px solid var(--xgreen); font-size: 13.5px; color: #cbd5e1; line-height: 1.6; }",
+
+"/* ── premium fill-in-the-blank elements ── */",
+".premium-fillblank-card { background: rgba(15,23,42,0.6); border: 1px solid rgba(59,130,246,0.2); border-radius: 14px; padding: 26px 28px; margin: 30px 0; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }",
+".fib-instruction { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14.5px; font-weight: 700; color: var(--xblueb); margin-bottom: 16px; }",
+".fib-text-body { font-family: 'Inter', sans-serif; font-size: 16px; line-height: 2.2; color: #e2e8f0; }",
+".fib-input { display: inline-block; margin: 0 3px; padding: 4px 8px; background: rgba(255,255,255,0.04); border: none; border-bottom: 2px solid var(--xblue); border-radius: 4px 4px 0 0; color: #ffffff; font-family: 'Inter', sans-serif; font-size: 15px; text-align: center; }",
+".fib-input:focus { outline: none; background: rgba(59,130,246,0.1); }",
+".fib-input.fib-correct { border-bottom-color: var(--xgreen); background: rgba(79,214,156,0.14); color: var(--xgreen); }",
+".fib-input.fib-wrong { border-bottom-color: var(--xrose); background: rgba(240,112,104,0.14); color: var(--xrose); }",
+".fib-action-btn { display: block; width: 100%; margin-top: 20px; padding: 12px; background: linear-gradient(135deg, var(--xblue), var(--xblueb)); border: none; border-radius: 9px; color: #071022; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13.5px; cursor: pointer; transition: all 0.2s ease; }",
+".fib-action-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }",
+".fib-result-msg { margin-top: 14px; font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600; text-align: center; }",
+
+"/* ── premium matching (eşleştirme) elements ── */",
+".premium-matching-card { background: rgba(15,23,42,0.6); border: 1px solid rgba(59,130,246,0.2); border-radius: 14px; padding: 26px 28px; margin: 30px 0; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }",
+".matching-instruction { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14.5px; font-weight: 700; color: var(--xblueb); margin-bottom: 18px; }",
+".matching-columns { display: flex; gap: 24px; flex-wrap: wrap; }",
+".matching-col-left, .matching-col-right { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 10px; }",
+".matching-left-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; color: #e2e8f0; }",
+".matching-num { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--xblue); color: #071022; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; }",
+".matching-right-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; transition: all 0.2s ease; }",
+".matching-right-item select { flex-shrink: 0; padding: 5px 7px; background: var(--bg-elevated, rgba(255,255,255,0.06)); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: #fff; font-size: 13px; }",
+".matching-right-text { font-family: 'Inter', sans-serif; font-size: 14px; color: #e2e8f0; }",
+".matching-right-item.matching-correct { border-color: var(--xgreen); background: rgba(79,214,156,0.12); }",
+".matching-right-item.matching-wrong { border-color: var(--xrose); background: rgba(240,112,104,0.12); }",
+".matching-action-btn { display: block; width: 100%; margin-top: 22px; padding: 12px; background: linear-gradient(135deg, var(--xblue), var(--xblueb)); border: none; border-radius: 9px; color: #071022; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13.5px; cursor: pointer; transition: all 0.2s ease; }",
+".matching-action-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }",
+".matching-result-msg { margin-top: 14px; font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600; text-align: center; }",
+
+"/* ── premium sentence ordering (cümle sıralama) elements ── */",
+".premium-sentorder-card { background: rgba(15,23,42,0.6); border: 1px solid rgba(59,130,246,0.2); border-radius: 14px; padding: 26px 28px; margin: 30px 0; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }",
+".sentorder-instruction { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14.5px; font-weight: 700; color: var(--xblueb); margin-bottom: 16px; }",
+".sentorder-list { display: flex; flex-direction: column; gap: 8px; }",
+".sentorder-item { display: flex; align-items: center; gap: 12px; padding: 13px 16px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; transition: all 0.2s ease; }",
+".sentorder-text { flex: 1; font-family: 'Inter', sans-serif; font-size: 14.5px; color: #e2e8f0; }",
+".sentorder-btns { display: flex; gap: 4px; flex-shrink: 0; }",
+".sentorder-btns button { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #cbd5e1; cursor: pointer; transition: all 0.15s ease; }",
+".sentorder-btns button:hover { background: rgba(59,130,246,0.15); color: #fff; }",
+".sentorder-item.sentorder-correct { border-color: var(--xgreen); background: rgba(79,214,156,0.1); }",
+".sentorder-item.sentorder-wrong { border-color: var(--xrose); background: rgba(240,112,104,0.1); }",
+".sentorder-action-btn { display: block; width: 100%; margin-top: 20px; padding: 12px; background: linear-gradient(135deg, var(--xblue), var(--xblueb)); border: none; border-radius: 9px; color: #071022; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13.5px; cursor: pointer; transition: all 0.2s ease; }",
+".sentorder-action-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }",
+".sentorder-result-msg { margin-top: 14px; font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600; text-align: center; }",
 
 "/* ── premium audio elements ── */",
 ".premium-audio-card { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: rgba(59,130,246,0.05); border: 1px solid rgba(59,130,246,0.15); border-radius: 12px; margin: 24px 0; }",
@@ -1382,7 +1720,83 @@ blocksHtml,
 "  card.querySelector('.quiz-action-btn').style.display = 'none';",
 "}",
 
-"/* 6. Dynamic Auto-TOC (Table of Contents) Generator */",
+"/* 6. Boşluk Doldurma (Fill-in-the-blank) Engine */",
+"function checkFillBlank(fbId) {",
+"  const card = document.getElementById(fbId);",
+"  if (!card) return;",
+"  const inputs = card.querySelectorAll('.fib-input');",
+"  let correct = 0;",
+"  inputs.forEach(inp => {",
+"    const answer = (inp.dataset.answer || '').trim().toLowerCase();",
+"    const val = inp.value.trim().toLowerCase();",
+"    inp.classList.remove('fib-correct', 'fib-wrong');",
+"    if (val === answer) { inp.classList.add('fib-correct'); correct++; }",
+"    else { inp.classList.add('fib-wrong'); }",
+"    inp.disabled = true;",
+"  });",
+"  const msg = card.querySelector('.fib-result-msg');",
+"  if (msg) {",
+"    msg.textContent = correct + ' / ' + inputs.length + ' doğru';",
+"    msg.style.color = correct === inputs.length ? '#4fd69c' : '#f07068';",
+"  }",
+"  card.querySelector('.fib-action-btn').style.display = 'none';",
+"}",
+
+"/* 7. Eşleştirme (Matching) Engine */",
+"function checkMatching(mId) {",
+"  const card = document.getElementById(mId);",
+"  if (!card) return;",
+"  let correctArr = [];",
+"  try { correctArr = JSON.parse(card.dataset.correct); } catch (e) { correctArr = []; }",
+"  const items = card.querySelectorAll('.matching-right-item');",
+"  let correctCount = 0;",
+"  items.forEach(item => {",
+"    const select = item.querySelector('select');",
+"    const pos = parseInt(select.dataset.pos);",
+"    const chosen = select.value === '' ? -1 : parseInt(select.value);",
+"    item.classList.remove('matching-correct', 'matching-wrong');",
+"    if (chosen === correctArr[pos]) { item.classList.add('matching-correct'); correctCount++; }",
+"    else { item.classList.add('matching-wrong'); }",
+"    select.disabled = true;",
+"  });",
+"  const msg = card.querySelector('.matching-result-msg');",
+"  if (msg) {",
+"    msg.textContent = correctCount + ' / ' + items.length + ' doğru eşleşme';",
+"    msg.style.color = correctCount === items.length ? '#4fd69c' : '#f07068';",
+"  }",
+"  card.querySelector('.matching-action-btn').style.display = 'none';",
+"}",
+
+"/* 8. Cümle Sıralama (Sentence Ordering) Engine */",
+"function moveSentOrderItem(btn, dir) {",
+"  const item = btn.closest('.sentorder-item');",
+"  const list = item.parentElement;",
+"  if (dir === -1 && item.previousElementSibling) {",
+"    list.insertBefore(item, item.previousElementSibling);",
+"  } else if (dir === 1 && item.nextElementSibling) {",
+"    list.insertBefore(item.nextElementSibling, item);",
+"  }",
+"}",
+"function checkSentOrder(soId) {",
+"  const card = document.getElementById(soId);",
+"  if (!card) return;",
+"  const items = Array.from(card.querySelectorAll('.sentorder-item'));",
+"  let correctCount = 0;",
+"  items.forEach((item, i) => {",
+"    item.classList.remove('sentorder-correct', 'sentorder-wrong');",
+"    if (parseInt(item.dataset.orig) === i) { item.classList.add('sentorder-correct'); correctCount++; }",
+"    else { item.classList.add('sentorder-wrong'); }",
+"    item.querySelectorAll('button').forEach(b => b.disabled = true);",
+"  });",
+"  const msg = card.querySelector('.sentorder-result-msg');",
+"  if (msg) {",
+"    msg.textContent = correctCount + ' / ' + items.length + ' doğru sırada';",
+"    msg.style.color = correctCount === items.length ? '#4fd69c' : '#f07068';",
+"  }",
+"  card.querySelector('.sentorder-action-btn').style.display = 'none';",
+"}",
+
+"/* 9. Dynamic Auto-TOC (Table of Contents) Generator */",
 "document.addEventListener('DOMContentLoaded', () => {",
 "  const tocList = document.getElementById('auto-toc-list');",
 "  if (!tocList) return;",
