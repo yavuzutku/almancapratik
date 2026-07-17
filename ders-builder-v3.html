@@ -387,9 +387,9 @@ button, input, select, textarea { font-family: inherit; }
     const base = commonDefaults();
     switch (type) {
       case "heading":
-        return Object.assign(base, { level: "h2", text: "Başlık metni", size: 28, color: "#ffffff", weight: "700", font: "display", lineHeight: 150, letterSpacing: -1 });
+        return Object.assign(base, { level: "h2", text: "Başlık metni", size: 28, color: "#f0eee8", weight: "700", font: "display", lineHeight: 150, letterSpacing: -1 });
       case "paragraph":
-        return Object.assign(base, { html: "Paragraf metnini buraya yazın. Doğrudan tıklayıp düzenleyebilirsiniz.", size: 17, align: "left", color: "#cbd5e1", font: "body", lineHeight: 178, letterSpacing: -1 });
+        return Object.assign(base, { html: "Paragraf metnini buraya yazın. Doğrudan tıklayıp düzenleyebilirsiniz.", size: 17, align: "left", color: "rgba(240,238,232,0.82)", font: "body", lineHeight: 178, letterSpacing: -1 });
       case "image":
         return Object.assign(base, { url: "", alt: "", width: 100, radius: 16, align: "center" });
       case "vocab":
@@ -433,7 +433,7 @@ button, input, select, textarea { font-family: inherit; }
   }
 
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
-  function fontStack(key) { return key === "display" ? "'Plus Jakarta Sans', sans-serif" : "'Inter', sans-serif"; }
+  function fontStack(key) { return key === "display" ? "'Syne', sans-serif" : "'Lora', Georgia, serif"; }
   function $(sel, root) { return (root || document).querySelector(sel); }
   function $all(sel, root) { return Array.from((root || document).querySelectorAll(sel)); }
   function hexToRgba(hex, opacityPct) {
@@ -569,14 +569,14 @@ button, input, select, textarea { font-family: inherit; }
       h += fg("Boyut (px)", rangeHtml("size", 16, 52, block.size));
       h += fg("Renk", '<input type="color" data-f="color" value="' + block.color + '">');
       h += fg("Kalınlık", selectHtml("weight", [["500","Orta"],["600","Yarı Kalın"],["700","Kalın"],["800","Ekstra Kalın"]], block.weight));
-      h += fg("Font", selectHtml("font", [["display","Plus Jakarta Sans"],["body","Inter"]], block.font));
+      h += fg("Font", selectHtml("font", [["display","Syne (Başlık fontu)"],["body","Lora (Okuma fontu)"]], block.font));
       h += fg("Satır Yüksekliği", rangeHtml("lineHeight", 110, 180, block.lineHeight, "%"));
       h += fg("Harf Aralığı (px)", rangeHtml("letterSpacing", -3, 4, block.letterSpacing));
     } else if (block.type === "paragraph") {
       h += fg("Boyut (px)", rangeHtml("size", 13, 26, block.size));
       h += fg("Hizalama", alignBtnsHtml("align", block.align));
       h += fg("Renk", '<input type="color" data-f="color" value="' + rgbaToHex(block.color) + '">');
-      h += fg("Font", selectHtml("font", [["body","Inter"],["display","Plus Jakarta Sans"]], block.font));
+      h += fg("Font", selectHtml("font", [["body","Lora (Okuma fontu)"],["display","Syne (Başlık fontu)"]], block.font));
       h += fg("Satır Yüksekliği", rangeHtml("lineHeight", 140, 220, block.lineHeight, "%"));
       h += fg("Harf Aralığı (px)", rangeHtml("letterSpacing", -2, 4, block.letterSpacing));
     } else if (block.type === "image") {
@@ -892,15 +892,12 @@ button, input, select, textarea { font-family: inherit; }
 '<meta property="og:description" content="' + esc(meta.description) + '">',
 (meta.cover ? '<meta property="og:image" content="' + esc(meta.cover) + '">' : ""),
 '<meta name="twitter:card" content="summary_large_image">',
-'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap">',
+'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap">',
 '<link rel="stylesheet" href="../css/global.css">',
 '<link rel="stylesheet" href="../src/styles/tokens.css">',
 '<link rel="stylesheet" href="../lesson-static.css">',
 "<style>",
-":root { --font-display: 'Plus Jakarta Sans', sans-serif; --xblue: #3b82f6; --xblueb: #60a5fa; }",
-"body { background: #070d19 !important; }",
-".lesson-body { font-family: 'Inter', sans-serif; color: #cbd5e1; }",
-".lesson-heading { color: #ffffff; }",
+":root { --xblue: #3b82f6; --xblueb: #60a5fa; }",
 
 "/* ── byline / difficulty badge ── */",
 ".lb-byline { font-size: 12.5px; color: rgba(226,232,240,0.55); margin: -18px 0 24px; }",
