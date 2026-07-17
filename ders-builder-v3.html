@@ -31,6 +31,367 @@
   --tr:           0.18s cubic-bezier(.4,0,.2,1);
 }
 
+
+/* ══════════════════════════════════════
+   DİNAMİK GRADIENT TEMA SİSTEMİ (25 TEMA)
+   ══════════════════════════════════════ */
+
+body.theme-ocean {
+  --bg-base: #070d19;
+  --blue: #2563eb;
+  --blue-bright: #38bdf8;
+  --blue-glow: rgba(37,99,235,0.40);
+  --border: rgba(37,99,235,0.18);
+  --border-hover: rgba(56,189,248,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 12% 15%, rgba(37,99,235,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 88% 85%, rgba(14,165,233,0.22), transparent 60%),
+    linear-gradient(160deg, #050b16 0%, #0b1c33 100%);
+  background-attachment: fixed;
+}
+
+body.theme-sunset {
+  --bg-base: #1a0f1f;
+  --blue: #f97316;
+  --blue-bright: #fb923c;
+  --blue-glow: rgba(249,115,22,0.40);
+  --border: rgba(249,115,22,0.20);
+  --border-hover: rgba(251,146,60,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 10% 10%, rgba(244,63,94,0.35), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 90% 90%, rgba(249,115,22,0.28), transparent 60%),
+    linear-gradient(160deg, #1a0f1f 0%, #3b1225 100%);
+  background-attachment: fixed;
+}
+
+body.theme-aurora {
+  --bg-base: #071016;
+  --blue: #10b981;
+  --blue-bright: #34d399;
+  --blue-glow: rgba(16,185,129,0.40);
+  --border: rgba(16,185,129,0.18);
+  --border-hover: rgba(52,211,153,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 10%, rgba(16,185,129,0.30), transparent 60%),
+    radial-gradient(ellipse 850px 550px at 85% 90%, rgba(147,51,234,0.28), transparent 60%),
+    linear-gradient(160deg, #071016 0%, #0d1f24 100%);
+  background-attachment: fixed;
+}
+
+body.theme-forest {
+  --bg-base: #081511;
+  --blue: #22c55e;
+  --blue-bright: #4ade80;
+  --blue-glow: rgba(34,197,94,0.40);
+  --border: rgba(34,197,94,0.18);
+  --border-hover: rgba(74,222,128,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 10% 15%, rgba(34,197,94,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 90% 85%, rgba(101,163,13,0.20), transparent 60%),
+    linear-gradient(160deg, #081511 0%, #0f2a1d 100%);
+  background-attachment: fixed;
+}
+
+body.theme-midnight {
+  --bg-base: #05060d;
+  --blue: #4f46e5;
+  --blue-bright: #818cf8;
+  --blue-glow: rgba(79,70,229,0.40);
+  --border: rgba(79,70,229,0.18);
+  --border-hover: rgba(129,140,248,0.40);
+  background:
+    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(2px 2px at 70% 65%, rgba(255,255,255,0.35), transparent),
+    radial-gradient(1.5px 1.5px at 45% 80%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(ellipse 900px 600px at 20% 20%, rgba(79,70,229,0.25), transparent 60%),
+    linear-gradient(160deg, #05060d 0%, #0a0e1f 100%);
+  background-attachment: fixed;
+}
+
+body.theme-cyberpunk {
+  --bg-base: #0a0014;
+  --blue: #d946ef;
+  --blue-bright: #f472b6;
+  --blue-glow: rgba(217,70,239,0.45);
+  --border: rgba(217,70,239,0.22);
+  --border-hover: rgba(244,114,182,0.45);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(168,85,247,0.35), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 30%, rgba(236,72,153,0.30), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 50% 90%, rgba(59,130,246,0.25), transparent 60%),
+    linear-gradient(160deg, #0a0014 0%, #1a0a2e 100%);
+  background-attachment: fixed;
+}
+
+body.theme-lavender {
+  --bg-base: #12101d;
+  --blue: #a78bfa;
+  --blue-bright: #c4b5fd;
+  --blue-glow: rgba(167,139,250,0.40);
+  --border: rgba(167,139,250,0.20);
+  --border-hover: rgba(196,181,253,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(167,139,250,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(216,180,254,0.20), transparent 60%),
+    linear-gradient(160deg, #12101d 0%, #221c38 100%);
+  background-attachment: fixed;
+}
+
+body.theme-desert {
+  --bg-base: #1a1208;
+  --blue: #d97706;
+  --blue-bright: #f59e0b;
+  --blue-glow: rgba(217,119,6,0.40);
+  --border: rgba(217,119,6,0.20);
+  --border-hover: rgba(245,158,11,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 10% 20%, rgba(217,119,6,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 90% 80%, rgba(180,83,9,0.22), transparent 60%),
+    linear-gradient(160deg, #1a1208 0%, #2e1f0d 100%);
+  background-attachment: fixed;
+}
+
+body.theme-volcano {
+  --bg-base: #0d0403;
+  --blue: #dc2626;
+  --blue-bright: #f97316;
+  --blue-glow: rgba(220,38,38,0.45);
+  --border: rgba(220,38,38,0.22);
+  --border-hover: rgba(249,115,22,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 20% 80%, rgba(220,38,38,0.35), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 80% 20%, rgba(249,115,22,0.28), transparent 60%),
+    linear-gradient(160deg, #0d0403 0%, #1f0a05 100%);
+  background-attachment: fixed;
+}
+
+body.theme-emerald {
+  --bg-base: #04140f;
+  --blue: #10b981;
+  --blue-bright: #6ee7b7;
+  --blue-glow: rgba(16,185,129,0.40);
+  --border: rgba(16,185,129,0.20);
+  --border-hover: rgba(110,231,183,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(16,185,129,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(5,150,105,0.22), transparent 60%),
+    linear-gradient(160deg, #04140f 0%, #082820 100%);
+  background-attachment: fixed;
+}
+
+body.theme-sapphire {
+  --bg-base: #050b1a;
+  --blue: #1d4ed8;
+  --blue-bright: #3b82f6;
+  --blue-glow: rgba(29,78,216,0.40);
+  --border: rgba(29,78,216,0.20);
+  --border-hover: rgba(59,130,246,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(29,78,216,0.32), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(79,70,229,0.22), transparent 60%),
+    linear-gradient(160deg, #050b1a 0%, #0b1533 100%);
+  background-attachment: fixed;
+}
+
+body.theme-rose {
+  --bg-base: #170a10;
+  --blue: #f43f5e;
+  --blue-bright: #fb7185;
+  --blue-glow: rgba(244,63,94,0.40);
+  --border: rgba(244,63,94,0.20);
+  --border-hover: rgba(251,113,133,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(244,63,94,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(236,72,153,0.20), transparent 60%),
+    linear-gradient(160deg, #170a10 0%, #2c111c 100%);
+  background-attachment: fixed;
+}
+
+body.theme-coffee {
+  --bg-base: #140f0b;
+  --blue: #92400e;
+  --blue-bright: #b45309;
+  --blue-glow: rgba(146,64,14,0.40);
+  --border: rgba(146,64,14,0.20);
+  --border-hover: rgba(180,83,9,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 10% 15%, rgba(146,64,14,0.25), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 90% 85%, rgba(120,53,15,0.20), transparent 60%),
+    linear-gradient(160deg, #140f0b 0%, #241a12 100%);
+  background-attachment: fixed;
+}
+
+body.theme-neon {
+  --bg-base: #06060a;
+  --blue: #22d3ee;
+  --blue-bright: #67e8f9;
+  --blue-glow: rgba(34,211,238,0.45);
+  --border: rgba(34,211,238,0.22);
+  --border-hover: rgba(103,232,249,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 10% 20%, rgba(34,211,238,0.32), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 90% 80%, rgba(217,70,239,0.28), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 50% 50%, rgba(74,222,128,0.15), transparent 60%),
+    linear-gradient(160deg, #06060a 0%, #0c0c18 100%);
+  background-attachment: fixed;
+}
+
+body.theme-galaxy {
+  --bg-base: #050414;
+  --blue: #7c3aed;
+  --blue-bright: #a78bfa;
+  --blue-glow: rgba(124,58,237,0.40);
+  --border: rgba(124,58,237,0.20);
+  --border-hover: rgba(167,139,250,0.40);
+  background:
+    radial-gradient(1.5px 1.5px at 25% 20%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1.5px 1.5px at 75% 60%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(ellipse 900px 600px at 20% 30%, rgba(124,58,237,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 80% 80%, rgba(59,130,246,0.20), transparent 60%),
+    linear-gradient(160deg, #050414 0%, #0d0a24 100%);
+  background-attachment: fixed;
+}
+
+body.theme-arctic {
+  --bg-base: #0a1218;
+  --blue: #38bdf8;
+  --blue-bright: #7dd3fc;
+  --blue-glow: rgba(56,189,248,0.40);
+  --border: rgba(56,189,248,0.20);
+  --border-hover: rgba(125,211,252,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(56,189,248,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(224,242,254,0.12), transparent 60%),
+    linear-gradient(160deg, #0a1218 0%, #101f2b 100%);
+  background-attachment: fixed;
+}
+
+body.theme-tropical {
+  --bg-base: #031815;
+  --blue: #14b8a6;
+  --blue-bright: #2dd4bf;
+  --blue-glow: rgba(20,184,166,0.40);
+  --border: rgba(20,184,166,0.20);
+  --border-hover: rgba(45,212,191,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(20,184,166,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(250,204,21,0.18), transparent 60%),
+    linear-gradient(160deg, #031815 0%, #06302a 100%);
+  background-attachment: fixed;
+}
+
+body.theme-royal {
+  --bg-base: #0f0a1a;
+  --blue: #7e22ce;
+  --blue-bright: #a855f7;
+  --blue-glow: rgba(126,34,206,0.40);
+  --border: rgba(212,175,55,0.22);
+  --border-hover: rgba(250,204,21,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(126,34,206,0.32), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(212,175,55,0.20), transparent 60%),
+    linear-gradient(160deg, #0f0a1a 0%, #1e1330 100%);
+  background-attachment: fixed;
+}
+
+body.theme-obsidian {
+  --bg-base: #000000;
+  --blue: #64748b;
+  --blue-bright: #94a3b8;
+  --blue-glow: rgba(100,116,139,0.30);
+  --border: rgba(148,163,184,0.14);
+  --border-hover: rgba(148,163,184,0.30);
+  background:
+    radial-gradient(ellipse 900px 600px at 20% 20%, rgba(30,41,59,0.50), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 80% 80%, rgba(51,65,85,0.35), transparent 60%),
+    linear-gradient(160deg, #000000 0%, #0a0a0c 100%);
+  background-attachment: fixed;
+}
+
+body.theme-peach {
+  --bg-base: #1a1109;
+  --blue: #fb923c;
+  --blue-bright: #fdba74;
+  --blue-glow: rgba(251,146,60,0.40);
+  --border: rgba(251,146,60,0.20);
+  --border-hover: rgba(253,186,116,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(251,146,60,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(244,114,182,0.18), transparent 60%),
+    linear-gradient(160deg, #1a1109 0%, #2e1c10 100%);
+  background-attachment: fixed;
+}
+
+body.theme-mint {
+  --bg-base: #041512;
+  --blue: #34d399;
+  --blue-bright: #6ee7b7;
+  --blue-glow: rgba(52,211,153,0.40);
+  --border: rgba(52,211,153,0.20);
+  --border-hover: rgba(110,231,183,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(52,211,153,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(45,212,191,0.18), transparent 60%),
+    linear-gradient(160deg, #041512 0%, #082a23 100%);
+  background-attachment: fixed;
+}
+
+body.theme-titanium {
+  --bg-base: #0e1013;
+  --blue: #94a3b8;
+  --blue-bright: #cbd5e1;
+  --blue-glow: rgba(148,163,184,0.35);
+  --border: rgba(148,163,184,0.18);
+  --border-hover: rgba(203,213,225,0.35);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(148,163,184,0.22), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(100,116,139,0.18), transparent 60%),
+    linear-gradient(160deg, #0e1013 0%, #181c21 100%);
+  background-attachment: fixed;
+}
+
+body.theme-ruby {
+  --bg-base: #12040a;
+  --blue: #be123c;
+  --blue-bright: #e11d48;
+  --blue-glow: rgba(190,18,60,0.40);
+  --border: rgba(190,18,60,0.20);
+  --border-hover: rgba(225,29,72,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(190,18,60,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(225,29,72,0.20), transparent 60%),
+    linear-gradient(160deg, #12040a 0%, #260814 100%);
+  background-attachment: fixed;
+}
+
+body.theme-amethyst {
+  --bg-base: #0f0716;
+  --blue: #9333ea;
+  --blue-bright: #c084fc;
+  --blue-glow: rgba(147,51,234,0.40);
+  --border: rgba(147,51,234,0.20);
+  --border-hover: rgba(192,132,252,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(147,51,234,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(192,132,252,0.18), transparent 60%),
+    linear-gradient(160deg, #0f0716 0%, #1e0e2e 100%);
+  background-attachment: fixed;
+}
+
+body.theme-coral {
+  --bg-base: #190b0b;
+  --blue: #fb7185;
+  --blue-bright: #fda4af;
+  --blue-glow: rgba(251,113,133,0.40);
+  --border: rgba(251,113,133,0.20);
+  --border-hover: rgba(253,164,175,0.40);
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(251,113,133,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(249,115,22,0.18), transparent 60%),
+    linear-gradient(160deg, #190b0b 0%, #2c1414 100%);
+  background-attachment: fixed;
+}
+
 html, body { height: 100%; }
 body {
   margin: 0; background: var(--bg-base); color: var(--text);
@@ -64,6 +425,15 @@ button, input, select, textarea { font-family: inherit; }
 .tb-title { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
 .tb-sub { display: block; font-size: 10.5px; color: var(--text-faint); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
 .topbar-actions { display: flex; align-items: center; gap: 14px; }
+#metaTheme {
+  padding: 7px 30px 7px 12px; border: 1px solid var(--border); border-radius: 20px;
+  background: var(--bg-surface); color: var(--text-dim); font-size: 12.5px; font-weight: 600;
+  cursor: pointer; transition: all var(--tr); appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+#metaTheme:hover { border-color: var(--border-hover); color: var(--text); }
+#metaTheme:focus { outline: none; border-color: var(--border-hover); }
 .block-count {
   font-size: 11.5px; color: var(--text-faint); font-variant-numeric: tabular-nums;
   padding: 6px 12px; border: 1px solid var(--border); border-radius: 20px; background: var(--bg-surface);
@@ -258,6 +628,9 @@ button, input, select, textarea { font-family: inherit; }
 .tbl-prev th { background: rgba(59,130,246,0.12); font-weight: 700; color: var(--text); }
 .tbl-prev td { color: var(--text-dim); background: rgba(255,255,255,0.015); }
 .tbl-cell-wrap { position: relative; }
+.tbl-cell-wrap > [contenteditable] { display: block; width: 100%; min-height: 1.5em; min-width: 24px; cursor: text; outline: none; white-space: pre-wrap; word-break: break-word; }
+.tbl-cell-wrap > [contenteditable]:empty::before { content: attr(data-placeholder); color: var(--text-faint); pointer-events: none; }
+.tbl-prev th, .tbl-prev td { cursor: text; }
 .tbl-del-row, .tbl-del-col {
   position: absolute; width: 16px; height: 16px; border-radius: 50%; background: var(--rose); color: #fff; border: none;
   font-size: 10px; line-height: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity var(--tr);
@@ -347,7 +720,7 @@ button, input, select, textarea { font-family: inherit; }
 }
 </style>
 </head>
-<body>
+<body class="theme-ocean">
 
 <div class="app">
   <header class="topbar">
@@ -358,6 +731,34 @@ button, input, select, textarea { font-family: inherit; }
       <div><span class="tb-title">Ders Builder</span><span class="tb-sub">Premium Statik Sayfa Üretici</span></div>
     </div>
     <div class="topbar-actions">
+      <select id="metaTheme" title="Arayüz teması / Ders arka planı">
+        <option value="none">Tema Yok (Varsayılan)</option>
+        <option value="ocean" selected>Ocean</option>
+        <option value="sunset">Sunset</option>
+        <option value="aurora">Aurora</option>
+        <option value="forest">Forest</option>
+        <option value="midnight">Midnight</option>
+        <option value="cyberpunk">Cyberpunk</option>
+        <option value="lavender">Lavender</option>
+        <option value="desert">Desert</option>
+        <option value="volcano">Volcano</option>
+        <option value="emerald">Emerald</option>
+        <option value="sapphire">Sapphire</option>
+        <option value="rose">Rose</option>
+        <option value="coffee">Coffee</option>
+        <option value="neon">Neon</option>
+        <option value="galaxy">Galaxy</option>
+        <option value="arctic">Arctic</option>
+        <option value="tropical">Tropical</option>
+        <option value="royal">Royal</option>
+        <option value="obsidian">Obsidian</option>
+        <option value="peach">Peach</option>
+        <option value="mint">Mint</option>
+        <option value="titanium">Titanium</option>
+        <option value="ruby">Ruby</option>
+        <option value="amethyst">Amethyst</option>
+        <option value="coral">Coral</option>
+      </select>
       <span class="block-count" id="blockCount">0 blok</span>
       <button class="btn btn-danger-ghost" id="btnClearAll">Tümünü Temizle</button>
       <button class="btn" id="btnPreview">
@@ -1004,14 +1405,14 @@ button, input, select, textarea { font-family: inherit; }
       function renderTable() {
         let h = "<thead><tr>";
         block.headers.forEach((hd, ci) => {
-          h += '<th><div class="tbl-cell-wrap"><span contenteditable="true" data-h="' + ci + '">' + esc(hd) + '</span>' +
+          h += '<th><div class="tbl-cell-wrap"><span contenteditable="true" data-placeholder="Başlık" data-h="' + ci + '">' + esc(hd) + '</span>' +
             (block.headers.length > 1 ? '<button class="tbl-del-col" data-delcol="' + ci + '" title="Sütunu sil">×</button>' : "") + '</div></th>';
         });
         h += "</tr></thead><tbody>";
         block.rows.forEach((row, ri) => {
           h += '<tr>';
           row.forEach((cell, ci) => {
-            h += '<td><div class="tbl-cell-wrap"><span contenteditable="true" data-r="' + ri + '" data-c="' + ci + '">' + esc(cell) + '</span>' +
+            h += '<td><div class="tbl-cell-wrap"><span contenteditable="true" data-placeholder="Metin" data-r="' + ri + '" data-c="' + ci + '">' + esc(cell) + '</span>' +
               (ci === row.length - 1 && block.rows.length > 1 ? '<button class="tbl-del-row" data-delrow="' + ri + '" title="Satırı sil">×</button>' : "") + '</div></td>';
           });
           h += '</tr>';
@@ -1020,6 +1421,14 @@ button, input, select, textarea { font-family: inherit; }
         tableEl.innerHTML = h;
         $all("[data-h]", tableEl).forEach(s => s.addEventListener("input", () => { block.headers[+s.dataset.h] = s.textContent; }));
         $all("[data-r]", tableEl).forEach(s => s.addEventListener("input", () => { block.rows[+s.dataset.r][+s.dataset.c] = s.textContent; }));
+        $all("[data-h], [data-r]", tableEl).forEach(s => s.addEventListener("keydown", e => { if (e.key === "Enter") e.preventDefault(); }));
+        $all("th, td", tableEl).forEach(cellEl => {
+          cellEl.addEventListener("mousedown", e => {
+            if (e.target.closest("[contenteditable]") || e.target.closest("button")) return;
+            const editable = cellEl.querySelector("[contenteditable]");
+            if (editable) { e.preventDefault(); editable.focus(); }
+          });
+        });
         $all("[data-delcol]", tableEl).forEach(b => b.addEventListener("click", () => { const ci=+b.dataset.delcol; block.headers.splice(ci,1); block.rows.forEach(r=>r.splice(ci,1)); renderTable(); }));
         $all("[data-delrow]", tableEl).forEach(b => b.addEventListener("click", () => { block.rows.splice(+b.dataset.delrow,1); renderTable(); }));
       }
@@ -1363,6 +1772,17 @@ button, input, select, textarea { font-family: inherit; }
   $all(".add-block-btn").forEach(btn => btn.addEventListener("click", () => addBlock(btn.dataset.type)));
   $("#btnClearAll").addEventListener("click", clearAll);
 
+  /* ══════════════════════════════════════
+     Dinamik Gradient Tema Sistemi
+     ══════════════════════════════════════ */
+  const themeSelect = $("#metaTheme");
+  const DEFAULT_THEME = "ocean";
+  function applyTheme(value) {
+    document.body.className = (value && value !== "none") ? "theme-" + value : "";
+  }
+  applyTheme(themeSelect.value || DEFAULT_THEME);
+  themeSelect.addEventListener("change", () => applyTheme(themeSelect.value));
+
   const overlay = $("#exportModalOverlay");
   $("#btnExport").addEventListener("click", () => {
     if (!blocks.length) { toast("Önce en az bir blok ekleyin.", "err"); return; }
@@ -1381,8 +1801,9 @@ button, input, select, textarea { font-family: inherit; }
     const readTime = $("#metaReadTime").value || "5";
     const author = $("#metaAuthor").value.trim();
     const cover = $("#metaCover").value.trim();
+    const theme = $("#metaTheme").value || "ocean";
     if (!title) { toast("Sayfa başlığı boş olamaz.", "err"); return; }
-    const html = buildExportHtml({ title, description, level, type, difficulty, readTime, author, cover });
+    const html = buildExportHtml({ title, description, level, type, difficulty, readTime, author, cover, theme });
     downloadHtml(html);
     overlay.classList.remove("open");
     toast("index.html indirildi ✓", "ok");
@@ -1408,9 +1829,14 @@ button, input, select, textarea { font-family: inherit; }
      kendi kendine yeten bir CSS bloğuyla değiştiriyoruz. Gerçek "İndir"
      çıktısı (buildExportHtml) bundan etkilenmez. */
   const PREVIEW_FALLBACK_CSS = [
-    "body{margin:0;background:#070d19;color:#e2e8f0;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}",
-    ".bg-canvas{position:fixed;inset:0;z-index:-1;overflow:hidden;background:radial-gradient(ellipse 900px 500px at -10% -10%, rgba(59,130,246,0.14), transparent 60%),radial-gradient(ellipse 700px 500px at 110% 20%, rgba(96,165,250,0.08), transparent 60%);}",
-    ".bg-grid,.bg-glow{display:none;}",
+    "body{margin:0;background:#0a0a0f;color:#e2e8f0;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}",
+    ".bg-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}",
+    ".bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 20%, transparent 100%);}",
+    ".bg-glow{position:absolute;border-radius:50%;filter:blur(120px);opacity:0.08;animation:drift 14s ease-in-out infinite alternate;}",
+    ".bg-glow--1{width:600px;height:600px;top:-200px;left:-100px;background:radial-gradient(circle, #c9a84c, transparent 70%);}",
+    ".bg-glow--2{width:400px;height:400px;top:30%;right:-120px;background:radial-gradient(circle, #60c8f0, transparent 70%);animation-delay:-7s;opacity:0.06;}",
+    "@keyframes drift{from{transform:translate(0,0) scale(1);}to{transform:translate(30px,20px) scale(1.06);}}",
+    ".lesson-wrap{position:relative;z-index:1;}",
     ".lesson-nav-row{max-width:760px;margin:0 auto;padding:22px 24px 0;}",
     ".lesson-back{display:inline-flex;align-items:center;gap:6px;color:#93c5fd;text-decoration:none;font-size:13px;font-weight:600;}",
     ".lesson-back:hover{color:#fff;}",
@@ -1434,7 +1860,8 @@ button, input, select, textarea { font-family: inherit; }
       difficulty: $("#metaDifficulty").value || "Orta",
       readTime: $("#metaReadTime").value || "5",
       author: $("#metaAuthor").value.trim(),
-      cover: $("#metaCover").value.trim()
+      cover: $("#metaCover").value.trim(),
+      theme: $("#metaTheme").value || "none"
     };
   }
 
@@ -1447,7 +1874,7 @@ button, input, select, textarea { font-family: inherit; }
     html = html.replace(/<!-- Navbar[\s\S]*?<\/script>/, "");
     // Yerine önizlemeye özel, kendi kendine yeten yaklaşık stilleri ekle
     html = html.replace("<" + "/style>", PREVIEW_FALLBACK_CSS + "\n<" + "/style>");
-    html = html.replace("<body>", '<body>\n<div class="preview-mode-banner">🔍 ÖNİZLEME MODU — gerçek sitede navbar ve bazı stiller farklı görünebilir</div>');
+    html = html.replace(/<body([^>]*)>/, '<body$1>\n<div class="preview-mode-banner">🔍 ÖNİZLEME MODU — gerçek sitede navbar ve bazı stiller farklı görünebilir</div>');
     return html;
   }
 
@@ -1777,6 +2204,278 @@ function buildExportHtml(meta) {
 "<style>",
 ":root { --xblue: #3b82f6; --xblueb: #60a5fa; --xgreen: #4fd69c; --xrose: #f07068; }",
 
+"/* ── Ders arka plan tema sistemi (25 tema) ── */",
+`
+/* lesson-themes.css
+ * Ders sayfaları için opsiyonel arka plan tema sistemi.
+ * Konum: /dersler/lesson-themes.css (lesson-static.css ile aynı klasör)
+ * Her /dersler/{slug}/index.html, global.css + tokens.css + lesson-static.css'ten
+ * SONRA bu dosyaya referans verir. "Tema Yok" seçilirse <body> üzerinde
+ * theme-* class'ı olmaz ve sayfa mevcut varsayılan (gold/mavi) görünümünde kalır.
+ *
+ * Her tema, gövde arka planını 3 katmanlı bir gradient ile (2x radial + 1x linear)
+ * değiştirir ve lesson-static.css'teki .bg-glow--1 / .bg-glow--2 parlama
+ * renklerini temayla uyumlu hale getirir.
+ */
+
+body.theme-ocean {
+  background:
+    radial-gradient(ellipse 900px 600px at 12% 15%, rgba(37,99,235,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 88% 85%, rgba(14,165,233,0.22), transparent 60%),
+    linear-gradient(160deg, #050b16 0%, #0b1c33 100%);
+  background-attachment: fixed;
+}
+body.theme-ocean .bg-glow--1 { background: radial-gradient(circle, #2563eb, transparent 70%); }
+body.theme-ocean .bg-glow--2 { background: radial-gradient(circle, #0ea5e9, transparent 70%); }
+
+body.theme-sunset {
+  background:
+    radial-gradient(ellipse 900px 600px at 10% 10%, rgba(244,63,94,0.35), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 90% 90%, rgba(249,115,22,0.28), transparent 60%),
+    linear-gradient(160deg, #1a0f1f 0%, #3b1225 100%);
+  background-attachment: fixed;
+}
+body.theme-sunset .bg-glow--1 { background: radial-gradient(circle, #f43f5e, transparent 70%); }
+body.theme-sunset .bg-glow--2 { background: radial-gradient(circle, #f97316, transparent 70%); }
+
+body.theme-aurora {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 10%, rgba(16,185,129,0.30), transparent 60%),
+    radial-gradient(ellipse 850px 550px at 85% 90%, rgba(147,51,234,0.28), transparent 60%),
+    linear-gradient(160deg, #071016 0%, #0d1f24 100%);
+  background-attachment: fixed;
+}
+body.theme-aurora .bg-glow--1 { background: radial-gradient(circle, #10b981, transparent 70%); }
+body.theme-aurora .bg-glow--2 { background: radial-gradient(circle, #9333ea, transparent 70%); }
+
+body.theme-forest {
+  background:
+    radial-gradient(ellipse 900px 600px at 10% 15%, rgba(34,197,94,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 90% 85%, rgba(101,163,13,0.20), transparent 60%),
+    linear-gradient(160deg, #081511 0%, #0f2a1d 100%);
+  background-attachment: fixed;
+}
+body.theme-forest .bg-glow--1 { background: radial-gradient(circle, #22c55e, transparent 70%); }
+body.theme-forest .bg-glow--2 { background: radial-gradient(circle, #65a30d, transparent 70%); }
+
+body.theme-midnight {
+  background:
+    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(2px 2px at 70% 65%, rgba(255,255,255,0.35), transparent),
+    radial-gradient(1.5px 1.5px at 45% 80%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(ellipse 900px 600px at 20% 20%, rgba(79,70,229,0.25), transparent 60%),
+    linear-gradient(160deg, #05060d 0%, #0a0e1f 100%);
+  background-attachment: fixed;
+}
+body.theme-midnight .bg-glow--1 { background: radial-gradient(circle, #4f46e5, transparent 70%); }
+body.theme-midnight .bg-glow--2 { background: radial-gradient(circle, #818cf8, transparent 70%); }
+
+body.theme-cyberpunk {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(168,85,247,0.35), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 30%, rgba(236,72,153,0.30), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 50% 90%, rgba(59,130,246,0.25), transparent 60%),
+    linear-gradient(160deg, #0a0014 0%, #1a0a2e 100%);
+  background-attachment: fixed;
+}
+body.theme-cyberpunk .bg-glow--1 { background: radial-gradient(circle, #a855f7, transparent 70%); }
+body.theme-cyberpunk .bg-glow--2 { background: radial-gradient(circle, #ec4899, transparent 70%); }
+
+body.theme-lavender {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(167,139,250,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(216,180,254,0.20), transparent 60%),
+    linear-gradient(160deg, #12101d 0%, #221c38 100%);
+  background-attachment: fixed;
+}
+body.theme-lavender .bg-glow--1 { background: radial-gradient(circle, #a78bfa, transparent 70%); }
+body.theme-lavender .bg-glow--2 { background: radial-gradient(circle, #d8b4fe, transparent 70%); }
+
+body.theme-desert {
+  background:
+    radial-gradient(ellipse 900px 600px at 10% 20%, rgba(217,119,6,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 90% 80%, rgba(180,83,9,0.22), transparent 60%),
+    linear-gradient(160deg, #1a1208 0%, #2e1f0d 100%);
+  background-attachment: fixed;
+}
+body.theme-desert .bg-glow--1 { background: radial-gradient(circle, #d97706, transparent 70%); }
+body.theme-desert .bg-glow--2 { background: radial-gradient(circle, #b45309, transparent 70%); }
+
+body.theme-volcano {
+  background:
+    radial-gradient(ellipse 900px 600px at 20% 80%, rgba(220,38,38,0.35), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 80% 20%, rgba(249,115,22,0.28), transparent 60%),
+    linear-gradient(160deg, #0d0403 0%, #1f0a05 100%);
+  background-attachment: fixed;
+}
+body.theme-volcano .bg-glow--1 { background: radial-gradient(circle, #dc2626, transparent 70%); }
+body.theme-volcano .bg-glow--2 { background: radial-gradient(circle, #f97316, transparent 70%); }
+
+body.theme-emerald {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(16,185,129,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(5,150,105,0.22), transparent 60%),
+    linear-gradient(160deg, #04140f 0%, #082820 100%);
+  background-attachment: fixed;
+}
+body.theme-emerald .bg-glow--1 { background: radial-gradient(circle, #10b981, transparent 70%); }
+body.theme-emerald .bg-glow--2 { background: radial-gradient(circle, #059669, transparent 70%); }
+
+body.theme-sapphire {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(29,78,216,0.32), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(79,70,229,0.22), transparent 60%),
+    linear-gradient(160deg, #050b1a 0%, #0b1533 100%);
+  background-attachment: fixed;
+}
+body.theme-sapphire .bg-glow--1 { background: radial-gradient(circle, #1d4ed8, transparent 70%); }
+body.theme-sapphire .bg-glow--2 { background: radial-gradient(circle, #4f46e5, transparent 70%); }
+
+body.theme-rose {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(244,63,94,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(236,72,153,0.20), transparent 60%),
+    linear-gradient(160deg, #170a10 0%, #2c111c 100%);
+  background-attachment: fixed;
+}
+body.theme-rose .bg-glow--1 { background: radial-gradient(circle, #f43f5e, transparent 70%); }
+body.theme-rose .bg-glow--2 { background: radial-gradient(circle, #ec4899, transparent 70%); }
+
+body.theme-coffee {
+  background:
+    radial-gradient(ellipse 900px 600px at 10% 15%, rgba(146,64,14,0.25), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 90% 85%, rgba(120,53,15,0.20), transparent 60%),
+    linear-gradient(160deg, #140f0b 0%, #241a12 100%);
+  background-attachment: fixed;
+}
+body.theme-coffee .bg-glow--1 { background: radial-gradient(circle, #92400e, transparent 70%); }
+body.theme-coffee .bg-glow--2 { background: radial-gradient(circle, #78350f, transparent 70%); }
+
+body.theme-neon {
+  background:
+    radial-gradient(ellipse 900px 600px at 10% 20%, rgba(34,211,238,0.32), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 90% 80%, rgba(217,70,239,0.28), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 50% 50%, rgba(74,222,128,0.15), transparent 60%),
+    linear-gradient(160deg, #06060a 0%, #0c0c18 100%);
+  background-attachment: fixed;
+}
+body.theme-neon .bg-glow--1 { background: radial-gradient(circle, #22d3ee, transparent 70%); }
+body.theme-neon .bg-glow--2 { background: radial-gradient(circle, #d946ef, transparent 70%); }
+
+body.theme-galaxy {
+  background:
+    radial-gradient(1.5px 1.5px at 25% 20%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1.5px 1.5px at 75% 60%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(ellipse 900px 600px at 20% 30%, rgba(124,58,237,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 80% 80%, rgba(59,130,246,0.20), transparent 60%),
+    linear-gradient(160deg, #050414 0%, #0d0a24 100%);
+  background-attachment: fixed;
+}
+body.theme-galaxy .bg-glow--1 { background: radial-gradient(circle, #7c3aed, transparent 70%); }
+body.theme-galaxy .bg-glow--2 { background: radial-gradient(circle, #3b82f6, transparent 70%); }
+
+body.theme-arctic {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(56,189,248,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(224,242,254,0.12), transparent 60%),
+    linear-gradient(160deg, #0a1218 0%, #101f2b 100%);
+  background-attachment: fixed;
+}
+body.theme-arctic .bg-glow--1 { background: radial-gradient(circle, #38bdf8, transparent 70%); }
+body.theme-arctic .bg-glow--2 { background: radial-gradient(circle, #e0f2fe, transparent 70%); }
+
+body.theme-tropical {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(20,184,166,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(250,204,21,0.18), transparent 60%),
+    linear-gradient(160deg, #031815 0%, #06302a 100%);
+  background-attachment: fixed;
+}
+body.theme-tropical .bg-glow--1 { background: radial-gradient(circle, #14b8a6, transparent 70%); }
+body.theme-tropical .bg-glow--2 { background: radial-gradient(circle, #facc15, transparent 70%); }
+
+body.theme-royal {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(126,34,206,0.32), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(212,175,55,0.20), transparent 60%),
+    linear-gradient(160deg, #0f0a1a 0%, #1e1330 100%);
+  background-attachment: fixed;
+}
+body.theme-royal .bg-glow--1 { background: radial-gradient(circle, #7e22ce, transparent 70%); }
+body.theme-royal .bg-glow--2 { background: radial-gradient(circle, #d4af37, transparent 70%); }
+
+body.theme-obsidian {
+  background:
+    radial-gradient(ellipse 900px 600px at 20% 20%, rgba(30,41,59,0.50), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 80% 80%, rgba(51,65,85,0.35), transparent 60%),
+    linear-gradient(160deg, #000000 0%, #0a0a0c 100%);
+  background-attachment: fixed;
+}
+body.theme-obsidian .bg-glow--1 { background: radial-gradient(circle, #1e293b, transparent 70%); }
+body.theme-obsidian .bg-glow--2 { background: radial-gradient(circle, #334155, transparent 70%); }
+
+body.theme-peach {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(251,146,60,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(244,114,182,0.18), transparent 60%),
+    linear-gradient(160deg, #1a1109 0%, #2e1c10 100%);
+  background-attachment: fixed;
+}
+body.theme-peach .bg-glow--1 { background: radial-gradient(circle, #fb923c, transparent 70%); }
+body.theme-peach .bg-glow--2 { background: radial-gradient(circle, #f472b6, transparent 70%); }
+
+body.theme-mint {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(52,211,153,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(45,212,191,0.18), transparent 60%),
+    linear-gradient(160deg, #041512 0%, #082a23 100%);
+  background-attachment: fixed;
+}
+body.theme-mint .bg-glow--1 { background: radial-gradient(circle, #34d399, transparent 70%); }
+body.theme-mint .bg-glow--2 { background: radial-gradient(circle, #2dd4bf, transparent 70%); }
+
+body.theme-titanium {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(148,163,184,0.22), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(100,116,139,0.18), transparent 60%),
+    linear-gradient(160deg, #0e1013 0%, #181c21 100%);
+  background-attachment: fixed;
+}
+body.theme-titanium .bg-glow--1 { background: radial-gradient(circle, #94a3b8, transparent 70%); }
+body.theme-titanium .bg-glow--2 { background: radial-gradient(circle, #64748b, transparent 70%); }
+
+body.theme-ruby {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(190,18,60,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(225,29,72,0.20), transparent 60%),
+    linear-gradient(160deg, #12040a 0%, #260814 100%);
+  background-attachment: fixed;
+}
+body.theme-ruby .bg-glow--1 { background: radial-gradient(circle, #be123c, transparent 70%); }
+body.theme-ruby .bg-glow--2 { background: radial-gradient(circle, #e11d48, transparent 70%); }
+
+body.theme-amethyst {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(147,51,234,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(192,132,252,0.18), transparent 60%),
+    linear-gradient(160deg, #0f0716 0%, #1e0e2e 100%);
+  background-attachment: fixed;
+}
+body.theme-amethyst .bg-glow--1 { background: radial-gradient(circle, #9333ea, transparent 70%); }
+body.theme-amethyst .bg-glow--2 { background: radial-gradient(circle, #c084fc, transparent 70%); }
+
+body.theme-coral {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(251,113,133,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(249,115,22,0.18), transparent 60%),
+    linear-gradient(160deg, #190b0b 0%, #2c1414 100%);
+  background-attachment: fixed;
+}
+body.theme-coral .bg-glow--1 { background: radial-gradient(circle, #fb7185, transparent 70%); }
+body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, transparent 70%); }
+
+`,
+
 "/* ── premium scroll progress bar ── */",
 ".premium-progress-bar { position: fixed; top: 0; left: 0; width: 0%; height: 4px; background: linear-gradient(90deg, var(--xblue), var(--xblueb)); z-index: 9999; transition: width 0.1s ease; }",
 
@@ -1999,10 +2698,48 @@ function buildExportHtml(meta) {
 ".toc-link-h3::before { content: '↳'; position: absolute; left: 4px; color: rgba(255,255,255,0.2); }",
 
 "@media (max-width: 480px) { .callout-box { flex-direction: column; } .lb-table th, .lb-table td { padding: 8px 10px; font-size: 13px; } }",
+
+"/* ── PDF indirme butonu (yazdır tabanlı) ── */",
+".pdf-download-btn { position: fixed; right: 22px; bottom: 22px; z-index: 9998; display: flex; align-items: center; gap: 9px; padding: 13px 20px; border: none; border-radius: 50px; background: linear-gradient(135deg, var(--xblue), var(--xblueb)); color: #071022; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13.5px; cursor: pointer; box-shadow: 0 10px 30px rgba(59,130,246,0.4), 0 0 0 1px rgba(255,255,255,0.08) inset; transition: all 0.2s ease; }",
+".pdf-download-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 38px rgba(59,130,246,0.5), 0 0 0 1px rgba(255,255,255,0.12) inset; }",
+".pdf-download-btn svg { flex-shrink: 0; }",
+"@media (max-width: 640px) { .pdf-download-btn { right: 14px; bottom: 14px; padding: 12px 16px; font-size: 0; } .pdf-download-btn svg { width: 20px; height: 20px; } }",
+
+"/* ── PDF / Yazdırma çıktısı (window.print tabanlı, harici kütüphane yok) ── */",
+"@media print {",
+"  .pdf-download-btn, .premium-progress-bar, .lesson-nav-row, .bg-canvas, .lb-lightbox-overlay,",
+"  .quiz-action-btn, .fib-action-btn, .matching-action-btn, .matching-retry-btn,",
+"  .sentorder-action-btn, .wordorder-actions, .code-copy-btn, .rt-toolbar,",
+"  .premium-audio-btn, nav, [data-navbar], .lb-image-trigger { display: none !important; }",
+"  html, body { background: #ffffff !important; color: #111827 !important; }",
+"  .lesson-wrap { max-width: 100% !important; }",
+"  * { box-shadow: none !important; text-shadow: none !important; backdrop-filter: none !important; }",
+"  .lesson-heading, .lb-byline, .lesson-meta-row { color: #111827 !important; }",
+"  .premium-quiz-card, .premium-fillblank-card, .premium-matching-card, .premium-sentorder-card,",
+"  .premium-wordorder-card, .premium-dialogue-card, .premium-audio-card, .premium-accordion-wrap,",
+"  .accordion-item-box, .premium-video-card, .premium-code-box, .vocab-card, .callout-box,",
+"  .premium-toc-card, .lb-table { background: #f8fafc !important; border: 1px solid #cbd5e1 !important; page-break-inside: avoid; }",
+"  .quiz-question-title, .fib-instruction, .matching-instruction, .sentorder-instruction, .wordorder-instruction,",
+"  .dialogue-instruction, .quiz-opt-text, .matching-card-text, .fib-input, .sentorder-text, .wordorder-chip,",
+"  .wordorder-placed-chip, .dialogue-bubble-text, .vocab-de, .vocab-tr, .vocab-example, .callout-title,",
+"  .callout-text, .lb-table th, .lb-table td, .toc-link-a, .accordion-trigger, .code-lang-tag { color: #111827 !important; }",
+"  .accordion-panel-content { max-height: none !important; }",
+"  .accordion-panel-content p { color: #1f2937 !important; }",
+"  .dialogue-step.dialogue-locked { display: block !important; }",
+"  .matching-drop-zone, .matching-card { border-color: #94a3b8 !important; }",
+"  .premium-code-box code { color: #1f2937 !important; }",
+"  img, .premium-image-el { max-width: 100% !important; box-shadow: none !important; }",
+"  .premium-video-card { display: none !important; }",
+"  a[href]::after { content: '' !important; }",
+"  @page { margin: 16mm 14mm; }",
+"}",
 "</style>",
 "</head>",
-"<body>",
+((meta.theme && meta.theme !== "none") ? '<body class="theme-' + esc(meta.theme) + '">' : "<body>"),
 '<div class="premium-progress-bar" id="readingProgressBar"></div>',
+'<button type="button" class="pdf-download-btn" onclick="downloadAsPDF()" title="Bu dersi PDF olarak indir">' +
+'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+'<span>PDF Olarak İndir</span></button>',
 '<div class="bg-canvas"><div class="bg-grid"></div><div class="bg-glow bg-glow--1"></div><div class="bg-glow bg-glow--2"></div></div>',
 
 '<div class="lesson-nav-row">',
@@ -2039,6 +2776,21 @@ blocksHtml,
 
 "<!-- PREMIUM INTERACTION ENGINE -->",
 "<scr" + "ipt>", // <-- Güvenli Script Açılışı
+"/* 0. PDF İndirme (window.print tabanlı, kütüphanesiz) */",
+"function downloadAsPDF() {",
+"  document.title = document.title; // dosya adı için mevcut başlığı korur",
+"  window.print();",
+"}",
+"window.addEventListener('beforeprint', () => {",
+"  closeLightbox();",
+"  document.querySelectorAll('.accordion-item-box').forEach(box => {",
+"    box.classList.add('active');",
+"    const panel = box.querySelector('.accordion-panel-content');",
+"    if (panel) panel.style.maxHeight = 'none';",
+"  });",
+"  document.querySelectorAll('.dialogue-step').forEach(step => step.classList.remove('dialogue-locked'));",
+"});",
+
 "/* 1. Progress Bar Logic */",
 "window.addEventListener('scroll', () => {",
 "  const winScroll = document.body.scrollTop || document.documentElement.scrollTop;",
