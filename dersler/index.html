@@ -40,6 +40,31 @@
       </div>
     </div>
 
+    <!-- Üç öğrenme sütunu: İletişim / Kültür / Gramer -->
+    <div class="dersler-pillars" id="derslerPillars">
+      <button class="pillar-card" data-type="iletisim" type="button">
+        <div class="pillar-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="pillar-name">İletişim</div>
+        <div class="pillar-desc">Günlük konuşmalar, diyaloglar ve pratik cümle kalıpları</div>
+      </button>
+      <button class="pillar-card" data-type="kultur" type="button">
+        <div class="pillar-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+        </div>
+        <div class="pillar-name">Kültür</div>
+        <div class="pillar-desc">Almanya'yı ve Alman yaşam tarzını daha yakından tanı</div>
+      </button>
+      <button class="pillar-card" data-type="gramer" type="button">
+        <div class="pillar-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+        </div>
+        <div class="pillar-name">Gramer</div>
+        <div class="pillar-desc">Dil bilgisi kuralları, yapılar ve alıştırmalar</div>
+      </button>
+    </div>
+
     <!-- Arama -->
     <div class="lessons-search-row">
       <div class="lessons-search-wrap">
@@ -91,6 +116,7 @@
 
     <div class="lesson-meta-row">
       <span class="lesson-cat-badge" id="lessonCatBadge" style="display:none"></span>
+      <span class="lesson-type-tag" id="lessonTypeTag" style="display:none"></span>
       <span id="lessonDate"></span>
       <span class="lesson-card-dot"></span>
       <span id="lessonReadTime"></span>

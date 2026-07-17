@@ -23,6 +23,7 @@ let isAdmin          = false;
 let currentUser      = null;
 let deleteTargetId   = null;
 let activeCatFilter  = "all";
+let activeTypeFilter = "all";
 let searchTerm       = "";
 let allLessons       = [];
 let _currentLessonId = null;
@@ -122,6 +123,7 @@ function setCatFilter(cat) {
 
 function filterLessons(lessons) {
   let out = activeCatFilter === "all" ? lessons : lessons.filter(l => l.category === activeCatFilter);
+  if (activeTypeFilter !== "all") out = out.filter(l => l.type === activeTypeFilter);
   if (searchTerm) {
     const q = searchTerm.toLocaleLowerCase("tr");
     out = out.filter(l =>
@@ -131,6 +133,22 @@ function filterLessons(lessons) {
   }
   return out;
 }
+
+/* ── İletişim / Kültür / Gramer sütun filtresi ──
+   Bir sütuna tıklamak o türe göre filtreler; tekrar tıklamak filtreyi kaldırır. */
+function setTypeFilter(type) {
+  activeTypeFilter = (activeTypeFilter === type) ? "all" : type;
+  document.querySelectorAll(".pillar-card").forEach(btn =>
+    btn.classList.toggle("active", btn.dataset.type === activeTypeFilter)
+  );
+  const filtered = filterLessons(allLessons);
+  updateLessonsCount(filtered.length);
+  renderLessons(filtered, (isAdmin ? allLessons : allLessons.filter(l => l.published)).length);
+}
+document.querySelectorAll(".pillar-card").forEach(btn => {
+  btn.addEventListener("click", () => setTypeFilter(btn.dataset.type));
+});
+window.setTypeFilter = setTypeFilter;
 
 /* ── Tarih yardımcı fonksiyonu: Firestore Timestamp'i de,
    statik manifest'ten gelen düz ISO string tarihi de anlar ── */
@@ -245,8 +263,8 @@ function renderLessons(list, totalVisible = list.length) {
     /* Sadece seçili kategoride ders yok, diğerlerinde var */
     grid.innerHTML = `<div class="grid-empty">
       <div class="grid-empty-icon">🔍</div>
-      <div class="grid-empty-text">Bu kategoride henüz ders yayınlanmamış.</div>
-      <button class="grid-empty-link" onclick="setCatFilter('all')">Tüm dersleri göster</button>
+      <div class="grid-empty-text">Bu filtrede henüz ders yayınlanmamış.</div>
+      <button class="grid-empty-link" onclick="resetAllFilters()">Tüm dersleri göster</button>
     </div>`;
     return;
   }
@@ -262,6 +280,10 @@ function renderLessons(list, totalVisible = list.length) {
         : `/dersler/?id=${encodeURIComponent(lesson.id)}`);
 
     const cat      = lesson.category || "";
+    const typeMap  = { iletisim: "İletişim", kultur: "Kültür", gramer: "Gramer" };
+    const typeTag  = lesson.type && typeMap[lesson.type]
+      ? `<span class="lesson-type-tag" data-type="${esc(lesson.type)}">${typeMap[lesson.type]}</span>`
+      : "";
     const dateObj  = getLessonDate(lesson);
     const date     = dateObj
       ? dateObj.toLocaleDateString("tr-TR",{day:"2-digit",month:"long",year:"numeric"})
@@ -292,6 +314,7 @@ function renderLessons(list, totalVisible = list.length) {
       <div class="lesson-card-body">
         <div class="lesson-card-meta">
           ${cat ? `<span class="lesson-cat-badge" data-cat="${esc(cat)}">${esc(cat)}</span><span class="lesson-card-dot"></span>` : ""}
+          ${typeTag ? `${typeTag}<span class="lesson-card-dot"></span>` : ""}
           <span>${date}</span>
           <span class="lesson-card-dot"></span>
           <span>${readMin} dk</span>
@@ -354,6 +377,14 @@ function openLesson(lesson, pushUrl = true) {
     catBadge.className     = "lesson-cat-badge";
     catBadge.style.display = "inline-flex";
   } else { catBadge.style.display = "none"; }
+
+  const typeMapFull = { iletisim: "İletişim", kultur: "Kültür", gramer: "Gramer" };
+  const typeTagEl = document.getElementById("lessonTypeTag");
+  if (lesson.type && typeMapFull[lesson.type]) {
+    typeTagEl.textContent   = typeMapFull[lesson.type];
+    typeTagEl.dataset.type  = lesson.type;
+    typeTagEl.style.display = "inline-flex";
+  } else { typeTagEl.style.display = "none"; }
 
   document.getElementById("lessonDraftBadge").style.display =
     (isAdmin && !lesson.published) ? "inline-flex" : "none";
@@ -581,6 +612,13 @@ function wordCountText(t) {
 window.confirmDeleteLesson = confirmDeleteLesson;
 window.setCatFilter        = setCatFilter;
 
+function resetAllFilters() {
+  activeTypeFilter = "all";
+  document.querySelectorAll(".pillar-card").forEach(b => b.classList.remove("active"));
+  setCatFilter("all");
+}
+window.resetAllFilters = resetAllFilters;
+
 /* ══════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════ */
@@ -590,6 +628,7 @@ window.setCatFilter        = setCatFilter;
   const slug     = pathSlug || p.get("ders");
   const id       = p.get("id");
   const cat      = p.get("cat");
+  const type     = p.get("type");
 
   await loadLessons();
 
@@ -598,5 +637,6 @@ window.setCatFilter        = setCatFilter;
   else {
     showViewOnly("viewList");
     if (cat) setCatFilter(cat);
+    if (type) setTypeFilter(type);
   }
 })();
