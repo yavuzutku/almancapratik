@@ -1,0 +1,42 @@
+name: Ders Listesini Güncelle
+
+# dersler/ klasörü altında bir şey değiştiğinde (yeni ders eklendiğinde,
+# bir ders düzenlendiğinde, kapak fotoğrafı eklendiğinde vs.) otomatik çalışır.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "dersler/**"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build-manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu çek
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # git log ile ilk commit tarihini okuyabilmek için tam geçmiş gerekir
+
+      - name: Node kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Ders manifestini oluştur
+        run: node scripts/build-lessons-manifest.mjs
+
+      - name: Değişiklik varsa commit'le ve push'la
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- dersler/lessons.json; then
+            git add dersler/lessons.json
+            git commit -m "chore: dersler/lessons.json otomatik güncellendi [skip ci]"
+            git push
+          else
+            echo "Değişiklik yok, commit atlanıyor."
+          fi

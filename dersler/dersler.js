@@ -132,6 +132,17 @@ function filterLessons(lessons) {
   return out;
 }
 
+/* ── Tarih yardımcı fonksiyonu: Firestore Timestamp'i de,
+   statik manifest'ten gelen düz ISO string tarihi de anlar ── */
+function getLessonDate(lesson) {
+  if (lesson.createdAt?.toDate) return lesson.createdAt.toDate();
+  if (lesson.createdAt) {
+    const d = new Date(lesson.createdAt);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  return null;
+}
+
 function updateLessonsCount(n) {
   const el = document.getElementById("lessonsCount");
   if (el) el.textContent = n ? `${n} ders` : "";
@@ -147,12 +158,49 @@ document.getElementById("lessonSearchInput")?.addEventListener("input", (e) => {
 /* ══════════════════════════════════════════════
    LIST
 ══════════════════════════════════════════════ */
+/* /dersler/ klasörüne eklenen statik ders sayfaları (Ders Builder çıktıları),
+   her push'ta bir GitHub Action tarafından taranıp /dersler/lessons.json
+   içine yazılır. Burada o dosyayı okuyup Firestore derslerinin yanına
+   ekliyoruz — böylece yeni bir statik ders eklendiğinde elle bir şey
+   yapmana gerek kalmadan listede görünür. */
+async function loadStaticLessonsManifest() {
+  try {
+    const res = await fetch("/dersler/lessons.json", { cache: "no-store" });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.map(l => ({
+      id:        "static-" + l.slug,
+      isStatic:  true,
+      slug:      l.slug,
+      title:     l.title || "Başlıksız",
+      excerpt:   l.excerpt || "",
+      category:  l.category || "",
+      published: l.published !== false,
+      coverUrl:  l.cover ? `/dersler/${encodeURIComponent(l.slug)}/${l.cover}` : "",
+      createdAt: l.date || null,
+      readTime:  l.readTime || null
+    }));
+  } catch(e) {
+    console.error("Statik ders manifesti okunamadı:", e);
+    return [];
+  }
+}
+
 async function loadLessons() {
   const grid = document.getElementById("lessonsGrid");
   grid.innerHTML = `<div class="grid-loading"><div class="spinner"></div></div>`;
   try {
-    const snap = await getDocs(query(LESSONS_COL, orderBy("createdAt","desc")));
-    allLessons  = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const [snap, staticLessons] = await Promise.all([
+      getDocs(query(LESSONS_COL, orderBy("createdAt","desc"))),
+      loadStaticLessonsManifest()
+    ]);
+    const dynamicLessons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    allLessons = [...dynamicLessons, ...staticLessons].sort((a, b) => {
+      const da = getLessonDate(a)?.getTime() || 0;
+      const dbb = getLessonDate(b)?.getTime() || 0;
+      return dbb - da;
+    });
     const visible = isAdmin ? allLessons : allLessons.filter(l => l.published);
     buildCatFilters(visible);
     updateLessonsCount(visible.length);
@@ -207,22 +255,29 @@ function renderLessons(list, totalVisible = list.length) {
     const card = document.createElement("a");
     card.className = "lesson-card";
     card.style.animationDelay = (i * 50) + "ms";
-    card.href = lesson.slug
-      ? `/dersler/${encodeURIComponent(lesson.slug)}`
-      : `/dersler/?id=${encodeURIComponent(lesson.id)}`;
+    card.href = lesson.isStatic
+      ? `/dersler/${encodeURIComponent(lesson.slug)}/`
+      : (lesson.slug
+        ? `/dersler/${encodeURIComponent(lesson.slug)}`
+        : `/dersler/?id=${encodeURIComponent(lesson.id)}`);
 
-    const cat     = lesson.category || "";
-    const date    = lesson.createdAt?.toDate
-      ? lesson.createdAt.toDate().toLocaleDateString("tr-TR",{day:"2-digit",month:"long",year:"numeric"})
+    const cat      = lesson.category || "";
+    const dateObj  = getLessonDate(lesson);
+    const date     = dateObj
+      ? dateObj.toLocaleDateString("tr-TR",{day:"2-digit",month:"long",year:"numeric"})
       : "—";
-    const wc      = wordCountText(lesson.content || "");
-    const readMin = Math.max(1, Math.round(wc / 200));
+    const readMin  = lesson.readTime
+      ? lesson.readTime
+      : Math.max(1, Math.round(wordCountText(lesson.content || "") / 200));
 
     const coverHtml = lesson.coverUrl
       ? `<img class="lesson-card-cover" src="${esc(lesson.coverUrl)}" alt="${esc(lesson.title)}" loading="lazy">`
       : `<div class="lesson-card-cover-placeholder">📖</div>`;
 
-    const adminBtns = isAdmin ? `
+    /* Statik (Ders Builder ile üretilmiş, gerçek HTML dosyası olan) dersler
+       Firestore'da bir doküman değildir; bu yüzden admin panelinden
+       silinemezler — o buton sadece Firestore derslerinde gösterilir. */
+    const adminBtns = (isAdmin && !lesson.isStatic) ? `
       <div class="lesson-card-admin" onclick="event.stopPropagation();event.preventDefault()">
         <button class="btn-icon-sm danger" title="Sil" onclick="confirmDeleteLesson('${lesson.id}');event.preventDefault()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
@@ -251,6 +306,10 @@ function renderLessons(list, totalVisible = list.length) {
       </div>`;
 
     card.addEventListener("click", e => {
+      /* Statik dersler gerçek bir HTML dosyasıdır — SPA'ya sokmadan
+         normal bağlantı gibi davranıp tarayıcının o dosyayı
+         doğrudan yüklemesine izin veriyoruz. */
+      if (lesson.isStatic) return;
       if (e.ctrlKey || e.metaKey) return;
       e.preventDefault();
       openLesson(lesson);
