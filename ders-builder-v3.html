@@ -6,6 +6,7 @@
 <title>Ders Builder — No-Code Statik Sayfa Üretici</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap">
 <style>
+
 *, *::before, *::after { box-sizing: border-box; }
 
 :root {
@@ -292,7 +293,20 @@ button, input, select, textarea { font-family: inherit; }
   box-shadow: 0 14px 34px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 9px;
 }
 .dc-toast.ok svg { color: var(--green); } .dc-toast.err svg { color: var(--rose); }
-
+/* ── Rich Text Toolbar ── */
+.rt-toolbar {
+  position: absolute; display: none; gap: 4px; padding: 6px;
+  background: rgba(15,23,42,0.95); border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm); box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px); z-index: 1000; pointer-events: auto;
+}
+.rt-toolbar.show { display: flex; }
+.rt-toolbar button {
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; border-radius: 6px; color: var(--text-dim);
+  cursor: pointer; transition: all var(--tr);
+}
+.rt-toolbar button:hover { background: var(--bg-hover); color: var(--text); }
 @media (max-width: 840px) {
   .sidebar { position: fixed; left: -270px; top: 66px; bottom: 0; z-index: 60; transition: left var(--tr); box-shadow: 14px 0 40px rgba(0,0,0,0.55); }
   .sidebar.open { left: 0; }
@@ -328,7 +342,25 @@ button, input, select, textarea { font-family: inherit; }
       <button class="add-block-btn" data-type="vocab"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>Almanca Kelime Kartı</button>
       <button class="add-block-btn" data-type="callout"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>Bilgi / Uyarı Kutusu</button>
       <button class="add-block-btn" data-type="table"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="3" x2="12" y2="21"/></svg></span>Tablo</button>
-      <div class="sidebar-hint"><b>İpucu:</b> İçeriğe tıklayıp doğrudan yazabilirsin. ⚙ ikonu her blok için stil, boşluk ve arka plan ayarlarını açar.</div>
+      <button class="add-block-btn" data-type="quiz"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>Quiz / Sınav</button>
+      <button class="add-block-btn" data-type="audio"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></span>Sesli Okuma (DE)</button>
+      <button class="add-block-btn" data-type="accordion"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>Akordeon / SSS</button>
+      <button class="add-block-btn" data-type="video"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>Video (YouTube/Vimeo)</button>
+      <button class="add-block-btn" data-type="code"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>Kod Bloğu</button>
+      <button class="add-block-btn" data-type="toc"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>İçindekiler (TOC)</button>
+      <div class="sidebar-hint"><b>İpucu:</b> İçeriğe tıklayıp doğrudan yazabilirsin. ⚙ ikonu her blok için stil, boşluk ve arka plan ayarlarını açar. Paragrafta metin seçince biçimlendirme barı belirir. Metinde <code>[kelime|açıklama]</code> yazarsan çıktıda ipucu balonuna dönüşür.</div>
+
+      <div style="height: 1px; background: var(--border); margin: 20px 4px 16px;"></div>
+      <div class="sidebar-label">Şablonlar</div>
+      <button class="template-btn" data-template="vocab"><span>Kelime Odaklı Ders</span><small>Başlık + kelime kartları + quiz</small></button>
+      <button class="template-btn" data-template="reading"><span>Okuma-Anlama Şablonu</span><small>Başlık + metin + kutu + quiz</small></button>
+      <button class="template-btn" data-template="grammar"><span>Gramer Yoğun Şablon</span><small>Başlık + kurallar + tablo + akordeon</small></button>
+
+      <div style="height: 1px; background: var(--border); margin: 20px 4px 16px;"></div>
+      <div class="sidebar-label">Proje Dosyası</div>
+      <button class="add-block-btn" id="btnSaveProject"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>Projeyi Kaydet (.json)</button>
+      <button class="add-block-btn" id="btnLoadProject"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>Projeyi Yükle (.json)</button>
+      <input type="file" id="loadProjectInput" style="display:none;" accept="application/json,.json">
     </aside>
 
     <main class="canvas-wrap"><div class="canvas" id="canvas"></div></main>
@@ -387,9 +419,9 @@ button, input, select, textarea { font-family: inherit; }
     const base = commonDefaults();
     switch (type) {
       case "heading":
-        return Object.assign(base, { level: "h2", text: "Başlık metni", size: 28, color: "#f0eee8", weight: "700", font: "display", lineHeight: 150, letterSpacing: -1 });
+        return Object.assign(base, { level: "h2", text: "Başlık metni", size: 28, color: "#ffffff", weight: "700", font: "display", lineHeight: 150, letterSpacing: -1 });
       case "paragraph":
-        return Object.assign(base, { html: "Paragraf metnini buraya yazın. Doğrudan tıklayıp düzenleyebilirsiniz.", size: 17, align: "left", color: "rgba(240,238,232,0.82)", font: "body", lineHeight: 178, letterSpacing: -1 });
+        return Object.assign(base, { html: "Paragraf metnini buraya yazın. Doğrudan tıklayıp düzenleyebilirsiniz.", size: 17, align: "left", color: "#cbd5e1", font: "body", lineHeight: 178, letterSpacing: -1 });
       case "image":
         return Object.assign(base, { url: "", alt: "", width: 100, radius: 16, align: "center" });
       case "vocab":
@@ -398,13 +430,24 @@ button, input, select, textarea { font-family: inherit; }
         return Object.assign(base, { theme: "amber", title: "Bilgi", html: "Öğrenciler için önemli bir not buraya yazılabilir." });
       case "table":
         return Object.assign(base, { headers: ["Sütun 1", "Sütun 2"], rows: [["", ""], ["", ""]] });
+      case "quiz":
+        return Object.assign(base, { question: "Soru metni buraya gelecek?", options: ["Seçenek A", "Seçenek B", "Seçenek C"], correctIndex: 0, explanation: "" });
+      case "audio":
+        return Object.assign(base, { text: "Guten Tag", caption: "Dinlemek için oynat tuşuna basın", lang: "de-DE" });
+      case "accordion":
+        return Object.assign(base, { items: [{ q: "Soru veya başlık 1", a: "Buraya cevabı veya çözümü yazın." }] });
+      case "video":
+        return Object.assign(base, { url: "", caption: "" });
+      case "code":
+        return Object.assign(base, { lang: "javascript", code: "// Kod örneğiniz buraya" });
+      case "toc":
+        return Object.assign(base, { title: "İçindekiler" });
       default:
         return base;
     }
   }
 
-  const TYPE_LABEL = { heading: "Başlık", paragraph: "Paragraf", image: "Görsel", vocab: "Kelime Kartı", callout: "Bilgi Kutusu", table: "Tablo" };
-
+  const TYPE_LABEL = { heading: "Başlık", paragraph: "Paragraf", image: "Görsel", vocab: "Kelime Kartı", callout: "Bilgi Kutusu", table: "Tablo", quiz: "Quiz / Sınav", audio: "Sesli Okuma", accordion: "Akordeon / SSS", video: "Video", code: "Kod Bloğu", toc: "İçindekiler" };
   const ICO = {
     up:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>',
     down:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>',
@@ -417,7 +460,13 @@ button, input, select, textarea { font-family: inherit; }
     plus:  '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
     check: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
     warn:  '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-    tip:   '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>'
+    tip:   '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>',
+    bold:      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>',
+    italic:    '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>',
+    underline: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>',
+    link:      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+    highlight: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+    play:      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
   };
 
   function iconFor(type) {
@@ -428,12 +477,45 @@ button, input, select, textarea { font-family: inherit; }
       case "vocab":    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>';
       case "callout":  return ICO.warn;
       case "table":    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="3" x2="12" y2="21"/></svg>';
+      case "quiz":     return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+      case "audio":    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+      case "accordion":return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+      case "video":    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
+      case "code":     return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
+      case "toc":      return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>';
       default: return "";
     }
   }
 
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
-  function fontStack(key) { return key === "display" ? "'Syne', sans-serif" : "'Lora', Georgia, serif"; }
+  function slugify(text) {
+    return text.toString().toLowerCase().trim()
+      .replace(/[\s_]+/g, '-')
+      .replace(/[^\w\-]+/g, '')
+      .replace(/\-\-+/g, '-');
+  }
+
+  function convertTooltips(html) {
+    return html.replace(/\[([^|\]]+)\|([^\]]+)\]/g, function(match, word, tip) {
+      return '<span class="lb-tooltip">' + esc(word) + '<span class="lb-tooltip-bubble">' + esc(tip) + '</span></span>';
+    });
+  }
+
+  function parseVideoEmbed(url) {
+    if (!url) return "";
+    let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    let match = url.match(regExp);
+    if (match && match[2].length === 11) {
+      return "https://www.youtube.com/embed/" + match[2];
+    }
+    let vimeoReg = /vimeo\.com\/(\d+)/;
+    let vimeoMatch = url.match(vimeoReg);
+    if (vimeoMatch) {
+      return "https://player.vimeo.com/video/" + vimeoMatch[1];
+    }
+    return url;
+  }
+  function fontStack(key) { return key === "display" ? "'Plus Jakarta Sans', sans-serif" : "'Inter', sans-serif"; }
   function $(sel, root) { return (root || document).querySelector(sel); }
   function $all(sel, root) { return Array.from((root || document).querySelectorAll(sel)); }
   function hexToRgba(hex, opacityPct) {
@@ -569,14 +651,14 @@ button, input, select, textarea { font-family: inherit; }
       h += fg("Boyut (px)", rangeHtml("size", 16, 52, block.size));
       h += fg("Renk", '<input type="color" data-f="color" value="' + block.color + '">');
       h += fg("Kalınlık", selectHtml("weight", [["500","Orta"],["600","Yarı Kalın"],["700","Kalın"],["800","Ekstra Kalın"]], block.weight));
-      h += fg("Font", selectHtml("font", [["display","Syne (Başlık fontu)"],["body","Lora (Okuma fontu)"]], block.font));
+      h += fg("Font", selectHtml("font", [["display","Plus Jakarta Sans"],["body","Inter"]], block.font));
       h += fg("Satır Yüksekliği", rangeHtml("lineHeight", 110, 180, block.lineHeight, "%"));
       h += fg("Harf Aralığı (px)", rangeHtml("letterSpacing", -3, 4, block.letterSpacing));
     } else if (block.type === "paragraph") {
       h += fg("Boyut (px)", rangeHtml("size", 13, 26, block.size));
       h += fg("Hizalama", alignBtnsHtml("align", block.align));
       h += fg("Renk", '<input type="color" data-f="color" value="' + rgbaToHex(block.color) + '">');
-      h += fg("Font", selectHtml("font", [["body","Lora (Okuma fontu)"],["display","Syne (Başlık fontu)"]], block.font));
+      h += fg("Font", selectHtml("font", [["body","Inter"],["display","Plus Jakarta Sans"]], block.font));
       h += fg("Satır Yüksekliği", rangeHtml("lineHeight", 140, 220, block.lineHeight, "%"));
       h += fg("Harf Aralığı (px)", rangeHtml("letterSpacing", -2, 4, block.letterSpacing));
     } else if (block.type === "image") {
@@ -667,7 +749,7 @@ button, input, select, textarea { font-family: inherit; }
       const div = document.createElement("div");
       div.className = "hp-editable"; div.contentEditable = "true"; div.dataset.placeholder = "Başlık metni...";
       div.textContent = block.text;
-      div.style.cssText = "font-family:" + fontStack(block.font) + ";font-size:" + block.size + "px;color:" + block.color + ";font-weight:" + block.weight + ";line-height:" + (block.lineHeight/100) + ";letter-spacing:" + block.letterSpacing + "px;";
+      div.style.cssText = "font-family:" + fontStack(block.font) + ";font-size:" + block.size + "px;color:" + block.color + ";font-weight:" + block.weight + ";line-height:" + (block.lineHeight/100) + ";letter-spacing:" + block.letterSpacing + "px Paprika;";
       div.addEventListener("input", () => { block.text = div.textContent; });
       div.addEventListener("keydown", e => { if (e.key === "Enter") e.preventDefault(); });
       content.appendChild(div);
@@ -683,13 +765,13 @@ button, input, select, textarea { font-family: inherit; }
     } else if (block.type === "image") {
       const urlRow = document.createElement("div");
       urlRow.className = "img-url-row";
-      urlRow.innerHTML = '<input type="url" placeholder="https://gorsel-url.jpg" value="' + esc(block.url) + '">';
+      urlRow.innerHTML = '<input type="url" placeholder="https://gorsel-url.jpg" value="' + esc(block.url) + '" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">';
       const urlInput = urlRow.querySelector("input");
       content.appendChild(urlRow);
 
       const altRow = document.createElement("div");
       altRow.className = "img-alt-row";
-      altRow.innerHTML = '<input type="text" placeholder="Alternatif metin (alt)" value="' + esc(block.alt) + '">';
+      altRow.innerHTML = '<input type="text" placeholder="Alternatif metin (alt)" value="' + esc(block.alt) + '" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; margin-top:6px;">';
       const altInput = altRow.querySelector("input");
 
       const holder = document.createElement("div");
@@ -704,7 +786,7 @@ button, input, select, textarea { font-family: inherit; }
           img.style.width = block.width + "%"; img.style.borderRadius = block.radius + "px";
           holder.appendChild(img);
         } else {
-          holder.innerHTML = '<div class="img-block-empty"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>Görsel URL adresi girin</span></div>';
+          holder.innerHTML = '<div class="img-block-empty" style="border:1.5px dashed var(--border); padding:20px; text-align:center; color:var(--text-faint);"><span>Görsel URL adresi girin</span></div>';
         }
       }
       urlInput.addEventListener("input", () => { block.url = urlInput.value.trim(); renderImgPreview(); });
@@ -717,13 +799,13 @@ button, input, select, textarea { font-family: inherit; }
       card.className = "vocab-card-prev";
       card.innerHTML =
         '<div class="vocab-grid">' +
-          '<div><label>Almanca</label><input type="text" data-f="de" value="' + esc(block.de) + '" class="de-input"></div>' +
-          '<div><label>Türkçe</label><input type="text" data-f="tr" value="' + esc(block.tr) + '"></div>' +
-          '<div class="full"><label>Okunuşu</label><input type="text" data-f="phon" value="' + esc(block.phon) + '"></div>' +
-          '<div class="full"><label>Örnek Cümle</label><input type="text" data-f="example" value="' + esc(block.example) + '"></div>' +
+          '<div><label>Almanca</label><input type="text" data-f="de" value="' + esc(block.de) + '" class="de-input" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;"></div>' +
+          '<div><label>Türkçe</label><input type="text" data-f="tr" value="' + esc(block.tr) + '" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;"></div>' +
+          '<div class="full" style="margin-top:6px;"><label>Okunuşu</label><input type="text" data-f="phon" value="' + esc(block.phon) + '" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;"></div>' +
+          '<div class="full" style="margin-top:6px;"><label>Örnek Cümle</label><input type="text" data-f="example" value="' + esc(block.example) + '" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;"></div>' +
         '</div>' +
-        '<button type="button" class="vocab-tip-toggle">' + ICO.tip + '<span data-tiplabel>' + (block.tipEnabled ? "İpucunu kaldır" : "+ İpucu / Gramer Notu ekle") + '</span></button>' +
-        '<div class="vocab-tip-wrap" style="display:' + (block.tipEnabled ? "block" : "none") + ';"><textarea placeholder="örn. Akkusativ hali der → den değişimini gerektirir.">' + esc(block.tip) + '</textarea></div>';
+        '<button type="button" class="vocab-tip-toggle" style="margin-top:10px; background:transparent; border:none; color:var(--blue-bright); cursor:pointer;">' + ICO.tip + '<span data-tiplabel>' + (block.tipEnabled ? " İpucunu kaldır" : " + İpucu / Gramer Notu ekle") + '</span></button>' +
+        '<div class="vocab-tip-wrap" style="display:' + (block.tipEnabled ? "block" : "none") + '; margin-top:6px;"><textarea style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; min-height:60px;">' + esc(block.tip) + '</textarea></div>';
 
       $all("input", card).forEach(inp => inp.addEventListener("input", () => { block[inp.dataset.f] = inp.value; }));
       const tipToggle = card.querySelector(".vocab-tip-toggle");
@@ -733,8 +815,7 @@ button, input, select, textarea { font-family: inherit; }
       tipToggle.addEventListener("click", () => {
         block.tipEnabled = !block.tipEnabled;
         tipWrap.style.display = block.tipEnabled ? "block" : "none";
-        tipLabel.textContent = block.tipEnabled ? "İpucunu kaldır" : "+ İpucu / Gramer Notu ekle";
-        if (block.tipEnabled) tipArea.focus();
+        tipLabel.textContent = block.tipEnabled ? " İpucunu kaldır" : " + İpucu / Gramer Notu ekle";
       });
       tipArea.addEventListener("input", () => { block.tip = tipArea.value; });
       content.appendChild(card);
@@ -744,9 +825,9 @@ button, input, select, textarea { font-family: inherit; }
       box.className = "callout-prev"; box.dataset.theme = block.theme;
       box.innerHTML =
         '<div class="callout-prev-ico">' + CALLOUT_ICON[block.theme] + '</div>' +
-        '<div class="callout-prev-body-wrap">' +
-          '<div class="callout-prev-title" contenteditable="true" data-placeholder="Başlık">' + esc(block.title) + '</div>' +
-          '<div class="callout-prev-body" contenteditable="true" data-placeholder="Metin...">' + block.html + '</div>' +
+        '<div class="callout-prev-body-wrap" style="width:100%;">' +
+          '<div class="callout-prev-title" contenteditable="true" data-placeholder="Başlık" style="font-weight:700; color:white; margin-bottom:4px;">' + esc(block.title) + '</div>' +
+          '<div class="callout-prev-body" contenteditable="true" data-placeholder="Metin..." style="color:var(--text-dim);">' + block.html + '</div>' +
         '</div>';
       box.querySelector(".callout-prev-title").addEventListener("input", function () { block.title = this.textContent; });
       box.querySelector(".callout-prev-body").addEventListener("input", function () { block.html = this.innerHTML; });
@@ -789,9 +870,99 @@ button, input, select, textarea { font-family: inherit; }
       toolbarRow.querySelector('[data-tact="addrow"]').addEventListener("click", () => { block.rows.push(block.headers.map(()=>"")); renderTable(); });
       toolbarRow.querySelector('[data-tact="addcol"]').addEventListener("click", () => { block.headers.push("Sütun " + (block.headers.length+1)); block.rows.forEach(r=>r.push("")); renderTable(); });
       content.appendChild(wrap2);
+
+    } else if (block.type === "quiz") {
+      const card = document.createElement("div");
+      card.style.cssText = "background:rgba(59,130,246,0.04); border:1px solid var(--border); padding:16px; border-radius:10px;";
+      card.innerHTML = `
+        <input type="text" class="q-title" placeholder="Soru metni" value="${esc(block.question)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:700;">
+        <div class="opts-list" style="margin-top:10px; display:flex; flex-direction:column; gap:6px;"></div>
+        <button class="btn btn-sm add-opt" style="margin-top:8px;">+ Seçenek Ekle</button>
+        <textarea class="q-explain" placeholder="Doğru cevap açıklaması" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; min-height:50px; margin-top:8px;">${esc(block.explanation)}</textarea>
+      `;
+      const optsList = card.querySelector(".opts-list");
+      function renderQuizOpts() {
+        optsList.innerHTML = "";
+        block.options.forEach((opt, i) => {
+          const row = document.createElement("div");
+          row.style.cssText = "display:flex; align-items:center; gap:8px;";
+          row.innerHTML = `
+            <input type="radio" name="correct_${block.id}" ${block.correctIndex === i ? "checked" : ""} style="accent-color:var(--green);">
+            <input type="text" value="${esc(opt)}" style="flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+            <button class="del-opt" style="background:transparent; border:none; color:var(--rose); cursor:pointer;">×</button>
+          `;
+          row.querySelector("input[type=radio]").addEventListener("change", () => { block.correctIndex = i; });
+          row.querySelector("input[type=text]").addEventListener("input", function() { block.options[i] = this.value; });
+          row.querySelector(".del-opt").addEventListener("click", () => { if(block.options.length > 2) { block.options.splice(i,1); if(block.correctIndex >= block.options.length) block.correctIndex=0; renderQuizOpts(); } });
+          optsList.appendChild(row);
+        });
+      }
+      card.querySelector(".add-opt").addEventListener("click", () => { block.options.push("Yeni Seçenek"); renderQuizOpts(); });
+      card.querySelector(".q-title").addEventListener("input", function() { block.question = this.value; });
+      card.querySelector(".q-explain").addEventListener("input", function() { block.explanation = this.value; });
+      renderQuizOpts();
+      content.appendChild(card);
+
+    } else if (block.type === "audio") {
+      const card = document.createElement("div");
+      card.innerHTML = `
+        <input type="text" class="aud-text" placeholder="Okunacak Almanca metin" value="${esc(block.text)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+        <input type="text" class="aud-cap" placeholder="Açıklama etiketi" value="${esc(block.caption)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; margin-top:6px;">
+      `;
+      card.querySelector(".aud-text").addEventListener("input", function() { block.text = this.value; });
+      card.querySelector(".aud-cap").addEventListener("input", function() { block.caption = this.value; });
+      content.appendChild(card);
+
+    } else if (block.type === "accordion") {
+      const card = document.createElement("div");
+      function renderAccItems() {
+        card.innerHTML = "";
+        block.items.forEach((item, i) => {
+          const itemDiv = document.createElement("div");
+          itemDiv.style.cssText = "border:1px solid var(--border); padding:8px; border-radius:6px; margin-bottom:6px; background:rgba(255,255,255,0.01);";
+          itemDiv.innerHTML = `
+            <input type="text" placeholder="Başlık / Soru" value="${esc(item.q)}" style="width:100%; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:4px;">
+            <textarea placeholder="Açıklama / İçerik" style="width:100%; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:4px; margin-top:4px; min-height:45px;">${esc(item.a)}</textarea>
+          `;
+          itemDiv.querySelector("input").addEventListener("input", function() { item.q = this.value; });
+          itemDiv.querySelector("textarea").addEventListener("input", function() { item.a = this.value; });
+          card.appendChild(itemDiv);
+        });
+        const addBtn = document.createElement("button");
+        addBtn.className = "btn btn-sm"; addBtn.innerText = "+ Panel Ekle";
+        addBtn.addEventListener("click", () => { block.items.push({ q: "Yeni Panel", a: "" }); renderAccItems(); });
+        card.appendChild(addBtn);
+      }
+      renderAccItems();
+      content.appendChild(card);
+
+    } else if (block.type === "video") {
+      const card = document.createElement("div");
+      card.innerHTML = `
+        <input type="url" placeholder="YouTube veya Vimeo Linki" value="${esc(block.url)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+        <input type="text" placeholder="Video Altı Açıklaması" value="${esc(block.caption)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; margin-top:6px;">
+      `;
+      card.querySelector("input[type=url]").addEventListener("input", function() { block.url = this.value.trim(); });
+      card.querySelector("input[type=text]").addEventListener("input", function() { block.caption = this.value; });
+      content.appendChild(card);
+
+    } else if (block.type === "code") {
+      const card = document.createElement("div");
+      card.innerHTML = `
+        <input type="text" placeholder="Dil (Örn: javascript, python)" value="${esc(block.lang)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+        <textarea placeholder="Kod parçacığı" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-family:monospace; min-height:80px; margin-top:6px;">${esc(block.code)}</textarea>
+      `;
+      card.querySelector("input").addEventListener("input", function() { block.lang = this.value.trim(); });
+      card.querySelector("textarea").addEventListener("input", function() { block.code = this.value; });
+      content.appendChild(card);
+
+    } else if (block.type === "toc") {
+      const card = document.createElement("div");
+      card.style.cssText = "border:1px dashed var(--border); padding:12px; color:var(--text-faint); font-size:12.5px; border-radius:6px;";
+      card.innerHTML = `<span><strong>İçindekiler Tablosu (TOC):</strong> Bu alan yayınlanan sayfada otomatik oluşacaktır.</span>`;
+      content.appendChild(card);
     }
   }
-
   $all(".add-block-btn").forEach(btn => btn.addEventListener("click", () => addBlock(btn.dataset.type)));
   $("#btnClearAll").addEventListener("click", clearAll);
 
@@ -828,16 +999,20 @@ button, input, select, textarea { font-family: inherit; }
     setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
 
-  function renderBlockExport(b) {
+function renderBlockExport(b) {
     const forceTransparent = b.type === "paragraph";
     const wrapOpen = '<div style="' + wrapperStyle(b, forceTransparent) + '">';
     const wrapClose = "</div>";
     switch (b.type) {
-      case "heading":
-        return wrapOpen + "<" + b.level + ' style="font-family:' + fontStack(b.font) + ";font-size:" + b.size + "px;color:" + b.color + ";font-weight:" + b.weight + ";line-height:" + (b.lineHeight/100) + ";letter-spacing:" + b.letterSpacing + 'px;">' + esc(b.text) + "</" + b.level + ">" + wrapClose;
+      case "heading": {
+        // H2 veya H3 başlıklarına TOC'un yakalayabilmesi için slug ID atıyoruz
+        const idAttr = b.level !== "h1" ? ' id="' + slugify(b.text) + '"' : '';
+        return wrapOpen + "<" + b.level + idAttr + ' style="font-family:' + fontStack(b.font) + ";font-size:" + b.size + "px;color:" + b.color + ";font-weight:" + b.weight + ";line-height:" + (b.lineHeight/100) + ";letter-spacing:" + b.letterSpacing + 'px;">' + esc(b.text) + "</" + b.level + ">" + wrapClose;
+      }
 
       case "paragraph":
-        return wrapOpen + '<p style="font-family:' + fontStack(b.font) + ";font-size:" + b.size + "px;color:" + b.color + ";text-align:" + b.align + ";line-height:" + (b.lineHeight/100) + ";letter-spacing:" + b.letterSpacing + 'px;background:transparent;">' + b.html + "</p>" + wrapClose;
+        // convertTooltips fonksiyonu ile satır içi ipuçlarını HTML elementine çeviriyoruz
+        return wrapOpen + '<p style="font-family:' + fontStack(b.font) + ";font-size:" + b.size + "px;color:" + b.color + ";text-align:" + b.align + ";line-height:" + (b.lineHeight/100) + ";letter-spacing:" + b.letterSpacing + 'px;background:transparent;">' + convertTooltips(b.html) + "</p>" + wrapClose;
 
       case "image":
         if (!b.url) return "";
@@ -868,11 +1043,89 @@ button, input, select, textarea { font-family: inherit; }
         t += "</tbody></table></div>" + wrapClose;
         return t;
       }
+
+      case "quiz": {
+        const qId = "q_" + b.id;
+        let qHtml = wrapOpen + '<div class="premium-quiz-card" id="' + qId + '" data-correct="' + b.correctIndex + '">' +
+          '<div class="quiz-question-title">' + esc(b.question) + '</div>' +
+          '<div class="quiz-options-list">';
+        b.options.forEach((opt, idx) => {
+          qHtml += '<div class="quiz-option-item" data-index="' + idx + '">' +
+            '<span class="quiz-indicator"></span>' +
+            '<span class="quiz-opt-text">' + esc(opt) + '</span>' +
+            '</div>';
+        });
+        qHtml += '</div>' +
+          '<button class="quiz-action-btn" onclick="checkQuizAnswer(\'' + qId + '\')">Cevabı Kontrol Et</button>' +
+          '<div class="quiz-explain-panel">' +
+            '<strong>' + (b.explanation ? 'Açıklama:' : '') + '</strong> ' + esc(b.explanation) +
+          '</div>' +
+          '</div>' + wrapClose;
+        return qHtml;
+      }
+
+      case "audio": {
+        return wrapOpen + '<div class="premium-audio-card">' +
+          '<button class="premium-audio-btn" onclick="playSpeechText(this, \'' + esc(b.text).replace(/'/g, "\\'") + '\', \'' + b.lang + '\')">' +
+            ICO.play +
+          '</button>' +
+          '<div class="premium-audio-details">' +
+            '<span class="premium-audio-caption">' + esc(b.caption || "Almanca Telaffuz") + '</span>' +
+            '<span class="premium-audio-meta">Sistem Sesi (Web Speech API)</span>' +
+          '</div>' +
+          '</div>' + wrapClose;
+      }
+
+      case "accordion": {
+        let accHtml = wrapOpen + '<div class="premium-accordion-wrap">';
+        b.items.forEach(item => {
+          accHtml += '<div class="accordion-item-box">' +
+            '<button class="accordion-trigger" onclick="toggleAccordion(this)">' +
+              '<span>' + esc(item.q) + '</span>' +
+              '<span class="acc-chevron">▼</span>' +
+            '</button>' +
+            '<div class="accordion-panel-content"><p>' + esc(item.a) + '</p></div>' +
+            '</div>';
+        });
+        accHtml += '</div>' + wrapClose;
+        return accHtml;
+      }
+
+      case "video": {
+        const embed = parseVideoEmbed(b.url);
+        if (!embed) return "";
+        return wrapOpen + '<div class="premium-video-card">' +
+          '<div class="video-ratio-box">' +
+            '<iframe src="' + esc(embed) + '" allowfullscreen loading="lazy"></iframe>' +
+          '</div>' +
+          (b.caption ? '<div class="premium-video-caption">' + esc(b.caption) + '</div>' : '') +
+          '</div>' + wrapClose;
+      }
+
+      case "code": {
+        return wrapOpen + '<div class="premium-code-box">' +
+          '<div class="code-header-bar">' +
+            '<span class="code-lang-tag">' + esc(b.lang).toUpperCase() + '</span>' +
+            '<button class="code-copy-btn" onclick="copyCodePayload(this)">Kopyala</button>' +
+          '</div>' +
+          '<pre><code>' + esc(b.code) + '</code></pre>' +
+          '</div>' + wrapClose;
+      }
+
+      case "toc": {
+        return wrapOpen + '<div class="premium-toc-card" id="auto-toc-container">' +
+          '<div class="toc-header-title">' + esc(b.title || "İçindekiler") + '</div>' +
+          '<ul class="toc-links-list" id="auto-toc-list">' +
+            '<li style="color:rgba(255,255,255,0.3); font-size:12.5px; list-style:none;">Yükleniyor...</li>' +
+          '</ul>' +
+          '</div>' + wrapClose;
+      }
+
       default: return "";
     }
   }
 
-  function buildExportHtml(meta) {
+function buildExportHtml(meta) {
     const blocksHtml = blocks.map(renderBlockExport).join("\n");
     const canonicalTitle = esc(meta.title);
 
@@ -881,7 +1134,6 @@ button, input, select, textarea { font-family: inherit; }
 '<html lang="tr">',
 "<head>",
 '<!-- Bu dosya "Ders Builder" ile üretilmiştir. -->',
-'<!-- NOT: /dersler/{slug}/index.html konumuna yerleştirilmek üzere tasarlanmıştır; CSS ve ../js/core.js yollarını klasör derinliğinize göre kontrol edin. -->',
 '<meta charset="UTF-8">',
 '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
 "<title>" + canonicalTitle + " — AlmancaPratik</title>",
@@ -897,7 +1149,10 @@ button, input, select, textarea { font-family: inherit; }
 '<link rel="stylesheet" href="../src/styles/tokens.css">',
 '<link rel="stylesheet" href="../lesson-static.css">',
 "<style>",
-":root { --xblue: #3b82f6; --xblueb: #60a5fa; }",
+":root { --xblue: #3b82f6; --xblueb: #60a5fa; --xgreen: #4fd69c; --xrose: #f07068; }",
+
+"/* ── premium scroll progress bar ── */",
+".premium-progress-bar { position: fixed; top: 0; left: 0; width: 0%; height: 4px; background: linear-gradient(90deg, var(--xblue), var(--xblueb)); z-index: 9999; transition: width 0.1s ease; }",
 
 "/* ── byline / difficulty badge ── */",
 ".lb-byline { font-size: 12.5px; color: rgba(226,232,240,0.55); margin: -18px 0 24px; }",
@@ -928,16 +1183,86 @@ button, input, select, textarea { font-family: inherit; }
 ".callout-text { font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.7; color: rgba(226,232,240,.78); }",
 
 "/* ── ultra modern responsive table ── */",
-".lb-table { width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; }",
+".lb-table { width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; margin: 24px 0; }",
 ".lb-table th, .lb-table td { border: 1px solid rgba(148,163,184,0.18); padding: 11px 15px; font-size: 14.5px; text-align: left; }",
 ".lb-table th { background: rgba(59,130,246,0.14); color: #ffffff; font-weight: 600; }",
 ".lb-table td { color: #cbd5e1; background: rgba(255,255,255,0.012); }",
 ".lb-table tr:nth-child(even) td { background: rgba(255,255,255,0.025); }",
 
+"/* ── premium tooltip engine ── */",
+".lb-tooltip { position: relative; border-bottom: 1.5px dashed var(--xblueb); color: var(--xblueb); font-weight: 600; cursor: help; display: inline-block; }",
+".lb-tooltip-bubble { position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%) scale(0.9); background: rgba(11,19,36,0.96); border: 1px solid rgba(96,165,250,0.3); color: #ffffff; padding: 7px 11px; border-radius: 8px; font-size: 12.5px; line-height: 1.4; white-space: nowrap; visibility: hidden; opacity: 0; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); transition: all 0.15s cubic-bezier(.4,0,.2,1); pointer-events: none; }",
+".lb-tooltip-bubble::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: rgba(11,19,36,0.96); }",
+".lb-tooltip:hover .lb-tooltip-bubble, .lb-tooltip:focus .lb-tooltip-bubble { visibility: visible; opacity: 1; transform: translateX(-50%) scale(1); }",
+
+"/* ── premium quiz elements ── */",
+".premium-quiz-card { background: rgba(15,23,42,0.6); border: 1px solid rgba(59,130,246,0.2); border-radius: 14px; padding: 26px 28px; margin: 30px 0; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }",
+".quiz-question-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; color: #ffffff; margin-bottom: 20px; line-height: 1.5; }",
+".quiz-options-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }",
+".quiz-option-item { display: flex; align-items: center; gap: 12px; padding: 13px 16px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; cursor: pointer; transition: all 0.2s ease; }",
+".quiz-option-item:hover { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.25); }",
+".quiz-option-item.selected { background: rgba(59,130,246,0.14); border-color: var(--xblue); }",
+".quiz-indicator { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }",
+".quiz-option-item.selected .quiz-indicator { border-color: var(--xblueb); background: var(--xblue); }",
+".quiz-opt-text { font-family: 'Inter', sans-serif; font-size: 14.5px; color: #e2e8f0; }",
+".quiz-action-btn { display: block; width: 100%; padding: 12px; background: linear-gradient(135deg, var(--xblue), var(--xblueb)); border: none; border-radius: 9px; color: #071022; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13.5px; cursor: pointer; transition: all 0.2s ease; }",
+".quiz-action-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }",
+".quiz-option-item.correct-reveal { border-color: var(--xgreen) !important; background: rgba(79,214,156,0.12) !important; }",
+".quiz-option-item.correct-reveal .quiz-indicator { border-color: var(--xgreen) !important; background: var(--xgreen) !important; }",
+".quiz-option-item.wrong-reveal { border-color: var(--xrose) !important; background: rgba(240,112,104,0.12) !important; }",
+".quiz-option-item.wrong-reveal .quiz-indicator { border-color: var(--xrose) !important; background: var(--xrose) !important; }",
+".quiz-explain-panel { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; margin-top: 16px; padding: 0 16px; background: rgba(255,255,255,0.02); border-left: 3px solid var(--xgreen); font-size: 13.5px; color: #cbd5e1; line-height: 1.6; }",
+
+"/* ── premium audio elements ── */",
+".premium-audio-card { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: rgba(59,130,246,0.05); border: 1px solid rgba(59,130,246,0.15); border-radius: 12px; margin: 24px 0; }",
+".premium-audio-btn { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--xblue); border: none; color: #071022; cursor: pointer; transition: all 0.2s ease; }",
+".premium-audio-btn:hover { background: var(--xblueb); transform: scale(1.05); }",
+".premium-audio-btn svg { width: 18px; height: 18px; }",
+".premium-audio-details { display: flex; flex-direction: column; gap: 4px; }",
+".premium-audio-caption { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; color: #ffffff; }",
+".premium-audio-meta { font-size: 11.5px; color: rgba(255,255,255,0.3); }",
+
+"/* ── premium accordion elements ── */",
+".premium-accordion-wrap { display: flex; flex-direction: column; gap: 8px; margin: 24px 0; }",
+".accordion-item-box { border: 1px solid rgba(255,255,255,0.06); background: rgba(15,23,42,0.4); border-radius: 10px; overflow: hidden; transition: all 0.2s ease; }",
+".accordion-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; background: transparent; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14.5px; font-weight: 700; color: #ffffff; text-align: left; cursor: pointer; }",
+".accordion-trigger:hover { background: rgba(255,255,255,0.02); }",
+".acc-chevron { font-size: 10px; transition: transform 0.2s ease; color: rgba(255,255,255,0.4); }",
+".accordion-item-box.active { border-color: rgba(59,130,246,0.3); }",
+".accordion-item-box.active .acc-chevron { transform: rotate(180deg); color: var(--xblueb); }",
+".accordion-panel-content { max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; background: rgba(255,255,255,0.01); }",
+".accordion-panel-content p { padding: 15px 20px; margin: 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #cbd5e1; line-height: 1.6; }",
+
+"/* ── premium responsive video ── */",
+".premium-video-card { border-radius: 14px; overflow: hidden; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); margin: 30px 0; }",
+".video-ratio-box { position: relative; width: 100%; padding-top: 56.25%; }",
+".video-ratio-box iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }",
+".premium-video-caption { padding: 12px; text-align: center; font-size: 12.5px; color: rgba(226,232,240,0.5); background: rgba(255,255,255,0.01); border-top: 1px solid rgba(255,255,255,0.04); }",
+
+"/* ── premium code formatting ── */",
+".premium-code-box { background: #080c14; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; margin: 24px 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }",
+".code-header-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.06); }",
+".code-lang-tag { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.4); letter-spacing: 0.05em; }",
+".code-copy-btn { background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 5px; color: rgba(255,255,255,0.6); font-size: 11.5px; padding: 4px 8px; cursor: pointer; transition: all 0.2s ease; }",
+".code-copy-btn:hover { background: rgba(255,255,255,0.05); color: #ffffff; }",
+".premium-code-box pre { margin: 0; padding: 16px; overflow-x: auto; }",
+".premium-code-box code { font-family: 'Consolas', 'Courier New', monospace; font-size: 13.5px; color: #e2e8f0; line-height: 1.5; }",
+
+"/* ── premium auto-TOC widget ── */",
+".premium-toc-card { background: rgba(59,130,246,0.03); border: 1px solid rgba(59,130,246,0.15); border-radius: 12px; padding: 20px 24px; margin: 28px 0; }",
+".toc-header-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px; color: #ffffff; margin-bottom: 14px; letter-spacing: -0.01em; }",
+".toc-links-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }",
+".toc-links-list li { margin: 0; padding: 0; }",
+".toc-link-a { display: block; font-family: 'Inter', sans-serif; font-size: 13.5px; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.15s ease; }",
+".toc-link-a:hover { color: var(--xblueb); }",
+".toc-link-h3 { padding-left: 18px; position: relative; }",
+".toc-link-h3::before { content: '↳'; position: absolute; left: 4px; color: rgba(255,255,255,0.2); }",
+
 "@media (max-width: 480px) { .callout-box { flex-direction: column; } .lb-table th, .lb-table td { padding: 8px 10px; font-size: 13px; } }",
 "</style>",
 "</head>",
 "<body>",
+'<div class="premium-progress-bar" id="readingProgressBar"></div>',
 '<div class="bg-canvas"><div class="bg-grid"></div><div class="bg-glow bg-glow--1"></div><div class="bg-glow bg-glow--2"></div></div>',
 
 '<div class="lesson-nav-row">',
@@ -963,14 +1288,261 @@ blocksHtml,
 "<!-- Navbar + Radyal FAB (gerçek site altyapısı) -->",
 '<scr' + 'ipt type="module">',
 '  import "../js/core.js";',
-"  window.loadNavbar();",
-'</scr' + 'ipt>',
+'  if(window.loadNavbar) window.loadNavbar();',
+"</scr" + "ipt>",
+
+"<!-- PREMIUM INTERACTION ENGINE -->",
+"<scr" + "ipt>", // <-- Güvenli Script Açılışı
+"/* 1. Progress Bar Logic */",
+"window.addEventListener('scroll', () => {",
+"  const winScroll = document.body.scrollTop || document.documentElement.scrollTop;",
+"  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;",
+"  const scrolled = (winScroll / height) * 100;",
+"  document.getElementById('readingProgressBar').style.width = scrolled + '%';",
+"});",
+
+"/* 2. Audio Playback (Speech Synthesis) Engine */",
+"function playSpeechText(btn, text, lang) {",
+"  if (!('speechSynthesis' in window)) { alert('Tarayıcınız sesli okumayı desteklemiyor.'); return; }",
+"  window.speechSynthesis.cancel();",
+"  const utterance = new SpeechSynthesisUtterance(text);",
+"  utterance.lang = lang || 'de-DE';",
+"  utterance.rate = 0.90;",
+"  btn.style.opacity = '0.5';",
+"  utterance.onend = () => btn.style.opacity = '1';",
+"  utterance.onerror = () => btn.style.opacity = '1';",
+"  window.speechSynthesis.speak(utterance);",
+"}",
+
+"/* 3. Dynamic Accordion Toggler */",
+"function toggleAccordion(btn) {",
+"  const item = btn.parentElement;",
+"  const panel = item.querySelector('.accordion-panel-content');",
+"  const isOpening = !item.classList.contains('active');",
+"  ",
+"  document.querySelectorAll('.accordion-item-box').forEach(box => {",
+"    box.classList.remove('active');",
+"    box.querySelector('.accordion-panel-content').style.maxHeight = null;",
+"  });",
+"  ",
+"  if (isOpening) {",
+"    item.classList.add('active');",
+"    panel.style.maxHeight = panel.scrollHeight + 'px';",
+"  } else {",
+"    item.classList.remove('active');",
+"    panel.style.maxHeight = null;",
+"  }",
+"}",
+
+"/* 4. Code Block Clipboard Copier */",
+"function copyCodePayload(btn) {",
+"  const box = btn.closest('.premium-code-box');",
+"  const codeText = box.querySelector('code').innerText;",
+"  navigator.clipboard.writeText(codeText).then(() => {",
+"    const oldText = btn.innerText;",
+"    btn.innerText = 'Kopyalandı!';",
+"    btn.style.color = '#4fd69c';",
+"    setTimeout(() => { btn.innerText = oldText; btn.style.color = ''; }, 2000);",
+"  });",
+"}",
+
+"/* 5. Premium Quiz Engine */",
+"document.addEventListener('DOMContentLoaded', () => {",
+"  document.querySelectorAll('.premium-quiz-card').forEach(card => {",
+"    card.querySelectorAll('.quiz-option-item').forEach(opt => {",
+"      opt.addEventListener('click', () => {",
+"        if (card.dataset.evaluated === 'true') return;",
+"        card.querySelectorAll('.quiz-option-item').forEach(o => o.classList.remove('selected'));",
+"        opt.classList.add('selected');",
+"      });",
+"    });",
+"  });",
+"});",
+"function checkQuizAnswer(qId) {",
+"  const card = document.getElementById(qId);",
+"  if (!card || card.dataset.evaluated === 'true') return;",
+"  const selectedOpt = card.querySelector('.quiz-option-item.selected');",
+"  if (!selectedOpt) { alert('Lütfen bir seçenek işaretleyin.'); return; }",
+"  ",
+"  const correctIndex = parseInt(card.dataset.correct);",
+"  const selectedIndex = parseInt(selectedOpt.dataset.index);",
+"  card.dataset.evaluated = 'true';",
+"  ",
+"  if (selectedIndex === correctIndex) {",
+"    selectedOpt.classList.add('correct-reveal');",
+"  } else {",
+"    selectedOpt.classList.add('wrong-reveal');",
+"    card.querySelector('[data-index=\"' + correctIndex + '\"]').classList.add('correct-reveal');",
+"  }",
+"  ",
+"  const explain = card.querySelector('.quiz-explain-panel');",
+"  if (explain) {",
+"    explain.style.maxHeight = explain.scrollHeight + 32 + 'px';",
+"  }",
+"  card.querySelector('.quiz-action-btn').style.display = 'none';",
+"}",
+
+"/* 6. Dynamic Auto-TOC (Table of Contents) Generator */",
+"document.addEventListener('DOMContentLoaded', () => {",
+"  const tocList = document.getElementById('auto-toc-list');",
+"  if (!tocList) return;",
+"  const headings = Array.from(document.querySelectorAll('article.lesson-body h2, article.lesson-body h3'));",
+"  ",
+"  if (headings.length === 0) {",
+"    const container = document.getElementById('auto-toc-container');",
+"    if (container) container.style.display = 'none';",
+"    return;",
+"  }",
+"  ",
+"  tocList.innerHTML = '';",
+"  headings.forEach(h => {",
+"    const li = document.createElement('li');",
+"    const a = document.createElement('a');",
+"    a.href = '#' + h.id;",
+"    a.innerText = h.innerText;",
+"    a.className = 'toc-link-a';",
+"    if (h.tagName.toLowerCase() === 'h3') {",
+"      a.classList.add('toc-link-h3');",
+"    }",
+"    li.appendChild(a);",
+"    tocList.appendChild(li);",
+"  });",
+"});",
+"</" + "script>", // <-- Güvenli Script Kapanışı
 
 "</body>",
 "</html>"
     ].join("\n");
   }
+  /* ══════════════════════════════════════
+     YENİ: Zengin Metin (Rich Text Toolbar) Logic
+     ══════════════════════════════════════ */
+  const rtToolbar = document.createElement("div");
+  rtToolbar.className = "rt-toolbar";
+  rtToolbar.innerHTML = `
+    <button data-cmd="bold" title="Kalın">` + ICO.bold + `</button>
+    <button data-cmd="italic" title="İtalik">` + ICO.italic + `</button>
+    <button data-cmd="underline" title="Altı Çizili">` + ICO.underline + `</button>
+    <button data-cmd="createLink" title="Bağlantı">` + ICO.link + `</button>
+    <button data-cmd="hiliteColor" title="Vurgula">` + ICO.highlight + `</button>
+  `;
+  document.body.appendChild(rtToolbar);
 
+  document.addEventListener("selectionchange", () => {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed) {
+      rtToolbar.classList.remove("show");
+      return;
+    }
+    const node = sel.anchorNode ? sel.anchorNode.parentElement : null;
+    if (node && node.closest("[contenteditable='true']")) {
+      const range = sel.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      rtToolbar.style.top = (rect.top + window.scrollY - 42) + "px";
+      rtToolbar.style.left = (rect.left + window.scrollX + (rect.width / 2) - 65) + "px";
+      rtToolbar.classList.add("show");
+    } else {
+      rtToolbar.classList.remove("show");
+    }
+  });
+
+  rtToolbar.addEventListener("mousedown", (e) => {
+    e.preventDefault(); // Focus kaybını önler
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    const cmd = btn.dataset.cmd;
+    if (cmd === "createLink") {
+      const url = prompt("Bağlantı adresi (URL) girin:");
+      if (url) document.execCommand(cmd, false, url);
+    } else if (cmd === "hiliteColor") {
+      // Sarı neon arka plan vurgusu
+      document.execCommand(cmd, false, "#ffd250");
+    } else {
+      document.execCommand(cmd, false, null);
+    }
+  });
+
+  /* ══════════════════════════════════════
+     YENİ: JSON Proje Kaydetme & Yükleme
+     ══════════════════════════════════════ */
+  $("#btnSaveProject").addEventListener("click", () => {
+    if (!blocks.length) { toast("Kaydedilecek blok bulunamadı.", "err"); return; }
+    const projectData = JSON.stringify({ seq, blocks }, null, 2);
+    const blob = new Blob([projectData], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ders-projesi-" + Date.now() + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast("Proje JSON olarak kaydedildi ✓");
+  });
+
+  const loadInput = $("#loadProjectInput");
+  $("#btnLoadProject").addEventListener("click", () => loadInput.click());
+  loadInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      try {
+        const data = JSON.parse(evt.target.result);
+        if (Array.isArray(data.blocks)) {
+          blocks = data.blocks;
+          seq = data.seq || blocks.length;
+          renderAll();
+          toast("Proje başarıyla yüklendi ✓");
+        } else {
+          throw new Error("Geçersiz şema");
+        }
+      } catch (err) {
+        toast("Dosya yüklenemedi. Geçersiz JSON formatı.", "err");
+      }
+    };
+    reader.readAsText(file);
+    loadInput.value = ""; // Inputu sıfırla
+  });
+
+  /* ══════════════════════════════════════
+     YENİ: Hazır Şablonlar Sistemi
+     ══════════════════════════════════════ */
+  $all(".template-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (blocks.length && !confirm("Mevcut çalışmanız silinecek, onaylıyor musunuz?")) return;
+      blocks = [];
+      const type = btn.dataset.template;
+      
+      if (type === "vocab") {
+        blocks.push(
+          Object.assign({ id: nextId(), type: "heading" }, defaultsFor("heading"), { text: "Günün Almanca Kelimeleri", level: "h1" }),
+          Object.assign({ id: nextId(), type: "vocab" }, defaultsFor("vocab"), { de: "der Tisch", tr: "masa", phon: "tiş", example: "Der Tisch ist sehr groß." }),
+          Object.assign({ id: nextId(), type: "vocab" }, defaultsFor("vocab"), { de: "der Stuhl", tr: "sandalye", phon: "ştuul", example: "Ich sitze auf dem Stuhl." }),
+          Object.assign({ id: nextId(), type: "quiz" }, defaultsFor("quiz"), { question: "Hangi kelime 'masa' anlamına gelir?", options: ["der Stuhl", "der Tisch", "das Auto"], correctIndex: 1, explanation: "Almanca'da 'der Tisch' masa demektir." })
+        );
+      } else if (type === "reading") {
+        blocks.push(
+          Object.assign({ id: nextId(), type: "heading" }, defaultsFor("heading"), { text: "Okuma-Anlama: Mein Tag", level: "h1" }),
+          Object.assign({ id: nextId(), type: "paragraph" }, defaultsFor("paragraph"), { html: "Ich stehe jeden Morgen um [6 Uhr|saat 6'da] auf. Dann trinke ich einen Kaffee. [Danach|Ondan sonra] gehe ich zur Arbeit. Ich liebe meinen Beruf." }),
+          Object.assign({ id: nextId(), type: "callout" }, defaultsFor("callout"), { theme: "blue", title: "Gramematik Notu", html: "Almanca'da saatlerden önce her zaman <b>um</b> edatı kullanılır." }),
+          Object.assign({ id: nextId(), type: "quiz" }, defaultsFor("quiz"), { question: "Yazar sabah saat kaçta uyanıyor?", options: ["7 Uhr", "6 Uhr", "8 Uhr"], correctIndex: 1, explanation: "Metinde 'Ich stehe jeden Morgen um 6 Uhr auf.' ifadesi geçmektedir." })
+        );
+      } else if (type === "grammar") {
+        blocks.push(
+          Object.assign({ id: nextId(), type: "heading" }, defaultsFor("heading"), { text: "Belirsiz Artıkeller (Unbestimmte Artikel)", level: "h1" }),
+          Object.assign({ id: nextId(), type: "paragraph" }, defaultsFor("paragraph"), { html: "Almanca'da bilinmeyen veya genel bir nesneden bahsederken belirsiz artıkeller kullanılır." }),
+          Object.assign({ id: nextId(), type: "table" }, defaultsFor("table"), { headers: ["Artıkel", "Belirsiz Hali", "Olumsuz Hali"], rows: [["der (Eril)", "ein", "kein"], ["die (Dişil)", "eine", "keine"], ["das (Nötr)", "ein", "kein"]] }),
+          Object.assign({ id: nextId(), type: "accordion" }, defaultsFor("accordion"), { items: [
+            { q: "Neden çoğul kelimelerin belirsiz artıkeli yoktur?", a: "Çünkü belirsiz artıkel (ein/eine) 'bir' anlamına gelir. Türkçe'de de 'bir kitaplar' diyemeyeceğimiz gibi Almanca'da da çoğul isimlerin önüne belirsiz artıkel gelmez." },
+            { q: "Kein/Keine olumsuzluğu ne zaman kullanılır?", a: "Belirsiz artıkelle ifade edilebilecek isimleri veya artıkeli olmayan isimleri olumsuz yapmak için 'kein' yapısı tercih edilir." }
+          ] })
+        );
+      }
+      renderAll();
+      toast("Şablon başarıyla uygulandı ✓");
+    });
+  });
   renderAll();
 })();
 </script>
