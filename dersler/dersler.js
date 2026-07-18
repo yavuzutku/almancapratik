@@ -194,6 +194,7 @@ async function loadStaticLessonsManifest() {
       title:     l.title || "Başlıksız",
       excerpt:   l.excerpt || "",
       category:  l.category || "",
+      type:      l.type || "",
       published: l.published !== false,
       coverUrl:  l.cover ? `/dersler/${encodeURIComponent(l.slug)}/${l.cover}` : "",
       createdAt: l.date || null,
