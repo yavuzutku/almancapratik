@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "slug": "deneme-dersi",
+    "title": "Deneme Dersi",
+    "excerpt": "şu anlık boş",
+    "category": "A1",
+    "type": "kultur",
+    "author": "Yavuz Utku VAROL",
+    "published": true,
+    "cover": null,
+    "readTime": 1,
+    "date": "2026-07-18T15:33:21+03:00"
+  }
+]
