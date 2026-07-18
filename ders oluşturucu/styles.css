@@ -674,6 +674,16 @@ button, input, select, textarea { font-family: inherit; }
   top: -6px; right: -6px;
 }
 .tbl-prev tr:hover .tbl-del-row, .tbl-prev th:hover .tbl-del-col { opacity: 1; }
+.tbl-audio-toggle {
+  position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--bg-elevated); color: var(--text-faint);
+  border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: all var(--tr); bottom: -7px; right: -6px; padding: 0;
+}
+.tbl-audio-toggle svg { width: 10px; height: 10px; pointer-events: none; }
+.tbl-prev tr:hover .tbl-audio-toggle, .tbl-prev th:hover .tbl-audio-toggle { opacity: 1; }
+.tbl-audio-toggle:hover { border-color: var(--border-hover); color: var(--text); }
+.tbl-audio-toggle.active { opacity: 1; background: var(--blue); border-color: var(--blue); color: #071022; }
+.tbl-audio-toggle.active:hover { background: var(--blue-bright); }
 
 .hp-editable { min-height: 1.4em; }
 

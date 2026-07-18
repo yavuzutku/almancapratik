@@ -33,7 +33,7 @@
       case "callout":
         return Object.assign(base, { theme: "amber", title: "Bilgi", html: "Öğrenciler için önemli bir not buraya yazılabilir." });
       case "table":
-        return Object.assign(base, { headers: ["Sütun 1", "Sütun 2"], rows: [["", ""], ["", ""]] });
+        return Object.assign(base, { headers: ["Sütun 1", "Sütun 2"], rows: [["", ""], ["", ""]], audioHeaders: [false, false], audioCells: [[false, false], [false, false]] });
       case "quiz":
         return Object.assign(base, { question: "Soru metni buraya gelecek?", options: ["Seçenek A", "Seçenek B", "Seçenek C"], correctIndex: 0, explanation: "" });
       case "fillblank":
@@ -101,7 +101,8 @@
     underline: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>',
     link:      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
     highlight: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-    play:      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
+    play:      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
+    tts:       '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>'
   };
 
   function iconFor(type) {
@@ -130,6 +131,22 @@
   }
 
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+  // Tablo bloğunda hangi başlık/hücrelerin sesli okunacağını tutan dizileri satır/sütun sayısıyla eşitler
+  // (eski projelerde bu alanlar hiç yoksa veya satır/sütun eklenip silinince boyutlar kayarsa güvenli hale getirir)
+  function ensureTableAudioShape(b) {
+    if (!Array.isArray(b.audioHeaders)) b.audioHeaders = [];
+    while (b.audioHeaders.length < b.headers.length) b.audioHeaders.push(false);
+    b.audioHeaders.length = b.headers.length;
+    if (!Array.isArray(b.audioCells)) b.audioCells = [];
+    while (b.audioCells.length < b.rows.length) b.audioCells.push([]);
+    b.audioCells.length = b.rows.length;
+    b.rows.forEach((row, ri) => {
+      if (!Array.isArray(b.audioCells[ri])) b.audioCells[ri] = [];
+      while (b.audioCells[ri].length < row.length) b.audioCells[ri].push(false);
+      b.audioCells[ri].length = row.length;
+    });
+  }
   function slugify(text) {
     return text.toString().toLowerCase().trim()
       .replace(/[\s_]+/g, '-')
@@ -565,9 +582,11 @@
       tableEl.className = "tbl-prev";
 
       function renderTable() {
+        ensureTableAudioShape(block);
         let h = "<thead><tr>";
         block.headers.forEach((hd, ci) => {
           h += '<th><div class="tbl-cell-wrap"><span contenteditable="true" data-placeholder="Başlık" data-h="' + ci + '">' + esc(hd) + '</span>' +
+            '<button type="button" class="tbl-audio-toggle' + (block.audioHeaders[ci] ? ' active' : '') + '" data-audioh="' + ci + '" title="Bu başlığı sesli okut">' + ICO.tts + '</button>' +
             (block.headers.length > 1 ? '<button class="tbl-del-col" data-delcol="' + ci + '" title="Sütunu sil">×</button>' : "") + '</div></th>';
         });
         h += "</tr></thead><tbody>";
@@ -575,6 +594,7 @@
           h += '<tr>';
           row.forEach((cell, ci) => {
             h += '<td><div class="tbl-cell-wrap"><span contenteditable="true" data-placeholder="Metin" data-r="' + ri + '" data-c="' + ci + '">' + esc(cell) + '</span>' +
+              '<button type="button" class="tbl-audio-toggle' + (block.audioCells[ri][ci] ? ' active' : '') + '" data-audior="' + ri + '" data-audioc="' + ci + '" title="Bu hücreyi sesli okut">' + ICO.tts + '</button>' +
               (ci === row.length - 1 && block.rows.length > 1 ? '<button class="tbl-del-row" data-delrow="' + ri + '" title="Satırı sil">×</button>' : "") + '</div></td>';
           });
           h += '</tr>';
@@ -584,6 +604,16 @@
         $all("[data-h]", tableEl).forEach(s => s.addEventListener("input", () => { block.headers[+s.dataset.h] = s.textContent; }));
         $all("[data-r]", tableEl).forEach(s => s.addEventListener("input", () => { block.rows[+s.dataset.r][+s.dataset.c] = s.textContent; }));
         $all("[data-h], [data-r]", tableEl).forEach(s => s.addEventListener("keydown", e => { if (e.key === "Enter") e.preventDefault(); }));
+        $all("[data-audioh]", tableEl).forEach(b => b.addEventListener("click", () => {
+          const ci = +b.dataset.audioh;
+          block.audioHeaders[ci] = !block.audioHeaders[ci];
+          b.classList.toggle("active", block.audioHeaders[ci]);
+        }));
+        $all("[data-audior]", tableEl).forEach(b => b.addEventListener("click", () => {
+          const ri = +b.dataset.audior, ci = +b.dataset.audioc;
+          block.audioCells[ri][ci] = !block.audioCells[ri][ci];
+          b.classList.toggle("active", block.audioCells[ri][ci]);
+        }));
         $all("th, td", tableEl).forEach(cellEl => {
           cellEl.addEventListener("mousedown", e => {
             if (e.target.closest("[contenteditable]") || e.target.closest("button")) return;
@@ -591,13 +621,13 @@
             if (editable) { e.preventDefault(); editable.focus(); }
           });
         });
-        $all("[data-delcol]", tableEl).forEach(b => b.addEventListener("click", () => { const ci=+b.dataset.delcol; block.headers.splice(ci,1); block.rows.forEach(r=>r.splice(ci,1)); renderTable(); }));
-        $all("[data-delrow]", tableEl).forEach(b => b.addEventListener("click", () => { block.rows.splice(+b.dataset.delrow,1); renderTable(); }));
+        $all("[data-delcol]", tableEl).forEach(b => b.addEventListener("click", () => { const ci=+b.dataset.delcol; block.headers.splice(ci,1); block.audioHeaders.splice(ci,1); block.rows.forEach(r=>r.splice(ci,1)); block.audioCells.forEach(r=>r.splice(ci,1)); renderTable(); }));
+        $all("[data-delrow]", tableEl).forEach(b => b.addEventListener("click", () => { block.rows.splice(+b.dataset.delrow,1); block.audioCells.splice(+b.dataset.delrow,1); renderTable(); }));
       }
       renderTable();
       wrap2.appendChild(tableEl);
-      toolbarRow.querySelector('[data-tact="addrow"]').addEventListener("click", () => { block.rows.push(block.headers.map(()=>"")); renderTable(); });
-      toolbarRow.querySelector('[data-tact="addcol"]').addEventListener("click", () => { block.headers.push("Sütun " + (block.headers.length+1)); block.rows.forEach(r=>r.push("")); renderTable(); });
+      toolbarRow.querySelector('[data-tact="addrow"]').addEventListener("click", () => { block.rows.push(block.headers.map(()=>"")); block.audioCells.push(block.headers.map(()=>false)); renderTable(); });
+      toolbarRow.querySelector('[data-tact="addcol"]').addEventListener("click", () => { block.headers.push("Sütun " + (block.headers.length+1)); block.audioHeaders.push(false); block.rows.forEach(r=>r.push("")); block.audioCells.forEach(r=>r.push(false)); renderTable(); });
       content.appendChild(wrap2);
 
     } else if (block.type === "quiz") {
@@ -1214,6 +1244,23 @@
   previewOverlay.addEventListener("click", e => { if (e.target === previewOverlay) previewOverlay.classList.remove("open"); });
   $("#previewOpenTab").addEventListener("click", () => { if (previewBlobUrl) window.open(previewBlobUrl, "_blank"); });
 
+  // ── Sesli Okuma (TTS) kontrolleri: kelime kartları ve diğer Almanca metinler için ──
+  const TTS_ICO_SLOW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13c0-4 3.5-7 8-7s8 3 8 7-3.5 5-8 5-8-1-8-5Z"/><circle cx="19" cy="10" r="1.6"/><path d="M6 16l-2 3"/><path d="M9 17.6l-1 2.6"/><path d="M15 17.6l1 2.6"/><path d="M18 16l2 3"/></svg>';
+  const TTS_ICO_NORMAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.3 5.7a9 9 0 0 1 0 12.6"/></svg>';
+  function escJsAttr(s) { return esc(s).replace(/'/g, "\\'"); }
+  // text: okunacak Almanca metin, lang: BCP47 dil kodu, sizeCls: "" (normal) veya "tts-cluster-sm" (küçük varyant),
+  // extraOnclick: butonlara eklenecek ek JS (örn. sürükle-bırak alanlarında tıklamanın kabarmasını durdurmak için)
+  function ttsCluster(text, lang, sizeCls, extraOnclick) {
+    if (!text) return "";
+    const t = escJsAttr(text);
+    const l = lang || "de-DE";
+    const stop = extraOnclick ? extraOnclick : "";
+    return '<span class="tts-cluster' + (sizeCls ? " " + sizeCls : "") + '">' +
+      '<button type="button" class="tts-btn tts-slow" title="Yavaş oku" aria-label="Yavaş sesli oku" onclick="' + stop + "playSpeechText(this,'" + t + "','" + l + "',0.55)\">" + TTS_ICO_SLOW + '</button>' +
+      '<button type="button" class="tts-btn tts-normal" title="Normal hızda oku" aria-label="Normal hızda sesli oku" onclick="' + stop + "playSpeechText(this,'" + t + "','" + l + "',1)\">" + TTS_ICO_NORMAL + '</button>' +
+      '</span>';
+  }
+
 function renderBlockExport(b) {
     const forceTransparent = b.type === "paragraph";
     const wrapOpen = '<div style="' + wrapperStyle(b, forceTransparent) + '">';
@@ -1256,10 +1303,10 @@ function renderBlockExport(b) {
 
       case "vocab":
         return wrapOpen + '<div class="vocab-card">' +
-          '<div class="vocab-de">' + esc(b.de) + "</div>" +
+          '<div class="vocab-de">' + esc(b.de) + ttsCluster(b.de, "de-DE") + "</div>" +
           (b.phon ? '<div class="vocab-phon">[' + esc(b.phon) + "]</div>" : "") +
           '<div class="vocab-tr">' + esc(b.tr) + "</div>" +
-          (b.example ? '<div class="vocab-example">' + esc(b.example) + "</div>" : "") +
+          (b.example ? '<div class="vocab-example">' + esc(b.example) + ttsCluster(b.example, "de-DE", "tts-cluster-sm") + "</div>" : "") +
           (b.tipEnabled && b.tip ? '<div class="vocab-tip"><strong>İpucu:</strong> ' + esc(b.tip) + "</div>" : "") +
           "</div>" + wrapClose;
 
@@ -1270,10 +1317,15 @@ function renderBlockExport(b) {
           "</div>" + wrapClose;
 
       case "table": {
+        ensureTableAudioShape(b);
         let t = wrapOpen + '<div style="overflow-x:auto;"><table class="lb-table"><thead><tr>';
-        b.headers.forEach(h => { t += "<th>" + esc(h) + "</th>"; });
+        b.headers.forEach((h, ci) => { t += "<th>" + esc(h) + (b.audioHeaders[ci] ? ttsCluster(h, "de-DE", "tts-cluster-sm") : "") + "</th>"; });
         t += "</tr></thead><tbody>";
-        b.rows.forEach(row => { t += "<tr>"; row.forEach(c => { t += "<td>" + esc(c) + "</td>"; }); t += "</tr>"; });
+        b.rows.forEach((row, ri) => {
+          t += "<tr>";
+          row.forEach((c, ci) => { t += "<td>" + esc(c) + (b.audioCells[ri][ci] ? ttsCluster(c, "de-DE", "tts-cluster-sm") : "") + "</td>"; });
+          t += "</tr>";
+        });
         t += "</tbody></table></div>" + wrapClose;
         return t;
       }
@@ -1337,7 +1389,7 @@ function renderBlockExport(b) {
           leftHtml += '<div class="matching-drop-zone" role="listitem" data-target-idx="' + i + '" tabindex="0" ' +
             'aria-label="Hedef ' + (i + 1) + ': ' + esc(leftIsImage ? "görsel" : p.left) + '">' +
             '<span class="matching-num">' + (i + 1) + '</span>' +
-            '<span class="matching-drop-fixed">' + sideContent(p, leftIsImage, p.left) + '</span>' +
+            '<span class="matching-drop-fixed">' + sideContent(p, leftIsImage, p.left) + (leftIsImage ? "" : ttsCluster(p.left, "de-DE", "tts-cluster-sm", "event.stopPropagation();")) + '</span>' +
             '<span class="matching-drop-slot" data-slot></span>' +
             '</div>';
         });
@@ -1371,6 +1423,7 @@ function renderBlockExport(b) {
         shuffled.forEach((it, i) => {
           itemsHtml += '<div class="sentorder-item" data-orig="' + it.idx + '">' +
             '<span class="sentorder-text">' + esc(it.text) + '</span>' +
+            ttsCluster(it.text, "de-DE", "tts-cluster-sm") +
             '<span class="sentorder-btns">' +
               '<button type="button" onclick="moveSentOrderItem(this,-1)">' + ICO.up + '</button>' +
               '<button type="button" onclick="moveSentOrderItem(this,1)">' + ICO.down + '</button>' +
@@ -1417,7 +1470,7 @@ function renderBlockExport(b) {
             '<div class="dialogue-avatar">' + esc((name || "?").charAt(0).toUpperCase()) + '</div>' +
             '<div class="dialogue-bubble-body">' +
               '<div class="dialogue-bubble-name">' + esc(name) + '</div>' +
-              '<div class="dialogue-bubble-text">' + esc(ln.text) + '</div>' +
+              '<div class="dialogue-bubble-text">' + esc(ln.text) + ttsCluster(ln.text, "de-DE", "tts-cluster-sm") + '</div>' +
             '</div>' +
           '</div>';
           const lockedCls = (firstChoiceIdx !== -1 && i > firstChoiceIdx) ? " dialogue-locked" : "";
@@ -1444,8 +1497,13 @@ function renderBlockExport(b) {
       }
 
       case "audio": {
+        const audT = escJsAttr(b.text);
+        const audL = b.lang || "de-DE";
         return wrapOpen + '<div class="premium-audio-card">' +
-          '<button class="premium-audio-btn" onclick="playSpeechText(this, \'' + esc(b.text).replace(/'/g, "\\'") + '\', \'' + b.lang + '\')">' +
+          '<button class="premium-audio-btn premium-audio-btn-slow" title="Yavaş oku" aria-label="Yavaş oku" onclick="playSpeechText(this,\'' + audT + '\',\'' + audL + '\',0.55)">' +
+            TTS_ICO_SLOW +
+          '</button>' +
+          '<button class="premium-audio-btn" title="Normal hızda oku" aria-label="Normal hızda oku" onclick="playSpeechText(this,\'' + audT + '\',\'' + audL + '\',1)">' +
             ICO.play +
           '</button>' +
           '<div class="premium-audio-details">' +
@@ -1497,7 +1555,7 @@ function renderBlockExport(b) {
             '</div>';
         });
         return wrapOpen + '<div class="konj-prev" id="' + kjId + '">' +
-          '<div class="konj-header"><strong>Fiil:</strong>&nbsp;' + esc(b.verb) + '&nbsp;<span>' + esc(TENSE_LABEL[b.tense] || b.tense) + '</span></div>' +
+          '<div class="konj-header"><strong>Fiil:</strong>&nbsp;' + esc(b.verb) + ttsCluster(b.verb, "de-DE", "tts-cluster-sm") + '&nbsp;<span>' + esc(TENSE_LABEL[b.tense] || b.tense) + '</span></div>' +
           '<div class="konj-rows">' + rowsHtml + '</div>' +
           '<button type="button" class="konj-action-btn" onclick="checkKonjugation(\'' + kjId + '\')">Cevapları Kontrol Et</button>' +
           '<div class="konj-result"></div>' +
@@ -2067,6 +2125,19 @@ body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, tran
 ".premium-audio-details { display: flex; flex-direction: column; gap: 4px; }",
 ".premium-audio-caption { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; color: #ffffff; }",
 ".premium-audio-meta { font-size: 11.5px; color: rgba(255,255,255,0.3); }",
+".premium-audio-btn-slow { width: 36px; height: 36px; background: rgba(59,130,246,0.14); color: var(--xblueb); }",
+".premium-audio-btn-slow:hover { background: rgba(59,130,246,0.26); }",
+".premium-audio-btn-slow svg { width: 15px; height: 15px; }",
+
+"/* ── Sesli Okuma (TTS) mini kontrolleri: kelime kartı, diyalog, cümle sıralama vb. ── */",
+".tts-cluster { display: inline-flex; align-items: center; gap: 4px; margin-left: 9px; vertical-align: middle; }",
+".tts-btn { display: inline-flex; align-items: center; justify-content: center; width: 23px; height: 23px; flex-shrink: 0; padding: 0; border-radius: 50%; border: 1px solid rgba(59,130,246,0.32); background: rgba(59,130,246,0.09); color: var(--xblueb); cursor: pointer; transition: all 0.15s ease; }",
+".tts-btn:hover { background: rgba(59,130,246,0.2); border-color: rgba(59,130,246,0.55); transform: scale(1.08); }",
+".tts-btn svg { width: 12px; height: 12px; pointer-events: none; display: block; }",
+".tts-cluster.tts-cluster-sm .tts-btn { width: 19px; height: 19px; }",
+".tts-cluster.tts-cluster-sm .tts-btn svg { width: 10px; height: 10px; }",
+".tts-playing { animation: ttsPulse 0.9s ease-in-out infinite; }",
+"@keyframes ttsPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.5); } 50% { box-shadow: 0 0 0 5px rgba(59,130,246,0); } }",
 
 "/* ── premium paragraf varyantları (alıntı / vurgu kutusu / drop cap) ── */",
 ".lb-dropcap::first-letter { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 3.3em; font-weight: 800; float: left; line-height: 0.82; padding: 4px 8px 0 0; color: var(--xblueb); }",
@@ -2160,7 +2231,7 @@ body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, tran
 "  .quiz-action-btn, .fib-action-btn, .matching-action-btn, .matching-retry-btn,",
 "  .sentorder-action-btn, .wordorder-actions, .code-copy-btn, .rt-toolbar,",
 "  .konj-action-btn, .listen-audio-player,",
-"  .premium-audio-btn, nav, [data-navbar], .lb-image-trigger { display: none !important; }",
+"  .premium-audio-btn, .tts-cluster, nav, [data-navbar], .lb-image-trigger { display: none !important; }",
 "  html, body { background: #ffffff !important; color: #111827 !important; }",
 "  .lesson-wrap { max-width: 100% !important; }",
 "  * { box-shadow: none !important; text-shadow: none !important; backdrop-filter: none !important; }",
@@ -2251,16 +2322,20 @@ blocksHtml,
 "  document.getElementById('readingProgressBar').style.width = scrolled + '%';",
 "});",
 
-"/* 2. Audio Playback (Speech Synthesis) Engine */",
-"function playSpeechText(btn, text, lang) {",
+"/* 2. Audio Playback (Speech Synthesis) Engine — hızlı/yavaş sesli okuma */",
+"var __ttsActiveBtn = null;",
+"function playSpeechText(btn, text, lang, rate) {",
 "  if (!('speechSynthesis' in window)) { alert('Tarayıcınız sesli okumayı desteklemiyor.'); return; }",
 "  window.speechSynthesis.cancel();",
+"  if (__ttsActiveBtn) __ttsActiveBtn.classList.remove('tts-playing');",
 "  const utterance = new SpeechSynthesisUtterance(text);",
 "  utterance.lang = lang || 'de-DE';",
-"  utterance.rate = 0.90;",
-"  btn.style.opacity = '0.5';",
-"  utterance.onend = () => btn.style.opacity = '1';",
-"  utterance.onerror = () => btn.style.opacity = '1';",
+"  utterance.rate = rate || 0.95;",
+"  btn.classList.add('tts-playing');",
+"  __ttsActiveBtn = btn;",
+"  const resetBtn = () => { btn.classList.remove('tts-playing'); if (__ttsActiveBtn === btn) __ttsActiveBtn = null; };",
+"  utterance.onend = resetBtn;",
+"  utterance.onerror = resetBtn;",
 "  window.speechSynthesis.speak(utterance);",
 "}",
 

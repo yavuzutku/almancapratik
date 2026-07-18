@@ -297,6 +297,31 @@ function loadNavbar() {
 
     .sn-divider { height: 1px; background: var(--sn-border); margin: 5px 4px; }
 
+    /* ── ALT BAĞLANTILAR (Sponsorlar / Kullanım Koşulları / Gizlilik) ── */
+    .sn-legal {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px 8px;
+      padding: 2px 10px 6px;
+    }
+    .sn-legal a {
+      font-family: 'Manrope', system-ui, sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(195,198,215,0.42);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color var(--sn-tr);
+    }
+    .sn-legal a:hover { color: var(--sn-primary); }
+    .sn-legal-dot {
+      width: 2px; height: 2px; border-radius: 50%;
+      background: rgba(195,198,215,0.3);
+      flex-shrink: 0;
+    }
+    #sideNav.sn-col .sn-legal { display: none; }
+
     /* ── FOOTER ── */
     .sn-footer {
       padding: 10px 8px 14px;
@@ -593,6 +618,14 @@ function loadNavbar() {
           </button>
         </div>
       </div>
+
+      <nav class="sn-legal" aria-label="Yasal bağlantılar">
+        <a href="/sponsorlar/">Sponsorlar</a>
+        <span class="sn-legal-dot"></span>
+        <a href="/kullanim-sartlari.html">Kullanım Koşulları</a>
+        <span class="sn-legal-dot"></span>
+        <a href="/privacy.html">Gizlilik</a>
+      </nav>
     </div>
   `;
 
