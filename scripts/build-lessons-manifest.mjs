@@ -24,6 +24,12 @@ const OUT_FILE = path.join(DERS_DIR, "lessons.json");
    Ders klasörüne bu isimlerden biriyle bir görsel koyman yeterli. */
 const COVER_CANDIDATES = ["cover.jpg", "cover.jpeg", "cover.png", "cover.webp"];
 
+/* dersler.js'teki İletişim / Kültür / Gramer sütun filtresinin
+   çalışması için geçerli sayılan "type" değerleri. Ders Builder'ın
+   <meta name="lesson-type" content="..."> ile yazdığı değerlerle
+   birebir eşleşmeli. */
+const VALID_TYPES = ["iletisim", "kultur", "gramer"];
+
 function readText(p) {
   return fs.readFileSync(p, "utf-8");
 }
@@ -84,6 +90,13 @@ function buildEntry(slug) {
 
   const category = extract(/class=["'][^"']*lesson-cat-badge[^"']*["']\s+data-cat=["']([^"']+)["']/i, html);
 
+  /* İletişim / Kültür / Gramer sütun filtresi için tür bilgisi.
+     Ders Builder <head> içine <meta name="lesson-type" content="kultur"> yazar;
+     bu satır olmadan liste sayfasındaki sütun filtreleri statik dersleri hiç
+     yakalayamıyordu — dersler.js'teki lesson.type alanı hep undefined kalıyordu. */
+  const rawType = extract(/<meta\s+name=["']lesson-type["']\s+content=["']([^"']*)["']\s*\/?>/i, html).toLowerCase();
+  const type = VALID_TYPES.includes(rawType) ? rawType : "";
+
   /* Taslak işaretlemek istersen ders sayfasının <head> kısmına şunu ekle:
      <meta name="robots" content="noindex">
      — o zaman bu ders "yayınlanmamış" (taslak) sayılır ve sitede görünmez
@@ -93,6 +106,12 @@ function buildEntry(slug) {
   const bodyMatch  = html.match(/<article[^>]*class=["'][^"']*lesson-body[^"']*["'][^>]*>([\s\S]*?)<\/article>/i);
   const readTime   = Math.max(1, Math.round(wordCount(bodyMatch ? bodyMatch[1] : "") / 200));
 
+  /* Yazar adı — Ders Builder <meta name="author" content="..."> yazmıyorsa
+     boş kalır (opsiyonel alan, liste/detay sayfası göstermek isterse hazır). */
+  const author = decodeEntities(
+    extract(/<meta\s+name=["']author["']\s+content=["']([\s\S]*?)["']\s*\/?>/i, html)
+  );
+
   const cover = findCover(lessonDir);
   const date  = getFirstCommitDate(indexFile);
 
@@ -101,6 +120,8 @@ function buildEntry(slug) {
     title,
     excerpt,
     category,
+    type,
+    author,
     published: !isNoindex,
     cover,
     readTime,

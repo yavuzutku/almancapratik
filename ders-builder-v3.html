@@ -502,6 +502,52 @@ button, input, select, textarea { font-family: inherit; }
 }
 .sidebar-hint b { color: var(--blue-bright); font-weight: 700; }
 
+/* ══════════════════════════════════════
+   Şablonlar (hazır + kullanıcı şablonları)
+   ══════════════════════════════════════ */
+.template-subhead {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em;
+  color: var(--text-faint); margin: 2px 8px 8px; opacity: 0.85;
+}
+.template-btn {
+  width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  padding: 11px 14px 11px 16px; margin-bottom: 8px;
+  border-radius: 11px; border: 1px solid var(--border);
+  background: var(--bg-surface); color: var(--text-dim);
+  text-align: left; cursor: pointer; transition: all var(--tr);
+  position: relative; overflow: hidden;
+}
+.template-btn::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg, var(--blue), var(--blue-bright)); opacity: 0.75;
+}
+.template-btn span { font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: -0.005em; line-height: 1.3; }
+.template-btn small { font-size: 11px; color: var(--text-faint); line-height: 1.45; }
+.template-btn:hover {
+  background: var(--bg-hover); border-color: var(--border-hover); transform: translateX(2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.28);
+}
+.template-btn:hover::before { opacity: 1; }
+
+.custom-template-row { position: relative; }
+.custom-template-row .template-btn {
+  padding-right: 34px;
+}
+.custom-template-row .template-btn::before {
+  background: linear-gradient(180deg, var(--green), #34d399); opacity: 0.75;
+}
+.tpl-delete-btn {
+  position: absolute; top: 9px; right: 9px; z-index: 2;
+  width: 22px; height: 22px; border-radius: 7px; border: 1px solid transparent;
+  background: transparent; color: var(--text-faint);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all var(--tr);
+}
+.tpl-delete-btn:hover { background: rgba(240,112,104,0.14); border-color: rgba(240,112,104,0.4); color: var(--rose); }
+.template-empty-hint {
+  font-size: 11.5px; color: var(--text-faint); padding: 6px 8px 10px; line-height: 1.5; opacity: 0.85;
+}
+
 .canvas-wrap { flex: 1; overflow-y: auto; }
 .canvas { max-width: 780px; margin: 0 auto; padding: 48px 28px 160px; min-height: 100%; }
 
@@ -796,9 +842,14 @@ button, input, select, textarea { font-family: inherit; }
 
       <div style="height: 1px; background: var(--border); margin: 20px 4px 16px;"></div>
       <div class="sidebar-label">Şablonlar</div>
+      <div class="template-subhead">Hazır Şablonlar</div>
       <button class="template-btn" data-template="vocab"><span>Kelime Odaklı Ders</span><small>Başlık + kelime kartları + quiz</small></button>
       <button class="template-btn" data-template="reading"><span>Okuma-Anlama Şablonu</span><small>Başlık + metin + kutu + quiz</small></button>
       <button class="template-btn" data-template="grammar"><span>Gramer Yoğun Şablon</span><small>Başlık + kurallar + tablo + akordeon</small></button>
+
+      <div class="template-subhead" style="margin-top: 14px;">Kendi Şablonların</div>
+      <div id="customTemplatesList"></div>
+      <button class="add-block-btn" id="btnSaveAsTemplate"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg></span>Bu Dersi Şablon Olarak Kaydet</button>
 
       <div style="height: 1px; background: var(--border); margin: 20px 4px 16px;"></div>
       <div class="sidebar-label">Proje Dosyası</div>
@@ -819,6 +870,7 @@ button, input, select, textarea { font-family: inherit; }
     </div>
     <div class="modal-body">
       <div class="form-row"><label for="metaTitle">Sayfa Başlığı</label><input type="text" id="metaTitle" placeholder="örn. Almanca'da Hal Ekleri (Akkusativ)"></div>
+      <div class="form-row"><label for="metaSlug">URL Slug (klasör adı)</label><input type="text" id="metaSlug" placeholder="örn. hal-ekleri-akkusativ"><div class="form-hint">Bu dosyayı <code>/dersler/&lt;slug&gt;/index.html</code> olarak kaydedeceksin — slug, o klasör adıyla birebir aynı olmalı. Başlığa göre otomatik önerilir, istersen değiştirebilirsin.</div></div>
       <div class="form-row"><label for="metaDesc">Meta Açıklaması (SEO)</label><textarea id="metaDesc" rows="3" placeholder="Arama motorlarında görünecek kısa açıklama"></textarea></div>
       <div class="form-row-split">
         <div class="form-row"><label for="metaLevel">Seviye</label><select id="metaLevel"><option value="A1">A1</option><option value="A2">A2</option><option value="B1" selected>B1</option><option value="B2">B2</option><option value="C1">C1</option></select></div>
@@ -829,7 +881,7 @@ button, input, select, textarea { font-family: inherit; }
         <div class="form-row"><label for="metaReadTime">Okuma Süresi (dk)</label><input type="number" id="metaReadTime" min="1" max="60" value="5"></div>
       </div>
       <div class="form-row"><label for="metaAuthor">Yazar Adı</label><input type="text" id="metaAuthor" placeholder="örn. Çetin Hoca"></div>
-      <div class="form-row"><label for="metaCover">Kapak Görseli URL'si</label><input type="url" id="metaCover" placeholder="https://..."><div class="form-hint">Boş bırakılırsa kapak görseli olmadan üretilir.</div></div>
+      <div class="form-row"><label for="metaCover">Kapak Görseli URL'si</label><input type="url" id="metaCover" placeholder="https://..."><div class="form-hint">Boş bırakılırsa kapak görseli olmadan üretilir. Bu, sosyal medya paylaşım görseli (og:image) içindir — liste sayfasındaki kapak küçük resmi için ayrıca ders klasörüne <code>cover.jpg</code> koymalısın.</div></div>
     </div>
     <div class="modal-footer">
       <button class="btn" id="cancelExport">Vazgeç</button>
@@ -1792,8 +1844,31 @@ button, input, select, textarea { font-family: inherit; }
   $("#cancelExport").addEventListener("click", () => overlay.classList.remove("open"));
   overlay.addEventListener("click", e => { if (e.target === overlay) overlay.classList.remove("open"); });
 
+  /* ══════════════════════════════════════
+     URL Slug — başlıktan otomatik önerilir,
+     kullanıcı elle değiştirirse artık otomatik güncellenmez.
+     ══════════════════════════════════════ */
+  const TR_MAP = { ç:"c", Ç:"c", ğ:"g", Ğ:"g", ı:"i", İ:"i", ö:"o", Ö:"o", ş:"s", Ş:"s", ü:"u", Ü:"u" };
+  function slugify(str) {
+    return String(str || "")
+      .replace(/[çÇğĞıİöÖşŞüÜ]/g, ch => TR_MAP[ch] || ch)
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80);
+  }
+  const metaTitleInput = $("#metaTitle");
+  const metaSlugInput = $("#metaSlug");
+  let slugManuallyEdited = false;
+  metaSlugInput.addEventListener("input", () => { slugManuallyEdited = metaSlugInput.value.trim() !== slugify(metaTitleInput.value); });
+  metaTitleInput.addEventListener("input", () => {
+    if (!slugManuallyEdited) metaSlugInput.value = slugify(metaTitleInput.value);
+  });
+
   $("#confirmExport").addEventListener("click", () => {
     const title = $("#metaTitle").value.trim();
+    const slug = ($("#metaSlug").value.trim() || slugify(title));
     const description = $("#metaDesc").value.trim();
     const level = $("#metaLevel").value;
     const type = $("#metaType").value;
@@ -1803,7 +1878,8 @@ button, input, select, textarea { font-family: inherit; }
     const cover = $("#metaCover").value.trim();
     const theme = $("#metaTheme").value || "ocean";
     if (!title) { toast("Sayfa başlığı boş olamaz.", "err"); return; }
-    const html = buildExportHtml({ title, description, level, type, difficulty, readTime, author, cover, theme });
+    if (!slug) { toast("URL slug boş olamaz.", "err"); return; }
+    const html = buildExportHtml({ title, slug, description, level, type, difficulty, readTime, author, cover, theme });
     downloadHtml(html);
     overlay.classList.remove("open");
     toast("index.html indirildi ✓", "ok");
@@ -1852,8 +1928,10 @@ button, input, select, textarea { font-family: inherit; }
 
   function getPreviewMeta() {
     const firstHeading = blocks.find(b => b.type === "heading" && b.text && b.text.trim());
+    const titleVal = $("#metaTitle").value.trim() || (firstHeading ? firstHeading.text.trim() : "Ders Önizleme");
     return {
-      title: $("#metaTitle").value.trim() || (firstHeading ? firstHeading.text.trim() : "Ders Önizleme"),
+      title: titleVal,
+      slug: $("#metaSlug").value.trim() || slugify(titleVal),
       description: $("#metaDesc").value.trim(),
       level: $("#metaLevel").value || "B1",
       type: $("#metaType").value || "",
@@ -2180,6 +2258,29 @@ function renderBlockExport(b) {
 function buildExportHtml(meta) {
     const blocksHtml = blocks.map(renderBlockExport).join("\n");
     const canonicalTitle = esc(meta.title);
+    const SITE_URL = "https://almancapratik.com";
+    const slugPart = encodeURIComponent(meta.slug || slugify(meta.title));
+    const canonicalUrl = SITE_URL + "/dersler/" + slugPart + "/";
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "LearningResource",
+      "name": meta.title || "Ders",
+      "description": meta.description || "",
+      "url": canonicalUrl,
+      "inLanguage": "de",
+      "educationalLevel": meta.level || undefined,
+      "author": meta.author ? { "@type": "Person", "name": meta.author } : undefined,
+      "publisher": { "@type": "Organization", "name": "AlmancaPratik", "url": SITE_URL }
+    };
+    const breadcrumbLd = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Anasayfa", "item": SITE_URL + "/" },
+        { "@type": "ListItem", "position": 2, "name": "Dersler", "item": SITE_URL + "/dersler/" },
+        { "@type": "ListItem", "position": 3, "name": meta.title || "Ders", "item": canonicalUrl }
+      ]
+    };
 
     return [
 "<!DOCTYPE html>",
@@ -2191,12 +2292,20 @@ function buildExportHtml(meta) {
 "<title>" + canonicalTitle + " — AlmancaPratik</title>",
 '<meta name="description" content="' + esc(meta.description) + '">',
 '<meta name="robots" content="index, follow">',
+'<link rel="canonical" href="' + canonicalUrl + '">',
 '<meta property="og:type" content="article">',
+'<meta property="og:site_name" content="AlmancaPratik">',
 '<meta property="og:title" content="' + canonicalTitle + '">',
 '<meta property="og:description" content="' + esc(meta.description) + '">',
+'<meta property="og:url" content="' + canonicalUrl + '">',
 (meta.cover ? '<meta property="og:image" content="' + esc(meta.cover) + '">' : ""),
 '<meta name="twitter:card" content="summary_large_image">',
+'<meta name="twitter:title" content="' + canonicalTitle + '">',
+'<meta name="twitter:description" content="' + esc(meta.description) + '">',
 (meta.type ? '<meta name="lesson-type" content="' + esc(meta.type) + '">' : ""),
+(meta.author ? '<meta name="author" content="' + esc(meta.author) + '">' : ""),
+'<script type="application/ld+json">' + JSON.stringify(jsonLd) + '</' + 'script>',
+'<script type="application/ld+json">' + JSON.stringify(breadcrumbLd) + '</' + 'script>',
 '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap">',
 '<link rel="stylesheet" href="../../css/global.css">',
 '<link rel="stylesheet" href="../../src/styles/tokens.css">',
@@ -3318,30 +3427,39 @@ blocksHtml,
   });
 
   /* ══════════════════════════════════════
-     YENİ: Hazır Şablonlar Sistemi
+     Hazır Şablonlar Sistemi
      ══════════════════════════════════════ */
-  $all(".template-btn").forEach(btn => {
+  function loadIntoCanvas(newBlocks, newSeq) {
+    blocks = newBlocks;
+    seq = newSeq || blocks.reduce((m, b) => {
+      const n = parseInt(String(b.id).replace(/^b/, ""), 10);
+      return isNaN(n) ? m : Math.max(m, n);
+    }, blocks.length);
+    renderAll();
+  }
+
+  $all(".template-btn[data-template]").forEach(btn => {
     btn.addEventListener("click", () => {
       if (blocks.length && !confirm("Mevcut çalışmanız silinecek, onaylıyor musunuz?")) return;
-      blocks = [];
+      const newBlocks = [];
       const type = btn.dataset.template;
-      
+
       if (type === "vocab") {
-        blocks.push(
+        newBlocks.push(
           Object.assign({ id: nextId(), type: "heading" }, defaultsFor("heading"), { text: "Günün Almanca Kelimeleri", level: "h1" }),
           Object.assign({ id: nextId(), type: "vocab" }, defaultsFor("vocab"), { de: "der Tisch", tr: "masa", phon: "tiş", example: "Der Tisch ist sehr groß." }),
           Object.assign({ id: nextId(), type: "vocab" }, defaultsFor("vocab"), { de: "der Stuhl", tr: "sandalye", phon: "ştuul", example: "Ich sitze auf dem Stuhl." }),
           Object.assign({ id: nextId(), type: "quiz" }, defaultsFor("quiz"), { question: "Hangi kelime 'masa' anlamına gelir?", options: ["der Stuhl", "der Tisch", "das Auto"], correctIndex: 1, explanation: "Almanca'da 'der Tisch' masa demektir." })
         );
       } else if (type === "reading") {
-        blocks.push(
+        newBlocks.push(
           Object.assign({ id: nextId(), type: "heading" }, defaultsFor("heading"), { text: "Okuma-Anlama: Mein Tag", level: "h1" }),
           Object.assign({ id: nextId(), type: "paragraph" }, defaultsFor("paragraph"), { html: "Ich stehe jeden Morgen um [6 Uhr|saat 6'da] auf. Dann trinke ich einen Kaffee. [Danach|Ondan sonra] gehe ich zur Arbeit. Ich liebe meinen Beruf." }),
           Object.assign({ id: nextId(), type: "callout" }, defaultsFor("callout"), { theme: "blue", title: "Gramematik Notu", html: "Almanca'da saatlerden önce her zaman <b>um</b> edatı kullanılır." }),
           Object.assign({ id: nextId(), type: "quiz" }, defaultsFor("quiz"), { question: "Yazar sabah saat kaçta uyanıyor?", options: ["7 Uhr", "6 Uhr", "8 Uhr"], correctIndex: 1, explanation: "Metinde 'Ich stehe jeden Morgen um 6 Uhr auf.' ifadesi geçmektedir." })
         );
       } else if (type === "grammar") {
-        blocks.push(
+        newBlocks.push(
           Object.assign({ id: nextId(), type: "heading" }, defaultsFor("heading"), { text: "Belirsiz Artıkeller (Unbestimmte Artikel)", level: "h1" }),
           Object.assign({ id: nextId(), type: "paragraph" }, defaultsFor("paragraph"), { html: "Almanca'da bilinmeyen veya genel bir nesneden bahsederken belirsiz artıkeller kullanılır." }),
           Object.assign({ id: nextId(), type: "table" }, defaultsFor("table"), { headers: ["Artıkel", "Belirsiz Hali", "Olumsuz Hali"], rows: [["der (Eril)", "ein", "kein"], ["die (Dişil)", "eine", "keine"], ["das (Nötr)", "ein", "kein"]] }),
@@ -3351,10 +3469,80 @@ blocksHtml,
           ] })
         );
       }
-      renderAll();
+      loadIntoCanvas(newBlocks);
       toast("Şablon başarıyla uygulandı ✓");
     });
   });
+
+  /* ══════════════════════════════════════
+     Kendi Şablonların (localStorage) — en zahmetsiz yol:
+     tarayıcıda saklanır, dosya indirip yüklemeye gerek yok.
+     ══════════════════════════════════════ */
+  const CUSTOM_TPL_KEY = "dersBuilderCustomTemplates";
+  const customTplList = $("#customTemplatesList");
+
+  function getCustomTemplates() {
+    try {
+      const raw = localStorage.getItem(CUSTOM_TPL_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) { return []; }
+  }
+  function setCustomTemplates(arr) {
+    try { localStorage.setItem(CUSTOM_TPL_KEY, JSON.stringify(arr)); }
+    catch (e) { toast("Şablon kaydedilemedi (tarayıcı depolaması dolu olabilir).", "err"); }
+  }
+
+  function renderCustomTemplates() {
+    const list = getCustomTemplates();
+    customTplList.innerHTML = "";
+    if (!list.length) {
+      customTplList.innerHTML = '<div class="template-empty-hint">Henüz kaydedilmiş şablonun yok. Bir ders hazırlayıp aşağıdaki butonla şablon olarak kaydedebilirsin.</div>';
+      return;
+    }
+    list.forEach(tpl => {
+      const row = document.createElement("div");
+      row.className = "custom-template-row";
+      row.innerHTML =
+        '<button class="template-btn" type="button"><span>' + esc(tpl.name) + '</span><small>' + tpl.blockCount + ' blok · ' + esc(tpl.savedAtLabel || "") + '</small></button>' +
+        '<button class="tpl-delete-btn" type="button" title="Şablonu sil"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+      row.querySelector(".template-btn").addEventListener("click", () => {
+        if (blocks.length && !confirm("Mevcut çalışmanız silinecek, onaylıyor musunuz?")) return;
+        loadIntoCanvas(JSON.parse(JSON.stringify(tpl.blocks)), tpl.seq);
+        toast('"' + tpl.name + '" şablonu yüklendi ✓');
+      });
+      row.querySelector(".tpl-delete-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (!confirm('"' + tpl.name + '" şablonunu silmek istediğine emin misin?')) return;
+        setCustomTemplates(getCustomTemplates().filter(t => t.id !== tpl.id));
+        renderCustomTemplates();
+        toast("Şablon silindi");
+      });
+      customTplList.appendChild(row);
+    });
+  }
+
+  $("#btnSaveAsTemplate").addEventListener("click", () => {
+    if (!blocks.length) { toast("Şablon olarak kaydetmek için önce en az bir blok ekleyin.", "err"); return; }
+    const name = prompt('Şablon için bir isim yaz (örn. "A2 Kelime Dersi"):', "");
+    if (name === null) return;
+    const trimmed = name.trim();
+    if (!trimmed) { toast("Şablon adı boş olamaz.", "err"); return; }
+    const list = getCustomTemplates();
+    list.push({
+      id: "tpl" + Date.now(),
+      name: trimmed,
+      blocks: JSON.parse(JSON.stringify(blocks)),
+      seq: seq,
+      blockCount: blocks.length,
+      savedAtLabel: new Date().toLocaleDateString("tr-TR", { day: "2-digit", month: "2-digit", year: "numeric" })
+    });
+    setCustomTemplates(list);
+    renderCustomTemplates();
+    toast('"' + trimmed + '" şablon olarak kaydedildi ✓');
+  });
+
+  renderCustomTemplates();
   renderAll();
 })();
 </script>
