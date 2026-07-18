@@ -323,12 +323,12 @@ function showToast(message, type = "success") {
   .lv-header { padding:22px 22px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-shrink:0; }
   .lv-title { font-family:'DM Serif Display',Georgia,serif;font-size:20px;font-weight:400;color:#f1ece0;margin:0 0 4px; }
   .lv-desc { font-size:13px;color:#6b7280;margin:0; }
-  .lv-count { font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);color:#b8922e;white-space:nowrap; }
+  .lv-count { font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(180,197,255,0.1);border:1px solid rgba(180,197,255,0.2);color:#b4c5ff;white-space:nowrap; }
   .lv-close { background:none;border:1px solid rgba(255,255,255,0.08);border-radius:8px;width:30px;height:30px;color:#4b5563;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:0.15s; }
   .lv-close:hover { color:#9ca3af;border-color:rgba(255,255,255,0.18); }
   .lv-search-wrap { position:relative;padding:14px 22px 8px;flex-shrink:0; }
   .lv-search { width:100%;box-sizing:border-box;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.07);border-radius:9px;color:#e5e7eb;font-size:13px;font-family:inherit;padding:8px 12px 8px 34px;outline:none;transition:border-color 0.18s; }
-  .lv-search:focus { border-color:rgba(201,168,76,0.3); }
+  .lv-search:focus { border-color:rgba(180,197,255,0.3); }
   .lv-search::placeholder { color:#374151; }
   .lv-word-list { flex:1;overflow-y:auto;padding:0 22px;display:flex;flex-direction:column;gap:4px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent; }
   .lv-word-list::-webkit-scrollbar { width:4px; }
@@ -343,19 +343,19 @@ function showToast(message, type = "success") {
   .lv-artikel.das { background:rgba(16,185,129,0.1);color:#34d399;border:1px solid rgba(16,185,129,0.18); }
   .lv-word-info { min-width:0; }
   .lv-word-de { font-family:'DM Serif Display',Georgia,serif;font-size:14px;color:#f1ece0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-  .lv-word-de mark { background:rgba(201,168,76,0.2);color:#c9a84c;border-radius:2px;padding:0 1px; }
+  .lv-word-de mark { background:rgba(180,197,255,0.2);color:#b4c5ff;border-radius:2px;padding:0 1px; }
   .lv-word-tr { font-size:12px;color:#6b7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
   .lv-word-tags { display:flex;gap:3px;flex-wrap:wrap;flex-shrink:0; }
   .lv-tag { padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;letter-spacing:0.02em;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);color:#4b5563; }
   .lv-tag.A1 { background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.18);color:#34d399; }
   .lv-tag.A2 { background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.18);color:#60a5fa; }
-  .lv-tag.B1 { background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.18);color:#c9a84c; }
+  .lv-tag.B1 { background:rgba(180,197,255,0.08);border-color:rgba(180,197,255,0.18);color:#b4c5ff; }
   .lv-tag.B2 { background:rgba(236,72,153,0.08);border-color:rgba(236,72,153,0.18);color:#f472b6; }
   .lv-footer { padding:14px 22px;border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:8px;flex-shrink:0; }
   .lv-edit-btn { flex:1;padding:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#6b7280;font-size:13px;font-family:inherit;cursor:pointer;transition:0.15s; }
   .lv-edit-btn:hover { color:#9ca3af;background:rgba(255,255,255,0.07); }
-  .lv-close-btn { flex:1;padding:10px;background:#c9a84c;border:none;border-radius:10px;color:#0c0c12;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.15s; }
-  .lv-close-btn:hover { background:#d4b055; }
+  .lv-close-btn { flex:1;padding:10px;background:#b4c5ff;border:none;border-radius:10px;color:#0c0c12;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.15s; }
+  .lv-close-btn:hover { background:#dbe1ff; }
   `;
   document.head.appendChild(s);
 })();

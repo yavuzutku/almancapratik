@@ -6,11 +6,11 @@
 <link rel="icon" href="favicon.ico" type="image/x-icon">
 <title>Kullanım Koşulları — Almanca Pratik</title>
 <meta name="description" content="AlmancaPratik kullanım koşulları. Platformu kullanmadan önce lütfen okuyunuz.">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Manrope:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --font-display: 'Syne', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body:    'Manrope', sans-serif;
   --bg-base:      #070709;
   --bg-surface:   rgba(255,255,255,0.035);
   --bg-hover:     rgba(255,255,255,0.06);
@@ -19,8 +19,8 @@
   --text-primary:   #f0eee8;
   --text-secondary: rgba(240,238,232,0.55);
   --text-muted:     rgba(240,238,232,0.32);
-  --gold:   #c9a84c;
-  --gold-light: #e8c97a;
+  --gold:   #b4c5ff;
+  --gold-light: #dbe1ff;
   --radius-card: 16px;
   --transition:  0.3s cubic-bezier(0.4,0,0.2,1);
 }
@@ -46,7 +46,7 @@ body {
   mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
 }
 .bg-glow { position: absolute; border-radius: 50%; filter: blur(120px); animation: drift 12s ease-in-out infinite alternate; }
-.bg-glow--1 { width:500px; height:500px; top:-150px; right:-80px; background:radial-gradient(circle,#c9a84c,transparent 70%); opacity:0.09; }
+.bg-glow--1 { width:500px; height:500px; top:-150px; right:-80px; background:radial-gradient(circle,#b4c5ff,transparent 70%); opacity:0.09; }
 .bg-glow--2 { width:400px; height:400px; bottom:10%; left:-100px; background:radial-gradient(circle,#60c8f0,transparent 70%); opacity:0.05; animation-delay:-6s; }
 @keyframes drift { from{transform:translate(0,0) scale(1)} to{transform:translate(30px,20px) scale(1.05)} }
 
@@ -63,7 +63,7 @@ body {
   width:34px; height:34px;
   background: linear-gradient(135deg, var(--gold), var(--gold-light));
   border-radius:9px; display:flex; align-items:center; justify-content:center;
-  box-shadow: 0 4px 16px rgba(201,168,76,0.2);
+  box-shadow: 0 4px 16px rgba(180,197,255,0.2);
 }
 .nav-logo-icon svg { width:18px; height:18px; }
 .nav-logo-name { font-family:var(--font-display); font-size:16px; font-weight:800; color:var(--text-primary); letter-spacing:-0.01em; }
@@ -94,7 +94,7 @@ body {
 .eyebrow-dot { width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 8px var(--gold); animation:pulse 2.5s ease-in-out infinite; }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
 .page-title { font-family:var(--font-display); font-size:clamp(32px,5vw,52px); font-weight:800; letter-spacing:-0.03em; line-height:1.05; margin-bottom:16px; }
-.page-title span { background:linear-gradient(135deg,#c9a84c 0%,#f0d080 50%,#c9a84c 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.page-title span { background:linear-gradient(135deg,#b4c5ff 0%,#dbe1ff 50%,#b4c5ff 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
 .page-meta { font-size:14px; color:var(--text-muted); }
 
 .section {
@@ -115,12 +115,12 @@ body {
 
 .contact-box {
   margin-top:40px; padding:28px 32px;
-  border:1px solid rgba(201,168,76,0.2); border-radius:var(--radius-card);
-  background:rgba(201,168,76,0.04); display:flex; align-items:center; gap:20px;
+  border:1px solid rgba(180,197,255,0.2); border-radius:var(--radius-card);
+  background:rgba(180,197,255,0.04); display:flex; align-items:center; gap:20px;
 }
 .contact-box-icon {
   width:44px; height:44px; flex-shrink:0; border-radius:12px;
-  background:rgba(201,168,76,0.12); border:1px solid rgba(201,168,76,0.2);
+  background:rgba(180,197,255,0.12); border:1px solid rgba(180,197,255,0.2);
   display:flex; align-items:center; justify-content:center; color:var(--gold);
 }
 .contact-box-icon svg { width:20px; height:20px; }

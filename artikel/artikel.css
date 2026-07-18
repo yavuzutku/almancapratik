@@ -6,8 +6,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap');
 
 :root {
-  --gold:       #c9a84c;
-  --gold-light: #e8c96a;
+  --gold:       #b4c5ff;
+  --gold-light: #dbe1ff;
   --surface:    rgba(255,255,255,0.04);
   --border:     rgba(255,255,255,0.09);
   --text:       #e8e2d5;
@@ -40,7 +40,7 @@ body {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(180,197,255,0.06) 0%, transparent 70%),
     radial-gradient(ellipse 40% 40% at 80% 80%, rgba(74,144,217,0.04) 0%, transparent 60%);
   pointer-events: none;
   z-index: 0;
@@ -172,7 +172,7 @@ body {
 }
 .input-wrapper input[type="text"]:focus {
   border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+  box-shadow: 0 0 0 3px rgba(180,197,255,0.1);
 }
 
 .search-btn {
@@ -340,7 +340,7 @@ body {
 .copy-btn:hover {
   border-color: var(--gold);
   color: var(--gold);
-  background: rgba(201,168,76,0.06);
+  background: rgba(180,197,255,0.06);
 }
 .copy-btn.copied {
   border-color: var(--das);
@@ -491,7 +491,7 @@ body {
 
 .selectable::selection,
 .selectable *::selection {
-  background: rgba(201,168,76,0.22);
+  background: rgba(180,197,255,0.22);
   color: var(--text);
 }
 
@@ -596,7 +596,7 @@ body {
   margin-top: 1.2rem;
   width: 100%;
   background: transparent;
-  border: 1px solid rgba(201,168,76,0.35);
+  border: 1px solid rgba(180,197,255,0.35);
   color: var(--gold);
   font-family: 'DM Mono', monospace;
   font-size: 0.72rem;
@@ -610,7 +610,7 @@ body {
   animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 #quizStartBtn:hover {
-  background: rgba(201,168,76,0.07);
+  background: rgba(180,197,255,0.07);
   border-color: var(--gold);
 }
 #quizStartBtn:active { transform: scale(0.98); }
@@ -744,8 +744,8 @@ body {
   display: block;
   width: calc(100% - 2.8rem);
   margin: 0.2rem 1.4rem 1.2rem;
-  background: rgba(201,168,76,0.1);
-  border: 1px solid rgba(201,168,76,0.35);
+  background: rgba(180,197,255,0.1);
+  border: 1px solid rgba(180,197,255,0.35);
   color: var(--gold);
   font-family: 'DM Mono', monospace;
   font-size: 0.72rem;
@@ -759,7 +759,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 .quiz-next:hover {
-  background: rgba(201,168,76,0.17);
+  background: rgba(180,197,255,0.17);
   border-color: var(--gold);
 }
 
@@ -813,12 +813,12 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 .quiz-restart-btn {
-  background: rgba(201,168,76,0.1);
-  border: 1px solid rgba(201,168,76,0.4);
+  background: rgba(180,197,255,0.1);
+  border: 1px solid rgba(180,197,255,0.4);
   color: var(--gold);
 }
 .quiz-restart-btn:hover {
-  background: rgba(201,168,76,0.18);
+  background: rgba(180,197,255,0.18);
   border-color: var(--gold);
 }
 .quiz-close-btn {

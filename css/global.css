@@ -1,4 +1,49 @@
 /* =========================
+   RENK TOKENLARI (Material3 tarzı)
+   Tüm renkler burada tek noktadan yönetilir.
+========================= */
+
+:root {
+  --surface-container-low:     #131b2e;
+  --surface-dim:                #0b1326;
+  --secondary-fixed:            #d8e3fb;
+  --secondary:                  #bcc7de;
+  --on-tertiary-container:      #ffede6;
+  --on-primary-container:       #eeefff;
+  --surface-container-high:     #222a3d;
+  --surface-container:          #171f33;
+  --surface-container-lowest:   #060e20;
+  --on-secondary:                #263143;
+  --on-error:                   #690005;
+  --primary-container:          #2563eb;
+  --secondary-container:        #3e495d;
+  --on-background:              #dae2fd;
+  --background:                 #0b1326;
+  --surface-container-highest:  #2d3449;
+  --surface-tint:               #b4c5ff;
+  --primary-fixed-dim:          #b4c5ff;
+  --secondary-fixed-dim:        #bcc7de;
+  --on-secondary-fixed:         #111c2d;
+  --on-primary:                 #002a78;
+  --outline:                    #8d90a0;
+  --on-surface:                 #dae2fd;
+  --on-surface-variant:         #c3c6d7;
+  --on-primary-fixed:           #00174b;
+  --primary-fixed:              #dbe1ff;
+  --surface:                    #0b1326;
+  --primary:                    #b4c5ff;
+  --surface-variant:            #2d3449;
+  --on-secondary-container:     #aeb9d0;
+  --outline-variant:            #434655;
+  --inverse-on-surface:         #283044;
+  --surface-bright:             #31394d;
+
+  /* Fontlar */
+  --font-display: 'Space Grotesk', sans-serif;   /* eski: Syne */
+  --font-body:    'Manrope', sans-serif;         /* eski: DM Sans — alternatif: 'Inter' */
+}
+
+/* =========================
    BASE RESET
    (Tüm sayfalarda geçerli — sayfa CSS'lerinde tekrar yazmaya gerek yok)
 ========================= */
@@ -9,9 +54,9 @@
 
 body {
   margin: 0;
-  font-family: 'DM Sans', sans-serif;
-  background: #0a0a0f;
-  color: #fff;
+  font-family: var(--font-body);
+  background: var(--background);
+  color: var(--on-background);
   min-height: 100vh;
 }
 
@@ -19,7 +64,10 @@ body {
    NAVBAR
 ========================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap');
+/* Body fontu olarak Manrope yerine Inter tercih edilirse alttaki satırı da ekleyip
+   --font-body değerini 'Inter', sans-serif olarak değiştir:
+   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); */
 
 .navbar {
   position: sticky;
@@ -33,12 +81,12 @@ body {
   padding: 0 44px;
   height: 62px;
 
-  background: rgba(7,7,9,0.82);
+  background: rgba(6,14,32,0.82);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(218,226,253,0.06);
   box-shadow:
-    0 1px 0 0 rgba(201,168,76,0.08),
+    0 1px 0 0 rgba(180,197,255,0.08),
     0 4px 24px rgba(0,0,0,0.35);
 
   transition: background 0.3s ease, box-shadow 0.3s ease;
@@ -46,11 +94,11 @@ body {
 
 /* ── Logo ── */
 .logo {
-  font-family: 'Syne', sans-serif;
+  font-family: var(--font-display);
   font-size: 17px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: #f0eee8;
+  color: var(--on-primary-container);
   position: relative;
   user-select: none;
   flex-shrink: 0;
@@ -63,7 +111,7 @@ body {
   left: 0;
   width: 100%;
   height: 1.5px;
-  background: linear-gradient(90deg, #c9a84c, transparent);
+  background: linear-gradient(90deg, var(--primary), transparent);
   border-radius: 2px;
   opacity: 0.7;
 }
@@ -79,14 +127,14 @@ body {
 .home-btn {
   padding: 7px 16px;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(218,226,253,0.1);
   border-radius: 8px;
   cursor: pointer;
 
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-body);
   font-size: 13px;
   font-weight: 500;
-  color: rgba(240,238,232,0.65);
+  color: var(--on-surface-variant);
   letter-spacing: 0.01em;
 
   white-space: nowrap;
@@ -98,9 +146,9 @@ body {
 }
 
 .home-btn:hover {
-  background: rgba(255,255,255,0.07);
-  border-color: rgba(255,255,255,0.2);
-  color: #f0eee8;
+  background: rgba(218,226,253,0.07);
+  border-color: rgba(218,226,253,0.2);
+  color: var(--on-primary-container);
   transform: translateY(-1px);
 }
 
@@ -112,26 +160,26 @@ body {
 .tag-chip {
   padding: 5px 12px;
   border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.04);
-  color: rgba(240,238,232,0.45);
+  border: 1px solid rgba(218,226,253,0.1);
+  background: rgba(218,226,253,0.04);
+  color: var(--secondary);
   font-size: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-body);
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500;
 }
 
 .tag-chip:hover {
-  border-color: rgba(201,168,76,0.5);
-  color: #c9a84c;
-  background: rgba(201,168,76,0.06);
+  border-color: rgba(180,197,255,0.5);
+  color: var(--primary);
+  background: rgba(180,197,255,0.06);
 }
 
 .tag-chip.selected {
-  background: rgba(201,168,76,0.15);
-  border-color: rgba(201,168,76,0.5);
-  color: #c9a84c;
+  background: rgba(180,197,255,0.15);
+  border-color: rgba(180,197,255,0.5);
+  color: var(--primary);
   font-weight: 600;
 }
 
@@ -208,12 +256,12 @@ body {
   top: 0; left: 0;
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, #c9a84c, #e8c97a);
+  background: linear-gradient(135deg, var(--primary), var(--primary-fixed));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0a0a0f;
+  color: var(--on-primary);
   box-shadow: 0 4px 20px rgba(0,0,0,0.5);
   cursor: pointer;
   border: none;
@@ -229,7 +277,7 @@ body {
 
 .fab-wrapper.active .fab-main {
   transform: rotate(135deg);
-  background: #f07068;
+  background: var(--primary-container);
 }
 
 /* ── FAB Item (her alt buton) ── */
@@ -261,13 +309,13 @@ body {
 .fab-item-content {
   width: 48px;
   height: 48px;
-  background: #1c1c26;
-  border: 1px solid #c9a84c;
+  background: var(--surface-container-high);
+  border: 1px solid var(--primary);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #c9a84c;
+  color: var(--primary);
   box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
               background 0.2s ease;
@@ -287,8 +335,8 @@ body {
 /* ── Hover (yalnızca masaüstü) ── */
 @media (hover: hover) {
   .fab-item:hover .fab-item-content {
-    background: #c9a84c;
-    color: #0a0a0f;
+    background: var(--primary);
+    color: var(--on-primary);
     transform:
       rotate(calc(var(--angle) * 1deg))
       translate(var(--radius))
@@ -309,8 +357,8 @@ body {
 
 .fab-label {
   position: absolute;
-  background: #c9a84c;
-  color: #0a0a0f;
+  background: var(--primary);
+  color: var(--on-primary);
   padding: 4px 10px;
   border-radius: 4px;
   font-size: 10px;
@@ -321,6 +369,7 @@ body {
   transition: opacity 0.2s ease;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   z-index: 2020;
+  font-family: var(--font-display);
 
   /* Varsayılan konum: üst */
   bottom: calc(100% + 12px);
@@ -337,7 +386,7 @@ body {
   transform: translateX(-50%);
   border-width: 5px;
   border-style: solid;
-  border-color: #c9a84c transparent transparent transparent;
+  border-color: var(--primary) transparent transparent transparent;
 }
 
 /* item-2: üst-sol köşe */
@@ -363,7 +412,7 @@ body {
   top: 50%;
   left: 100%;
   transform: translateY(-50%);
-  border-color: transparent transparent transparent #c9a84c;
+  border-color: transparent transparent transparent var(--primary);
 }
 
 /* Masaüstü hover'da etiket belir */
@@ -396,8 +445,8 @@ body {
 
   /* İkon büyütme efekti (dokunuş geri bildirimi) */
   .fab-item:active .fab-item-content {
-    background: #c9a84c;
-    color: #0a0a0f;
+    background: var(--primary);
+    color: var(--on-primary);
     transform:
       rotate(calc(var(--angle) * 1deg))
       translate(var(--radius))

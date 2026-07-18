@@ -43,7 +43,7 @@ body {
   opacity: 0.12;
   animation: drift 12s ease-in-out infinite alternate;
 }
-.bg-glow--1 { width:600px; height:600px; top:-200px; left:-100px;  background:radial-gradient(circle,#c9a84c,transparent 70%); animation-delay:0s; }
+.bg-glow--1 { width:600px; height:600px; top:-200px; left:-100px;  background:radial-gradient(circle,#b4c5ff,transparent 70%); animation-delay:0s; }
 .bg-glow--2 { width:500px; height:500px; top:10%; right:-150px;    background:radial-gradient(circle,#60c8f0,transparent 70%); animation-delay:-4s; opacity:0.08; }
 .bg-glow--3 { width:400px; height:400px; bottom:10%; left:40%;     background:radial-gradient(circle,#a064ff,transparent 70%); animation-delay:-8s; opacity:0.07; }
 
@@ -87,7 +87,7 @@ body {
   position: absolute;
   left: 0; top: 18%; bottom: 18%;
   width: 3px;
-  background: linear-gradient(to bottom, transparent, #c9a84c 40%, #c9a84c 60%, transparent);
+  background: linear-gradient(to bottom, transparent, #b4c5ff 40%, #b4c5ff 60%, transparent);
   border-radius: 999px;
 }
 
@@ -98,7 +98,7 @@ body {
   top: -80px; right: -80px;
   width: 240px; height: 240px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(201,168,76,0.07), transparent 70%);
+  background: radial-gradient(circle, rgba(180,197,255,0.07), transparent 70%);
   pointer-events: none;
 }
 
@@ -150,7 +150,7 @@ body {
 }
 
 .hero__title--accent {
-  background: linear-gradient(135deg, #c9a84c 0%, #f0d080 45%, #c9a84c 100%);
+  background: linear-gradient(135deg, #b4c5ff 0%, #dbe1ff 45%, #b4c5ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -365,9 +365,9 @@ body {
    CARD VARIANTS
 ══════════════════════════════════════════════ */
 .action-card--primary .card-glow    { background: var(--gold); }
-.action-card--primary:hover         { border-color:rgba(201,168,76,0.35); box-shadow:0 20px 40px -10px rgba(201,168,76,0.15); }
-.action-card--primary:hover .card-icon { color:var(--gold); border-color:rgba(201,168,76,0.3); }
-.action-card--primary:hover .card-tag  { color:var(--gold); border-color:rgba(201,168,76,0.3); }
+.action-card--primary:hover         { border-color:rgba(180,197,255,0.35); box-shadow:0 20px 40px -10px rgba(180,197,255,0.15); }
+.action-card--primary:hover .card-icon { color:var(--gold); border-color:rgba(180,197,255,0.3); }
+.action-card--primary:hover .card-tag  { color:var(--gold); border-color:rgba(180,197,255,0.3); }
 
 .action-card--gecmis .card-glow     { background: var(--rose); }
 .action-card--gecmis:hover          { border-color:rgba(240,112,104,0.3); box-shadow:0 20px 40px -10px rgba(240,112,104,0.12); }
@@ -487,7 +487,7 @@ body {
 .dersler-level--a2 { color: #86efac; border-color: rgba(134,239,172,0.2); background: rgba(134,239,172,0.05); }
 .dersler-level--b1 { color: var(--blue); border-color: rgba(96,200,240,0.2); background: rgba(96,200,240,0.05); }
 .dersler-level--b2 { color: #818cf8;  border-color: rgba(129,140,248,0.2); background: rgba(129,140,248,0.05); }
-.dersler-level--c1 { color: var(--gold); border-color: rgba(201,168,76,0.25); background: rgba(201,168,76,0.07); }
+.dersler-level--c1 { color: var(--gold); border-color: rgba(180,197,255,0.25); background: rgba(180,197,255,0.07); }
 
 
 /* ══════════════════════════════════════════════
@@ -550,7 +550,7 @@ body {
   .action-cards { gap: 6px; }
   .action-card { padding: 14px 12px 10px; }
 }
-.action-card--notlar .card-glow  { background: #c9a84c; }
-.action-card--notlar:hover       { border-color:rgba(201,168,76,0.35); box-shadow:0 20px 40px -10px rgba(201,168,76,0.15); }
-.action-card--notlar:hover .card-icon { color:#c9a84c; border-color:rgba(201,168,76,0.3); }
-.action-card--notlar:hover .card-tag  { color:#c9a84c; border-color:rgba(201,168,76,0.3); }
+.action-card--notlar .card-glow  { background: #b4c5ff; }
+.action-card--notlar:hover       { border-color:rgba(180,197,255,0.35); box-shadow:0 20px 40px -10px rgba(180,197,255,0.15); }
+.action-card--notlar:hover .card-icon { color:#b4c5ff; border-color:rgba(180,197,255,0.3); }
+.action-card--notlar:hover .card-tag  { color:#b4c5ff; border-color:rgba(180,197,255,0.3); }

@@ -1,7 +1,7 @@
 :root {
-  --gold: #c9a84c;
-  --gold-dim: rgba(201,168,76,0.15);
-  --gold-border: rgba(201,168,76,0.3);
+  --gold: #b4c5ff;
+  --gold-dim: rgba(180,197,255,0.15);
+  --gold-border: rgba(180,197,255,0.3);
   --bg: #0a0a0f;
   --surface: rgba(255,255,255,0.04);
   --surface-hover: rgba(255,255,255,0.07);
@@ -30,7 +30,7 @@
 }
 
 .page-title {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 26px;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -44,7 +44,7 @@
   padding: 8px 16px;
   border-radius: 10px;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 13px;
   transition: 0.2s;
 }
@@ -60,7 +60,7 @@
   padding: 8px 16px;
   border-radius: 10px;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 13px;
   transition: 0.2s;
 }
@@ -80,7 +80,7 @@
   color: var(--text);
   padding: 14px 20px;
   border-radius: 14px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 15px;
   outline: none;
   transition: 0.2s;
@@ -111,7 +111,7 @@
   background: var(--surface-hover);
   border-color: var(--gold-border);
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(201,168,76,0.08);
+  box-shadow: 0 8px 32px rgba(180,197,255,0.08);
 }
 
 @keyframes fadeUp {
@@ -244,13 +244,13 @@
   border: none;
   padding: 12px;
   border-radius: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s;
 }
-.btn-primary:hover { background: #d9b85c; }
+.btn-primary:hover { background: #dbe1ff; }
 
 .btn-danger {
   background: var(--danger-dim);
@@ -258,7 +258,7 @@
   color: var(--danger);
   padding: 12px 20px;
   border-radius: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   cursor: pointer;
   transition: 0.2s;
@@ -295,27 +295,27 @@
   align-items: center;
   gap: 10px;
   padding: 10px 20px;
-  background: rgba(201,168,76,0.08);
-  border: 0.5px solid rgba(201,168,76,0.2);
+  background: rgba(180,197,255,0.08);
+  border: 0.5px solid rgba(180,197,255,0.2);
   border-radius: 10px;
   margin-bottom: 14px;
   font-size: 13px;
-  color: #c9a84c;
+  color: #b4c5ff;
 }
 
 #selectedCount { flex: 1; font-weight: 500; }
 
 .select-all-btn {
   background: transparent;
-  border: 1px solid rgba(201,168,76,0.3);
+  border: 1px solid rgba(180,197,255,0.3);
   border-radius: 7px;
-  color: #c9a84c;
+  color: #b4c5ff;
   font-size: 12px;
   padding: 5px 12px;
   cursor: pointer;
   transition: all .15s;
 }
-.select-all-btn:hover { background: rgba(201,168,76,0.12); }
+.select-all-btn:hover { background: rgba(180,197,255,0.12); }
 
 .delete-selected-btn {
   background: rgba(201,76,76,0.1);
@@ -334,8 +334,8 @@
 .history-list.select-mode .history-card { cursor: pointer; }
 
 .history-card.selected {
-  border-color: rgba(201,168,76,0.5) !important;
-  background: rgba(201,168,76,0.06) !important;
+  border-color: rgba(180,197,255,0.5) !important;
+  background: rgba(180,197,255,0.06) !important;
 }
 
 .card-checkbox {
@@ -349,7 +349,7 @@
   justify-content: center;
   font-size: 11px;
   font-weight: 700;
-  color: #c9a84c;
+  color: #b4c5ff;
   flex-shrink: 0;
   margin-bottom: 6px;
   transition: all .15s;
@@ -357,8 +357,8 @@
 
 .history-list.select-mode .card-checkbox { display: flex; }
 .history-card.selected .card-checkbox {
-  background: rgba(201,168,76,0.2);
-  border-color: #c9a84c;
+  background: rgba(180,197,255,0.2);
+  border-color: #b4c5ff;
 }
 
 /* ── Favori butonu (kart içi) ───────────────── */
@@ -373,22 +373,22 @@
   transition: color .15s, transform .15s;
   margin-left: auto;
 }
-.card-fav-btn:hover   { color: #c9a84c; transform: scale(1.15); }
-.card-fav-btn.is-fav  { color: #c9a84c; }
+.card-fav-btn:hover   { color: #b4c5ff; transform: scale(1.15); }
+.card-fav-btn.is-fav  { color: #b4c5ff; }
 
 /* ── Modal favori butonu ────────────────────── */
 .btn-fav {
   padding: 9px 18px;
   background: transparent;
-  border: 1px solid rgba(201,168,76,0.3);
+  border: 1px solid rgba(180,197,255,0.3);
   border-radius: 8px;
   color: #9a9488;
   font-size: 13px;
   cursor: pointer;
   transition: all .18s;
 }
-.btn-fav:hover  { background: rgba(201,168,76,0.1); color: #c9a84c; }
-.btn-fav.is-fav { color: #c9a84c; border-color: rgba(201,168,76,0.5); }
+.btn-fav:hover  { background: rgba(180,197,255,0.1); color: #b4c5ff; }
+.btn-fav.is-fav { color: #b4c5ff; border-color: rgba(180,197,255,0.5); }
 
 /* ── card-meta flex düzeltmesi ──────────────── */
 .card-meta {

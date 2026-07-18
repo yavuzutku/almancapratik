@@ -263,7 +263,7 @@ function createNoteCard(note) {
     <div class="note-card__footer">
       <span class="note-card__date">${date}</span>
       <div class="note-card__badges">
-        ${note.pinned ? `<span class="badge-pin"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="color:#c9a84c"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg></span>` : ""}
+        ${note.pinned ? `<span class="badge-pin"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="color:#b4c5ff"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg></span>` : ""}
         ${note.archived ? `<span class="badge-archive" title="Arşivlenmiş"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.4"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/></svg></span>` : ""}
         <div class="note-card__tags">${tagsHtml}</div>
       </div>
@@ -852,7 +852,7 @@ DOM.btnExport?.addEventListener("click", () => {
   h2{font-size:20px;} h3{font-size:16px;}
   code{background:#f0f0f0;padding:2px 6px;border-radius:4px;font-size:13px;}
   pre{background:#f5f5f5;padding:16px;border-radius:8px;overflow:auto;}
-  blockquote{border-left:3px solid #c9a84c;padding-left:1em;color:#666;}
+  blockquote{border-left:3px solid #b4c5ff;padding-left:1em;color:#666;}
 </style>
 </head>
 <body>

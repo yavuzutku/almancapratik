@@ -8,8 +8,8 @@
   --bg:     #0a0a0f;
   --panel:  #12121a;
   --border: rgba(255,255,255,0.07);
-  --gold:       #c9a84c;
-  --gold-light: #e8c97a;
+  --gold:       #b4c5ff;
+  --gold-light: #dbe1ff;
   --text:   #f0ede8;
 
   /*
@@ -36,7 +36,7 @@ body {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,168,76,.08) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(180,197,255,.08) 0%, transparent 60%),
     radial-gradient(ellipse 60% 80% at 80% 90%, rgba(100,80,180,.07) 0%, transparent 55%),
     var(--bg);
 }
@@ -64,7 +64,7 @@ body {
 .orb-1 {
   width: 400px;
   height: 400px;
-  background: rgba(201,168,76,.07);
+  background: rgba(180,197,255,.07);
   top: -100px;
   right: -100px;
 }
@@ -125,7 +125,7 @@ main {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  box-shadow: 0 8px 32px rgba(201,168,76,.25);
+  box-shadow: 0 8px 32px rgba(180,197,255,.25);
 }
 
 .logo-name {
@@ -228,8 +228,8 @@ main {
   font-size: 12px;
   font-weight: 600;
   color: var(--gold);
-  background: rgba(201,168,76,0.1);
-  border: 1px solid rgba(201,168,76,0.25);
+  background: rgba(180,197,255,0.1);
+  border: 1px solid rgba(180,197,255,0.25);
   padding: 4px 12px;
   border-radius: 999px;
 }
@@ -242,7 +242,7 @@ main {
   cursor: pointer;
   /* ✅ KONTRAST: --muted şimdi #a8a5b0 */
   color: var(--muted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   transition: border-color 0.2s, color 0.2s;
 }
@@ -273,7 +273,7 @@ main {
   border-radius: 8px;
   font-size: 15px;
   font-weight: 500;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   width: 100%;
@@ -318,7 +318,7 @@ main {
   border: none;
   border-radius: 9px;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   font-weight: 500;
   color: var(--muted);
@@ -372,7 +372,7 @@ main {
   border-radius: 10px;
   padding: 11px 14px;
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s, background 0.2s;
@@ -380,8 +380,8 @@ main {
 }
 
 .field-input:focus {
-  border-color: rgba(201,168,76,0.5);
-  background: rgba(201,168,76,0.04);
+  border-color: rgba(180,197,255,0.5);
+  background: rgba(180,197,255,0.04);
 }
 
 .field-input::placeholder { color: rgba(255,255,255,0.2); }
@@ -410,7 +410,7 @@ main {
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 15px;
   font-weight: 700;
   transition: box-shadow 0.2s, transform 0.15s, opacity 0.2s;
@@ -419,7 +419,7 @@ main {
 }
 
 .btn-submit:hover {
-  box-shadow: 0 6px 24px rgba(201,168,76,0.4);
+  box-shadow: 0 6px 24px rgba(180,197,255,0.4);
   transform: translateY(-1px);
 }
 
@@ -430,4 +430,3 @@ main {
   cursor: not-allowed;
   transform: none;
 }
-

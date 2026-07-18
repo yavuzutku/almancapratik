@@ -148,7 +148,7 @@ export function renderTagChips(containerId, selected = [], allTags = TAG_OPTIONS
     font-size:12px;font-family:inherit;
     padding:6px 10px;outline:none;transition:0.2s;
   `;
-  input.addEventListener("focus", () => input.style.borderColor = "#c9a84c");
+  input.addEventListener("focus", () => input.style.borderColor = "#b4c5ff");
   input.addEventListener("blur",  () => input.style.borderColor = "rgba(255,255,255,0.12)");
 
   const addBtn = document.createElement("button");
@@ -156,13 +156,13 @@ export function renderTagChips(containerId, selected = [], allTags = TAG_OPTIONS
   addBtn.textContent = "+ Ekle";
   addBtn.style.cssText = `
     padding:6px 12px;border-radius:8px;white-space:nowrap;
-    border:1px solid rgba(201,168,76,0.4);
-    background:rgba(201,168,76,0.1);color:#c9a84c;
+    border:1px solid rgba(180,197,255,0.4);
+    background:rgba(180,197,255,0.1);color:#b4c5ff;
     font-size:12px;font-family:inherit;cursor:pointer;
     font-weight:600;transition:0.2s;
   `;
-  addBtn.addEventListener("mouseenter", () => addBtn.style.background = "rgba(201,168,76,0.2)");
-  addBtn.addEventListener("mouseleave", () => addBtn.style.background = "rgba(201,168,76,0.1)");
+  addBtn.addEventListener("mouseenter", () => addBtn.style.background = "rgba(180,197,255,0.2)");
+  addBtn.addEventListener("mouseleave", () => addBtn.style.background = "rgba(180,197,255,0.1)");
 
   function addCustomTag() {
     const val = input.value.trim();
