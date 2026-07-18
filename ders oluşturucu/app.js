@@ -4,6 +4,8 @@
   let blocks = [];
   let seq = 0;
   const nextId = () => "b" + (++seq);
+  let draggingBlockId = null;
+  let activeBlockId = null;
 
   const THEME_META = {
     amber: { label: "Sarı",    css: "#ffd250" },
@@ -18,7 +20,7 @@
     rose:  '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
   };
 
-  function commonDefaults() { return { padY: 0, padX: 0, marginY: 0, bgColor: "", bgOpacity: 30 }; }
+  function commonDefaults() { return { padY: 0, padX: 0, marginY: 0, bgColor: "", bgOpacity: 30, audioSlots: {} }; }
   function defaultsFor(type) {
     const base = commonDefaults();
     switch (type) {
@@ -102,7 +104,10 @@
     link:      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
     highlight: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
     play:      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
-    tts:       '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>'
+    tts:       '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>',
+    grip:      '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>',
+    close:     '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    clear:     '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3 21 7 10 18H4v-6L17 3z"/><line x1="4" y1="21" x2="20" y2="21"/></svg>'
   };
 
   function iconFor(type) {
@@ -131,6 +136,108 @@
   }
 
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+  /* ══════════════════════════════════════
+     Sürükle-Bırak Sesli Okuma Aracı
+     Soldaki sabit "Sesli Okuma Aracı" istenen herhangi bir metin kutusunun
+     üzerine sürüklenip bırakılınca, sadece o kutu için sesli okuma
+     (TTS oynatma düğmesi) etkinleşir. block.audioSlots = { slotKey: true }
+     şeklinde saklanır; tekrar tıklanınca kaldırılabilir.
+     ══════════════════════════════════════ */
+  let audioToolDragging = false;
+
+  // Bir blok içindeki belirli bir "slot" (örn. "text", "title", "opt0") için
+  // düzenleme ekranında görünen küçük sesli okuma rozetini üretir.
+  function audioSlotBadgeHtml(block, slot) {
+    const active = !!(block.audioSlots && block.audioSlots[slot]);
+    return '<button type="button" class="audio-slot-badge' + (active ? ' active' : '') + '" data-audioslot="' + slot + '" ' +
+      'title="' + (active ? "Sesli okumayı kaldır" : "Sesli okuma eklemek için buraya sürükleyin ya da tıklayın") + '">' + ICO.tts + '</button>';
+  }
+
+  // Belirli bir slotu sürükle-bırak (veya doğrudan tıklama) ile açıp kapatmak için
+  // kutuyu saran wrapper'ın açılış etiketini üretir.
+  function audioDropOpenTag(block, slot, extraCls) {
+    return '<div class="audio-drop-target' + (extraCls ? " " + extraCls : "") + '" data-block="' + block.id + '" data-slot="' + slot + '">';
+  }
+
+  // DOM tabanlı editör alanları (heading/paragraph gibi contentEditable kutular) için:
+  // içine hem asıl elemanı hem de sesli okuma rozetini koyabileceğimiz bir sarmalayıcı üretir.
+  function audioInlineWrap(block, slot) {
+    const wrap = document.createElement("div");
+    wrap.className = "audio-drop-target audio-drop-inline";
+    wrap.dataset.block = block.id;
+    wrap.dataset.slot = slot;
+    const tmp = document.createElement("div");
+    tmp.innerHTML = audioSlotBadgeHtml(block, slot);
+    return { wrap, badgeBtn: tmp.firstElementChild };
+  }
+
+  // Bir konteynerin içindeki tüm sesli okuma rozetlerine tıklama olayını bağlar.
+  // Rozete tıklamak, o slotun sesli okuma durumunu açar/kapatır (sürüklemenin alternatifi).
+  function wireAudioSlotBadges(container, block) {
+    $all(".audio-slot-badge", container).forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const slot = btn.dataset.audioslot;
+        block.audioSlots = block.audioSlots || {};
+        block.audioSlots[slot] = !block.audioSlots[slot];
+        btn.classList.toggle("active", block.audioSlots[slot]);
+        btn.title = block.audioSlots[slot] ? "Sesli okumayı kaldır" : "Sesli okuma eklemek için buraya sürükleyin ya da tıklayın";
+      });
+    });
+  }
+
+  // Soldaki sabit sürükle-bırak aracını ve tüm ".audio-drop-target" alanlarını
+  // dinleyen global sürükle-bırak mantığını kurar. Sayfa yüklenince bir kez çağrılır.
+  function setupAudioDragTool() {
+    const tool = document.getElementById("ttsDragTool");
+    const canvasEl = document.getElementById("canvas");
+    if (!tool || !canvasEl) return;
+
+    tool.addEventListener("dragstart", (e) => {
+      audioToolDragging = true;
+      try { e.dataTransfer.setData("text/plain", "audio-tool"); } catch (err) {}
+      e.dataTransfer.effectAllowed = "copy";
+      document.body.classList.add("audio-tool-dragging");
+    });
+    tool.addEventListener("dragend", () => {
+      audioToolDragging = false;
+      document.body.classList.remove("audio-tool-dragging");
+      $all(".audio-drop-target.audio-drop-hover", canvasEl).forEach(t => t.classList.remove("audio-drop-hover"));
+    });
+
+    canvasEl.addEventListener("dragover", (e) => {
+      if (!audioToolDragging) return;
+      const target = e.target.closest(".audio-drop-target");
+      if (!target) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "copy";
+      target.classList.add("audio-drop-hover");
+    });
+    canvasEl.addEventListener("dragleave", (e) => {
+      const target = e.target.closest(".audio-drop-target");
+      if (target) target.classList.remove("audio-drop-hover");
+    });
+    canvasEl.addEventListener("drop", (e) => {
+      const target = e.target.closest(".audio-drop-target");
+      if (!target || !audioToolDragging) return;
+      e.preventDefault();
+      target.classList.remove("audio-drop-hover");
+      const blockId = target.dataset.block, slot = target.dataset.slot;
+      const block = blocks.find(b => b.id === blockId);
+      if (!block) return;
+      block.audioSlots = block.audioSlots || {};
+      block.audioSlots[slot] = true;
+      let badge = target.querySelector('.audio-slot-badge[data-audioslot="' + slot + '"]');
+      if (!badge) badge = target.querySelector(".audio-slot-badge");
+      if (badge) {
+        badge.classList.add("active");
+        badge.title = "Sesli okumayı kaldır";
+      }
+      toast("🔊 Sesli okuma eklendi ✓");
+    });
+  }
 
   // Tablo bloğunda hangi başlık/hücrelerin sesli okunacağını tutan dizileri satır/sütun sayısıyla eşitler
   // (eski projelerde bu alanlar hiç yoksa veya satır/sütun eklenip silinince boyutlar kayarsa güvenli hale getirir)
@@ -196,7 +303,27 @@
     }
     return url;
   }
-  function fontStack(key) { return key === "display" ? "'Plus Jakarta Sans', sans-serif" : "'Inter', sans-serif"; }
+  const FONT_MAP = {
+    body:        "'Inter', sans-serif",
+    display:     "'Plus Jakarta Sans', sans-serif",
+    serif:       "'Lora', serif",
+    merriweather:"'Merriweather', serif",
+    playfair:    "'Playfair Display', serif",
+    poppins:     "'Poppins', sans-serif",
+    montserrat:  "'Montserrat', sans-serif",
+    nunito:      "'Nunito', sans-serif"
+  };
+  const FONT_OPTIONS = [
+    ["body", "Inter (Standart)"],
+    ["display", "Plus Jakarta Sans (Başlık)"],
+    ["serif", "Lora (Serif)"],
+    ["merriweather", "Merriweather (Serif Klasik)"],
+    ["playfair", "Playfair Display (Zarif Serif)"],
+    ["poppins", "Poppins (Yuvarlak)"],
+    ["montserrat", "Montserrat (Modern)"],
+    ["nunito", "Nunito (Yumuşak)"]
+  ];
+  function fontStack(key) { return FONT_MAP[key] || FONT_MAP.body; }
   function $(sel, root) { return (root || document).querySelector(sel); }
   function $all(sel, root) { return Array.from((root || document).querySelectorAll(sel)); }
   function hexToRgba(hex, opacityPct) {
@@ -236,13 +363,62 @@
   function deleteBlock(id) {
     if (!confirm("Bu bloğu silmek istediğinize emin misiniz?")) return;
     blocks = blocks.filter(b => b.id !== id);
+    if (activeBlockId === id) activeBlockId = null;
     renderAll();
   }
   function clearAll() {
     if (!blocks.length) return;
     if (!confirm("Tüm bloklar silinecek. Emin misiniz?")) return;
-    blocks = []; renderAll();
+    blocks = []; activeBlockId = null; renderAll();
   }
+
+  /* Üstteki tek editör barı: seçili bloğun ayarlarını gösterir */
+  function selectBlock(block) {
+    activeBlockId = block.id;
+    $all(".block.block-active", $("#canvas")).forEach(el => el.classList.remove("block-active"));
+    const wrap = $('.block[data-id="' + block.id + '"]');
+    if (wrap) wrap.classList.add("block-active");
+    renderToolbar(block);
+  }
+  /* Editör barını kapatır / seçimi kaldırır (kapanmama sorununun düzeltmesi) */
+  function deselectBlock() {
+    if (!activeBlockId) return;
+    activeBlockId = null;
+    $all(".block.block-active", $("#canvas")).forEach(el => el.classList.remove("block-active"));
+    renderToolbar(null);
+  }
+  function renderToolbar(block) {
+    const empty = $("#etEmpty"), content = $("#etContent");
+    if (!empty || !content) return;
+    content.innerHTML = "";
+    if (!block) { empty.style.display = ""; return; }
+    empty.style.display = "none";
+    const label = document.createElement("div");
+    label.className = "et-label";
+    label.innerHTML = iconFor(block.type) + "<span>" + TYPE_LABEL[block.type] + "</span>";
+    content.appendChild(label);
+    const settingsEl = buildSettingsEl(block);
+    settingsEl.classList.add("open");
+    content.appendChild(settingsEl);
+    const closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.className = "et-close-btn";
+    closeBtn.title = "Düzenlemeyi kapat (Esc)";
+    closeBtn.innerHTML = ICO.close;
+    closeBtn.addEventListener("click", (e) => { e.stopPropagation(); deselectBlock(); });
+    content.appendChild(closeBtn);
+  }
+  /* Dışarı tıklayınca ya da Esc'e basınca editör barını kapat */
+  document.addEventListener("mousedown", (e) => {
+    if (!activeBlockId) return;
+    if (e.target.closest(".block") || e.target.closest(".editor-toolbar") ||
+        e.target.closest(".rt-toolbar") || e.target.closest(".modal-overlay") ||
+        e.target.closest(".preview-overlay")) return;
+    deselectBlock();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && activeBlockId) deselectBlock();
+  });
 
   function renderAll() {
     const canvas = $("#canvas");
@@ -252,37 +428,57 @@
       canvas.innerHTML =
         '<div class="empty-state"><div class="es-ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>' +
         '<h3>Henüz blok yok</h3><p>Soldaki panelden bir blok türü seçerek dersinizi oluşturmaya başlayın.</p></div>';
+      activeBlockId = null;
+      renderToolbar(null);
       return;
     }
     blocks.forEach((block, idx) => canvas.appendChild(buildBlockEl(block, idx)));
+    const active = blocks.find(b => b.id === activeBlockId);
+    renderToolbar(active || null);
+    if (!active) activeBlockId = null;
   }
 
   function buildBlockEl(block, idx) {
     const wrap = document.createElement("div");
     wrap.className = "block"; wrap.dataset.id = block.id; wrap.dataset.type = block.type;
+    if (block.id === activeBlockId) wrap.classList.add("block-active");
 
     const toolbar = document.createElement("div");
     toolbar.className = "block-toolbar";
     toolbar.innerHTML =
-      '<div class="block-type-label">' + iconFor(block.type) + '<span>' + TYPE_LABEL[block.type] + '</span></div>' +
+      '<div class="block-type-label"><span class="block-drag-handle" draggable="true" title="Sürükleyerek taşı">' + ICO.grip + '</span>' + iconFor(block.type) + '<span>' + TYPE_LABEL[block.type] + '</span></div>' +
       '<div class="block-actions">' +
         '<button data-act="up" title="Yukarı taşı"' + (idx === 0 ? " disabled" : "") + '>' + ICO.up + '</button>' +
         '<button data-act="down" title="Aşağı taşı"' + (idx === blocks.length - 1 ? " disabled" : "") + '>' + ICO.down + '</button>' +
-        '<button data-act="settings" title="Ayarlar">' + ICO.gear + '</button>' +
+        '<button data-act="settings" title="Düzenle (üstteki editörde açar)">' + ICO.gear + '</button>' +
         '<button data-act="delete" class="danger" title="Bloğu sil">' + ICO.trash + '</button>' +
       '</div>';
     wrap.appendChild(toolbar);
-    toolbar.querySelector('[data-act="up"]').addEventListener("click", () => moveBlock(block.id, "up"));
-    toolbar.querySelector('[data-act="down"]').addEventListener("click", () => moveBlock(block.id, "down"));
-    toolbar.querySelector('[data-act="delete"]').addEventListener("click", () => deleteBlock(block.id));
-    const gearBtn = toolbar.querySelector('[data-act="settings"]');
-    gearBtn.addEventListener("click", () => {
-      const drawer = wrap.querySelector(".block-settings");
-      const open = drawer.classList.toggle("open");
-      gearBtn.classList.toggle("active", open);
+    toolbar.querySelector('[data-act="up"]').addEventListener("click", (e) => { e.stopPropagation(); moveBlock(block.id, "up"); });
+    toolbar.querySelector('[data-act="down"]').addEventListener("click", (e) => { e.stopPropagation(); moveBlock(block.id, "down"); });
+    toolbar.querySelector('[data-act="delete"]').addEventListener("click", (e) => { e.stopPropagation(); deleteBlock(block.id); });
+    toolbar.querySelector('[data-act="settings"]').addEventListener("click", (e) => { e.stopPropagation(); selectBlock(block); });
+
+    const handle = toolbar.querySelector(".block-drag-handle");
+    handle.addEventListener("dragstart", (e) => {
+      draggingBlockId = block.id;
+      wrap.classList.add("block-dragging");
+      document.body.classList.add("block-tool-dragging");
+      try { e.dataTransfer.setData("text/plain", "block:" + block.id); } catch (err) {}
+      e.dataTransfer.effectAllowed = "move";
+      try { e.dataTransfer.setDragImage(wrap, 24, 24); } catch (err) {}
+    });
+    handle.addEventListener("dragend", () => {
+      draggingBlockId = null;
+      wrap.classList.remove("block-dragging");
+      document.body.classList.remove("block-tool-dragging");
+      $all(".block.block-drop-before, .block.block-drop-after", $("#canvas")).forEach(el => el.classList.remove("block-drop-before", "block-drop-after"));
     });
 
-    wrap.appendChild(buildSettingsEl(block));
+    wrap.addEventListener("click", (e) => {
+      if (e.target.closest(".block-actions") || e.target.closest(".block-drag-handle")) return;
+      selectBlock(block);
+    });
 
     const content = document.createElement("div");
     content.className = "block-content";
@@ -290,6 +486,54 @@
     buildContentEl(block, content);
     wrap.appendChild(content);
     return wrap;
+  }
+
+  // Bloklar arası sürükle-bırak ile yeniden sıralama: soldaki tutamaçtan (grip)
+  // sürüklenen bir blok, canvas üzerindeki diğer blokların arasına bırakılabilir.
+  function setupBlockDragReorder() {
+    const canvasEl = document.getElementById("canvas");
+    if (!canvasEl) return;
+
+    canvasEl.addEventListener("dragover", (e) => {
+      if (!draggingBlockId) return;
+      const target = e.target.closest(".block");
+      if (!target || target.dataset.id === draggingBlockId) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      const rect = target.getBoundingClientRect();
+      const before = (e.clientY - rect.top) < rect.height / 2;
+      $all(".block.block-drop-before, .block.block-drop-after", canvasEl).forEach(el => { if (el !== target) el.classList.remove("block-drop-before", "block-drop-after"); });
+      target.classList.toggle("block-drop-before", before);
+      target.classList.toggle("block-drop-after", !before);
+    });
+
+    canvasEl.addEventListener("dragleave", (e) => {
+      const target = e.target.closest(".block");
+      if (target) target.classList.remove("block-drop-before", "block-drop-after");
+    });
+
+    canvasEl.addEventListener("drop", (e) => {
+      if (!draggingBlockId) return;
+      const target = e.target.closest(".block");
+      if (!target || target.dataset.id === draggingBlockId) return;
+      e.preventDefault();
+      const before = target.classList.contains("block-drop-before");
+      target.classList.remove("block-drop-before", "block-drop-after");
+
+      const fromIdx = blocks.findIndex(b => b.id === draggingBlockId);
+      let toIdx = blocks.findIndex(b => b.id === target.dataset.id);
+      if (fromIdx < 0 || toIdx < 0 || fromIdx === toIdx) return;
+
+      const [moved] = blocks.splice(fromIdx, 1);
+      toIdx = blocks.findIndex(b => b.id === target.dataset.id);
+      const insertAt = before ? toIdx : toIdx + 1;
+      blocks.splice(insertAt, 0, moved);
+
+      draggingBlockId = null;
+      renderAll();
+      const el = $('.block[data-id="' + moved.id + '"]');
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
   }
 
   function fg(label, inner) { return '<div class="field-group"><label>' + label + '</label>' + inner + '</div>'; }
@@ -321,6 +565,13 @@
     const [r,g,b] = m;
     return "#" + [r,g,b].map(n => parseInt(n).toString(16).padStart(2,"0")).join("");
   }
+  const PALETTE = ["#ffffff","#0f172a","#3b82f6","#60a5fa","#4fd69c","#ffd250","#f07068","#a78bfa","#f472b6","#94a3b8","#000000"];
+  function colorFieldHtml(field, value) {
+    let sw = '<div class="color-swatches" data-f-swatch="' + field + '">';
+    PALETTE.forEach(c => { sw += '<button type="button" data-c="' + c + '" style="background:' + c + '" title="' + c + '"></button>'; });
+    sw += "</div>";
+    return '<div class="color-field"><input type="color" data-f="' + field + '" value="' + value + '">' + sw + '</div>';
+  }
 
   function buildSettingsEl(block) {
     const el = document.createElement("div");
@@ -330,9 +581,9 @@
     if (block.type === "heading") {
       h += fg("Seviye", selectHtml("level", [["h1","H1"],["h2","H2"],["h3","H3"]], block.level));
       h += fg("Boyut (px)", rangeHtml("size", 16, 52, block.size));
-      h += fg("Renk", '<input type="color" data-f="color" value="' + block.color + '">');
+      h += fg("Renk", colorFieldHtml("color", block.color));
       h += fg("Kalınlık", selectHtml("weight", [["500","Orta"],["600","Yarı Kalın"],["700","Kalın"],["800","Ekstra Kalın"]], block.weight));
-      h += fg("Font", selectHtml("font", [["display","Plus Jakarta Sans"],["body","Inter"]], block.font));
+      h += fg("Font", selectHtml("font", FONT_OPTIONS, block.font));
       h += fg("Satır Yüksekliği", rangeHtml("lineHeight", 110, 180, block.lineHeight, "%"));
       h += fg("Harf Aralığı (px)", rangeHtml("letterSpacing", -3, 4, block.letterSpacing));
     } else if (block.type === "paragraph") {
@@ -340,8 +591,8 @@
       h += fg("Büyük Baş Harf (Drop Cap)", selectHtml("dropCap", [["0","Kapalı"],["1","Açık"]], block.dropCap ? "1" : "0"));
       h += fg("Boyut (px)", rangeHtml("size", 13, 26, block.size));
       h += fg("Hizalama", alignBtnsHtml("align", block.align));
-      h += fg("Renk", '<input type="color" data-f="color" value="' + rgbaToHex(block.color) + '">');
-      h += fg("Font", selectHtml("font", [["body","Inter"],["display","Plus Jakarta Sans"]], block.font));
+      h += fg("Renk", colorFieldHtml("color", rgbaToHex(block.color)));
+      h += fg("Font", selectHtml("font", FONT_OPTIONS, block.font));
       h += fg("Satır Yüksekliği", rangeHtml("lineHeight", 140, 220, block.lineHeight, "%"));
       h += fg("Harf Aralığı (px)", rangeHtml("letterSpacing", -2, 4, block.letterSpacing));
     } else if (block.type === "image") {
@@ -356,18 +607,14 @@
       h += fg("Tema", themeBtnsHtml(block.theme));
     }
 
-    if (block.type !== "paragraph") {
-      h += '<div class="settings-divider"></div><div class="settings-group-label">Boşluk &amp; Arka Plan</div>';
-      h += fg("İç Boşluk Y (px)", rangeHtml("padY", 0, 60, block.padY));
-      h += fg("İç Boşluk X (px)", rangeHtml("padX", 0, 60, block.padX));
-      h += fg("Dış Boşluk (px)", rangeHtml("marginY", 0, 60, block.marginY));
-      h += fg("Arka Plan Rengi", '<input type="color" data-f="bgColor" value="' + (block.bgColor || "#3b82f6") + '">');
+    const hasBg = block.type !== "paragraph";
+    h += '<div class="settings-divider"></div><div class="settings-group-label">Boşluk' + (hasBg ? " &amp; Arka Plan" : " (Arka plan her zaman şeffaftır)") + '</div>';
+    h += fg("İç Boşluk Y (px)", rangeHtml("padY", 0, 60, block.padY));
+    h += fg("İç Boşluk X (px)", rangeHtml("padX", 0, 60, block.padX));
+    h += fg("Dış Boşluk (px)", rangeHtml("marginY", 0, 60, block.marginY));
+    if (hasBg) {
+      h += fg("Arka Plan Rengi", colorFieldHtml("bgColor", block.bgColor || "#3b82f6"));
       h += fg("Şeffaflık (%)", rangeHtml("bgOpacity", 0, 100, block.bgOpacity));
-    } else {
-      h += '<div class="settings-divider"></div><div class="settings-group-label">Boşluk (Arka plan her zaman şeffaftır)</div>';
-      h += fg("İç Boşluk Y (px)", rangeHtml("padY", 0, 60, block.padY));
-      h += fg("İç Boşluk X (px)", rangeHtml("padX", 0, 60, block.padX));
-      h += fg("Dış Boşluk (px)", rangeHtml("marginY", 0, 60, block.marginY));
     }
 
     el.innerHTML = h;
@@ -402,6 +649,13 @@
         applyBlockStyle(block);
       });
     });
+    $all(".color-swatches button", el).forEach(btn => {
+      btn.addEventListener("click", () => {
+        const field = btn.parentElement.dataset.fSwatch;
+        const input = el.querySelector('input[type="color"][data-f="' + field + '"]');
+        if (input) { input.value = btn.dataset.c; input.dispatchEvent(new Event("input", { bubbles: true })); }
+      });
+    });
   }
 
   function applyBlockStyle(block) {
@@ -412,10 +666,10 @@
 
     if (block.type === "heading") {
       const el2 = wrap.querySelector(".hp-editable");
-      if (el2) el2.style.cssText = "font-family:" + fontStack(block.font) + ";font-size:" + block.size + "px;color:" + block.color + ";font-weight:" + block.weight + ";line-height:" + (block.lineHeight/100) + ";letter-spacing:" + block.letterSpacing + "px;";
+      if (el2) el2.style.cssText = "font-family:" + fontStack(block.font) + ";font-size:" + block.size + "px;color:" + block.color + ";font-weight:" + block.weight + ";line-height:" + (block.lineHeight/100) + ";letter-spacing:" + block.letterSpacing + "px;flex:1;min-width:0;";
     } else if (block.type === "paragraph") {
       const el2 = wrap.querySelector(".hp-editable");
-      if (el2) el2.style.cssText = "font-family:" + fontStack(block.font) + ";font-size:" + block.size + "px;color:" + block.color + ";text-align:" + block.align + ";line-height:" + (block.lineHeight/100) + ";letter-spacing:" + block.letterSpacing + "px;";
+      if (el2) el2.style.cssText = "font-family:" + fontStack(block.font) + ";font-size:" + block.size + "px;color:" + block.color + ";text-align:" + block.align + ";line-height:" + (block.lineHeight/100) + ";letter-spacing:" + block.letterSpacing + "px;flex:1;min-width:0;";
     } else if (block.type === "image") {
       const img = wrap.querySelector("img.preview-img");
       const holder = wrap.querySelector(".img-align-holder");
@@ -442,18 +696,24 @@
       const div = document.createElement("div");
       div.className = "hp-editable"; div.contentEditable = "true"; div.dataset.placeholder = "Başlık metni...";
       div.textContent = block.text;
-      div.style.cssText = "font-family:" + fontStack(block.font) + ";font-size:" + block.size + "px;color:" + block.color + ";font-weight:" + block.weight + ";line-height:" + (block.lineHeight/100) + ";letter-spacing:" + block.letterSpacing + "px;";
+      div.style.cssText = "font-family:" + fontStack(block.font) + ";font-size:" + block.size + "px;color:" + block.color + ";font-weight:" + block.weight + ";line-height:" + (block.lineHeight/100) + ";letter-spacing:" + block.letterSpacing + "px;flex:1;min-width:0;";
       div.addEventListener("input", () => { block.text = div.textContent; });
       div.addEventListener("keydown", e => { if (e.key === "Enter") e.preventDefault(); });
-      content.appendChild(div);
+      const hWrap = audioInlineWrap(block, "text");
+      hWrap.wrap.appendChild(div); hWrap.wrap.appendChild(hWrap.badgeBtn);
+      content.appendChild(hWrap.wrap);
+      wireAudioSlotBadges(hWrap.wrap, block);
 
     } else if (block.type === "paragraph") {
       const div = document.createElement("div");
       div.className = "hp-editable"; div.contentEditable = "true"; div.dataset.placeholder = "Paragraf metni...";
       div.innerHTML = block.html;
-      div.style.cssText = "font-family:" + fontStack(block.font) + ";font-size:" + block.size + "px;color:" + block.color + ";text-align:" + block.align + ";line-height:" + (block.lineHeight/100) + ";letter-spacing:" + block.letterSpacing + "px;";
+      div.style.cssText = "font-family:" + fontStack(block.font) + ";font-size:" + block.size + "px;color:" + block.color + ";text-align:" + block.align + ";line-height:" + (block.lineHeight/100) + ";letter-spacing:" + block.letterSpacing + "px;flex:1;min-width:0;";
       div.addEventListener("input", () => { block.html = div.innerHTML; });
-      content.appendChild(div);
+      const pWrap = audioInlineWrap(block, "html");
+      pWrap.wrap.appendChild(div); pWrap.wrap.appendChild(pWrap.badgeBtn);
+      content.appendChild(pWrap.wrap);
+      wireAudioSlotBadges(pWrap.wrap, block);
 
     } else if (block.type === "image") {
       const srcTabs = document.createElement("div");
@@ -537,15 +797,26 @@
       card.className = "vocab-card-prev";
       card.innerHTML =
         '<div class="vocab-grid">' +
-          '<div><label>Almanca</label><input type="text" data-f="de" value="' + esc(block.de) + '" class="de-input" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;"></div>' +
+          '<div><label>Almanca</label>' +
+            '<div class="audio-drop-target audio-drop-inline" data-block="' + block.id + '" data-slot="de">' +
+              '<input type="text" data-f="de" value="' + esc(block.de) + '" class="de-input" style="flex:1; min-width:0; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">' +
+              audioSlotBadgeHtml(block, "de") +
+            '</div>' +
+          '</div>' +
           '<div><label>Türkçe</label><input type="text" data-f="tr" value="' + esc(block.tr) + '" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;"></div>' +
           '<div class="full" style="margin-top:6px;"><label>Okunuşu</label><input type="text" data-f="phon" value="' + esc(block.phon) + '" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;"></div>' +
-          '<div class="full" style="margin-top:6px;"><label>Örnek Cümle</label><input type="text" data-f="example" value="' + esc(block.example) + '" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;"></div>' +
+          '<div class="full" style="margin-top:6px;"><label>Örnek Cümle</label>' +
+            '<div class="audio-drop-target audio-drop-inline" data-block="' + block.id + '" data-slot="example">' +
+              '<input type="text" data-f="example" value="' + esc(block.example) + '" style="flex:1; min-width:0; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">' +
+              audioSlotBadgeHtml(block, "example") +
+            '</div>' +
+          '</div>' +
         '</div>' +
         '<button type="button" class="vocab-tip-toggle" style="margin-top:10px; background:transparent; border:none; color:var(--blue-bright); cursor:pointer;">' + ICO.tip + '<span data-tiplabel>' + (block.tipEnabled ? " İpucunu kaldır" : " + İpucu / Gramer Notu ekle") + '</span></button>' +
         '<div class="vocab-tip-wrap" style="display:' + (block.tipEnabled ? "block" : "none") + '; margin-top:6px;"><textarea style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; min-height:60px;">' + esc(block.tip) + '</textarea></div>';
 
-      $all("input", card).forEach(inp => inp.addEventListener("input", () => { block[inp.dataset.f] = inp.value; }));
+      $all("input[data-f]", card).forEach(inp => inp.addEventListener("input", () => { block[inp.dataset.f] = inp.value; }));
+      wireAudioSlotBadges(card, block);
       const tipToggle = card.querySelector(".vocab-tip-toggle");
       const tipWrap = card.querySelector(".vocab-tip-wrap");
       const tipLabel = card.querySelector("[data-tiplabel]");
@@ -564,11 +835,18 @@
       box.innerHTML =
         '<div class="callout-prev-ico">' + CALLOUT_ICON[block.theme] + '</div>' +
         '<div class="callout-prev-body-wrap" style="width:100%;">' +
-          '<div class="callout-prev-title" contenteditable="true" data-placeholder="Başlık" style="font-weight:700; color:white; margin-bottom:4px;">' + esc(block.title) + '</div>' +
-          '<div class="callout-prev-body" contenteditable="true" data-placeholder="Metin..." style="color:var(--text-dim);">' + block.html + '</div>' +
+          '<div class="audio-drop-target audio-drop-inline" data-block="' + block.id + '" data-slot="title">' +
+            '<div class="callout-prev-title" contenteditable="true" data-placeholder="Başlık" style="font-weight:700; color:white; margin-bottom:4px; flex:1; min-width:0;">' + esc(block.title) + '</div>' +
+            audioSlotBadgeHtml(block, "title") +
+          '</div>' +
+          '<div class="audio-drop-target audio-drop-inline" data-block="' + block.id + '" data-slot="html">' +
+            '<div class="callout-prev-body" contenteditable="true" data-placeholder="Metin..." style="color:var(--text-dim); flex:1; min-width:0;">' + block.html + '</div>' +
+            audioSlotBadgeHtml(block, "html") +
+          '</div>' +
         '</div>';
       box.querySelector(".callout-prev-title").addEventListener("input", function () { block.title = this.textContent; });
       box.querySelector(".callout-prev-body").addEventListener("input", function () { block.html = this.innerHTML; });
+      wireAudioSlotBadges(box, block);
       content.appendChild(box);
 
     } else if (block.type === "table") {
@@ -634,25 +912,33 @@
       const card = document.createElement("div");
       card.style.cssText = "background:rgba(59,130,246,0.04); border:1px solid var(--border); padding:16px; border-radius:10px;";
       card.innerHTML = `
-        <input type="text" class="q-title" placeholder="Soru metni" value="${esc(block.question)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:700;">
+        <div class="audio-drop-target audio-drop-inline" data-block="${block.id}" data-slot="question">
+          <input type="text" class="q-title" placeholder="Soru metni" value="${esc(block.question)}" style="flex:1; min-width:0; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:700;">
+          ${audioSlotBadgeHtml(block, "question")}
+        </div>
         <div class="opts-list" style="margin-top:10px; display:flex; flex-direction:column; gap:6px;"></div>
         <button class="btn btn-sm add-opt" style="margin-top:8px;">+ Seçenek Ekle</button>
         <textarea class="q-explain" placeholder="Doğru cevap açıklaması" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; min-height:50px; margin-top:8px;">${esc(block.explanation)}</textarea>
       `;
+      wireAudioSlotBadges(card, block);
       const optsList = card.querySelector(".opts-list");
       function renderQuizOpts() {
         optsList.innerHTML = "";
         block.options.forEach((opt, i) => {
           const row = document.createElement("div");
+          row.className = "audio-drop-target audio-drop-inline";
+          row.dataset.block = block.id; row.dataset.slot = "opt" + i;
           row.style.cssText = "display:flex; align-items:center; gap:8px;";
           row.innerHTML = `
             <input type="radio" name="correct_${block.id}" ${block.correctIndex === i ? "checked" : ""} style="accent-color:var(--green);">
             <input type="text" value="${esc(opt)}" style="flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+            ${audioSlotBadgeHtml(block, "opt" + i)}
             <button class="del-opt" style="background:transparent; border:none; color:var(--rose); cursor:pointer;">×</button>
           `;
           row.querySelector("input[type=radio]").addEventListener("change", () => { block.correctIndex = i; });
           row.querySelector("input[type=text]").addEventListener("input", function() { block.options[i] = this.value; });
           row.querySelector(".del-opt").addEventListener("click", () => { if(block.options.length > 2) { block.options.splice(i,1); if(block.correctIndex >= block.options.length) block.correctIndex=0; renderQuizOpts(); } });
+          wireAudioSlotBadges(row, block);
           optsList.appendChild(row);
         });
       }
@@ -667,9 +953,13 @@
       card.style.cssText = "background:rgba(59,130,246,0.04); border:1px solid var(--border); padding:16px; border-radius:10px;";
       card.innerHTML = `
         <input type="text" class="fib-instr" placeholder="Yönerge / talimat metni" value="${esc(block.instruction)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:600;">
-        <textarea class="fib-text" placeholder="Metni yazın, boşluk yapılacak kelimeleri {{ }} içine alın. Örn: Ich {{gehe}} ins Kino." style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; min-height:80px; margin-top:8px; font-family:monospace; font-size:13px;">${esc(block.text)}</textarea>
+        <div class="audio-drop-target audio-drop-inline" data-block="${block.id}" data-slot="text" style="margin-top:8px; align-items:flex-start;">
+          <textarea class="fib-text" placeholder="Metni yazın, boşluk yapılacak kelimeleri {{ }} içine alın. Örn: Ich {{gehe}} ins Kino." style="flex:1; min-width:0; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; min-height:80px; font-family:monospace; font-size:13px;">${esc(block.text)}</textarea>
+          ${audioSlotBadgeHtml(block, "text")}
+        </div>
         <div style="margin-top:8px; font-size:11.5px; color:var(--text-faint);">İpucu: boşluğa dönüşecek kelimeyi çift süslü parantez içine yazın — <code>{{cevap}}</code></div>
       `;
+      wireAudioSlotBadges(card, block);
       card.querySelector(".fib-instr").addEventListener("input", function() { block.instruction = this.value; });
       card.querySelector(".fib-text").addEventListener("input", function() { block.text = this.value; });
       content.appendChild(card);
@@ -732,11 +1022,22 @@
           if (block.mode === "image") {
             row.appendChild(pairImgUploadBtn(p, i, renderPairs));
           } else {
+            const leftWrap = document.createElement("div");
+            leftWrap.className = "audio-drop-target audio-drop-inline";
+            leftWrap.dataset.block = block.id;
+            leftWrap.dataset.slot = "left" + i;
+            leftWrap.style.flex = "1";
+            leftWrap.style.minWidth = "0";
             const leftInput = document.createElement("input");
             leftInput.type = "text"; leftInput.value = p.left; leftInput.placeholder = "Sol (örn: das Haus)";
-            leftInput.style.cssText = "flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;";
+            leftInput.style.cssText = "flex:1; min-width:0; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;";
             leftInput.addEventListener("input", function() { p.left = this.value; });
-            row.appendChild(leftInput);
+            leftWrap.appendChild(leftInput);
+            const leftBadgeHolder = document.createElement("div");
+            leftBadgeHolder.innerHTML = audioSlotBadgeHtml(block, "left" + i);
+            leftWrap.appendChild(leftBadgeHolder.firstElementChild);
+            wireAudioSlotBadges(leftWrap, block);
+            row.appendChild(leftWrap);
           }
 
           const arrow = document.createElement("span");
@@ -794,10 +1095,13 @@
         listWrap.innerHTML = "";
         block.sentences.forEach((s, i) => {
           const row = document.createElement("div");
+          row.className = "audio-drop-target audio-drop-inline";
+          row.dataset.block = block.id; row.dataset.slot = "sent" + i;
           row.style.cssText = "display:flex; align-items:center; gap:8px; margin-bottom:6px;";
           row.innerHTML = `
             <span style="color:var(--text-faint); font-size:12px; width:16px; flex-shrink:0;">${i+1}.</span>
             <input type="text" value="${esc(s)}" placeholder="Cümle" style="flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+            ${audioSlotBadgeHtml(block, "sent" + i)}
             <button class="sord-up" title="Yukarı" ${i===0?"disabled":""} style="background:transparent; border:none; color:var(--text-faint); cursor:pointer;">↑</button>
             <button class="sord-down" title="Aşağı" ${i===block.sentences.length-1?"disabled":""} style="background:transparent; border:none; color:var(--text-faint); cursor:pointer;">↓</button>
             <button class="sord-del" style="background:transparent; border:none; color:var(--rose); cursor:pointer;">×</button>
@@ -806,6 +1110,7 @@
           row.querySelector(".sord-up").addEventListener("click", () => { if (i>0) { const t=block.sentences[i-1]; block.sentences[i-1]=block.sentences[i]; block.sentences[i]=t; renderSentences(); } });
           row.querySelector(".sord-down").addEventListener("click", () => { if (i<block.sentences.length-1) { const t=block.sentences[i+1]; block.sentences[i+1]=block.sentences[i]; block.sentences[i]=t; renderSentences(); } });
           row.querySelector(".sord-del").addEventListener("click", () => { if (block.sentences.length > 2) { block.sentences.splice(i,1); renderSentences(); } });
+          wireAudioSlotBadges(row, block);
           listWrap.appendChild(row);
         });
       }
@@ -820,9 +1125,13 @@
       const card = document.createElement("div");
       card.innerHTML = `
         <input type="text" class="word-instr" placeholder="Yönerge / talimat metni" value="${esc(block.instruction)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:600; margin-bottom:10px;">
-        <input type="text" class="word-sentence" placeholder="Cümle (örn: Ich gehe heute ins Kino.)" value="${esc(block.sentence)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+        <div class="audio-drop-target audio-drop-inline" data-block="${block.id}" data-slot="sentence">
+          <input type="text" class="word-sentence" placeholder="Cümle (örn: Ich gehe heute ins Kino.)" value="${esc(block.sentence)}" style="flex:1; min-width:0; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+          ${audioSlotBadgeHtml(block, "sentence")}
+        </div>
         <div style="margin-top:8px; font-size:11.5px; color:var(--text-faint);">Öğrenciye bu cümlenin kelimeleri karışık sırada, tıklanabilir kutucuklar halinde gösterilir. Doğru sırayla tıklayınca onaylar.</div>
       `;
+      wireAudioSlotBadges(card, block);
       card.querySelector(".word-instr").addEventListener("input", function() { block.instruction = this.value; });
       card.querySelector(".word-sentence").addEventListener("input", function() { block.sentence = this.value; });
       content.appendChild(card);
@@ -852,7 +1161,10 @@
                 <option value="A" ${ln.speaker === "A" ? "selected" : ""}>A — ${esc(block.speakerA || "A")}</option>
                 <option value="B" ${ln.speaker === "B" ? "selected" : ""}>B — ${esc(block.speakerB || "B")}</option>
               </select>
-              <input type="text" class="dlg-text" value="${esc(ln.text)}" placeholder="Konuşma metni" style="flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+              <div class="audio-drop-target audio-drop-inline" data-block="${block.id}" data-slot="line${i}" style="flex:1; min-width:0;">
+                <input type="text" class="dlg-text" value="${esc(ln.text)}" placeholder="Konuşma metni" style="flex:1; min-width:0; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+                ${audioSlotBadgeHtml(block, "line" + i)}
+              </div>
               <button class="dlg-up" title="Yukarı" ${i === 0 ? "disabled" : ""} style="background:transparent; border:none; color:var(--text-faint); cursor:pointer;">↑</button>
               <button class="dlg-down" title="Aşağı" ${i === block.lines.length - 1 ? "disabled" : ""} style="background:transparent; border:none; color:var(--text-faint); cursor:pointer;">↓</button>
               <button class="dlg-del" style="background:transparent; border:none; color:var(--rose); cursor:pointer;">×</button>
@@ -862,6 +1174,7 @@
             </label>
             <div class="dlg-distractors-wrap" style="margin-top:8px; ${ln.choice ? "" : "display:none;"}"></div>
           `;
+          wireAudioSlotBadges(row, block);
           row.querySelector(".dlg-speaker-sel").addEventListener("change", function() { ln.speaker = this.value; });
           row.querySelector(".dlg-text").addEventListener("input", function() { ln.text = this.value; });
           row.querySelector(".dlg-up").addEventListener("click", () => { if (i > 0) { const t = block.lines[i-1]; block.lines[i-1] = block.lines[i]; block.lines[i] = t; renderLines(); } });
@@ -1011,7 +1324,10 @@
         <div style="display:flex; gap:10px; margin-bottom:12px;">
           <div style="flex:1;">
             <label style="font-size:12px; color:var(--text-faint); display:block; margin-bottom:4px;">Fiil</label>
-            <input type="text" class="kj-verb" placeholder="gehen" value="${esc(block.verb)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:700;">
+            <div class="audio-drop-target audio-drop-inline" data-block="${block.id}" data-slot="verb">
+              <input type="text" class="kj-verb" placeholder="gehen" value="${esc(block.verb)}" style="flex:1; min-width:0; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:700;">
+              ${audioSlotBadgeHtml(block, "verb")}
+            </div>
           </div>
           <div style="flex:1;">
             <label style="font-size:12px; color:var(--text-faint); display:block; margin-bottom:4px;">Zaman</label>
@@ -1025,6 +1341,7 @@
         <div style="font-size:11.5px; color:var(--text-faint); margin-bottom:10px;">Her kişi için <b>doğru</b> çekimi yazın. Öğrenci önizlemede/export sayfasında bu değeri boş bir kutucuğa yazarak deneyecek.</div>
         <div class="kj-rows" style="display:flex; flex-direction:column; gap:6px;"></div>
       `;
+      wireAudioSlotBadges(card, block);
       card.querySelector(".kj-tense").value = block.tense;
       card.querySelector(".kj-verb").addEventListener("input", function() { block.verb = this.value; });
       card.querySelector(".kj-tense").addEventListener("change", function() { block.tense = this.value; });
@@ -1051,11 +1368,18 @@
           const itemDiv = document.createElement("div");
           itemDiv.style.cssText = "border:1px solid var(--border); padding:8px; border-radius:6px; margin-bottom:6px; background:rgba(255,255,255,0.01);";
           itemDiv.innerHTML = `
-            <input type="text" placeholder="Başlık / Soru" value="${esc(item.q)}" style="width:100%; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:4px;">
-            <textarea placeholder="Açıklama / İçerik" style="width:100%; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:4px; margin-top:4px; min-height:45px;">${esc(item.a)}</textarea>
+            <div class="audio-drop-target audio-drop-inline" data-block="${block.id}" data-slot="item${i}q">
+              <input type="text" placeholder="Başlık / Soru" value="${esc(item.q)}" style="flex:1; min-width:0; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:4px;">
+              ${audioSlotBadgeHtml(block, "item" + i + "q")}
+            </div>
+            <div class="audio-drop-target audio-drop-inline" data-block="${block.id}" data-slot="item${i}a" style="margin-top:4px; align-items:flex-start;">
+              <textarea placeholder="Açıklama / İçerik" style="flex:1; min-width:0; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:4px; min-height:45px;">${esc(item.a)}</textarea>
+              ${audioSlotBadgeHtml(block, "item" + i + "a")}
+            </div>
           `;
           itemDiv.querySelector("input").addEventListener("input", function() { item.q = this.value; });
           itemDiv.querySelector("textarea").addEventListener("input", function() { item.a = this.value; });
+          wireAudioSlotBadges(itemDiv, block);
           card.appendChild(itemDiv);
         });
         const addBtn = document.createElement("button");
@@ -1094,18 +1418,26 @@
     }
   }
   $all(".add-block-btn[data-type]").forEach(btn => btn.addEventListener("click", () => addBlock(btn.dataset.type)));
+  setupAudioDragTool();
+  setupBlockDragReorder();
   $("#btnClearAll").addEventListener("click", clearAll);
 
   /* ══════════════════════════════════════
      Dinamik Gradient Tema Sistemi
      ══════════════════════════════════════ */
   const themeSelect = $("#metaTheme");
+  const themeColorInput = $("#metaThemeColor");
   const DEFAULT_THEME = "ocean";
   function applyTheme(value) {
     document.body.className = (value && value !== "none") ? "theme-" + value : "";
+    themeColorInput.style.display = value === "custom" ? "" : "none";
+    if (value === "custom") document.body.style.setProperty("--custom-bg", themeColorInput.value);
   }
   applyTheme(themeSelect.value || DEFAULT_THEME);
   themeSelect.addEventListener("change", () => applyTheme(themeSelect.value));
+  themeColorInput.addEventListener("input", () => {
+    if (themeSelect.value === "custom") document.body.style.setProperty("--custom-bg", themeColorInput.value);
+  });
 
   const overlay = $("#exportModalOverlay");
   $("#btnExport").addEventListener("click", () => {
@@ -1149,9 +1481,10 @@
     const author = $("#metaAuthor").value.trim();
     const cover = $("#metaCover").value.trim();
     const theme = $("#metaTheme").value || "ocean";
+    const themeColor = $("#metaThemeColor").value || "#0b1220";
     if (!title) { toast("Sayfa başlığı boş olamaz.", "err"); return; }
     if (!slug) { toast("URL slug boş olamaz.", "err"); return; }
-    const html = buildExportHtml({ title, slug, description, level, type, difficulty, readTime, author, cover, theme });
+    const html = buildExportHtml({ title, slug, description, level, type, difficulty, readTime, author, cover, theme, themeColor });
     downloadHtml(html);
     overlay.classList.remove("open");
     toast("index.html indirildi ✓", "ok");
@@ -1211,7 +1544,8 @@
       readTime: $("#metaReadTime").value || "5",
       author: $("#metaAuthor").value.trim(),
       cover: $("#metaCover").value.trim(),
-      theme: $("#metaTheme").value || "none"
+      theme: $("#metaTheme").value || "none",
+      themeColor: $("#metaThemeColor").value || "#0b1220"
     };
   }
 
@@ -1250,6 +1584,18 @@
   function escJsAttr(s) { return esc(s).replace(/'/g, "\\'"); }
   // text: okunacak Almanca metin, lang: BCP47 dil kodu, sizeCls: "" (normal) veya "tts-cluster-sm" (küçük varyant),
   // extraOnclick: butonlara eklenecek ek JS (örn. sürükle-bırak alanlarında tıklamanın kabarmasını durdurmak için)
+  // Paragraf/bilgi kutusu gibi zengin metin (HTML) alanlarını sesli okuma için
+  // düz metne çevirir: etiketleri kaldırır, [kelime|ipucu] köşeli parantez sözdizimini
+  // ve {{boşluk}} işaretlerini de sesli okumaya uygun hale getirir.
+  function stripHtmlForTts(html) {
+    if (!html) return "";
+    let t = String(html).replace(/<[^>]*>/g, " ");
+    t = t.replace(/\[([^\|\]]+)\|[^\]]*\]/g, "$1");
+    t = t.replace(/\{\{([^}]*)\}\}/g, "$1");
+    t = t.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
+    return t.replace(/\s+/g, " ").trim();
+  }
+
   function ttsCluster(text, lang, sizeCls, extraOnclick) {
     if (!text) return "";
     const t = escJsAttr(text);
@@ -1269,7 +1615,8 @@ function renderBlockExport(b) {
       case "heading": {
         // H2 veya H3 başlıklarına TOC'un yakalayabilmesi için slug ID atıyoruz
         const idAttr = b.level !== "h1" ? ' id="' + slugify(b.text) + '"' : '';
-        return wrapOpen + "<" + b.level + idAttr + ' style="font-family:' + fontStack(b.font) + ";font-size:" + b.size + "px;color:" + b.color + ";font-weight:" + b.weight + ";line-height:" + (b.lineHeight/100) + ";letter-spacing:" + b.letterSpacing + 'px;">' + esc(b.text) + "</" + b.level + ">" + wrapClose;
+        const headingTts = (b.audioSlots && b.audioSlots.text) ? ttsCluster(b.text, "de-DE", "tts-cluster-sm") : "";
+        return wrapOpen + "<" + b.level + idAttr + ' style="font-family:' + fontStack(b.font) + ";font-size:" + b.size + "px;color:" + b.color + ";font-weight:" + b.weight + ";line-height:" + (b.lineHeight/100) + ";letter-spacing:" + b.letterSpacing + 'px;">' + esc(b.text) + headingTts + "</" + b.level + ">" + wrapClose;
       }
 
       case "paragraph": {
@@ -1277,7 +1624,8 @@ function renderBlockExport(b) {
         const variant = b.variant || "normal";
         const dropCapCls = (b.dropCap === true || b.dropCap === "1") ? " lb-dropcap" : "";
         const pStyle = 'font-family:' + fontStack(b.font) + ";font-size:" + b.size + "px;color:" + b.color + ";text-align:" + b.align + ";line-height:" + (b.lineHeight/100) + ";letter-spacing:" + b.letterSpacing + "px;background:transparent;";
-        const pHtml = '<p class="lb-paragraph-text' + dropCapCls + '" style="' + pStyle + '">' + convertTooltips(b.html) + "</p>";
+        const paraTts = (b.audioSlots && b.audioSlots.html) ? ttsCluster(stripHtmlForTts(b.html), "de-DE", "tts-cluster-sm") : "";
+        const pHtml = '<p class="lb-paragraph-text' + dropCapCls + '" style="' + pStyle + '">' + convertTooltips(b.html) + paraTts + "</p>";
         if (variant === "quote") return wrapOpen + '<blockquote class="lb-paragraph-quote">' + pHtml + "</blockquote>" + wrapClose;
         if (variant === "highlight") return wrapOpen + '<div class="lb-paragraph-highlight">' + pHtml + "</div>" + wrapClose;
         return wrapOpen + pHtml + wrapClose;
@@ -1301,20 +1649,26 @@ function renderBlockExport(b) {
           '</figure>' + wrapClose;
       }
 
-      case "vocab":
+      case "vocab": {
+        const vocabDeTts = (b.audioSlots && b.audioSlots.de) ? ttsCluster(b.de, "de-DE") : "";
+        const vocabExTts = (b.audioSlots && b.audioSlots.example) ? ttsCluster(b.example, "de-DE", "tts-cluster-sm") : "";
         return wrapOpen + '<div class="vocab-card">' +
-          '<div class="vocab-de">' + esc(b.de) + ttsCluster(b.de, "de-DE") + "</div>" +
+          '<div class="vocab-de">' + esc(b.de) + vocabDeTts + "</div>" +
           (b.phon ? '<div class="vocab-phon">[' + esc(b.phon) + "]</div>" : "") +
           '<div class="vocab-tr">' + esc(b.tr) + "</div>" +
-          (b.example ? '<div class="vocab-example">' + esc(b.example) + ttsCluster(b.example, "de-DE", "tts-cluster-sm") + "</div>" : "") +
+          (b.example ? '<div class="vocab-example">' + esc(b.example) + vocabExTts + "</div>" : "") +
           (b.tipEnabled && b.tip ? '<div class="vocab-tip"><strong>İpucu:</strong> ' + esc(b.tip) + "</div>" : "") +
           "</div>" + wrapClose;
+      }
 
-      case "callout":
+      case "callout": {
+        const calloutTitleTts = (b.audioSlots && b.audioSlots.title) ? ttsCluster(b.title, "de-DE", "tts-cluster-sm") : "";
+        const calloutBodyTts = (b.audioSlots && b.audioSlots.html) ? ttsCluster(stripHtmlForTts(b.html), "de-DE", "tts-cluster-sm") : "";
         return wrapOpen + '<div class="callout-box" data-theme="' + b.theme + '">' +
           '<div class="callout-ico">' + CALLOUT_ICON[b.theme] + '</div>' +
-          '<div class="callout-body-wrap"><div class="callout-title">' + esc(b.title) + '</div><div class="callout-text">' + b.html + "</div></div>" +
+          '<div class="callout-body-wrap"><div class="callout-title">' + esc(b.title) + calloutTitleTts + '</div><div class="callout-text">' + b.html + calloutBodyTts + "</div></div>" +
           "</div>" + wrapClose;
+      }
 
       case "table": {
         ensureTableAudioShape(b);
@@ -1332,13 +1686,15 @@ function renderBlockExport(b) {
 
       case "quiz": {
         const qId = "q_" + b.id;
+        const quizQTts = (b.audioSlots && b.audioSlots.question) ? ttsCluster(b.question, "de-DE", "tts-cluster-sm") : "";
         let qHtml = wrapOpen + '<div class="premium-quiz-card" id="' + qId + '" data-correct="' + b.correctIndex + '">' +
-          '<div class="quiz-question-title">' + esc(b.question) + '</div>' +
+          '<div class="quiz-question-title">' + esc(b.question) + quizQTts + '</div>' +
           '<div class="quiz-options-list">';
         b.options.forEach((opt, idx) => {
+          const quizOptTts = (b.audioSlots && b.audioSlots["opt" + idx]) ? ttsCluster(opt, "de-DE", "tts-cluster-sm", "event.stopPropagation();") : "";
           qHtml += '<div class="quiz-option-item" data-index="' + idx + '">' +
             '<span class="quiz-indicator"></span>' +
-            '<span class="quiz-opt-text">' + esc(opt) + '</span>' +
+            '<span class="quiz-opt-text">' + esc(opt) + '</span>' + quizOptTts +
             '</div>';
         });
         qHtml += '</div>' +
@@ -1362,9 +1718,10 @@ function renderBlockExport(b) {
             inner += '<input type="text" class="fib-input" data-answer="' + esc(p.value) + '" style="width:' + w + 'ch;" autocomplete="off" spellcheck="false">';
           }
         });
+        const fibTts = (b.audioSlots && b.audioSlots.text) ? ttsCluster(stripHtmlForTts(b.text), "de-DE", "tts-cluster-sm") : "";
         return wrapOpen + '<div class="premium-fillblank-card" id="' + fbId + '">' +
           (b.instruction ? '<div class="fib-instruction">' + esc(b.instruction) + '</div>' : '') +
-          '<div class="fib-text-body">' + inner + '</div>' +
+          '<div class="fib-text-body">' + inner + fibTts + '</div>' +
           '<button class="fib-action-btn" onclick="checkFillBlank(\'' + fbId + '\')">Cevapları Kontrol Et</button>' +
           '<div class="fib-result-msg"></div>' +
           '</div>' + wrapClose;
@@ -1386,10 +1743,11 @@ function renderBlockExport(b) {
 
         let leftHtml = '<div class="matching-col-left" role="list" aria-label="Sabit liste">';
         b.pairs.forEach((p, i) => {
+          const leftTts = (leftIsImage || !(b.audioSlots && b.audioSlots["left" + i])) ? "" : ttsCluster(p.left, "de-DE", "tts-cluster-sm", "event.stopPropagation();");
           leftHtml += '<div class="matching-drop-zone" role="listitem" data-target-idx="' + i + '" tabindex="0" ' +
             'aria-label="Hedef ' + (i + 1) + ': ' + esc(leftIsImage ? "görsel" : p.left) + '">' +
             '<span class="matching-num">' + (i + 1) + '</span>' +
-            '<span class="matching-drop-fixed">' + sideContent(p, leftIsImage, p.left) + (leftIsImage ? "" : ttsCluster(p.left, "de-DE", "tts-cluster-sm", "event.stopPropagation();")) + '</span>' +
+            '<span class="matching-drop-fixed">' + sideContent(p, leftIsImage, p.left) + leftTts + '</span>' +
             '<span class="matching-drop-slot" data-slot></span>' +
             '</div>';
         });
@@ -1421,9 +1779,10 @@ function renderBlockExport(b) {
         const shuffled = shuffleArr(b.sentences.map((s, i) => ({ text: s, idx: i })));
         let itemsHtml = "";
         shuffled.forEach((it, i) => {
+          const sentTts = (b.audioSlots && b.audioSlots["sent" + it.idx]) ? ttsCluster(it.text, "de-DE", "tts-cluster-sm") : "";
           itemsHtml += '<div class="sentorder-item" data-orig="' + it.idx + '">' +
             '<span class="sentorder-text">' + esc(it.text) + '</span>' +
-            ttsCluster(it.text, "de-DE", "tts-cluster-sm") +
+            sentTts +
             '<span class="sentorder-btns">' +
               '<button type="button" onclick="moveSentOrderItem(this,-1)">' + ICO.up + '</button>' +
               '<button type="button" onclick="moveSentOrderItem(this,1)">' + ICO.down + '</button>' +
@@ -1447,8 +1806,9 @@ function renderBlockExport(b) {
           const chipId = woId + "_c" + i;
           bankHtml += '<button type="button" class="wordorder-chip" id="' + chipId + '" data-word="' + esc(w.text) + '" data-orig="' + w.idx + '" onclick="selectWordOrderChip(this)">' + esc(w.text) + '</button>';
         });
+        const wordTts = (b.audioSlots && b.audioSlots.sentence) ? ttsCluster(b.sentence, "de-DE", "tts-cluster-sm") : "";
         return wrapOpen + '<div class="premium-wordorder-card" id="' + woId + '" data-total="' + words.length + '">' +
-          (b.instruction ? '<div class="wordorder-instruction">' + esc(b.instruction) + '</div>' : '') +
+          (b.instruction ? '<div class="wordorder-instruction">' + esc(b.instruction) + wordTts + '</div>' : wordTts) +
           '<div class="wordorder-answer-line"></div>' +
           '<div class="wordorder-bank">' + bankHtml + '</div>' +
           '<div class="wordorder-actions">' +
@@ -1466,11 +1826,12 @@ function renderBlockExport(b) {
         b.lines.forEach((ln, i) => {
           const side = ln.speaker === "A" ? "left" : "right";
           const name = ln.speaker === "A" ? (b.speakerA || "A") : (b.speakerB || "B");
+          const lineTts = (b.audioSlots && b.audioSlots["line" + i]) ? ttsCluster(ln.text, "de-DE", "tts-cluster-sm") : "";
           const bubbleHtml = '<div class="dialogue-bubble dialogue-' + side + '">' +
             '<div class="dialogue-avatar">' + esc((name || "?").charAt(0).toUpperCase()) + '</div>' +
             '<div class="dialogue-bubble-body">' +
               '<div class="dialogue-bubble-name">' + esc(name) + '</div>' +
-              '<div class="dialogue-bubble-text">' + esc(ln.text) + ttsCluster(ln.text, "de-DE", "tts-cluster-sm") + '</div>' +
+              '<div class="dialogue-bubble-text">' + esc(ln.text) + lineTts + '</div>' +
             '</div>' +
           '</div>';
           const lockedCls = (firstChoiceIdx !== -1 && i > firstChoiceIdx) ? " dialogue-locked" : "";
@@ -1555,7 +1916,7 @@ function renderBlockExport(b) {
             '</div>';
         });
         return wrapOpen + '<div class="konj-prev" id="' + kjId + '">' +
-          '<div class="konj-header"><strong>Fiil:</strong>&nbsp;' + esc(b.verb) + ttsCluster(b.verb, "de-DE", "tts-cluster-sm") + '&nbsp;<span>' + esc(TENSE_LABEL[b.tense] || b.tense) + '</span></div>' +
+          '<div class="konj-header"><strong>Fiil:</strong>&nbsp;' + esc(b.verb) + ((b.audioSlots && b.audioSlots.verb) ? ttsCluster(b.verb, "de-DE", "tts-cluster-sm") : "") + '&nbsp;<span>' + esc(TENSE_LABEL[b.tense] || b.tense) + '</span></div>' +
           '<div class="konj-rows">' + rowsHtml + '</div>' +
           '<button type="button" class="konj-action-btn" onclick="checkKonjugation(\'' + kjId + '\')">Cevapları Kontrol Et</button>' +
           '<div class="konj-result"></div>' +
@@ -1564,13 +1925,15 @@ function renderBlockExport(b) {
 
       case "accordion": {
         let accHtml = wrapOpen + '<div class="premium-accordion-wrap">';
-        b.items.forEach(item => {
+        b.items.forEach((item, i) => {
+          const accQTts = (b.audioSlots && b.audioSlots["item" + i + "q"]) ? ttsCluster(item.q, "de-DE", "tts-cluster-sm", "event.stopPropagation();") : "";
+          const accATts = (b.audioSlots && b.audioSlots["item" + i + "a"]) ? ttsCluster(item.a, "de-DE", "tts-cluster-sm") : "";
           accHtml += '<div class="accordion-item-box">' +
             '<button class="accordion-trigger" onclick="toggleAccordion(this)">' +
-              '<span>' + esc(item.q) + '</span>' +
+              '<span>' + esc(item.q) + '</span>' + accQTts +
               '<span class="acc-chevron">▼</span>' +
             '</button>' +
-            '<div class="accordion-panel-content"><p>' + esc(item.a) + '</p></div>' +
+            '<div class="accordion-panel-content"><p>' + esc(item.a) + accATts + '</p></div>' +
             '</div>';
         });
         accHtml += '</div>' + wrapClose;
@@ -1662,7 +2025,7 @@ function buildExportHtml(meta) {
 (meta.author ? '<meta name="author" content="' + esc(meta.author) + '">' : ""),
 '<script type="application/ld+json">' + JSON.stringify(jsonLd) + '</' + 'script>',
 '<script type="application/ld+json">' + JSON.stringify(breadcrumbLd) + '</' + 'script>',
-'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap">',
+'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap">',
 '<link rel="stylesheet" href="../../css/global.css">',
 '<link rel="stylesheet" href="../../src/styles/tokens.css">',
 '<link rel="stylesheet" href="../lesson-static.css">',
@@ -1940,6 +2303,12 @@ body.theme-coral .bg-glow--1 { background: radial-gradient(circle, #fb7185, tran
 body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, transparent 70%); }
 
 `,
+
+((meta.theme === "custom") ? (
+  "/* ── düz renk (özel), gradient yok ── */\n" +
+  "body.theme-custom { background: " + esc(meta.themeColor || "#0b1220") + " !important; background-attachment: fixed; }\n" +
+  "body.theme-custom .bg-glow, body.theme-custom .bg-grid { display: none !important; }"
+) : ""),
 
 "/* ── premium scroll progress bar ── */",
 ".premium-progress-bar { position: fixed; top: 0; left: 0; width: 0%; height: 4px; background: linear-gradient(90deg, var(--xblue), var(--xblueb)); z-index: 9999; transition: width 0.1s ease; }",
@@ -2810,43 +3179,79 @@ blocksHtml,
     ].join("\n");
   }
   /* ══════════════════════════════════════
-     YENİ: Zengin Metin (Rich Text Toolbar) Logic
+     Zengin Metin (Rich Text Toolbar) Logic
+     Seçili metin üzerinde açılan biçimlendirme çubuğu: yazı tipi, boyut,
+     kalın/italik/altı çizili, bağlantı, vurgu, biçim temizleme.
+     Kapanma davranışı: metin seçimi kalkınca, dışarı tıklayınca,
+     Esc'e basınca, sayfa kaydırılınca ya da X'e tıklayınca kapanır.
      ══════════════════════════════════════ */
+  const RT_FONT_OPTIONS = [
+    ["Inter", "Inter"],
+    ["Plus Jakarta Sans", "Plus Jakarta Sans"],
+    ["Lora", "Lora"],
+    ["Merriweather", "Merriweather"],
+    ["Playfair Display", "Playfair Display"],
+    ["Poppins", "Poppins"],
+    ["Montserrat", "Montserrat"],
+    ["Nunito", "Nunito"]
+  ];
+  const RT_SIZE_OPTIONS = [
+    ["1", "Çok Küçük"], ["2", "Küçük"], ["3", "Normal"],
+    ["4", "Orta"], ["5", "Büyük"], ["6", "Çok Büyük"], ["7", "Dev"]
+  ];
   const rtToolbar = document.createElement("div");
   rtToolbar.className = "rt-toolbar";
-  rtToolbar.innerHTML = `
-    <button data-cmd="bold" title="Kalın">` + ICO.bold + `</button>
-    <button data-cmd="italic" title="İtalik">` + ICO.italic + `</button>
-    <button data-cmd="underline" title="Altı Çizili">` + ICO.underline + `</button>
-    <button data-cmd="createLink" title="Bağlantı">` + ICO.link + `</button>
-    <button data-cmd="hiliteColor" title="Vurgula">` + ICO.highlight + `</button>
-  `;
+  rtToolbar.innerHTML =
+    '<select class="rt-select rt-select-font" data-cmd="fontName" title="Yazı Tipi">' +
+      RT_FONT_OPTIONS.map(f => '<option value="' + f[0] + '">' + f[1] + '</option>').join("") +
+    '</select>' +
+    '<select class="rt-select rt-select-size" data-cmd="fontSize" title="Yazı Boyutu">' +
+      RT_SIZE_OPTIONS.map(s => '<option value="' + s[0] + '"' + (s[0] === "3" ? " selected" : "") + '>' + s[1] + '</option>').join("") +
+    '</select>' +
+    '<div class="rt-divider"></div>' +
+    '<button data-cmd="bold" title="Kalın (Ctrl+B)">' + ICO.bold + '</button>' +
+    '<button data-cmd="italic" title="İtalik (Ctrl+I)">' + ICO.italic + '</button>' +
+    '<button data-cmd="underline" title="Altı Çizili (Ctrl+U)">' + ICO.underline + '</button>' +
+    '<div class="rt-divider"></div>' +
+    '<button data-cmd="createLink" title="Bağlantı Ekle">' + ICO.link + '</button>' +
+    '<button data-cmd="hiliteColor" title="Vurgula">' + ICO.highlight + '</button>' +
+    '<button data-cmd="removeFormat" title="Biçimlendirmeyi Temizle">' + ICO.clear + '</button>' +
+    '<div class="rt-divider"></div>' +
+    '<button data-cmd="__close" class="rt-close" title="Kapat (Esc)">' + ICO.close + '</button>';
   document.body.appendChild(rtToolbar);
+
+  function hideRtToolbar() { rtToolbar.classList.remove("show"); }
+
+  function positionRtToolbar(range) {
+    const rect = range.getBoundingClientRect();
+    rtToolbar.classList.add("show");
+    const tbWidth = rtToolbar.offsetWidth || 360;
+    let left = rect.left + window.scrollX + (rect.width / 2) - (tbWidth / 2);
+    left = Math.max(8, Math.min(left, document.documentElement.clientWidth + window.scrollX - tbWidth - 8));
+    rtToolbar.style.top = (rect.top + window.scrollY - 48) + "px";
+    rtToolbar.style.left = left + "px";
+  }
 
   document.addEventListener("selectionchange", () => {
     const sel = window.getSelection();
-    if (!sel || sel.isCollapsed) {
-      rtToolbar.classList.remove("show");
-      return;
-    }
+    if (!sel || sel.isCollapsed || !sel.rangeCount) { hideRtToolbar(); return; }
     const node = sel.anchorNode ? sel.anchorNode.parentElement : null;
     if (node && node.closest("[contenteditable='true']")) {
-      const range = sel.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      rtToolbar.style.top = (rect.top + window.scrollY - 42) + "px";
-      rtToolbar.style.left = (rect.left + window.scrollX + (rect.width / 2) - 65) + "px";
-      rtToolbar.classList.add("show");
+      positionRtToolbar(sel.getRangeAt(0));
     } else {
-      rtToolbar.classList.remove("show");
+      hideRtToolbar();
     }
   });
 
   rtToolbar.addEventListener("mousedown", (e) => {
+    if (e.target.closest("select")) return; // seçim kutularının normal açılmasına izin ver
     e.preventDefault(); // Focus kaybını önler
     const btn = e.target.closest("button");
     if (!btn) return;
     const cmd = btn.dataset.cmd;
-    if (cmd === "createLink") {
+    if (cmd === "__close") {
+      hideRtToolbar();
+    } else if (cmd === "createLink") {
       const url = prompt("Bağlantı adresi (URL) girin:");
       if (url) document.execCommand(cmd, false, url);
     } else if (cmd === "hiliteColor") {
@@ -2856,6 +3261,24 @@ blocksHtml,
       document.execCommand(cmd, false, null);
     }
   });
+  rtToolbar.querySelector(".rt-select-font").addEventListener("change", (e) => {
+    document.execCommand("fontName", false, e.target.value);
+  });
+  rtToolbar.querySelector(".rt-select-size").addEventListener("change", (e) => {
+    document.execCommand("fontSize", false, e.target.value);
+  });
+
+  // Asıl "kapanmıyor" hatasının düzeltmesi: dışarı tıklayınca, Esc'e basınca
+  // veya sayfa kaydırılınca (konumu bayatlamasın diye) çubuğu kesin olarak kapat.
+  document.addEventListener("mousedown", (e) => {
+    if (!rtToolbar.classList.contains("show")) return;
+    if (e.target.closest(".rt-toolbar") || e.target.closest("[contenteditable='true']")) return;
+    hideRtToolbar();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") hideRtToolbar();
+  });
+  window.addEventListener("scroll", hideRtToolbar, true);
 
   /* ══════════════════════════════════════
      YENİ: JSON Proje Kaydetme & Yükleme

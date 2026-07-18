@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ders Builder — No-Code Statik Sayfa Üretici</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body class="theme-ocean">
@@ -20,6 +20,7 @@
     <div class="topbar-actions">
       <select id="metaTheme" title="Arayüz teması / Ders arka planı">
         <option value="none">Tema Yok (Varsayılan)</option>
+        <option value="custom">Düz Renk (Özel)</option>
         <option value="ocean" selected>Ocean</option>
         <option value="sunset">Sunset</option>
         <option value="aurora">Aurora</option>
@@ -46,6 +47,7 @@
         <option value="amethyst">Amethyst</option>
         <option value="coral">Coral</option>
       </select>
+      <input type="color" id="metaThemeColor" value="#0b1220" title="Düz arka plan rengini seç" style="display:none;">
       <span class="block-count" id="blockCount">0 blok</span>
       <button class="btn btn-danger-ghost" id="btnClearAll">Tümünü Temizle</button>
       <button class="btn" id="btnPreview">
@@ -59,8 +61,23 @@
     </div>
   </header>
 
+  <div class="editor-toolbar" id="editorToolbar">
+    <div class="et-empty" id="etEmpty">Düzenlemek için bir bloğa tıklayın — rengini, boyutunu, arka planını buradan değiştirebilirsiniz.</div>
+    <div class="et-content" id="etContent"></div>
+  </div>
+
   <div class="workspace">
     <aside class="sidebar" id="sidebar">
+      <div class="sidebar-label">Sesli Okuma Aracı</div>
+      <div class="audio-tool-box">
+        <div id="ttsDragTool" class="audio-drag-tool" draggable="true" title="Bunu istediğiniz metin kutusunun üzerine sürükleyip bırakın">
+          <span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.3 5.7a9 9 0 0 1 0 12.6"/></svg></span>
+          <div class="audio-drag-tool-text">
+            <strong>Sesli Okuma Aracı</strong>
+            <small>Sürükle &amp; bir metin kutusuna bırak</small>
+          </div>
+        </div>
+      </div>
       <div class="sidebar-label">Blok Ekle</div>
       <button class="add-block-btn" data-type="heading"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v16"/><path d="M18 4v16"/><path d="M6 12h12"/></svg></span>Başlık</button>
       <button class="add-block-btn" data-type="paragraph"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg></span>Paragraf</button>
@@ -81,7 +98,7 @@
       <button class="add-block-btn" data-type="video"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>Video (YouTube/Vimeo)</button>
       <button class="add-block-btn" data-type="code"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>Kod Bloğu</button>
       <button class="add-block-btn" data-type="toc"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>İçindekiler (TOC)</button>
-      <div class="sidebar-hint"><b>İpucu:</b> İçeriğe tıklayıp doğrudan yazabilirsin. ⚙ ikonu her blok için stil, boşluk ve arka plan ayarlarını açar. Paragrafta metin seçince biçimlendirme barı belirir. Metinde <code>[kelime|açıklama]</code> yazarsan çıktıda ipucu balonuna dönüşür. Tabloda bir hücrenin üzerine gelince çıkan 🔊 ikonuna tıklayarak o hücrenin sesli okunup okunmayacağını seçebilirsin.</div>
+      <div class="sidebar-hint"><b>İpucu:</b> İçeriğe tıklayıp doğrudan yazabilirsin. Bir bloğa (veya ⚙ ikonuna) tıklarsan stil, renk, boyut ve arka plan ayarları en üstteki editör barında açılır. Paragrafta metin seçince biçimlendirme barı belirir. Metinde <code>[kelime|açıklama]</code> yazarsan çıktıda ipucu balonuna dönüşür. Tabloda bir hücrenin üzerine gelince çıkan 🔊 ikonuna tıklayarak o hücrenin sesli okunup okunmayacağını seçebilirsin.</div>
 
       <div style="height: 1px; background: var(--border); margin: 20px 4px 16px;"></div>
       <div class="sidebar-label">Şablonlar</div>
