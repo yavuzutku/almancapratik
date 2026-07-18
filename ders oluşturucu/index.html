@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ders Builder — No-Code Statik Sayfa Üretici</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-ocean">
+
+<div class="app">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-mark">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <div><span class="tb-title">Ders Builder</span><span class="tb-sub">Premium Statik Sayfa Üretici</span></div>
+    </div>
+    <div class="topbar-actions">
+      <select id="metaTheme" title="Arayüz teması / Ders arka planı">
+        <option value="none">Tema Yok (Varsayılan)</option>
+        <option value="ocean" selected>Ocean</option>
+        <option value="sunset">Sunset</option>
+        <option value="aurora">Aurora</option>
+        <option value="forest">Forest</option>
+        <option value="midnight">Midnight</option>
+        <option value="cyberpunk">Cyberpunk</option>
+        <option value="lavender">Lavender</option>
+        <option value="desert">Desert</option>
+        <option value="volcano">Volcano</option>
+        <option value="emerald">Emerald</option>
+        <option value="sapphire">Sapphire</option>
+        <option value="rose">Rose</option>
+        <option value="coffee">Coffee</option>
+        <option value="neon">Neon</option>
+        <option value="galaxy">Galaxy</option>
+        <option value="arctic">Arctic</option>
+        <option value="tropical">Tropical</option>
+        <option value="royal">Royal</option>
+        <option value="obsidian">Obsidian</option>
+        <option value="peach">Peach</option>
+        <option value="mint">Mint</option>
+        <option value="titanium">Titanium</option>
+        <option value="ruby">Ruby</option>
+        <option value="amethyst">Amethyst</option>
+        <option value="coral">Coral</option>
+      </select>
+      <span class="block-count" id="blockCount">0 blok</span>
+      <button class="btn btn-danger-ghost" id="btnClearAll">Tümünü Temizle</button>
+      <button class="btn" id="btnPreview">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Önizle
+      </button>
+      <button class="btn btn-blue" id="btnExport">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        HTML Oluştur
+      </button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-label">Blok Ekle</div>
+      <button class="add-block-btn" data-type="heading"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v16"/><path d="M18 4v16"/><path d="M6 12h12"/></svg></span>Başlık</button>
+      <button class="add-block-btn" data-type="paragraph"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg></span>Paragraf</button>
+      <button class="add-block-btn" data-type="image"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></span>Görsel</button>
+      <button class="add-block-btn" data-type="vocab"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>Almanca Kelime Kartı</button>
+      <button class="add-block-btn" data-type="callout"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>Bilgi / Uyarı Kutusu</button>
+      <button class="add-block-btn" data-type="table"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="3" x2="12" y2="21"/></svg></span>Tablo</button>
+      <button class="add-block-btn" data-type="quiz"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>Quiz / Sınav</button>
+      <button class="add-block-btn" data-type="fillblank"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></span>Boşluk Doldurma</button>
+      <button class="add-block-btn" data-type="matching"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="12" r="2"/><path d="M8 6.6 16 11"/><path d="M8 17.4 16 13"/></svg></span>Eşleştirme</button>
+      <button class="add-block-btn" data-type="sentorder"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span>Cümle Sıralama</button>
+      <button class="add-block-btn" data-type="wordorder"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="8.5" y="14" width="7" height="7" rx="1.5"/></svg></span>Kelime Sıralama</button>
+      <button class="add-block-btn" data-type="dialogue"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>Diyalog / Sohbet</button>
+      <button class="add-block-btn" data-type="audio"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></span>Sesli Okuma (DE)</button>
+      <button class="add-block-btn" data-type="listen"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14v-3a9 9 0 0 1 18 0v3"/><path d="M21 15.5a2.5 2.5 0 0 1-2.5 2.5H17v-6h1.5a2.5 2.5 0 0 1 2.5 2.5v1z"/><path d="M3 15.5A2.5 2.5 0 0 0 5.5 18H7v-6H5.5A2.5 2.5 0 0 0 3 14.5v1z"/></svg></span>Dinleme Anlama (Hörverstehen)</button>
+      <button class="add-block-btn" data-type="konjugation"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>Fiil Çekim Alıştırması (Konjugation)</button>
+      <button class="add-block-btn" data-type="accordion"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>Akordeon / SSS</button>
+      <button class="add-block-btn" data-type="video"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>Video (YouTube/Vimeo)</button>
+      <button class="add-block-btn" data-type="code"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>Kod Bloğu</button>
+      <button class="add-block-btn" data-type="toc"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>İçindekiler (TOC)</button>
+      <div class="sidebar-hint"><b>İpucu:</b> İçeriğe tıklayıp doğrudan yazabilirsin. ⚙ ikonu her blok için stil, boşluk ve arka plan ayarlarını açar. Paragrafta metin seçince biçimlendirme barı belirir. Metinde <code>[kelime|açıklama]</code> yazarsan çıktıda ipucu balonuna dönüşür.</div>
+
+      <div style="height: 1px; background: var(--border); margin: 20px 4px 16px;"></div>
+      <div class="sidebar-label">Şablonlar</div>
+      <div class="template-subhead">Hazır Şablonlar</div>
+      <button class="template-btn" data-template="vocab"><span>Kelime Odaklı Ders</span><small>Başlık + kelime kartları + quiz</small></button>
+      <button class="template-btn" data-template="reading"><span>Okuma-Anlama Şablonu</span><small>Başlık + metin + kutu + quiz</small></button>
+      <button class="template-btn" data-template="grammar"><span>Gramer Yoğun Şablon</span><small>Başlık + kurallar + tablo + akordeon</small></button>
+
+      <div class="template-subhead" style="margin-top: 14px;">Kendi Şablonların</div>
+      <div id="customTemplatesList"></div>
+      <button class="add-block-btn" id="btnSaveAsTemplate"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg></span>Bu Dersi Şablon Olarak Kaydet</button>
+
+      <div style="height: 1px; background: var(--border); margin: 20px 4px 16px;"></div>
+      <div class="sidebar-label">Proje Dosyası</div>
+      <button class="add-block-btn" id="btnSaveProject"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>Projeyi Kaydet (.json)</button>
+      <button class="add-block-btn" id="btnLoadProject"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>Projeyi Yükle (.json)</button>
+      <input type="file" id="loadProjectInput" style="display:none;" accept="application/json,.json">
+    </aside>
+
+    <main class="canvas-wrap"><div class="canvas" id="canvas"></div></main>
+  </div>
+</div>
+
+<div class="modal-overlay" id="exportModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>HTML Sayfası Oluştur</h2>
+      <button class="modal-close" id="closeExportModal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label for="metaTitle">Sayfa Başlığı</label><input type="text" id="metaTitle" placeholder="örn. Almanca'da Hal Ekleri (Akkusativ)"></div>
+      <div class="form-row"><label for="metaSlug">URL Slug (klasör adı)</label><input type="text" id="metaSlug" placeholder="örn. hal-ekleri-akkusativ"><div class="form-hint">Bu dosyayı <code>/dersler/&lt;slug&gt;/index.html</code> olarak kaydedeceksin — slug, o klasör adıyla birebir aynı olmalı. Başlığa göre otomatik önerilir, istersen değiştirebilirsin.</div></div>
+      <div class="form-row"><label for="metaDesc">Meta Açıklaması (SEO)</label><textarea id="metaDesc" rows="3" placeholder="Arama motorlarında görünecek kısa açıklama"></textarea></div>
+      <div class="form-row-split">
+        <div class="form-row"><label for="metaLevel">Seviye</label><select id="metaLevel"><option value="A1">A1</option><option value="A2">A2</option><option value="B1" selected>B1</option><option value="B2">B2</option><option value="C1">C1</option></select></div>
+        <div class="form-row"><label for="metaType">Tür</label><select id="metaType"><option value="">— Seçilmedi —</option><option value="iletisim">İletişim</option><option value="kultur">Kültür</option><option value="gramer">Gramer</option></select></div>
+      </div>
+      <div class="form-row-split">
+        <div class="form-row"><label for="metaDifficulty">Zorluk Derecesi</label><select id="metaDifficulty"><option value="Kolay">Kolay</option><option value="Orta" selected>Orta</option><option value="Zor">Zor</option></select></div>
+        <div class="form-row"><label for="metaReadTime">Okuma Süresi (dk)</label><input type="number" id="metaReadTime" min="1" max="60" value="5"></div>
+      </div>
+      <div class="form-row"><label for="metaAuthor">Yazar Adı</label><input type="text" id="metaAuthor" placeholder="örn. Çetin Hoca"></div>
+      <div class="form-row"><label for="metaCover">Kapak Görseli URL'si</label><input type="url" id="metaCover" placeholder="https://..."><div class="form-hint">Boş bırakılırsa kapak görseli olmadan üretilir. Bu, sosyal medya paylaşım görseli (og:image) içindir — liste sayfasındaki kapak küçük resmi için ayrıca ders klasörüne <code>cover.jpg</code> koymalısın.</div></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="cancelExport">Vazgeç</button>
+      <button class="btn btn-blue" id="confirmExport"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>İndir (index.html)</button>
+    </div>
+  </div>
+</div>
+
+<div class="preview-overlay" id="previewOverlay">
+  <div class="preview-panel">
+    <div class="preview-panel-header">
+      <h2><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Canlı Önizleme</h2>
+      <div class="preview-panel-actions">
+        <button class="btn btn-sm" id="previewOpenTab"><span class="psa-label">Yeni Sekmede Aç</span></button>
+        <button class="modal-close" id="closePreview"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <iframe class="preview-iframe" id="previewIframe" title="Ders önizlemesi"></iframe>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

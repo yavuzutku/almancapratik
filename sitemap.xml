@@ -25,13 +25,19 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://almancapratik.com/ders-builder-v3.html</loc>
+    <loc>https://almancapratik.com/ders oluşturucu/</loc>
     <lastmod>2026-07-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://almancapratik.com/dersler/</loc>
+    <lastmod>2026-07-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://almancapratik.com/dersler/deneme-dersi/</loc>
     <lastmod>2026-07-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

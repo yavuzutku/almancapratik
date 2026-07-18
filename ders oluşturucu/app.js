@@ -1,909 +1,3 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ders Builder — No-Code Statik Sayfa Üretici</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap">
-<style>
-
-*, *::before, *::after { box-sizing: border-box; }
-
-:root {
-  --bg-base:      #070d19;
-  --bg-panel:     rgba(15,23,42,0.74);
-  --bg-surface:   rgba(255,255,255,0.035);
-  --bg-elevated:  rgba(255,255,255,0.06);
-  --bg-hover:     rgba(255,255,255,0.06);
-  --border:       rgba(59,130,246,0.16);
-  --border-hover: rgba(59,130,246,0.36);
-  --blue:         #3b82f6;
-  --blue-bright:  #60a5fa;
-  --blue-glow:    rgba(59,130,246,0.4);
-  --text:         #ffffff;
-  --text-dim:     #cbd5e1;
-  --text-faint:   rgba(226,232,240,0.42);
-  --green:        #4fd69c;
-  --amber:        #ffd250;
-  --rose:         #f07068;
-  --radius:       14px;
-  --radius-sm:    8px;
-  --tr:           0.18s cubic-bezier(.4,0,.2,1);
-}
-
-
-/* ══════════════════════════════════════
-   DİNAMİK GRADIENT TEMA SİSTEMİ (25 TEMA)
-   ══════════════════════════════════════ */
-
-body.theme-ocean {
-  --bg-base: #070d19;
-  --blue: #2563eb;
-  --blue-bright: #38bdf8;
-  --blue-glow: rgba(37,99,235,0.40);
-  --border: rgba(37,99,235,0.18);
-  --border-hover: rgba(56,189,248,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 12% 15%, rgba(37,99,235,0.30), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 88% 85%, rgba(14,165,233,0.22), transparent 60%),
-    linear-gradient(160deg, #050b16 0%, #0b1c33 100%);
-  background-attachment: fixed;
-}
-
-body.theme-sunset {
-  --bg-base: #1a0f1f;
-  --blue: #f97316;
-  --blue-bright: #fb923c;
-  --blue-glow: rgba(249,115,22,0.40);
-  --border: rgba(249,115,22,0.20);
-  --border-hover: rgba(251,146,60,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 10% 10%, rgba(244,63,94,0.35), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 90% 90%, rgba(249,115,22,0.28), transparent 60%),
-    linear-gradient(160deg, #1a0f1f 0%, #3b1225 100%);
-  background-attachment: fixed;
-}
-
-body.theme-aurora {
-  --bg-base: #071016;
-  --blue: #10b981;
-  --blue-bright: #34d399;
-  --blue-glow: rgba(16,185,129,0.40);
-  --border: rgba(16,185,129,0.18);
-  --border-hover: rgba(52,211,153,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 10%, rgba(16,185,129,0.30), transparent 60%),
-    radial-gradient(ellipse 850px 550px at 85% 90%, rgba(147,51,234,0.28), transparent 60%),
-    linear-gradient(160deg, #071016 0%, #0d1f24 100%);
-  background-attachment: fixed;
-}
-
-body.theme-forest {
-  --bg-base: #081511;
-  --blue: #22c55e;
-  --blue-bright: #4ade80;
-  --blue-glow: rgba(34,197,94,0.40);
-  --border: rgba(34,197,94,0.18);
-  --border-hover: rgba(74,222,128,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 10% 15%, rgba(34,197,94,0.28), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 90% 85%, rgba(101,163,13,0.20), transparent 60%),
-    linear-gradient(160deg, #081511 0%, #0f2a1d 100%);
-  background-attachment: fixed;
-}
-
-body.theme-midnight {
-  --bg-base: #05060d;
-  --blue: #4f46e5;
-  --blue-bright: #818cf8;
-  --blue-glow: rgba(79,70,229,0.40);
-  --border: rgba(79,70,229,0.18);
-  --border-hover: rgba(129,140,248,0.40);
-  background:
-    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.5), transparent),
-    radial-gradient(2px 2px at 70% 65%, rgba(255,255,255,0.35), transparent),
-    radial-gradient(1.5px 1.5px at 45% 80%, rgba(255,255,255,0.3), transparent),
-    radial-gradient(ellipse 900px 600px at 20% 20%, rgba(79,70,229,0.25), transparent 60%),
-    linear-gradient(160deg, #05060d 0%, #0a0e1f 100%);
-  background-attachment: fixed;
-}
-
-body.theme-cyberpunk {
-  --bg-base: #0a0014;
-  --blue: #d946ef;
-  --blue-bright: #f472b6;
-  --blue-glow: rgba(217,70,239,0.45);
-  --border: rgba(217,70,239,0.22);
-  --border-hover: rgba(244,114,182,0.45);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(168,85,247,0.35), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 30%, rgba(236,72,153,0.30), transparent 60%),
-    radial-gradient(ellipse 700px 500px at 50% 90%, rgba(59,130,246,0.25), transparent 60%),
-    linear-gradient(160deg, #0a0014 0%, #1a0a2e 100%);
-  background-attachment: fixed;
-}
-
-body.theme-lavender {
-  --bg-base: #12101d;
-  --blue: #a78bfa;
-  --blue-bright: #c4b5fd;
-  --blue-glow: rgba(167,139,250,0.40);
-  --border: rgba(167,139,250,0.20);
-  --border-hover: rgba(196,181,253,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(167,139,250,0.28), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(216,180,254,0.20), transparent 60%),
-    linear-gradient(160deg, #12101d 0%, #221c38 100%);
-  background-attachment: fixed;
-}
-
-body.theme-desert {
-  --bg-base: #1a1208;
-  --blue: #d97706;
-  --blue-bright: #f59e0b;
-  --blue-glow: rgba(217,119,6,0.40);
-  --border: rgba(217,119,6,0.20);
-  --border-hover: rgba(245,158,11,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 10% 20%, rgba(217,119,6,0.28), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 90% 80%, rgba(180,83,9,0.22), transparent 60%),
-    linear-gradient(160deg, #1a1208 0%, #2e1f0d 100%);
-  background-attachment: fixed;
-}
-
-body.theme-volcano {
-  --bg-base: #0d0403;
-  --blue: #dc2626;
-  --blue-bright: #f97316;
-  --blue-glow: rgba(220,38,38,0.45);
-  --border: rgba(220,38,38,0.22);
-  --border-hover: rgba(249,115,22,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 20% 80%, rgba(220,38,38,0.35), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 80% 20%, rgba(249,115,22,0.28), transparent 60%),
-    linear-gradient(160deg, #0d0403 0%, #1f0a05 100%);
-  background-attachment: fixed;
-}
-
-body.theme-emerald {
-  --bg-base: #04140f;
-  --blue: #10b981;
-  --blue-bright: #6ee7b7;
-  --blue-glow: rgba(16,185,129,0.40);
-  --border: rgba(16,185,129,0.20);
-  --border-hover: rgba(110,231,183,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(16,185,129,0.30), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(5,150,105,0.22), transparent 60%),
-    linear-gradient(160deg, #04140f 0%, #082820 100%);
-  background-attachment: fixed;
-}
-
-body.theme-sapphire {
-  --bg-base: #050b1a;
-  --blue: #1d4ed8;
-  --blue-bright: #3b82f6;
-  --blue-glow: rgba(29,78,216,0.40);
-  --border: rgba(29,78,216,0.20);
-  --border-hover: rgba(59,130,246,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(29,78,216,0.32), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(79,70,229,0.22), transparent 60%),
-    linear-gradient(160deg, #050b1a 0%, #0b1533 100%);
-  background-attachment: fixed;
-}
-
-body.theme-rose {
-  --bg-base: #170a10;
-  --blue: #f43f5e;
-  --blue-bright: #fb7185;
-  --blue-glow: rgba(244,63,94,0.40);
-  --border: rgba(244,63,94,0.20);
-  --border-hover: rgba(251,113,133,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(244,63,94,0.30), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(236,72,153,0.20), transparent 60%),
-    linear-gradient(160deg, #170a10 0%, #2c111c 100%);
-  background-attachment: fixed;
-}
-
-body.theme-coffee {
-  --bg-base: #140f0b;
-  --blue: #92400e;
-  --blue-bright: #b45309;
-  --blue-glow: rgba(146,64,14,0.40);
-  --border: rgba(146,64,14,0.20);
-  --border-hover: rgba(180,83,9,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 10% 15%, rgba(146,64,14,0.25), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 90% 85%, rgba(120,53,15,0.20), transparent 60%),
-    linear-gradient(160deg, #140f0b 0%, #241a12 100%);
-  background-attachment: fixed;
-}
-
-body.theme-neon {
-  --bg-base: #06060a;
-  --blue: #22d3ee;
-  --blue-bright: #67e8f9;
-  --blue-glow: rgba(34,211,238,0.45);
-  --border: rgba(34,211,238,0.22);
-  --border-hover: rgba(103,232,249,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 10% 20%, rgba(34,211,238,0.32), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 90% 80%, rgba(217,70,239,0.28), transparent 60%),
-    radial-gradient(ellipse 700px 500px at 50% 50%, rgba(74,222,128,0.15), transparent 60%),
-    linear-gradient(160deg, #06060a 0%, #0c0c18 100%);
-  background-attachment: fixed;
-}
-
-body.theme-galaxy {
-  --bg-base: #050414;
-  --blue: #7c3aed;
-  --blue-bright: #a78bfa;
-  --blue-glow: rgba(124,58,237,0.40);
-  --border: rgba(124,58,237,0.20);
-  --border-hover: rgba(167,139,250,0.40);
-  background:
-    radial-gradient(1.5px 1.5px at 25% 20%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1.5px 1.5px at 75% 60%, rgba(255,255,255,0.3), transparent),
-    radial-gradient(ellipse 900px 600px at 20% 30%, rgba(124,58,237,0.30), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 80% 80%, rgba(59,130,246,0.20), transparent 60%),
-    linear-gradient(160deg, #050414 0%, #0d0a24 100%);
-  background-attachment: fixed;
-}
-
-body.theme-arctic {
-  --bg-base: #0a1218;
-  --blue: #38bdf8;
-  --blue-bright: #7dd3fc;
-  --blue-glow: rgba(56,189,248,0.40);
-  --border: rgba(56,189,248,0.20);
-  --border-hover: rgba(125,211,252,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(56,189,248,0.28), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(224,242,254,0.12), transparent 60%),
-    linear-gradient(160deg, #0a1218 0%, #101f2b 100%);
-  background-attachment: fixed;
-}
-
-body.theme-tropical {
-  --bg-base: #031815;
-  --blue: #14b8a6;
-  --blue-bright: #2dd4bf;
-  --blue-glow: rgba(20,184,166,0.40);
-  --border: rgba(20,184,166,0.20);
-  --border-hover: rgba(45,212,191,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(20,184,166,0.28), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(250,204,21,0.18), transparent 60%),
-    linear-gradient(160deg, #031815 0%, #06302a 100%);
-  background-attachment: fixed;
-}
-
-body.theme-royal {
-  --bg-base: #0f0a1a;
-  --blue: #7e22ce;
-  --blue-bright: #a855f7;
-  --blue-glow: rgba(126,34,206,0.40);
-  --border: rgba(212,175,55,0.22);
-  --border-hover: rgba(250,204,21,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(126,34,206,0.32), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(212,175,55,0.20), transparent 60%),
-    linear-gradient(160deg, #0f0a1a 0%, #1e1330 100%);
-  background-attachment: fixed;
-}
-
-body.theme-obsidian {
-  --bg-base: #000000;
-  --blue: #64748b;
-  --blue-bright: #94a3b8;
-  --blue-glow: rgba(100,116,139,0.30);
-  --border: rgba(148,163,184,0.14);
-  --border-hover: rgba(148,163,184,0.30);
-  background:
-    radial-gradient(ellipse 900px 600px at 20% 20%, rgba(30,41,59,0.50), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 80% 80%, rgba(51,65,85,0.35), transparent 60%),
-    linear-gradient(160deg, #000000 0%, #0a0a0c 100%);
-  background-attachment: fixed;
-}
-
-body.theme-peach {
-  --bg-base: #1a1109;
-  --blue: #fb923c;
-  --blue-bright: #fdba74;
-  --blue-glow: rgba(251,146,60,0.40);
-  --border: rgba(251,146,60,0.20);
-  --border-hover: rgba(253,186,116,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(251,146,60,0.28), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(244,114,182,0.18), transparent 60%),
-    linear-gradient(160deg, #1a1109 0%, #2e1c10 100%);
-  background-attachment: fixed;
-}
-
-body.theme-mint {
-  --bg-base: #041512;
-  --blue: #34d399;
-  --blue-bright: #6ee7b7;
-  --blue-glow: rgba(52,211,153,0.40);
-  --border: rgba(52,211,153,0.20);
-  --border-hover: rgba(110,231,183,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(52,211,153,0.28), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(45,212,191,0.18), transparent 60%),
-    linear-gradient(160deg, #041512 0%, #082a23 100%);
-  background-attachment: fixed;
-}
-
-body.theme-titanium {
-  --bg-base: #0e1013;
-  --blue: #94a3b8;
-  --blue-bright: #cbd5e1;
-  --blue-glow: rgba(148,163,184,0.35);
-  --border: rgba(148,163,184,0.18);
-  --border-hover: rgba(203,213,225,0.35);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(148,163,184,0.22), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(100,116,139,0.18), transparent 60%),
-    linear-gradient(160deg, #0e1013 0%, #181c21 100%);
-  background-attachment: fixed;
-}
-
-body.theme-ruby {
-  --bg-base: #12040a;
-  --blue: #be123c;
-  --blue-bright: #e11d48;
-  --blue-glow: rgba(190,18,60,0.40);
-  --border: rgba(190,18,60,0.20);
-  --border-hover: rgba(225,29,72,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(190,18,60,0.30), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(225,29,72,0.20), transparent 60%),
-    linear-gradient(160deg, #12040a 0%, #260814 100%);
-  background-attachment: fixed;
-}
-
-body.theme-amethyst {
-  --bg-base: #0f0716;
-  --blue: #9333ea;
-  --blue-bright: #c084fc;
-  --blue-glow: rgba(147,51,234,0.40);
-  --border: rgba(147,51,234,0.20);
-  --border-hover: rgba(192,132,252,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 15%, rgba(147,51,234,0.30), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 85%, rgba(192,132,252,0.18), transparent 60%),
-    linear-gradient(160deg, #0f0716 0%, #1e0e2e 100%);
-  background-attachment: fixed;
-}
-
-body.theme-coral {
-  --bg-base: #190b0b;
-  --blue: #fb7185;
-  --blue-bright: #fda4af;
-  --blue-glow: rgba(251,113,133,0.40);
-  --border: rgba(251,113,133,0.20);
-  --border-hover: rgba(253,164,175,0.40);
-  background:
-    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(251,113,133,0.30), transparent 60%),
-    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(249,115,22,0.18), transparent 60%),
-    linear-gradient(160deg, #190b0b 0%, #2c1414 100%);
-  background-attachment: fixed;
-}
-
-html, body { height: 100%; }
-body {
-  margin: 0; background: var(--bg-base); color: var(--text);
-  font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased;
-  background-image:
-    radial-gradient(ellipse 900px 500px at -10% -10%, rgba(59,130,246,0.14), transparent 60%),
-    radial-gradient(ellipse 700px 500px at 110% 20%, rgba(96,165,250,0.08), transparent 60%);
-  background-attachment: fixed;
-}
-button, input, select, textarea { font-family: inherit; }
-
-.app { display: flex; flex-direction: column; height: 100vh; }
-
-.topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  height: 66px; flex-shrink: 0; padding: 0 26px;
-  background: rgba(7,13,25,0.78);
-  backdrop-filter: blur(22px) saturate(180%);
-  -webkit-backdrop-filter: blur(22px) saturate(180%);
-  border-bottom: 1px solid var(--border);
-  box-shadow: 0 1px 0 rgba(59,130,246,0.1), 0 12px 30px rgba(0,0,0,0.35);
-  z-index: 50; position: relative;
-}
-.topbar-brand { display: flex; align-items: center; gap: 13px; }
-.brand-mark {
-  width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
-  background: linear-gradient(150deg, var(--blue), var(--blue-bright));
-  display: flex; align-items: center; justify-content: center; color: #071022;
-  box-shadow: 0 4px 16px rgba(59,130,246,0.4), inset 0 1px 0 rgba(255,255,255,0.4);
-}
-.tb-title { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
-.tb-sub { display: block; font-size: 10.5px; color: var(--text-faint); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
-.topbar-actions { display: flex; align-items: center; gap: 14px; }
-#metaTheme {
-  padding: 7px 30px 7px 12px; border: 1px solid var(--border); border-radius: 20px;
-  background: var(--bg-surface); color: var(--text-dim); font-size: 12.5px; font-weight: 600;
-  cursor: pointer; transition: all var(--tr); appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 10px center;
-}
-#metaTheme:hover { border-color: var(--border-hover); color: var(--text); }
-#metaTheme:focus { outline: none; border-color: var(--border-hover); }
-.block-count {
-  font-size: 11.5px; color: var(--text-faint); font-variant-numeric: tabular-nums;
-  padding: 6px 12px; border: 1px solid var(--border); border-radius: 20px; background: var(--bg-surface);
-}
-
-.btn {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 10px 17px; border-radius: 10px;
-  font-size: 13px; font-weight: 600; letter-spacing: 0.01em;
-  border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-dim);
-  cursor: pointer; transition: all var(--tr); white-space: nowrap;
-}
-.btn:hover { border-color: var(--border-hover); color: var(--text); background: var(--bg-hover); transform: translateY(-1px); }
-.btn-blue {
-  background: linear-gradient(150deg, var(--blue), var(--blue-bright));
-  border-color: transparent; color: #071022;
-  box-shadow: 0 4px 18px rgba(59,130,246,0.32), inset 0 1px 0 rgba(255,255,255,0.35);
-}
-.btn-blue:hover { filter: brightness(1.07); box-shadow: 0 6px 26px var(--blue-glow), 0 0 0 3px rgba(59,130,246,0.16), inset 0 1px 0 rgba(255,255,255,0.4); transform: translateY(-1px); }
-.btn-danger-ghost:hover { border-color: rgba(240,112,104,0.4); color: var(--rose); box-shadow: 0 0 16px rgba(240,112,104,0.15); }
-.btn-sm { padding: 6px 12px; font-size: 12px; }
-.img-src-tab.active, .match-mode-btn.active { border-color: var(--blue); color: #fff; background: rgba(59,130,246,0.18); }
-.match-drag-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; padding: 6px; border-radius: 8px; border: 1px solid transparent; }
-.match-drag-row.dragging-row { opacity: 0.4; border-color: var(--border-hover); }
-.match-drag-handle { cursor: grab; color: var(--text-faint); flex-shrink: 0; padding: 4px; }
-.match-drag-handle:active { cursor: grabbing; }
-.match-img-thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; flex-shrink: 0; border: 1px solid var(--border); }
-.match-img-upload-btn { flex-shrink: 0; }
-.btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-
-.workspace { flex: 1; display: flex; min-height: 0; }
-
-.sidebar {
-  width: 254px; flex-shrink: 0; overflow-y: auto; padding: 22px 15px;
-  background: rgba(9,15,28,0.6); backdrop-filter: blur(18px);
-  border-right: 1px solid var(--border);
-}
-.sidebar-label {
-  font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-  color: var(--blue-bright); margin: 4px 8px 12px; opacity: 0.9;
-}
-.add-block-btn {
-  width: 100%; display: flex; align-items: center; gap: 11px;
-  padding: 11px 13px; margin-bottom: 7px;
-  border-radius: 11px; border: 1px solid transparent;
-  background: transparent; color: var(--text-dim);
-  font-size: 13.5px; font-weight: 500; text-align: left; cursor: pointer;
-  transition: all var(--tr); position: relative; overflow: hidden;
-}
-.add-block-btn::before {
-  content: ''; position: absolute; inset: 0; border-radius: inherit;
-  background: linear-gradient(120deg, rgba(59,130,246,0.14), transparent 60%);
-  opacity: 0; transition: opacity var(--tr);
-}
-.add-block-btn:hover { background: var(--bg-surface); border-color: var(--border); color: var(--text); transform: translateX(2px); }
-.add-block-btn:hover::before { opacity: 1; }
-.add-block-btn .abx-ico {
-  flex-shrink: 0; color: var(--blue-bright); opacity: 0.95; width: 32px; height: 32px; border-radius: 9px;
-  display: flex; align-items: center; justify-content: center; background: rgba(59,130,246,0.1);
-}
-.sidebar-hint {
-  margin-top: 24px; padding: 14px 15px;
-  background: linear-gradient(160deg, rgba(59,130,246,0.1), rgba(59,130,246,0.02));
-  border: 1px solid var(--border); border-radius: 12px;
-  font-size: 11.5px; line-height: 1.65; color: var(--text-faint);
-}
-.sidebar-hint b { color: var(--blue-bright); font-weight: 700; }
-
-/* ══════════════════════════════════════
-   Şablonlar (hazır + kullanıcı şablonları)
-   ══════════════════════════════════════ */
-.template-subhead {
-  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em;
-  color: var(--text-faint); margin: 2px 8px 8px; opacity: 0.85;
-}
-.template-btn {
-  width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
-  padding: 11px 14px 11px 16px; margin-bottom: 8px;
-  border-radius: 11px; border: 1px solid var(--border);
-  background: var(--bg-surface); color: var(--text-dim);
-  text-align: left; cursor: pointer; transition: all var(--tr);
-  position: relative; overflow: hidden;
-}
-.template-btn::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-  background: linear-gradient(180deg, var(--blue), var(--blue-bright)); opacity: 0.75;
-}
-.template-btn span { font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: -0.005em; line-height: 1.3; }
-.template-btn small { font-size: 11px; color: var(--text-faint); line-height: 1.45; }
-.template-btn:hover {
-  background: var(--bg-hover); border-color: var(--border-hover); transform: translateX(2px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.28);
-}
-.template-btn:hover::before { opacity: 1; }
-
-.custom-template-row { position: relative; }
-.custom-template-row .template-btn {
-  padding-right: 34px;
-}
-.custom-template-row .template-btn::before {
-  background: linear-gradient(180deg, var(--green), #34d399); opacity: 0.75;
-}
-.tpl-delete-btn {
-  position: absolute; top: 9px; right: 9px; z-index: 2;
-  width: 22px; height: 22px; border-radius: 7px; border: 1px solid transparent;
-  background: transparent; color: var(--text-faint);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all var(--tr);
-}
-.tpl-delete-btn:hover { background: rgba(240,112,104,0.14); border-color: rgba(240,112,104,0.4); color: var(--rose); }
-.template-empty-hint {
-  font-size: 11.5px; color: var(--text-faint); padding: 6px 8px 10px; line-height: 1.5; opacity: 0.85;
-}
-
-.canvas-wrap { flex: 1; overflow-y: auto; }
-.canvas { max-width: 780px; margin: 0 auto; padding: 48px 28px 160px; min-height: 100%; }
-
-.empty-state {
-  display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: 100px 20px; color: var(--text-faint);
-  border: 1.5px dashed var(--border); border-radius: var(--radius);
-  background: var(--bg-surface);
-}
-.empty-state .es-ico {
-  width: 64px; height: 64px; border-radius: 18px; margin-bottom: 18px;
-  background: linear-gradient(150deg, rgba(59,130,246,0.18), rgba(59,130,246,0.03));
-  display: flex; align-items: center; justify-content: center; color: var(--blue-bright);
-  box-shadow: inset 0 0 0 1px rgba(59,130,246,0.25);
-}
-.empty-state h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 21px; color: var(--text); margin: 0 0 7px; font-weight: 700; }
-.empty-state p { margin: 0; font-size: 13px; max-width: 300px; line-height: 1.65; }
-
-.block {
-  position: relative; margin-bottom: 20px;
-  border: 1px solid var(--border); border-radius: var(--radius);
-  background: var(--bg-panel); backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.32);
-  transition: border-color var(--tr), box-shadow var(--tr);
-}
-.block:hover { border-color: var(--border-hover); }
-.block:focus-within { border-color: rgba(59,130,246,0.55); box-shadow: 0 10px 30px rgba(0,0,0,0.32), 0 0 0 3px rgba(59,130,246,0.12); }
-
-.block-toolbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 14px; border-bottom: 1px solid var(--border);
-  background: rgba(255,255,255,0.02); border-radius: var(--radius) var(--radius) 0 0;
-}
-.block-type-label { display: flex; align-items: center; gap: 8px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text-faint); }
-.block-type-label svg { color: var(--blue-bright); }
-.block-actions { display: flex; align-items: center; gap: 2px; }
-.block-actions button {
-  width: 29px; height: 29px; display: flex; align-items: center; justify-content: center;
-  background: transparent; border: none; border-radius: 8px; color: var(--text-faint); cursor: pointer; transition: all var(--tr);
-}
-.block-actions button:hover { background: var(--bg-hover); color: var(--text); box-shadow: 0 0 10px rgba(59,130,246,0.2); }
-.block-actions button:disabled { opacity: 0.22; cursor: not-allowed; box-shadow: none; }
-.block-actions button.danger:hover { color: var(--rose); background: rgba(240,112,104,0.12); box-shadow: 0 0 10px rgba(240,112,104,0.2); }
-.block-actions button.active { color: var(--blue-bright); background: rgba(59,130,246,0.18); }
-
-.block-settings { display: none; padding: 16px 18px; gap: 14px 18px; flex-wrap: wrap; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.18); }
-.block-settings.open { display: flex; }
-.settings-divider { flex-basis: 100%; height: 1px; background: var(--border); margin: 2px 0; opacity: 0.7; }
-.settings-group-label { flex-basis: 100%; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--blue-bright); opacity: 0.8; margin-top: 2px; }
-.field-group { display: flex; flex-direction: column; gap: 6px; min-width: 92px; }
-.field-group label { font-size: 10px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; }
-.field-group input[type="text"], .field-group input[type="number"], .field-group input[type="url"], .field-group select {
-  padding: 7px 10px; background: var(--bg-elevated); border: 1px solid var(--border);
-  border-radius: 7px; color: var(--text); font-size: 12.5px; min-width: 92px;
-}
-.field-group input[type="color"] { width: 42px; height: 32px; padding: 2px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; }
-.field-group input[type="range"] { width: 100px; accent-color: var(--blue); }
-.field-group .range-val { font-size: 11px; color: var(--blue-bright); font-variant-numeric: tabular-nums; font-weight: 600; }
-.align-btns { display: flex; gap: 3px; }
-.align-btns button {
-  width: 29px; height: 29px; display: flex; align-items: center; justify-content: center;
-  background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 7px; color: var(--text-faint); cursor: pointer; transition: all var(--tr);
-}
-.align-btns button.active { color: var(--blue-bright); border-color: rgba(59,130,246,0.55); background: rgba(59,130,246,0.18); box-shadow: 0 0 10px rgba(59,130,246,0.25); }
-
-.block-content { padding: 24px 26px; }
-[contenteditable]:focus { outline: none; }
-[contenteditable]:empty::before { content: attr(data-placeholder); color: var(--text-faint); }
-
-.img-block-empty {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 9px; padding: 38px; border: 1.5px dashed var(--border); border-radius: 12px; color: var(--text-faint); font-size: 12.5px;
-}
-.img-block-empty svg { color: var(--blue-bright); opacity: 0.6; }
-.block-content img.preview-img { max-width: 100%; display: block; margin: 0 auto; box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
-.img-url-row { display: flex; gap: 8px; margin-bottom: 12px; }
-.img-url-row input { flex: 1; padding: 9px 12px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 12.5px; }
-.img-alt-row input { width: 100%; padding: 8px 12px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; color: var(--text-dim); font-size: 12px; margin-top: 8px; }
-
-.vocab-card-prev {
-  background: linear-gradient(160deg, rgba(59,130,246,0.08), rgba(15,23,42,0.4));
-  border: 1px solid var(--border); border-left: 4px solid var(--blue);
-  border-radius: 14px; padding: 22px 24px 20px; position: relative;
-  box-shadow: 0 14px 34px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
-}
-.vocab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px 16px; margin-bottom: 6px; }
-.vocab-grid .full { grid-column: 1 / -1; }
-.vocab-grid label { display: block; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-faint); margin-bottom: 4px; }
-.vocab-grid input {
-  width: 100%; padding: 9px 11px; background: var(--bg-elevated); border: 1px solid var(--border);
-  border-radius: 8px; color: var(--text); font-size: 13.5px;
-}
-.vocab-grid input.de-input { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; color: var(--blue-bright); font-weight: 700; }
-.vocab-tip-toggle {
-  display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;
-  background: none; border: none; color: var(--blue-bright); font-size: 11.5px; font-weight: 600; cursor: pointer; padding: 4px 2px;
-}
-.vocab-tip-wrap { margin-top: 10px; }
-.vocab-tip-wrap textarea {
-  width: 100%; min-height: 52px; padding: 9px 11px; background: rgba(96,165,250,0.08);
-  border: 1px solid rgba(96,165,250,0.28); border-radius: 8px; color: var(--text-dim); font-size: 12.5px; resize: vertical;
-}
-
-.callout-prev {
-  border-radius: 12px; padding: 16px 20px 16px 18px; display: flex; gap: 13px;
-  border: 1px solid rgba(255,210,80,0.25); background: rgba(255,210,80,0.07);
-  box-shadow: 0 10px 26px rgba(255,210,80,0.06);
-}
-.callout-prev[data-theme="green"] { border-color: rgba(79,214,156,0.28); background: rgba(79,214,156,0.07); box-shadow: 0 10px 26px rgba(79,214,156,0.06); }
-.callout-prev[data-theme="blue"]  { border-color: rgba(59,130,246,0.32);  background: rgba(59,130,246,0.09);  box-shadow: 0 10px 26px rgba(59,130,246,0.08); }
-.callout-prev[data-theme="rose"]  { border-color: rgba(240,112,104,0.28); background: rgba(240,112,104,0.07); box-shadow: 0 10px 26px rgba(240,112,104,0.06); }
-.callout-prev-ico { flex-shrink: 0; width: 26px; height: 26px; margin-top: 1px; color: var(--amber); }
-.callout-prev[data-theme="green"] .callout-prev-ico { color: var(--green); }
-.callout-prev[data-theme="blue"]  .callout-prev-ico { color: var(--blue-bright); }
-.callout-prev[data-theme="rose"]  .callout-prev-ico { color: var(--rose); }
-.callout-prev-body-wrap { flex: 1; min-width: 0; }
-.callout-prev-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 14.5px; margin-bottom: 5px; }
-.callout-prev-body { font-size: 14px; line-height: 1.65; color: var(--text-dim); }
-
-.table-toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
-.tbl-prev { width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; }
-.tbl-prev th, .tbl-prev td { border: 1px solid var(--border); padding: 9px 11px; font-size: 13px; position: relative; }
-.tbl-prev th { background: rgba(59,130,246,0.12); font-weight: 700; color: var(--text); }
-.tbl-prev td { color: var(--text-dim); background: rgba(255,255,255,0.015); }
-.tbl-cell-wrap { position: relative; }
-.tbl-cell-wrap > [contenteditable] { display: block; width: 100%; min-height: 1.5em; min-width: 24px; cursor: text; outline: none; white-space: pre-wrap; word-break: break-word; }
-.tbl-cell-wrap > [contenteditable]:empty::before { content: attr(data-placeholder); color: var(--text-faint); pointer-events: none; }
-.tbl-prev th, .tbl-prev td { cursor: text; }
-.tbl-del-row, .tbl-del-col {
-  position: absolute; width: 16px; height: 16px; border-radius: 50%; background: var(--rose); color: #fff; border: none;
-  font-size: 10px; line-height: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity var(--tr);
-  top: -6px; right: -6px;
-}
-.tbl-prev tr:hover .tbl-del-row, .tbl-prev th:hover .tbl-del-col { opacity: 1; }
-
-.hp-editable { min-height: 1.4em; }
-
-.modal-overlay {
-  position: fixed; inset: 0; z-index: 200; background: rgba(3,6,14,0.8); backdrop-filter: blur(6px);
-  display: none; align-items: center; justify-content: center; padding: 20px;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
-  background: rgba(11,17,32,0.94); backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid var(--border); border-radius: 18px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(59,130,246,0.08);
-}
-.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; border-bottom: 1px solid var(--border); }
-.modal-header h2 { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; }
-.modal-close { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 8px; color: var(--text-faint); cursor: pointer; }
-.modal-close:hover { background: var(--bg-hover); color: var(--text); }
-.modal-body { padding: 22px 24px; display: flex; flex-direction: column; gap: 17px; }
-.form-row label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--blue-bright); opacity: 0.9; margin-bottom: 8px; }
-.form-row input, .form-row select, .form-row textarea {
-  width: 100%; padding: 11px 13px; background: var(--bg-elevated); border: 1px solid var(--border);
-  border-radius: 9px; color: var(--text); font-size: 13.5px; resize: vertical;
-}
-.form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: rgba(59,130,246,0.6); box-shadow: 0 0 0 3px rgba(59,130,246,0.14); }
-.form-row-split { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
-.form-hint { font-size: 11px; color: var(--text-faint); margin-top: 6px; }
-.modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 18px 24px; border-top: 1px solid var(--border); }
-
-.preview-overlay {
-  position: fixed; inset: 0; z-index: 250; background: rgba(3,6,14,0.86); backdrop-filter: blur(6px);
-  display: none; align-items: center; justify-content: center; padding: 20px;
-}
-.preview-overlay.open { display: flex; }
-.preview-panel {
-  width: 100%; max-width: 1020px; height: 92vh;
-  background: #0b1120; border: 1px solid var(--border); border-radius: 16px;
-  overflow: hidden; display: flex; flex-direction: column;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(59,130,246,0.08);
-}
-.preview-panel-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 13px 18px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); flex-shrink: 0;
-}
-.preview-panel-header h2 {
-  margin: 0; display: flex; align-items: center; gap: 9px;
-  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14.5px; font-weight: 700; color: var(--text);
-}
-.preview-panel-header h2 svg { color: var(--blue-bright); flex-shrink: 0; }
-.preview-panel-actions { display: flex; align-items: center; gap: 8px; }
-.preview-iframe { flex: 1; width: 100%; border: 0; background: #070d19; }
-@media (max-width: 700px) {
-  .preview-panel { height: 96vh; border-radius: 12px; }
-  .preview-panel-actions .btn-sm span.psa-label { display: none; }
-}
-
-.dc-toast {
-  position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%);
-  background: rgba(11,17,32,0.94); backdrop-filter: blur(14px); border: 1px solid var(--border); color: var(--text);
-  padding: 12px 22px; border-radius: 11px; font-size: 13px; z-index: 300;
-  box-shadow: 0 14px 34px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 9px;
-}
-.dc-toast.ok svg { color: var(--green); } .dc-toast.err svg { color: var(--rose); }
-/* ── Rich Text Toolbar ── */
-.rt-toolbar {
-  position: absolute; display: none; gap: 4px; padding: 6px;
-  background: rgba(15,23,42,0.95); border: 1px solid var(--border-hover);
-  border-radius: var(--radius-sm); box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-  backdrop-filter: blur(8px); z-index: 1000; pointer-events: auto;
-}
-.rt-toolbar.show { display: flex; }
-.rt-toolbar button {
-  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-  background: transparent; border: none; border-radius: 6px; color: var(--text-dim);
-  cursor: pointer; transition: all var(--tr);
-}
-.rt-toolbar button:hover { background: var(--bg-hover); color: var(--text); }
-@media (max-width: 840px) {
-  .sidebar { position: fixed; left: -270px; top: 66px; bottom: 0; z-index: 60; transition: left var(--tr); box-shadow: 14px 0 40px rgba(0,0,0,0.55); }
-  .sidebar.open { left: 0; }
-}
-</style>
-</head>
-<body class="theme-ocean">
-
-<div class="app">
-  <header class="topbar">
-    <div class="topbar-brand">
-      <div class="brand-mark">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      </div>
-      <div><span class="tb-title">Ders Builder</span><span class="tb-sub">Premium Statik Sayfa Üretici</span></div>
-    </div>
-    <div class="topbar-actions">
-      <select id="metaTheme" title="Arayüz teması / Ders arka planı">
-        <option value="none">Tema Yok (Varsayılan)</option>
-        <option value="ocean" selected>Ocean</option>
-        <option value="sunset">Sunset</option>
-        <option value="aurora">Aurora</option>
-        <option value="forest">Forest</option>
-        <option value="midnight">Midnight</option>
-        <option value="cyberpunk">Cyberpunk</option>
-        <option value="lavender">Lavender</option>
-        <option value="desert">Desert</option>
-        <option value="volcano">Volcano</option>
-        <option value="emerald">Emerald</option>
-        <option value="sapphire">Sapphire</option>
-        <option value="rose">Rose</option>
-        <option value="coffee">Coffee</option>
-        <option value="neon">Neon</option>
-        <option value="galaxy">Galaxy</option>
-        <option value="arctic">Arctic</option>
-        <option value="tropical">Tropical</option>
-        <option value="royal">Royal</option>
-        <option value="obsidian">Obsidian</option>
-        <option value="peach">Peach</option>
-        <option value="mint">Mint</option>
-        <option value="titanium">Titanium</option>
-        <option value="ruby">Ruby</option>
-        <option value="amethyst">Amethyst</option>
-        <option value="coral">Coral</option>
-      </select>
-      <span class="block-count" id="blockCount">0 blok</span>
-      <button class="btn btn-danger-ghost" id="btnClearAll">Tümünü Temizle</button>
-      <button class="btn" id="btnPreview">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        Önizle
-      </button>
-      <button class="btn btn-blue" id="btnExport">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-        HTML Oluştur
-      </button>
-    </div>
-  </header>
-
-  <div class="workspace">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-label">Blok Ekle</div>
-      <button class="add-block-btn" data-type="heading"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v16"/><path d="M18 4v16"/><path d="M6 12h12"/></svg></span>Başlık</button>
-      <button class="add-block-btn" data-type="paragraph"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg></span>Paragraf</button>
-      <button class="add-block-btn" data-type="image"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></span>Görsel</button>
-      <button class="add-block-btn" data-type="vocab"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>Almanca Kelime Kartı</button>
-      <button class="add-block-btn" data-type="callout"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>Bilgi / Uyarı Kutusu</button>
-      <button class="add-block-btn" data-type="table"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="3" x2="12" y2="21"/></svg></span>Tablo</button>
-      <button class="add-block-btn" data-type="quiz"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>Quiz / Sınav</button>
-      <button class="add-block-btn" data-type="fillblank"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></span>Boşluk Doldurma</button>
-      <button class="add-block-btn" data-type="matching"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="12" r="2"/><path d="M8 6.6 16 11"/><path d="M8 17.4 16 13"/></svg></span>Eşleştirme</button>
-      <button class="add-block-btn" data-type="sentorder"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span>Cümle Sıralama</button>
-      <button class="add-block-btn" data-type="wordorder"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="8.5" y="14" width="7" height="7" rx="1.5"/></svg></span>Kelime Sıralama</button>
-      <button class="add-block-btn" data-type="dialogue"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>Diyalog / Sohbet</button>
-      <button class="add-block-btn" data-type="audio"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></span>Sesli Okuma (DE)</button>
-      <button class="add-block-btn" data-type="accordion"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>Akordeon / SSS</button>
-      <button class="add-block-btn" data-type="video"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>Video (YouTube/Vimeo)</button>
-      <button class="add-block-btn" data-type="code"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>Kod Bloğu</button>
-      <button class="add-block-btn" data-type="toc"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>İçindekiler (TOC)</button>
-      <div class="sidebar-hint"><b>İpucu:</b> İçeriğe tıklayıp doğrudan yazabilirsin. ⚙ ikonu her blok için stil, boşluk ve arka plan ayarlarını açar. Paragrafta metin seçince biçimlendirme barı belirir. Metinde <code>[kelime|açıklama]</code> yazarsan çıktıda ipucu balonuna dönüşür.</div>
-
-      <div style="height: 1px; background: var(--border); margin: 20px 4px 16px;"></div>
-      <div class="sidebar-label">Şablonlar</div>
-      <div class="template-subhead">Hazır Şablonlar</div>
-      <button class="template-btn" data-template="vocab"><span>Kelime Odaklı Ders</span><small>Başlık + kelime kartları + quiz</small></button>
-      <button class="template-btn" data-template="reading"><span>Okuma-Anlama Şablonu</span><small>Başlık + metin + kutu + quiz</small></button>
-      <button class="template-btn" data-template="grammar"><span>Gramer Yoğun Şablon</span><small>Başlık + kurallar + tablo + akordeon</small></button>
-
-      <div class="template-subhead" style="margin-top: 14px;">Kendi Şablonların</div>
-      <div id="customTemplatesList"></div>
-      <button class="add-block-btn" id="btnSaveAsTemplate"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg></span>Bu Dersi Şablon Olarak Kaydet</button>
-
-      <div style="height: 1px; background: var(--border); margin: 20px 4px 16px;"></div>
-      <div class="sidebar-label">Proje Dosyası</div>
-      <button class="add-block-btn" id="btnSaveProject"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>Projeyi Kaydet (.json)</button>
-      <button class="add-block-btn" id="btnLoadProject"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>Projeyi Yükle (.json)</button>
-      <input type="file" id="loadProjectInput" style="display:none;" accept="application/json,.json">
-    </aside>
-
-    <main class="canvas-wrap"><div class="canvas" id="canvas"></div></main>
-  </div>
-</div>
-
-<div class="modal-overlay" id="exportModalOverlay">
-  <div class="modal">
-    <div class="modal-header">
-      <h2>HTML Sayfası Oluştur</h2>
-      <button class="modal-close" id="closeExportModal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="modal-body">
-      <div class="form-row"><label for="metaTitle">Sayfa Başlığı</label><input type="text" id="metaTitle" placeholder="örn. Almanca'da Hal Ekleri (Akkusativ)"></div>
-      <div class="form-row"><label for="metaSlug">URL Slug (klasör adı)</label><input type="text" id="metaSlug" placeholder="örn. hal-ekleri-akkusativ"><div class="form-hint">Bu dosyayı <code>/dersler/&lt;slug&gt;/index.html</code> olarak kaydedeceksin — slug, o klasör adıyla birebir aynı olmalı. Başlığa göre otomatik önerilir, istersen değiştirebilirsin.</div></div>
-      <div class="form-row"><label for="metaDesc">Meta Açıklaması (SEO)</label><textarea id="metaDesc" rows="3" placeholder="Arama motorlarında görünecek kısa açıklama"></textarea></div>
-      <div class="form-row-split">
-        <div class="form-row"><label for="metaLevel">Seviye</label><select id="metaLevel"><option value="A1">A1</option><option value="A2">A2</option><option value="B1" selected>B1</option><option value="B2">B2</option><option value="C1">C1</option></select></div>
-        <div class="form-row"><label for="metaType">Tür</label><select id="metaType"><option value="">— Seçilmedi —</option><option value="iletisim">İletişim</option><option value="kultur">Kültür</option><option value="gramer">Gramer</option></select></div>
-      </div>
-      <div class="form-row-split">
-        <div class="form-row"><label for="metaDifficulty">Zorluk Derecesi</label><select id="metaDifficulty"><option value="Kolay">Kolay</option><option value="Orta" selected>Orta</option><option value="Zor">Zor</option></select></div>
-        <div class="form-row"><label for="metaReadTime">Okuma Süresi (dk)</label><input type="number" id="metaReadTime" min="1" max="60" value="5"></div>
-      </div>
-      <div class="form-row"><label for="metaAuthor">Yazar Adı</label><input type="text" id="metaAuthor" placeholder="örn. Çetin Hoca"></div>
-      <div class="form-row"><label for="metaCover">Kapak Görseli URL'si</label><input type="url" id="metaCover" placeholder="https://..."><div class="form-hint">Boş bırakılırsa kapak görseli olmadan üretilir. Bu, sosyal medya paylaşım görseli (og:image) içindir — liste sayfasındaki kapak küçük resmi için ayrıca ders klasörüne <code>cover.jpg</code> koymalısın.</div></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn" id="cancelExport">Vazgeç</button>
-      <button class="btn btn-blue" id="confirmExport"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>İndir (index.html)</button>
-    </div>
-  </div>
-</div>
-
-<div class="preview-overlay" id="previewOverlay">
-  <div class="preview-panel">
-    <div class="preview-panel-header">
-      <h2><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Canlı Önizleme</h2>
-      <div class="preview-panel-actions">
-        <button class="btn btn-sm" id="previewOpenTab"><span class="psa-label">Yeni Sekmede Aç</span></button>
-        <button class="modal-close" id="closePreview"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-      </div>
-    </div>
-    <iframe class="preview-iframe" id="previewIframe" title="Ders önizlemesi"></iframe>
-  </div>
-</div>
-
-<script>
 (function () {
   "use strict";
 
@@ -931,7 +25,7 @@ button, input, select, textarea { font-family: inherit; }
       case "heading":
         return Object.assign(base, { level: "h2", text: "Başlık metni", size: 28, color: "#ffffff", weight: "700", font: "display", lineHeight: 150, letterSpacing: -1 });
       case "paragraph":
-        return Object.assign(base, { html: "Paragraf metnini buraya yazın. Doğrudan tıklayıp düzenleyebilirsiniz.", size: 17, align: "left", color: "#cbd5e1", font: "body", lineHeight: 178, letterSpacing: -1 });
+        return Object.assign(base, { html: "Paragraf metnini buraya yazın. Doğrudan tıklayıp düzenleyebilirsiniz.", size: 17, align: "left", color: "#cbd5e1", font: "body", lineHeight: 178, letterSpacing: -1, variant: "normal", dropCap: false });
       case "image":
         return Object.assign(base, { url: "", alt: "", caption: "", width: 100, height: "", radius: 16, align: "center", objectFit: "cover", shadow: "0", lazy: "1" });
       case "vocab":
@@ -963,6 +57,18 @@ button, input, select, textarea { font-family: inherit; }
         });
       case "audio":
         return Object.assign(base, { text: "Guten Tag", caption: "Dinlemek için oynat tuşuna basın", lang: "de-DE" });
+      case "listen":
+        return Object.assign(base, {
+          audioUrl: "", audioCaption: "Ses kaydını dinleyin ve aşağıdaki soruları cevaplayın.",
+          questions: [
+            { question: "Anna'nın adı nedir?", options: ["Maria", "Anna", "Julia", "Sophie"], correctIndex: 1 }
+          ]
+        });
+      case "konjugation":
+        return Object.assign(base, {
+          verb: "gehen", tense: "praesens",
+          answers: { ich: "gehe", du: "gehst", er: "geht", wir: "gehen", ihr: "geht", sie: "gehen" }
+        });
       case "accordion":
         return Object.assign(base, { items: [{ q: "Soru veya başlık 1", a: "Buraya cevabı veya çözümü yazın." }] });
       case "video":
@@ -976,7 +82,7 @@ button, input, select, textarea { font-family: inherit; }
     }
   }
 
-  const TYPE_LABEL = { heading: "Başlık", paragraph: "Paragraf", image: "Görsel", vocab: "Kelime Kartı", callout: "Bilgi Kutusu", table: "Tablo", quiz: "Quiz / Sınav", fillblank: "Boşluk Doldurma", matching: "Eşleştirme", sentorder: "Cümle Sıralama", wordorder: "Kelime Sıralama", dialogue: "Diyalog / Sohbet", audio: "Sesli Okuma", accordion: "Akordeon / SSS", video: "Video", code: "Kod Bloğu", toc: "İçindekiler" };
+  const TYPE_LABEL = { heading: "Başlık", paragraph: "Paragraf", image: "Görsel", vocab: "Kelime Kartı", callout: "Bilgi Kutusu", table: "Tablo", quiz: "Quiz / Sınav", fillblank: "Boşluk Doldurma", matching: "Eşleştirme", sentorder: "Cümle Sıralama", wordorder: "Kelime Sıralama", dialogue: "Diyalog / Sohbet", audio: "Sesli Okuma", listen: "Dinleme Anlama", konjugation: "Fiil Çekim Alıştırması", accordion: "Akordeon / SSS", video: "Video", code: "Kod Bloğu", toc: "İçindekiler" };
   const ICO = {
     up:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>',
     down:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>',
@@ -1013,6 +119,8 @@ button, input, select, textarea { font-family: inherit; }
       case "wordorder":return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="8.5" y="14" width="7" height="7" rx="1.5"/></svg>';
       case "dialogue":return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>';
       case "audio":    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+      case "listen":   return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14v-3a9 9 0 0 1 18 0v3"/><path d="M21 15.5a2.5 2.5 0 0 1-2.5 2.5H17v-6h1.5a2.5 2.5 0 0 1 2.5 2.5v1z"/><path d="M3 15.5A2.5 2.5 0 0 0 5.5 18H7v-6H5.5A2.5 2.5 0 0 0 3 14.5v1z"/></svg>';
+      case "konjugation":return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
       case "accordion":return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
       case "video":    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>';
       case "code":     return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
@@ -1211,6 +319,8 @@ button, input, select, textarea { font-family: inherit; }
       h += fg("Satır Yüksekliği", rangeHtml("lineHeight", 110, 180, block.lineHeight, "%"));
       h += fg("Harf Aralığı (px)", rangeHtml("letterSpacing", -3, 4, block.letterSpacing));
     } else if (block.type === "paragraph") {
+      h += fg("Stil", selectHtml("variant", [["normal","Normal"],["quote","Alıntı"],["highlight","Vurgu Kutusu"]], block.variant || "normal"));
+      h += fg("Büyük Baş Harf (Drop Cap)", selectHtml("dropCap", [["0","Kapalı"],["1","Açık"]], block.dropCap ? "1" : "0"));
       h += fg("Boyut (px)", rangeHtml("size", 13, 26, block.size));
       h += fg("Hizalama", alignBtnsHtml("align", block.align));
       h += fg("Renk", '<input type="color" data-f="color" value="' + rgbaToHex(block.color) + '">');
@@ -1771,6 +881,138 @@ button, input, select, textarea { font-family: inherit; }
       card.querySelector(".aud-cap").addEventListener("input", function() { block.caption = this.value; });
       content.appendChild(card);
 
+    } else if (block.type === "listen") {
+      const card = document.createElement("div");
+      card.style.cssText = "background:rgba(59,130,246,0.04); border:1px solid var(--border); padding:16px; border-radius:10px;";
+      card.innerHTML = `
+        <label style="font-size:12px; color:var(--text-faint); display:block; margin-bottom:4px;">Ses Kaynağı (URL)</label>
+        <input type="url" class="ls-url" placeholder="https://.../ses.mp3" value="${esc(block.audioUrl && !block.audioUrl.startsWith("data:") ? block.audioUrl : "")}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+          <input type="file" accept="audio/*" class="ls-file" style="flex:1; font-size:12px; color:var(--text-dim);">
+          <span style="font-size:11px; color:var(--text-faint); white-space:nowrap;">veya yükle (maks. 8MB)</span>
+        </div>
+        <div class="ls-audio-preview" style="margin-top:10px;"></div>
+        <input type="text" class="ls-caption" placeholder="Açıklama etiketi (örn: Dinleme metni)" value="${esc(block.audioCaption)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; margin-top:10px;">
+        <div class="ls-questions-wrap" style="margin-top:14px;"></div>
+        <button type="button" class="btn btn-sm ls-add-q" style="margin-top:4px;">+ Soru Ekle</button>
+      `;
+      const urlInput = card.querySelector(".ls-url");
+      const fileInput = card.querySelector(".ls-file");
+      const audioPreview = card.querySelector(".ls-audio-preview");
+      const capInput = card.querySelector(".ls-caption");
+      const qWrap = card.querySelector(".ls-questions-wrap");
+
+      function renderAudioPreview() {
+        audioPreview.innerHTML = block.audioUrl
+          ? '<audio controls src="' + esc(block.audioUrl) + '" style="width:100%; height:36px;"></audio>'
+          : '<div style="font-size:11.5px; color:var(--text-faint);">Henüz ses eklenmedi.</div>';
+      }
+      urlInput.addEventListener("input", () => { block.audioUrl = urlInput.value.trim(); renderAudioPreview(); });
+      fileInput.addEventListener("change", () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        if (file.size > 8 * 1024 * 1024) { toast("Ses dosyası 8MB üzerinde, lütfen daha küçük bir dosya seçin.", "err"); return; }
+        const reader = new FileReader();
+        reader.onload = function (evt) {
+          block.audioUrl = evt.target.result;
+          urlInput.value = "";
+          renderAudioPreview();
+          toast("Ses dosyası yüklendi ve Base64'e dönüştürüldü ✓");
+        };
+        reader.readAsDataURL(file);
+      });
+      capInput.addEventListener("input", () => { block.audioCaption = capInput.value; });
+      renderAudioPreview();
+
+      function renderListenQuestions() {
+        qWrap.innerHTML = "";
+        block.questions.forEach((q, qi) => {
+          const qBox = document.createElement("div");
+          qBox.style.cssText = "border:1px solid var(--border); padding:12px; border-radius:8px; margin-bottom:10px; background:rgba(255,255,255,0.01);";
+          qBox.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+              <input type="text" class="lq-question" placeholder="Soru metni" value="${esc(q.question)}" style="flex:1; padding:7px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:600;">
+              <button type="button" class="lq-del-q" title="Soruyu sil" style="background:transparent; border:none; color:var(--rose); cursor:pointer; font-size:16px; line-height:1;">×</button>
+            </div>
+            <div class="lq-opts-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+            <button type="button" class="btn btn-sm lq-add-opt" style="margin-top:6px;">+ Seçenek Ekle</button>
+          `;
+          qBox.querySelector(".lq-question").addEventListener("input", function() { q.question = this.value; });
+          qBox.querySelector(".lq-del-q").addEventListener("click", () => {
+            if (block.questions.length > 1) { block.questions.splice(qi, 1); renderListenQuestions(); }
+            else toast("En az bir soru kalmalı.", "err");
+          });
+          const optsList = qBox.querySelector(".lq-opts-list");
+          function renderOpts() {
+            optsList.innerHTML = "";
+            q.options.forEach((opt, oi) => {
+              const row = document.createElement("div");
+              row.style.cssText = "display:flex; align-items:center; gap:8px;";
+              row.innerHTML = `
+                <input type="radio" name="lq_correct_${block.id}_${qi}" ${q.correctIndex === oi ? "checked" : ""} style="accent-color:var(--green);">
+                <input type="text" value="${esc(opt)}" style="flex:1; padding:6px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+                <button type="button" class="lq-del-opt" style="background:transparent; border:none; color:var(--rose); cursor:pointer;">×</button>
+              `;
+              row.querySelector("input[type=radio]").addEventListener("change", () => { q.correctIndex = oi; });
+              row.querySelector("input[type=text]").addEventListener("input", function() { q.options[oi] = this.value; });
+              row.querySelector(".lq-del-opt").addEventListener("click", () => {
+                if (q.options.length > 2) { q.options.splice(oi, 1); if (q.correctIndex >= q.options.length) q.correctIndex = 0; renderOpts(); }
+                else toast("En az iki seçenek kalmalı.", "err");
+              });
+              optsList.appendChild(row);
+            });
+          }
+          qBox.querySelector(".lq-add-opt").addEventListener("click", () => { q.options.push("Yeni Seçenek"); renderOpts(); });
+          renderOpts();
+          qWrap.appendChild(qBox);
+        });
+      }
+      renderListenQuestions();
+      card.querySelector(".ls-add-q").addEventListener("click", () => {
+        block.questions.push({ question: "Yeni soru?", options: ["Seçenek A", "Seçenek B", "Seçenek C", "Seçenek D"], correctIndex: 0 });
+        renderListenQuestions();
+      });
+      content.appendChild(card);
+
+    } else if (block.type === "konjugation") {
+      const card = document.createElement("div");
+      card.style.cssText = "background:rgba(59,130,246,0.04); border:1px solid var(--border); padding:16px; border-radius:10px;";
+      card.innerHTML = `
+        <div style="display:flex; gap:10px; margin-bottom:12px;">
+          <div style="flex:1;">
+            <label style="font-size:12px; color:var(--text-faint); display:block; margin-bottom:4px;">Fiil</label>
+            <input type="text" class="kj-verb" placeholder="gehen" value="${esc(block.verb)}" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px; font-weight:700;">
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:12px; color:var(--text-faint); display:block; margin-bottom:4px;">Zaman</label>
+            <select class="kj-tense" style="width:100%; padding:8px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+              <option value="praesens">Präsens</option>
+              <option value="perfekt">Perfekt</option>
+              <option value="praeteritum">Präteritum</option>
+            </select>
+          </div>
+        </div>
+        <div style="font-size:11.5px; color:var(--text-faint); margin-bottom:10px;">Her kişi için <b>doğru</b> çekimi yazın. Öğrenci önizlemede/export sayfasında bu değeri boş bir kutucuğa yazarak deneyecek.</div>
+        <div class="kj-rows" style="display:flex; flex-direction:column; gap:6px;"></div>
+      `;
+      card.querySelector(".kj-tense").value = block.tense;
+      card.querySelector(".kj-verb").addEventListener("input", function() { block.verb = this.value; });
+      card.querySelector(".kj-tense").addEventListener("change", function() { block.tense = this.value; });
+
+      const rowsWrap = card.querySelector(".kj-rows");
+      const KONJ_PERSONS = [["ich","ich"],["du","du"],["er","er/sie/es"],["wir","wir"],["ihr","ihr"],["sie","sie/Sie"]];
+      KONJ_PERSONS.forEach(([key, label]) => {
+        const row = document.createElement("div");
+        row.style.cssText = "display:flex; align-items:center; gap:8px;";
+        row.innerHTML = `
+          <span style="flex:0 0 80px; font-size:12.5px; color:var(--text-dim);">${esc(label)}</span>
+          <input type="text" value="${esc((block.answers && block.answers[key]) || "")}" placeholder="doğru cevap" style="flex:1; padding:7px; background:var(--bg-elevated); border:1px solid var(--border); color:white; border-radius:6px;">
+        `;
+        row.querySelector("input").addEventListener("input", function() { block.answers[key] = this.value; });
+        rowsWrap.appendChild(row);
+      });
+      content.appendChild(card);
+
     } else if (block.type === "accordion") {
       const card = document.createElement("div");
       function renderAccItems() {
@@ -1821,7 +1063,7 @@ button, input, select, textarea { font-family: inherit; }
       content.appendChild(card);
     }
   }
-  $all(".add-block-btn").forEach(btn => btn.addEventListener("click", () => addBlock(btn.dataset.type)));
+  $all(".add-block-btn[data-type]").forEach(btn => btn.addEventListener("click", () => addBlock(btn.dataset.type)));
   $("#btnClearAll").addEventListener("click", clearAll);
 
   /* ══════════════════════════════════════
@@ -1983,9 +1225,16 @@ function renderBlockExport(b) {
         return wrapOpen + "<" + b.level + idAttr + ' style="font-family:' + fontStack(b.font) + ";font-size:" + b.size + "px;color:" + b.color + ";font-weight:" + b.weight + ";line-height:" + (b.lineHeight/100) + ";letter-spacing:" + b.letterSpacing + 'px;">' + esc(b.text) + "</" + b.level + ">" + wrapClose;
       }
 
-      case "paragraph":
+      case "paragraph": {
         // convertTooltips fonksiyonu ile satır içi ipuçlarını HTML elementine çeviriyoruz
-        return wrapOpen + '<p style="font-family:' + fontStack(b.font) + ";font-size:" + b.size + "px;color:" + b.color + ";text-align:" + b.align + ";line-height:" + (b.lineHeight/100) + ";letter-spacing:" + b.letterSpacing + 'px;background:transparent;">' + convertTooltips(b.html) + "</p>" + wrapClose;
+        const variant = b.variant || "normal";
+        const dropCapCls = (b.dropCap === true || b.dropCap === "1") ? " lb-dropcap" : "";
+        const pStyle = 'font-family:' + fontStack(b.font) + ";font-size:" + b.size + "px;color:" + b.color + ";text-align:" + b.align + ";line-height:" + (b.lineHeight/100) + ";letter-spacing:" + b.letterSpacing + "px;background:transparent;";
+        const pHtml = '<p class="lb-paragraph-text' + dropCapCls + '" style="' + pStyle + '">' + convertTooltips(b.html) + "</p>";
+        if (variant === "quote") return wrapOpen + '<blockquote class="lb-paragraph-quote">' + pHtml + "</blockquote>" + wrapClose;
+        if (variant === "highlight") return wrapOpen + '<div class="lb-paragraph-highlight">' + pHtml + "</div>" + wrapClose;
+        return wrapOpen + pHtml + wrapClose;
+      }
 
       case "image": {
         if (!b.url) return "";
@@ -2203,6 +1452,55 @@ function renderBlockExport(b) {
             '<span class="premium-audio-caption">' + esc(b.caption || "Almanca Telaffuz") + '</span>' +
             '<span class="premium-audio-meta">Sistem Sesi (Web Speech API)</span>' +
           '</div>' +
+          '</div>' + wrapClose;
+      }
+
+      case "listen": {
+        const lsId = "listen_" + b.id;
+        let questionsHtml = "";
+        (b.questions || []).forEach((q, qi) => {
+          const qName = lsId + "_q" + qi;
+          let optsHtml = "";
+          (q.options || []).forEach((opt, oi) => {
+            optsHtml += '<label class="listen-option" data-oidx="' + oi + '">' +
+              '<input type="radio" name="' + qName + '" value="' + oi + '" onchange="checkListenAnswer(this,' + Number(q.correctIndex || 0) + ')">' +
+              '<span>' + esc(opt) + '</span>' +
+              '</label>';
+          });
+          questionsHtml += '<div class="listen-question">' +
+            '<h4>' + esc(q.question) + '</h4>' +
+            '<div class="listen-options">' + optsHtml + '</div>' +
+            '<div class="listen-feedback"></div>' +
+            '</div>';
+        });
+        const audioHtml = b.audioUrl
+          ? '<audio controls preload="metadata" class="listen-audio-player" src="' + esc(b.audioUrl) + '"></audio>'
+          : '<div class="listen-audio-empty">Bu bloğa henüz bir ses dosyası eklenmedi.</div>';
+        return wrapOpen + '<div class="listen-prev" id="' + lsId + '">' +
+          audioHtml +
+          (b.audioCaption ? '<div class="listen-caption">' + esc(b.audioCaption) + '</div>' : '') +
+          questionsHtml +
+          '</div>' + wrapClose;
+      }
+
+      case "konjugation": {
+        const kjId = "konj_" + b.id;
+        const TENSE_LABEL = { praesens: "Präsens", perfekt: "Perfekt", praeteritum: "Präteritum" };
+        const KONJ_PERSONS = [["ich", "ich"], ["du", "du"], ["er", "er/sie/es"], ["wir", "wir"], ["ihr", "ihr"], ["sie", "sie/Sie"]];
+        let rowsHtml = "";
+        KONJ_PERSONS.forEach(([key, label]) => {
+          const answer = (b.answers && b.answers[key]) || "";
+          rowsHtml += '<div class="konj-row">' +
+            '<span class="konj-person">' + esc(label) + '</span>' +
+            '<input type="text" class="konj-input" data-answer="' + esc(answer) + '" autocomplete="off" spellcheck="false" autocapitalize="off">' +
+            '<span class="konj-correct-answer"></span>' +
+            '</div>';
+        });
+        return wrapOpen + '<div class="konj-prev" id="' + kjId + '">' +
+          '<div class="konj-header"><strong>Fiil:</strong>&nbsp;' + esc(b.verb) + '&nbsp;<span>' + esc(TENSE_LABEL[b.tense] || b.tense) + '</span></div>' +
+          '<div class="konj-rows">' + rowsHtml + '</div>' +
+          '<button type="button" class="konj-action-btn" onclick="checkKonjugation(\'' + kjId + '\')">Cevapları Kontrol Et</button>' +
+          '<div class="konj-result"></div>' +
           '</div>' + wrapClose;
       }
 
@@ -2770,6 +2068,48 @@ body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, tran
 ".premium-audio-caption { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; color: #ffffff; }",
 ".premium-audio-meta { font-size: 11.5px; color: rgba(255,255,255,0.3); }",
 
+"/* ── premium paragraf varyantları (alıntı / vurgu kutusu / drop cap) ── */",
+".lb-dropcap::first-letter { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 3.3em; font-weight: 800; float: left; line-height: 0.82; padding: 4px 8px 0 0; color: var(--xblueb); }",
+".lb-paragraph-quote { margin: 26px 0; padding: 6px 0 6px 22px; border-left: 4px solid var(--xblue); }",
+".lb-paragraph-quote p { font-style: italic; color: #e2e8f0 !important; }",
+".lb-paragraph-highlight { margin: 26px 0; padding: 18px 22px; background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; }",
+
+"/* ── Dinleme Anlama (Hörverstehen) elements ── */",
+".listen-prev { background: rgba(15,23,42,0.6); border: 1px solid rgba(59,130,246,0.2); border-radius: 14px; padding: 26px 28px; margin: 30px 0; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }",
+".listen-audio-player { width: 100%; height: 42px; margin-bottom: 14px; border-radius: 10px; }",
+".listen-audio-empty { padding: 16px; text-align: center; border: 1.5px dashed rgba(255,255,255,0.16); border-radius: 10px; color: rgba(226,232,240,0.4); font-family: 'Inter', sans-serif; font-size: 13px; margin-bottom: 16px; }",
+".listen-caption { font-family: 'Inter', sans-serif; font-size: 13px; color: rgba(226,232,240,0.55); font-style: italic; margin-bottom: 20px; }",
+".listen-question { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); }",
+".listen-question:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }",
+".listen-question h4 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15.5px; font-weight: 700; color: #ffffff; margin: 0 0 12px; line-height: 1.5; }",
+".listen-options { display: flex; flex-direction: column; gap: 8px; }",
+".listen-option { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; color: #e2e8f0; transition: all 0.18s ease; }",
+".listen-option:hover { border-color: rgba(59,130,246,0.32); background: rgba(59,130,246,0.06); }",
+".listen-option input[type=radio] { accent-color: var(--xblue); flex-shrink: 0; }",
+".listen-option.listen-correct { border-color: var(--xgreen) !important; background: rgba(79,214,156,0.13) !important; color: var(--xgreen); }",
+".listen-option.listen-wrong { border-color: var(--xrose) !important; background: rgba(240,112,104,0.13) !important; color: var(--xrose); }",
+".listen-feedback { margin-top: 9px; font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 700; min-height: 16px; }",
+".listen-feedback.is-correct { color: var(--xgreen); }",
+".listen-feedback.is-wrong { color: var(--xrose); }",
+
+"/* ── Fiil Çekim Alıştırması (Konjugation) elements ── */",
+".konj-prev { background: rgba(15,23,42,0.6); border: 1px solid rgba(59,130,246,0.2); border-radius: 14px; padding: 26px 28px; margin: 30px 0; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }",
+".konj-header { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; color: #ffffff; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }",
+".konj-header strong { color: var(--xblueb); }",
+".konj-header span { font-family: 'Inter', sans-serif; font-size: 12px; padding: 3px 10px; background: rgba(59,130,246,0.14); border-radius: 20px; color: var(--xblueb); font-weight: 600; }",
+".konj-rows { display: flex; flex-direction: column; gap: 10px; }",
+".konj-row { display: flex; align-items: center; gap: 12px; }",
+".konj-person { flex: 0 0 92px; font-family: 'Inter', sans-serif; font-size: 13.5px; color: rgba(226,232,240,0.68); font-weight: 600; }",
+".konj-input { flex: 1; min-width: 0; padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; color: #ffffff; font-family: 'Inter', sans-serif; font-size: 14px; }",
+".konj-input:focus { outline: none; border-color: var(--xblue); background: rgba(59,130,246,0.08); }",
+".konj-input.konj-correct { border-color: var(--xgreen); background: rgba(79,214,156,0.13); color: var(--xgreen); }",
+".konj-input.konj-wrong { border-color: var(--xrose); background: rgba(240,112,104,0.13); color: var(--xrose); }",
+".konj-correct-answer { flex: 0 0 auto; max-width: 40%; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--xgreen); font-style: italic; text-align: right; }",
+".konj-action-btn { display: block; width: 100%; margin-top: 22px; padding: 12px; background: linear-gradient(135deg, var(--xblue), var(--xblueb)); border: none; border-radius: 9px; color: #071022; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13.5px; cursor: pointer; transition: all 0.2s ease; }",
+".konj-action-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }",
+".konj-result { margin-top: 14px; text-align: center; font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 700; }",
+"@media (max-width: 480px) { .konj-row { flex-wrap: wrap; } .konj-person { flex: 0 0 100%; } .konj-correct-answer { flex: 0 0 100%; text-align: left; max-width: 100%; } }",
+
 "/* ── premium accordion elements ── */",
 ".premium-accordion-wrap { display: flex; flex-direction: column; gap: 8px; margin: 24px 0; }",
 ".accordion-item-box { border: 1px solid rgba(255,255,255,0.06); background: rgba(15,23,42,0.4); border-radius: 10px; overflow: hidden; transition: all 0.2s ease; }",
@@ -2819,6 +2159,7 @@ body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, tran
 "  .pdf-download-btn, .premium-progress-bar, .lesson-nav-row, .bg-canvas, .lb-lightbox-overlay,",
 "  .quiz-action-btn, .fib-action-btn, .matching-action-btn, .matching-retry-btn,",
 "  .sentorder-action-btn, .wordorder-actions, .code-copy-btn, .rt-toolbar,",
+"  .konj-action-btn, .listen-audio-player,",
 "  .premium-audio-btn, nav, [data-navbar], .lb-image-trigger { display: none !important; }",
 "  html, body { background: #ffffff !important; color: #111827 !important; }",
 "  .lesson-wrap { max-width: 100% !important; }",
@@ -2827,10 +2168,12 @@ body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, tran
 "  .premium-quiz-card, .premium-fillblank-card, .premium-matching-card, .premium-sentorder-card,",
 "  .premium-wordorder-card, .premium-dialogue-card, .premium-audio-card, .premium-accordion-wrap,",
 "  .accordion-item-box, .premium-video-card, .premium-code-box, .vocab-card, .callout-box,",
+"  .listen-prev, .konj-prev, .lb-paragraph-quote, .lb-paragraph-highlight,",
 "  .premium-toc-card, .lb-table { background: #f8fafc !important; border: 1px solid #cbd5e1 !important; page-break-inside: avoid; }",
 "  .quiz-question-title, .fib-instruction, .matching-instruction, .sentorder-instruction, .wordorder-instruction,",
 "  .dialogue-instruction, .quiz-opt-text, .matching-card-text, .fib-input, .sentorder-text, .wordorder-chip,",
 "  .wordorder-placed-chip, .dialogue-bubble-text, .vocab-de, .vocab-tr, .vocab-example, .callout-title,",
+"  .listen-question h4, .listen-option span, .listen-caption, .konj-header, .konj-person, .konj-input, .konj-result,",
 "  .callout-text, .lb-table th, .lb-table td, .toc-link-a, .accordion-trigger, .code-lang-tag { color: #111827 !important; }",
 "  .accordion-panel-content { max-height: none !important; }",
 "  .accordion-panel-content p { color: #1f2937 !important; }",
@@ -2987,6 +2330,62 @@ blocksHtml,
 "    explain.style.maxHeight = explain.scrollHeight + 32 + 'px';",
 "  }",
 "  card.querySelector('.quiz-action-btn').style.display = 'none';",
+"}",
+
+"/* 5b. Dinleme Anlama (Hörverstehen) Engine */",
+"function checkListenAnswer(input, correctIndex) {",
+"  const qBlock = input.closest('.listen-question');",
+"  if (!qBlock || qBlock.dataset.answered === 'true') return;",
+"  qBlock.dataset.answered = 'true';",
+"  const chosenIndex = parseInt(input.value, 10);",
+"  const options = qBlock.querySelectorAll('.listen-option');",
+"  options.forEach((opt, idx) => {",
+"    const radio = opt.querySelector('input[type=radio]');",
+"    if (radio) radio.disabled = true;",
+"    if (idx === correctIndex) opt.classList.add('listen-correct');",
+"    else if (idx === chosenIndex) opt.classList.add('listen-wrong');",
+"  });",
+"  const feedback = qBlock.querySelector('.listen-feedback');",
+"  if (feedback) {",
+"    if (chosenIndex === correctIndex) {",
+"      feedback.textContent = 'Doğru! ✓';",
+"      feedback.classList.add('is-correct');",
+"    } else {",
+"      feedback.textContent = 'Yanlış ✗';",
+"      feedback.classList.add('is-wrong');",
+"    }",
+"  }",
+"}",
+
+"/* 5c. Fiil Çekim Alıştırması (Konjugation) Engine */",
+"function checkKonjugation(kjId) {",
+"  const card = document.getElementById(kjId);",
+"  if (!card || card.dataset.evaluated === 'true') return;",
+"  const inputs = card.querySelectorAll('.konj-input');",
+"  let correctCount = 0;",
+"  inputs.forEach(inp => {",
+"    const correctAnswer = (inp.dataset.answer || '').trim().toLowerCase();",
+"    const userAnswer = inp.value.trim().toLowerCase();",
+"    const answerLabel = inp.closest('.konj-row').querySelector('.konj-correct-answer');",
+"    inp.classList.remove('konj-correct', 'konj-wrong');",
+"    if (correctAnswer !== '' && userAnswer === correctAnswer) {",
+"      inp.classList.add('konj-correct');",
+"      correctCount++;",
+"      if (answerLabel) answerLabel.textContent = '';",
+"    } else {",
+"      inp.classList.add('konj-wrong');",
+"      if (answerLabel) answerLabel.textContent = 'Doğrusu: ' + inp.dataset.answer;",
+"    }",
+"    inp.disabled = true;",
+"  });",
+"  card.dataset.evaluated = 'true';",
+"  const resultEl = card.querySelector('.konj-result');",
+"  if (resultEl) {",
+"    resultEl.textContent = correctCount + ' / ' + inputs.length + ' doğru';",
+"    resultEl.style.color = correctCount === inputs.length ? '#4fd69c' : (correctCount === 0 ? '#f07068' : '#ffd250');",
+"  }",
+"  const actionBtn = card.querySelector('.konj-action-btn');",
+"  if (actionBtn) actionBtn.style.display = 'none';",
 "}",
 
 "/* 6. Boşluk Doldurma (Fill-in-the-blank) Engine */",
@@ -3545,6 +2944,3 @@ blocksHtml,
   renderCustomTemplates();
   renderAll();
 })();
-</script>
-</body>
-</html>
