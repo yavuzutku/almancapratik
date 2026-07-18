@@ -372,52 +372,47 @@
     blocks = []; activeBlockId = null; renderAll();
   }
 
-  /* Üstteki tek editör barı: seçili bloğun ayarlarını gösterir */
-  function selectBlock(block) {
-    activeBlockId = block.id;
-    $all(".block.block-active", $("#canvas")).forEach(el => el.classList.remove("block-active"));
-    const wrap = $('.block[data-id="' + block.id + '"]');
-    if (wrap) wrap.classList.add("block-active");
-    renderToolbar(block);
+  /* Her bloğun kendi ayar panelini açar/kapatır (artık tek, ortak bir üst
+     editör barı yok — ayarlar ⚙ ikonuna basılan bloğun kendi üzerinde açılır) */
+  function toggleBlockSettings(block) {
+    activeBlockId = (activeBlockId === block.id) ? null : block.id;
+    renderAll();
   }
-  /* Editör barını kapatır / seçimi kaldırır (kapanmama sorununun düzeltmesi) */
-  function deselectBlock() {
+  function closeBlockSettings() {
     if (!activeBlockId) return;
     activeBlockId = null;
-    $all(".block.block-active", $("#canvas")).forEach(el => el.classList.remove("block-active"));
-    renderToolbar(null);
+    renderAll();
   }
-  function renderToolbar(block) {
-    const empty = $("#etEmpty"), content = $("#etContent");
-    if (!empty || !content) return;
-    content.innerHTML = "";
-    if (!block) { empty.style.display = ""; return; }
-    empty.style.display = "none";
-    const label = document.createElement("div");
-    label.className = "et-label";
-    label.innerHTML = iconFor(block.type) + "<span>" + TYPE_LABEL[block.type] + "</span>";
-    content.appendChild(label);
-    const settingsEl = buildSettingsEl(block);
-    settingsEl.classList.add("open");
-    content.appendChild(settingsEl);
+  /* Panelin gövdesini üretir: başlık + kapat düğmesi + ayar alanları */
+  function buildBlockSettingsPanel(block) {
+    const panel = document.createElement("div");
+    panel.className = "block-settings-panel open";
+    const header = document.createElement("div");
+    header.className = "bsp-header";
+    header.innerHTML = '<span class="bsp-label">' + iconFor(block.type) + '<span>' + TYPE_LABEL[block.type] + ' Ayarları</span></span>';
     const closeBtn = document.createElement("button");
     closeBtn.type = "button";
-    closeBtn.className = "et-close-btn";
-    closeBtn.title = "Düzenlemeyi kapat (Esc)";
+    closeBtn.className = "bsp-close";
+    closeBtn.title = "Ayarları kapat (Esc)";
     closeBtn.innerHTML = ICO.close;
-    closeBtn.addEventListener("click", (e) => { e.stopPropagation(); deselectBlock(); });
-    content.appendChild(closeBtn);
+    closeBtn.addEventListener("click", (e) => { e.stopPropagation(); closeBlockSettings(); });
+    header.appendChild(closeBtn);
+    panel.appendChild(header);
+    const settingsEl = buildSettingsEl(block);
+    settingsEl.classList.add("open");
+    panel.appendChild(settingsEl);
+    return panel;
   }
-  /* Dışarı tıklayınca ya da Esc'e basınca editör barını kapat */
+  /* Dışarı (herhangi bir bloğun ve çubukların dışına) tıklayınca ya da
+     Esc'e basınca açık olan ayar panelini kapat */
   document.addEventListener("mousedown", (e) => {
     if (!activeBlockId) return;
-    if (e.target.closest(".block") || e.target.closest(".editor-toolbar") ||
-        e.target.closest(".rt-toolbar") || e.target.closest(".modal-overlay") ||
-        e.target.closest(".preview-overlay")) return;
-    deselectBlock();
+    if (e.target.closest(".block") || e.target.closest(".rt-toolbar") ||
+        e.target.closest(".modal-overlay") || e.target.closest(".preview-overlay")) return;
+    closeBlockSettings();
   });
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && activeBlockId) deselectBlock();
+    if (e.key === "Escape" && activeBlockId) closeBlockSettings();
   });
 
   function renderAll() {
@@ -429,12 +424,10 @@
         '<div class="empty-state"><div class="es-ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>' +
         '<h3>Henüz blok yok</h3><p>Soldaki panelden bir blok türü seçerek dersinizi oluşturmaya başlayın.</p></div>';
       activeBlockId = null;
-      renderToolbar(null);
       return;
     }
     blocks.forEach((block, idx) => canvas.appendChild(buildBlockEl(block, idx)));
     const active = blocks.find(b => b.id === activeBlockId);
-    renderToolbar(active || null);
     if (!active) activeBlockId = null;
   }
 
@@ -450,14 +443,14 @@
       '<div class="block-actions">' +
         '<button data-act="up" title="Yukarı taşı"' + (idx === 0 ? " disabled" : "") + '>' + ICO.up + '</button>' +
         '<button data-act="down" title="Aşağı taşı"' + (idx === blocks.length - 1 ? " disabled" : "") + '>' + ICO.down + '</button>' +
-        '<button data-act="settings" title="Düzenle (üstteki editörde açar)">' + ICO.gear + '</button>' +
+        '<button data-act="settings" title="Ayarları aç/kapat">' + ICO.gear + '</button>' +
         '<button data-act="delete" class="danger" title="Bloğu sil">' + ICO.trash + '</button>' +
       '</div>';
     wrap.appendChild(toolbar);
     toolbar.querySelector('[data-act="up"]').addEventListener("click", (e) => { e.stopPropagation(); moveBlock(block.id, "up"); });
     toolbar.querySelector('[data-act="down"]').addEventListener("click", (e) => { e.stopPropagation(); moveBlock(block.id, "down"); });
     toolbar.querySelector('[data-act="delete"]').addEventListener("click", (e) => { e.stopPropagation(); deleteBlock(block.id); });
-    toolbar.querySelector('[data-act="settings"]').addEventListener("click", (e) => { e.stopPropagation(); selectBlock(block); });
+    toolbar.querySelector('[data-act="settings"]').addEventListener("click", (e) => { e.stopPropagation(); toggleBlockSettings(block); });
 
     const handle = toolbar.querySelector(".block-drag-handle");
     handle.addEventListener("dragstart", (e) => {
@@ -475,10 +468,9 @@
       $all(".block.block-drop-before, .block.block-drop-after", $("#canvas")).forEach(el => el.classList.remove("block-drop-before", "block-drop-after"));
     });
 
-    wrap.addEventListener("click", (e) => {
-      if (e.target.closest(".block-actions") || e.target.closest(".block-drag-handle")) return;
-      selectBlock(block);
-    });
+    if (block.id === activeBlockId) {
+      wrap.appendChild(buildBlockSettingsPanel(block));
+    }
 
     const content = document.createElement("div");
     content.className = "block-content";
@@ -636,6 +628,20 @@
           if (!block.bgOpacity) block.bgOpacity = 30;
         }
         block[field] = val;
+        // Başlık seviyesi (H1/H2/H3) değişince boyutu da o seviyeye uygun
+        // hale getir — "boyut çalışmıyor" hissinin asıl nedeni buydu.
+        if (block.type === "heading" && field === "level") {
+          const preset = { h1: 36, h2: 28, h3: 22 }[val];
+          if (preset) {
+            block.size = preset;
+            const sizeInput = el.querySelector('input[type="range"][data-f="size"]');
+            if (sizeInput) {
+              sizeInput.value = preset;
+              const sizeSpan = sizeInput.parentElement.querySelector("[data-rangeval]");
+              if (sizeSpan) sizeSpan.textContent = preset;
+            }
+          }
+        }
         applyBlockStyle(block);
       });
     });
@@ -2626,6 +2632,9 @@ body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, tran
 "  @page { margin: 16mm 14mm; }",
 "}",
 "</style>",
+'<script type="application/json" id="ders-builder-data">' +
+  JSON.stringify({ seq, blocks, meta }).replace(/<\//g, "<\\/") +
+'</' + 'script>',
 "</head>",
 ((meta.theme && meta.theme !== "none") ? '<body class="theme-' + esc(meta.theme) + '">' : "<body>"),
 '<div class="premium-progress-bar" id="readingProgressBar"></div>',
@@ -3321,6 +3330,38 @@ blocksHtml,
     };
     reader.readAsText(file);
     loadInput.value = ""; // Inputu sıfırla
+  });
+
+  // Daha önce "HTML Oluştur" ile dışa aktarılmış bir index.html dosyasını
+  // tekrar yükleyip düzenlemeye devam edebilmek için: export sırasında
+  // sayfanın <head> içine gizlenen JSON veriyi okuyup geri yüklüyoruz.
+  const loadHtmlInput = $("#loadHtmlInput");
+  $("#btnLoadHtml").addEventListener("click", () => loadHtmlInput.click());
+  loadHtmlInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (evt) {
+      try {
+        const html = evt.target.result;
+        const m = html.match(/<script type="application\/json" id="ders-builder-data">([\s\S]*?)<\/script>/);
+        if (!m) throw new Error("Bu dosyada düzenleme verisi bulunamadı");
+        const data = JSON.parse(m[1]);
+        if (Array.isArray(data.blocks)) {
+          blocks = data.blocks;
+          seq = data.seq || blocks.length;
+          activeBlockId = null;
+          renderAll();
+          toast("Ders HTML dosyasından yüklendi, düzenlemeye devam edebilirsiniz ✓");
+        } else {
+          throw new Error("Geçersiz şema");
+        }
+      } catch (err) {
+        toast("Bu HTML dosyası bu araçla oluşturulmamış ya da bozulmuş, yüklenemedi.", "err");
+      }
+    };
+    reader.readAsText(file);
+    loadHtmlInput.value = "";
   });
 
   /* ══════════════════════════════════════
