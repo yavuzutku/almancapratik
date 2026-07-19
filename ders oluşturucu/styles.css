@@ -648,23 +648,34 @@ body.audio-tool-dragging .audio-drop-target {
 
 .block {
   position: relative; margin-bottom: 20px;
-  border: 1px solid var(--border); border-radius: var(--radius);
+  border: 1px solid transparent; border-radius: var(--radius);
+  background: transparent;
+  box-shadow: none;
+  transition: border-color var(--tr), box-shadow var(--tr), background var(--tr);
+}
+/* Odaklanmamış (tıklanmamış) bloklar kart görünümü olmadan, tam olarak yayındaki
+   halleriyle görünür — böylece sürekli önizleme açmaya gerek kalmaz. Bir bloğa
+   tıklandığında ya da ayarları açıkken düzenleme kartı (kenarlık/arka plan/gölge) geri gelir. */
+.block:hover { border-color: var(--border-hover); }
+.block.block-focused, .block.block-active {
+  border-color: var(--border);
   background: var(--bg-panel); backdrop-filter: blur(18px) saturate(160%);
   -webkit-backdrop-filter: blur(18px) saturate(160%);
   box-shadow: 0 10px 30px rgba(0,0,0,0.32);
-  transition: border-color var(--tr), box-shadow var(--tr);
 }
-.block:hover { border-color: var(--border-hover); }
 .block:focus-within { border-color: rgba(59,130,246,0.55); box-shadow: 0 10px 30px rgba(0,0,0,0.32), 0 0 0 3px rgba(59,130,246,0.12); }
 .block.block-dragging { opacity: 0.4; }
 .block.block-drop-before { box-shadow: 0 -3px 0 0 var(--blue-bright), 0 10px 30px rgba(0,0,0,0.32); }
 .block.block-drop-after { box-shadow: 0 3px 0 0 var(--blue-bright), 0 10px 30px rgba(0,0,0,0.32); }
 
 .block-toolbar {
-  display: flex; align-items: center; justify-content: space-between;
+  display: none; align-items: center; justify-content: space-between;
   padding: 10px 14px; border-bottom: 1px solid var(--border);
   background: rgba(255,255,255,0.02); border-radius: var(--radius) var(--radius) 0 0;
 }
+/* Sadece bloğa tıklanınca (odaklanınca) ya da ayarları açıkken araç çubuğu görünür;
+   odak başka yere gidince gizlenir, böylece kanvas gerçek sayfa gibi görünür. */
+.block.block-focused > .block-toolbar, .block.block-active > .block-toolbar { display: flex; }
 .block-type-label { display: flex; align-items: center; gap: 8px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text-faint); }
 .block-type-label svg { color: var(--blue-bright); }
 .block-drag-handle { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; margin-left: -4px; color: var(--text-faint); cursor: grab; border-radius: 6px; transition: all var(--tr); }
@@ -725,11 +736,14 @@ body.block-tool-dragging .block-content, body.block-tool-dragging .block-setting
 .vocab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px 16px; margin-bottom: 6px; }
 .vocab-grid .full { grid-column: 1 / -1; }
 .vocab-grid label { display: block; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-faint); margin-bottom: 4px; }
-.vocab-grid input {
+.vocab-grid input,
+.vocab-grid .vocab-editable {
   width: 100%; padding: 9px 11px; background: var(--bg-elevated); border: 1px solid var(--border);
   border-radius: 8px; color: var(--text); font-size: 13.5px;
 }
-.vocab-grid input.de-input { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; color: var(--blue-bright); font-weight: 700; }
+.vocab-grid .vocab-editable { min-height: 1.3em; outline: none; cursor: text; }
+.vocab-grid input.de-input,
+.vocab-grid .vocab-editable.de-input { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; color: var(--blue-bright); font-weight: 700; }
 .vocab-tip-toggle {
   display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;
   background: none; border: none; color: var(--blue-bright); font-size: 11.5px; font-weight: 600; cursor: pointer; padding: 4px 2px;
@@ -739,6 +753,7 @@ body.block-tool-dragging .block-content, body.block-tool-dragging .block-setting
   width: 100%; min-height: 52px; padding: 9px 11px; background: rgba(96,165,250,0.08);
   border: 1px solid rgba(96,165,250,0.28); border-radius: 8px; color: var(--text-dim); font-size: 12.5px; resize: vertical;
 }
+.acc-editable { cursor: text; outline: none; }
 
 .callout-prev {
   border-radius: 12px; padding: 16px 20px 16px 18px; display: flex; gap: 13px;
@@ -756,7 +771,8 @@ body.block-tool-dragging .block-content, body.block-tool-dragging .block-setting
 .callout-prev-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 14.5px; margin-bottom: 5px; }
 .callout-prev-body { font-size: 14px; line-height: 1.65; color: var(--text-dim); }
 
-.table-toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
+.table-toolbar { display: none; gap: 8px; margin-bottom: 12px; }
+.block.block-focused .table-toolbar, .block.block-active .table-toolbar { display: flex; }
 .tbl-prev { width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; }
 .tbl-prev th, .tbl-prev td { border: 1px solid var(--border); padding: 9px 11px; font-size: 13px; position: relative; }
 .tbl-prev th { background: rgba(59,130,246,0.12); font-weight: 700; color: var(--text); }
@@ -770,16 +786,20 @@ body.block-tool-dragging .block-content, body.block-tool-dragging .block-setting
   font-size: 10px; line-height: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity var(--tr);
   top: -6px; right: -6px;
 }
-.tbl-prev tr:hover .tbl-del-row, .tbl-prev th:hover .tbl-del-col { opacity: 1; }
+/* Satır/sütun silme ve ses işaretleme düğmeleri de, tıpkı üstteki blok araç çubuğu
+   gibi, sadece blok odaklıyken (tıklanmışken) satır/başlık üzerine gelince görünür. */
+.block.block-focused .tbl-prev tr:hover .tbl-del-row, .block.block-active .tbl-prev tr:hover .tbl-del-row,
+.block.block-focused .tbl-prev th:hover .tbl-del-col, .block.block-active .tbl-prev th:hover .tbl-del-col { opacity: 1; }
 .tbl-audio-toggle {
   position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--bg-elevated); color: var(--text-faint);
   border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center;
   opacity: 0; transition: all var(--tr); bottom: -7px; right: -6px; padding: 0;
 }
 .tbl-audio-toggle svg { width: 10px; height: 10px; pointer-events: none; }
-.tbl-prev tr:hover .tbl-audio-toggle, .tbl-prev th:hover .tbl-audio-toggle { opacity: 1; }
+.block.block-focused .tbl-prev tr:hover .tbl-audio-toggle, .block.block-active .tbl-prev tr:hover .tbl-audio-toggle,
+.block.block-focused .tbl-prev th:hover .tbl-audio-toggle, .block.block-active .tbl-prev th:hover .tbl-audio-toggle { opacity: 1; }
 .tbl-audio-toggle:hover { border-color: var(--border-hover); color: var(--text); }
-.tbl-audio-toggle.active { opacity: 1; background: var(--blue); border-color: var(--blue); color: #071022; }
+.block.block-focused .tbl-audio-toggle.active, .block.block-active .tbl-audio-toggle.active { opacity: 1; background: var(--blue); border-color: var(--blue); color: #071022; }
 .tbl-audio-toggle.active:hover { background: var(--blue-bright); }
 
 .hp-editable { min-height: 1.4em; }
@@ -844,32 +864,85 @@ body.block-tool-dragging .block-content, body.block-tool-dragging .block-setting
   box-shadow: 0 14px 34px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 9px;
 }
 .dc-toast.ok svg { color: var(--green); } .dc-toast.err svg { color: var(--rose); }
-/* ── Rich Text Toolbar (metin seçince açılan biçimlendirme çubuğu) ── */
+/* ── Rich Text Toolbar (metin seçince açılan biçimlendirme çubuğu) ──
+   Google Dokümanlar hissi: sade, düz simge butonlar, ince ayraçlar,
+   renk/hizalama için açılır mini paneller. */
 .rt-toolbar {
-  position: absolute; display: none; align-items: center; gap: 2px; padding: 6px;
-  background: rgba(17,24,39,0.98); border: 1px solid var(--border-hover);
-  border-radius: 10px; box-shadow: 0 16px 36px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03);
+  position: absolute; display: none; align-items: center; gap: 1px; padding: 5px;
+  background: rgba(24,29,41,0.98); border: 1px solid var(--border-hover);
+  border-radius: 9px; box-shadow: 0 16px 36px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03);
   backdrop-filter: blur(14px); z-index: 1000; pointer-events: auto;
-  max-width: min(94vw, 480px); flex-wrap: nowrap;
+  max-width: min(96vw, 560px); flex-wrap: wrap; row-gap: 3px;
 }
 .rt-toolbar.show { display: flex; }
-.rt-toolbar button {
-  width: 30px; height: 30px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
-  background: transparent; border: none; border-radius: 7px; color: var(--text-dim);
-  cursor: pointer; transition: all var(--tr);
+.rt-toolbar .rt-btn {
+  width: 28px; height: 28px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; border-radius: 6px; color: var(--text-dim);
+  cursor: pointer; transition: background var(--tr), color var(--tr); position: relative;
 }
-.rt-toolbar button:hover { background: var(--bg-hover); color: var(--text); }
-.rt-toolbar button.rt-close { color: var(--text-faint); margin-left: 2px; }
-.rt-toolbar button.rt-close:hover { color: var(--rose, #f07068); background: rgba(240,112,104,0.12); }
+.rt-toolbar .rt-btn:hover { background: var(--bg-hover); color: var(--text); }
+.rt-toolbar .rt-btn.active { background: var(--blue-glow); color: var(--blue-bright); }
+.rt-toolbar .rt-btn.rt-close { color: var(--text-faint); margin-left: 2px; }
+.rt-toolbar .rt-btn.rt-close:hover { color: var(--rose, #f07068); background: rgba(240,112,104,0.12); }
+.rt-toolbar .rt-btn-pop { width: auto; padding: 0 4px 0 6px; gap: 2px; }
+.rt-toolbar .rt-color-ico { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 14px; }
+.rt-toolbar .rt-color-bar { display: block; width: 14px; height: 3px; border-radius: 2px; margin-top: 1px; }
 .rt-toolbar .rt-divider { width: 1px; align-self: stretch; margin: 3px 4px; background: var(--border-hover); opacity: 0.7; flex: 0 0 auto; }
 .rt-toolbar .rt-select {
-  height: 30px; flex: 0 0 auto; padding: 0 6px; font-size: 12.5px; font-weight: 600;
-  background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border);
-  border-radius: 7px; cursor: pointer; transition: all var(--tr); max-width: 132px;
+  height: 28px; flex: 0 0 auto; padding: 0 6px; font-size: 12.5px; font-weight: 600;
+  background: transparent; color: var(--text); border: none; outline: none;
+  border-radius: 6px; cursor: pointer; transition: background var(--tr); max-width: 130px;
+  -webkit-appearance: none; appearance: none;
 }
-.rt-toolbar .rt-select:hover { border-color: var(--border-hover); background: var(--bg-hover); }
-.rt-toolbar .rt-select-size { max-width: 84px; }
-.rt-toolbar .rt-select option { background: #111827; color: #fff; }
+.rt-toolbar .rt-select:hover { background: var(--bg-hover); }
+.rt-toolbar .rt-select-size { max-width: 76px; }
+.rt-toolbar .rt-select option { background: #1a2032; color: #fff; }
+
+/* Açılır mini paneller: renk paleti / hizalama seçenekleri */
+.rt-popover {
+  position: absolute; top: 100%; margin-top: 6px; display: none;
+  background: rgba(24,29,41,0.99); border: 1px solid var(--border-hover);
+  border-radius: 9px; padding: 9px; box-shadow: 0 16px 36px rgba(0,0,0,0.55);
+  backdrop-filter: blur(14px); z-index: 1001; width: max-content;
+}
+.rt-popover.show { display: block; }
+.rt-popover-grid { display: grid; grid-template-columns: repeat(9, 20px); gap: 4px; }
+.rt-swatch {
+  width: 20px; height: 20px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.12);
+  cursor: pointer; padding: 0; transition: transform var(--tr);
+}
+.rt-swatch:hover { transform: scale(1.14); border-color: rgba(255,255,255,0.4); }
+.rt-swatch-none {
+  display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05);
+  color: var(--text-faint);
+}
+.rt-swatch-none svg { width: 11px; height: 11px; }
+.rt-custom-color {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--border);
+  font-size: 11.5px; color: var(--text-faint); font-weight: 600;
+}
+.rt-custom-color-input {
+  width: 30px; height: 22px; border: 1px solid var(--border); border-radius: 5px;
+  background: transparent; cursor: pointer; padding: 0;
+}
+.rt-popover-row { display: flex; gap: 2px; }
+.rt-popover-row .rt-btn { width: 28px; height: 28px; }
+.rt-swatch.rt-swatch-selected { outline: 2px solid var(--blue-bright); outline-offset: 1px; }
+.rt-popover-label { font-size: 11px; font-weight: 700; color: var(--text-faint); margin: 8px 0 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+.rt-link-color-current { text-transform: none; font-weight: 600; letter-spacing: 0; margin-left: 4px; }
+.rt-link-pop { width: 210px; }
+.rt-link-field { display: block; font-size: 11px; font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+.rt-link-url {
+  display: block; width: 100%; margin-top: 5px; padding: 7px 9px; font-size: 13px; font-weight: 400;
+  text-transform: none; letter-spacing: normal; background: var(--bg-elevated); color: var(--text);
+  border: 1px solid var(--border); border-radius: 6px; outline: none;
+}
+.rt-link-url:focus { border-color: var(--border-hover); }
+.rt-link-apply {
+  display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
+  margin-top: 10px; padding: 8px; font-size: 12.5px; font-weight: 700;
+}
 @media (max-width: 840px) {
   .sidebar { position: fixed; left: -270px; top: 66px; bottom: 0; z-index: 60; transition: left var(--tr); box-shadow: 14px 0 40px rgba(0,0,0,0.55); }
   .sidebar.open { left: 0; }

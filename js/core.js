@@ -819,7 +819,7 @@ function loadFloatingMenu() {
       '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>')}
     ${fabItem("/quiz/", "Quiz", "item-3",
       '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>')}
-    ${fabItem("/notlarim/", "Notlarım", "item-4",
+    ${fabItem("/notlarım/", "Notlarım", "item-4",
       '<path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z"/><polyline points="15 3 15 9 21 9"/>')}
     <button class="fab-main" id="fabToggle" aria-label="Hızlı menü" aria-expanded="false">+</button>
   `;

@@ -161,6 +161,20 @@
   </div>
 </div>
 
-<script src="app.js"></script>
+<!--
+  ÖNEMLİ: Bu dosyalar app.js'nin bölünmüş hâlidir ve hepsi TEK bir global
+  scope'u paylaşır (module değildir). Bu yüzden yükleme SIRASI önemlidir —
+  sırayı değiştirmeyin, aralarına başka bir script eklemeyin.
+-->
+<script src="js/constants.js"></script>
+<script src="js/audio-text-utils.js"></script>
+<script src="js/canvas-core.js"></script>
+<script src="js/settings-panel.js"></script>
+<script src="js/block-editor-render.js"></script>
+<script src="js/theme-preview-export-ui.js"></script>
+<script src="js/block-export-render.js"></script>
+<script src="js/export-template-builder.js"></script>
+<script src="js/rich-text-toolbar.js"></script>
+<script src="js/project-io-templates.js"></script>
 </body>
 </html>
