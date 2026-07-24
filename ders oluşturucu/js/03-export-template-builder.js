@@ -1,5 +1,11 @@
 "use strict";
 /* ═══════════════════════════════════════════════════════════
+   JS 3/4 — EXPORT MOTORU: İndirilen index.html Şablonu
+   (CSS, tema arka planları, quiz mantığı, PDF indirme, TTS motoru)
+   Tek dosyadan birleştirilmiştir: export-template-builder.js
+   ═══════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════
    8) STATİK SAYFA ŞABLONU (buildExportHtml)
    Bu dosya, app.js'nin bölünmesiyle oluşturulmuştur.
    Diğer js/*.js dosyalarıyla aynı global scope'u paylaşır
@@ -97,6 +103,56 @@ body.theme-ocean {
 }
 body.theme-ocean .bg-glow--1 { background: radial-gradient(circle, #2563eb, transparent 70%); }
 body.theme-ocean .bg-glow--2 { background: radial-gradient(circle, #0ea5e9, transparent 70%); }
+
+body.theme-berlin {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 10%, rgba(255,255,255,0.05), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 90%, rgba(0,0,0,0.35), transparent 60%),
+    linear-gradient(155deg, #2b2b2e 0%, #1c1c1e 45%, #131315 100%);
+  background-attachment: fixed;
+}
+body.theme-berlin .bg-glow--1 { background: radial-gradient(circle, #9ca3af, transparent 70%); }
+body.theme-berlin .bg-glow--2 { background: radial-gradient(circle, #52525b, transparent 70%); }
+
+body.theme-iletisim {
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 20%, rgba(59,130,246,0.30), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 85% 80%, rgba(45,212,191,0.24), transparent 60%),
+    linear-gradient(160deg, #0b1220 0%, #101d33 100%);
+  background-attachment: fixed;
+}
+body.theme-iletisim .bg-glow--1 { background: radial-gradient(circle, #3b82f6, transparent 70%); }
+body.theme-iletisim .bg-glow--2 { background: radial-gradient(circle, #2dd4bf, transparent 70%); }
+
+body.theme-buzlucam {
+  background:
+    radial-gradient(ellipse 900px 600px at 10% -5%, rgba(96,165,250,0.28), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 90% 95%, rgba(167,139,250,0.22), transparent 60%),
+    linear-gradient(160deg, #0f172a 0%, #1c1a2b 100%);
+  background-attachment: fixed;
+}
+body.theme-buzlucam .bg-glow--1 { background: radial-gradient(circle, #60a5fa, transparent 70%); }
+body.theme-buzlucam .bg-glow--2 { background: radial-gradient(circle, #a78bfa, transparent 70%); }
+
+body.theme-likitmetal {
+  background:
+    radial-gradient(ellipse 900px 600px at 20% 10%, rgba(255,255,255,0.06), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 80% 90%, rgba(0,0,0,0.30), transparent 60%),
+    linear-gradient(135deg, #4b4f58 0%, #23262e 35%, #6b6f78 55%, #17181c 75%, #3c3e44 100%);
+  background-attachment: fixed;
+}
+body.theme-likitmetal .bg-glow--1 { background: radial-gradient(circle, #9ca3af, transparent 70%); }
+body.theme-likitmetal .bg-glow--2 { background: radial-gradient(circle, #52525b, transparent 70%); }
+
+body.theme-prizma {
+  background:
+    radial-gradient(ellipse 900px 600px at 20% 15%, rgba(167,139,250,0.26), transparent 60%),
+    radial-gradient(ellipse 800px 550px at 80% 85%, rgba(45,212,191,0.20), transparent 60%),
+    linear-gradient(160deg, #0a0a0f 0%, #14121c 100%);
+  background-attachment: fixed;
+}
+body.theme-prizma .bg-glow--1 { background: radial-gradient(circle, #a78bfa, transparent 70%); }
+body.theme-prizma .bg-glow--2 { background: radial-gradient(circle, #2dd4bf, transparent 70%); }
 
 body.theme-sunset {
   background:
@@ -565,7 +621,8 @@ body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, tran
 ".premium-audio-btn:hover { background: var(--xblueb); transform: scale(1.05); }",
 ".premium-audio-btn svg { width: 18px; height: 18px; }",
 ".premium-audio-details { display: flex; flex-direction: column; gap: 4px; }",
-".premium-audio-caption { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; color: #ffffff; }",
+".premium-audio-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 800; color: #ffffff; }",
+".premium-audio-caption { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.55); }",
 ".premium-audio-meta { font-size: 11.5px; color: rgba(255,255,255,0.3); }",
 ".premium-audio-btn-slow { width: 36px; height: 36px; background: rgba(59,130,246,0.14); color: var(--xblueb); }",
 ".premium-audio-btn-slow:hover { background: rgba(59,130,246,0.26); }",

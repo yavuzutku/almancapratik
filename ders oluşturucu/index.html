@@ -46,9 +46,18 @@
         <option value="ruby">Ruby</option>
         <option value="amethyst">Amethyst</option>
         <option value="coral">Coral</option>
+        <option value="berlin">Berlin Duvarı</option>
+        <option value="iletisim">İletişim</option>
+        <option value="buzlucam">Buzlu Cam</option>
+        <option value="likitmetal">Likit Metal</option>
+        <option value="prizma">Prizmatik Kristal</option>
       </select>
       <input type="color" id="metaThemeColor" value="#0b1220" title="Düz arka plan rengini seç" style="display:none;">
       <span class="block-count" id="blockCount">0 blok</span>
+      <button class="btn btn-ai" id="btnGeminiAI" title="Gemini AI ile tüm sayfayı düzenle">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="2.4"/></svg>
+        Gemini AI
+      </button>
       <button class="btn btn-danger-ghost" id="btnClearAll">Tümünü Temizle</button>
       <button class="btn" id="btnPreview">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -93,7 +102,7 @@
       <button class="add-block-btn" data-type="video"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>Video (YouTube/Vimeo)</button>
       <button class="add-block-btn" data-type="code"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>Kod Bloğu</button>
       <button class="add-block-btn" data-type="toc"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>İçindekiler (TOC)</button>
-      <div class="sidebar-hint"><b>İpucu:</b> İçeriğe tıklayıp doğrudan yazabilirsin. Bir bloğun ⚙ ikonuna tıklarsan, o bloğun kendi üzerinde rengini, boyutunu, arka planını değiştirebileceğin küçük bir ayar paneli açılır; tekrar ⚙'a, panelin üzerindeki ✕'e veya Esc'e basarak kapatabilirsin. Paragrafta metin seçince biçimlendirme barı belirir. Metinde <code>[kelime|açıklama]</code> yazarsan çıktıda ipucu balonuna dönüşür. Tabloda bir hücrenin üzerine gelince çıkan 🔊 ikonuna tıklayarak o hücrenin sesli okunup okunmayacağını seçebilirsin.</div>
+      <div class="sidebar-hint"><b>İpucu:</b> İçeriğe tıklayıp doğrudan yazabilirsin. Bir bloğun ⚙ ikonuna tıklarsan, o bloğun kendi üzerinde rengini, boyutunu, arka planını değiştirebileceğin küçük bir ayar paneli açılır; tekrar ⚙'a, panelin üzerindeki ✕'e veya Esc'e basarak kapatabilirsin. Paragrafta metin seçince biçimlendirme barı belirir. Metinde <code>[kelime|açıklama]</code> yazarsan çıktıda ipucu balonuna dönüşür. Tabloda bir sütun başlığının üzerine Sesli Okuma Aracı'nı sürükleyip bırakırsan (veya başlıktaki 🔊 ikonuna tıklarsan) o sütundaki <b>tüm kutular</b> otomatik olarak sesli okunur hale gelir; istersen bir hücrenin üzerine gelip çıkan 🔊 ikonuna tıklayarak sadece o hücreyi hızlıca kapatabilirsin.</div>
 
       <div style="height: 1px; background: var(--border); margin: 20px 4px 16px;"></div>
       <div class="sidebar-label">Şablonlar</div>
@@ -161,20 +170,56 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="geminiModalOverlay">
+  <div class="modal modal-gemini">
+    <div class="modal-header">
+      <h2><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="2.4"/></svg> Gemini AI Asistanı</h2>
+      <button class="modal-close" id="closeGeminiModal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label for="geminiApiKey">Gemini API Anahtarı</label>
+        <input type="password" id="geminiApiKey" placeholder="AIza... (Google AI Studio'dan alınır)" autocomplete="off">
+        <div class="form-hint">Anahtarınız yalnızca bu tarayıcıda saklanır, hiçbir sunucuya gönderilmez (istekler doğrudan Google'a gider). Ücretsiz anahtar için: <span style="color:var(--blue-bright)">aistudio.google.com/apikey</span></div>
+      </div>
+      <div class="form-row">
+        <label for="geminiModel">Model</label>
+        <select id="geminiModel">
+          <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash (önerilen, hızlı)</option>
+          <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite (en hızlı/ucuz)</option>
+          <option value="gemini-3.5-flash">Gemini 3.5 Flash (en güçlü)</option>
+          <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash-Lite</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="geminiPrompt">Ne yapmamı istersin?</label>
+        <textarea id="geminiPrompt" rows="4" placeholder="örn. Tüm başlıkları lacivert yap ve büyüt. 3. bloğun arka planını açık mavi yap. Sayfanın genel temasını Sunset yap."></textarea>
+        <div class="form-hint">Gemini, sayfadaki <b>her bloğa</b> tam yetkiyle erişir: yazı tipi, renk, arka plan, boyut, hizalama, boşluk, blok ekleme/silme/sıralama ve sayfa temasını değiştirebilir. Ctrl+Enter ile gönderebilirsiniz.</div>
+      </div>
+      <div id="geminiLog" class="gemini-log" style="display:none;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="cancelGemini">Kapat</button>
+      <button class="btn btn-blue" id="sendGemini">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Gönder
+      </button>
+    </div>
+  </div>
+</div>
+
 <!--
   ÖNEMLİ: Bu dosyalar app.js'nin bölünmüş hâlidir ve hepsi TEK bir global
   scope'u paylaşır (module değildir). Bu yüzden yükleme SIRASI önemlidir —
   sırayı değiştirmeyin, aralarına başka bir script eklemeyin.
+  05-gemini-assistant.js, diğer 4 dosyanın tanımladığı fonksiyonlara/değişkenlere
+  (blocks, renderAll, addBlock, applyTheme, $ vb.) ihtiyaç duyduğu için EN SONA
+  eklenmiştir — sırası değiştirilmemelidir.
 -->
-<script src="js/constants.js"></script>
-<script src="js/audio-text-utils.js"></script>
-<script src="js/canvas-core.js"></script>
-<script src="js/settings-panel.js"></script>
-<script src="js/block-editor-render.js"></script>
-<script src="js/theme-preview-export-ui.js"></script>
-<script src="js/block-export-render.js"></script>
-<script src="js/export-template-builder.js"></script>
-<script src="js/rich-text-toolbar.js"></script>
-<script src="js/project-io-templates.js"></script>
+<script src="js/01-core-canvas-settings.js"></script>
+<script src="js/02-block-render-theme-export.js"></script>
+<script src="js/03-export-template-builder.js"></script>
+<script src="js/04-toolbar-projectio.js"></script>
+<script src="js/05-gemini-assistant.js"></script>
 </body>
 </html>

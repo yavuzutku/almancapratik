@@ -1,5 +1,13 @@
 "use strict";
 /* ═══════════════════════════════════════════════════════════
+   JS 2/4 — BLOK ÇİZİMİ: Editör Görünümü + Tema/Önizleme/Export UI
+   + Export (Statik) Görünüm
+   3 parça dosyadan birleştirilmiştir (sıra ve işlev korunmuştur):
+   block-editor-render.js, theme-preview-export-ui.js, block-export-render.js
+   ═══════════════════════════════════════════════════════════ */
+
+/* ---------- block-editor-render.js ---------- */
+/* ═══════════════════════════════════════════════════════════
    5) EDİTÖR İÇERİK RENDER (buildContentEl)
    Bu dosya, app.js'nin bölünmesiyle oluşturulmuştur.
    Diğer js/*.js dosyalarıyla aynı global scope'u paylaşır
@@ -180,8 +188,8 @@
         ensureTableAudioShape(block);
         let h = "<thead><tr>";
         block.headers.forEach((hd, ci) => {
-          h += '<th><div class="tbl-cell-wrap"><span contenteditable="true" data-placeholder="Başlık" data-h="' + ci + '">' + esc(hd) + '</span>' +
-            '<button type="button" class="tbl-audio-toggle' + (block.audioHeaders[ci] ? ' active' : '') + '" data-audioh="' + ci + '" title="Bu başlığı sesli okut">' + ICO.tts + '</button>' +
+          h += '<th><div class="tbl-cell-wrap audio-drop-target" data-block="' + block.id + '" data-slot="col:' + ci + '" title="Sesli okuma aracını buraya sürükleyip bırakırsanız bu sütundaki TÜM kutular sesli okunur olur"><span contenteditable="true" data-placeholder="Başlık" data-h="' + ci + '">' + esc(hd) + '</span>' +
+            '<button type="button" class="tbl-audio-toggle' + (block.audioHeaders[ci] ? ' active' : '') + '" data-audioh="' + ci + '" title="Bu sütunun tamamını sesli okumaya aç">' + ICO.tts + '</button>' +
             (block.headers.length > 1 ? '<button class="tbl-del-col" data-delcol="' + ci + '" title="Sütunu sil">×</button>' : "") + '</div></th>';
         });
         h += "</tr></thead><tbody>";
@@ -201,8 +209,16 @@
         $all("[data-h], [data-r]", tableEl).forEach(s => s.addEventListener("keydown", e => { if (e.key === "Enter") e.preventDefault(); }));
         $all("[data-audioh]", tableEl).forEach(b => b.addEventListener("click", () => {
           const ci = +b.dataset.audioh;
-          block.audioHeaders[ci] = !block.audioHeaders[ci];
-          b.classList.toggle("active", block.audioHeaders[ci]);
+          const turningOn = !block.audioHeaders[ci];
+          block.audioHeaders[ci] = turningOn;
+          if (turningOn) {
+            // Sütun başlığındaki ikona basmak, sürükle-bırakla aynı işi yapar:
+            // o sütundaki TÜM hücreleri tek seferde sesli okumaya açar.
+            block.audioCells.forEach(row => { if (ci < row.length) row[ci] = true; });
+            renderTable();
+          } else {
+            b.classList.toggle("active", false);
+          }
         }));
         $all("[data-audior]", tableEl).forEach(b => b.addEventListener("click", () => {
           const ri = +b.dataset.audior, ci = +b.dataset.audioc;
@@ -742,3 +758,597 @@
   setupBlockDragReorder();
   $("#btnClearAll").addEventListener("click", clearAll);
 
+
+/* ---------- theme-preview-export-ui.js ---------- */
+/* ═══════════════════════════════════════════════════════════
+   6) TEMA SİSTEMİ + ÖNİZLEME + EXPORT MODAL
+   Bu dosya, app.js'nin bölünmesiyle oluşturulmuştur.
+   Diğer js/*.js dosyalarıyla aynı global scope'u paylaşır
+   (module DEĞİLDİR) — bu yüzden index.html'deki script sırası önemlidir.
+   ═══════════════════════════════════════════════════════════ */
+  /* ══════════════════════════════════════
+     Dinamik Gradient Tema Sistemi
+     ══════════════════════════════════════ */
+  const themeSelect = $("#metaTheme");
+  const themeColorInput = $("#metaThemeColor");
+  const DEFAULT_THEME = "ocean";
+  /* Hazır 25 temanın hepsi koyu zeminli gradyanlardır; sadece "Düz Renk (Özel)"
+     açık bir renk olabilir. Bloklara varsayılan/otomatik metin rengi seçerken
+     kıyaslanacak gerçek sayfa arka planı budur. */
+  function pageBgHex() {
+    return (themeSelect && themeSelect.value === "custom" && themeColorInput)
+      ? (themeColorInput.value || "#0b1220") : "#0b1220";
+  }
+  /* Sayfa arka planı (tema ya da düz renk) değişince, kendi arka planı olmayan
+     ve metin rengi elle ayarlanmamış tüm başlık/paragraf bloklarının rengini
+     otomatik olarak okunaklı kalacak şekilde günceller. */
+  function applyAutoTextColorsForPageBg() {
+    const auto = idealTextColor(pageBgHex());
+    if (!auto) return;
+    blocks.forEach(b => {
+      if ((b.type === "heading" || b.type === "paragraph") && !b.bgColor && !b.colorManual && b.color !== auto) {
+        b.color = auto;
+        applyBlockStyle(b);
+        if (b.id === activeBlockId) {
+          const input = $('.block[data-id="' + b.id + '"] input[type="color"][data-f="color"]');
+          if (input) input.value = auto;
+        }
+      }
+    });
+  }
+  function applyTheme(value) {
+    document.body.className = (value && value !== "none") ? "theme-" + value : "";
+    themeColorInput.style.display = value === "custom" ? "" : "none";
+    if (value === "custom") document.body.style.setProperty("--custom-bg", themeColorInput.value);
+  }
+  applyTheme(themeSelect.value || DEFAULT_THEME);
+  themeSelect.addEventListener("change", () => { applyTheme(themeSelect.value); applyAutoTextColorsForPageBg(); });
+  themeColorInput.addEventListener("input", () => {
+    if (themeSelect.value === "custom") document.body.style.setProperty("--custom-bg", themeColorInput.value);
+    applyAutoTextColorsForPageBg();
+  });
+
+  const overlay = $("#exportModalOverlay");
+  $("#btnExport").addEventListener("click", () => {
+    if (!blocks.length) { toast("Önce en az bir blok ekleyin.", "err"); return; }
+    overlay.classList.add("open");
+  });
+  $("#closeExportModal").addEventListener("click", () => overlay.classList.remove("open"));
+  $("#cancelExport").addEventListener("click", () => overlay.classList.remove("open"));
+  overlay.addEventListener("click", e => { if (e.target === overlay) overlay.classList.remove("open"); });
+
+  /* ══════════════════════════════════════
+     URL Slug — başlıktan otomatik önerilir,
+     kullanıcı elle değiştirirse artık otomatik güncellenmez.
+     ══════════════════════════════════════ */
+  const TR_MAP = { ç:"c", Ç:"c", ğ:"g", Ğ:"g", ı:"i", İ:"i", ö:"o", Ö:"o", ş:"s", Ş:"s", ü:"u", Ü:"u" };
+  function slugify(str) {
+    return String(str || "")
+      .replace(/[çÇğĞıİöÖşŞüÜ]/g, ch => TR_MAP[ch] || ch)
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80);
+  }
+  const metaTitleInput = $("#metaTitle");
+  const metaSlugInput = $("#metaSlug");
+  let slugManuallyEdited = false;
+  metaSlugInput.addEventListener("input", () => { slugManuallyEdited = metaSlugInput.value.trim() !== slugify(metaTitleInput.value); });
+  metaTitleInput.addEventListener("input", () => {
+    if (!slugManuallyEdited) metaSlugInput.value = slugify(metaTitleInput.value);
+  });
+
+  $("#confirmExport").addEventListener("click", () => {
+    const title = $("#metaTitle").value.trim();
+    const slug = ($("#metaSlug").value.trim() || slugify(title));
+    const description = $("#metaDesc").value.trim();
+    const level = $("#metaLevel").value;
+    const type = $("#metaType").value;
+    const difficulty = $("#metaDifficulty").value;
+    const readTime = $("#metaReadTime").value || "5";
+    const author = $("#metaAuthor").value.trim();
+    const cover = $("#metaCover").value.trim();
+    const theme = $("#metaTheme").value || "ocean";
+    const themeColor = $("#metaThemeColor").value || "#0b1220";
+    if (!title) { toast("Sayfa başlığı boş olamaz.", "err"); return; }
+    if (!slug) { toast("URL slug boş olamaz.", "err"); return; }
+    const html = buildExportHtml({ title, slug, description, level, type, difficulty, readTime, author, cover, theme, themeColor });
+    downloadHtml(html);
+    overlay.classList.remove("open");
+    toast("index.html indirildi ✓", "ok");
+  });
+
+  function downloadHtml(htmlStr) {
+    const blob = new Blob([htmlStr], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "index.html";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
+  /* ══════════════════════════════════════
+     YENİ: Canlı Önizleme (Preview)
+     ══════════════════════════════════════
+     Not: buildExportHtml() çıktısı, siteye ait ../../css/global.css,
+     ../../src/styles/tokens.css, ../lesson-static.css ve ../../js/core.js
+     gibi harici site dosyalarına bağlıdır. Bu dosyalar önizlemede
+     (site dışında) çözümlenemeyeceği için sayfa stilsiz görünür.
+     Önizleme için bu bağlantıları geçici olarak, aynı görünümü taklit eden
+     kendi kendine yeten bir CSS bloğuyla değiştiriyoruz. Gerçek "İndir"
+     çıktısı (buildExportHtml) bundan etkilenmez. */
+  const PREVIEW_FALLBACK_CSS = [
+    "body{margin:0;background:#0a0a0f;color:#e2e8f0;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}",
+    ".bg-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}",
+    ".bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 20%, transparent 100%);}",
+    ".bg-glow{position:absolute;border-radius:50%;filter:blur(120px);opacity:0.08;animation:drift 14s ease-in-out infinite alternate;}",
+    ".bg-glow--1{width:600px;height:600px;top:-200px;left:-100px;background:radial-gradient(circle, #c9a84c, transparent 70%);}",
+    ".bg-glow--2{width:400px;height:400px;top:30%;right:-120px;background:radial-gradient(circle, #60c8f0, transparent 70%);animation-delay:-7s;opacity:0.06;}",
+    "@keyframes drift{from{transform:translate(0,0) scale(1);}to{transform:translate(30px,20px) scale(1.06);}}",
+    ".lesson-wrap{position:relative;z-index:1;}",
+    ".lesson-nav-row{max-width:760px;margin:0 auto;padding:22px 24px 0;}",
+    ".lesson-back{display:inline-flex;align-items:center;gap:6px;color:#93c5fd;text-decoration:none;font-size:13px;font-weight:600;}",
+    ".lesson-back:hover{color:#fff;}",
+    ".lesson-wrap{max-width:760px;margin:0 auto;padding:22px 24px 140px;}",
+    ".lesson-hero-img{width:100%;height:auto;display:block;border-radius:16px;margin:20px 0 28px;box-shadow:0 20px 50px rgba(0,0,0,0.4);}",
+    ".lesson-meta-row{display:flex;align-items:center;gap:10px;margin:20px 0 14px;font-size:12.5px;color:rgba(226,232,240,0.55);}",
+    ".lesson-card-dot{width:3px;height:3px;border-radius:50%;background:rgba(226,232,240,0.3);flex-shrink:0;}",
+    ".lesson-heading{font-family:'Plus Jakarta Sans',sans-serif;font-size:36px;font-weight:800;line-height:1.2;letter-spacing:-0.02em;color:#fff;margin:0 0 22px;}",
+    ".lesson-body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.7;color:#cbd5e1;}",
+    ".lesson-body h1,.lesson-body h2,.lesson-body h3{font-family:'Plus Jakarta Sans',sans-serif;color:#fff;scroll-margin-top:20px;}",
+    ".preview-mode-banner{position:sticky;top:0;z-index:999;text-align:center;font-size:11.5px;font-weight:600;letter-spacing:.02em;color:#071022;background:linear-gradient(120deg,#ffd250,#ffb020);padding:7px 10px;}"
+  ].join("\n");
+
+  function getPreviewMeta() {
+    const firstHeading = blocks.find(b => b.type === "heading" && b.text && b.text.trim());
+    const titleVal = $("#metaTitle").value.trim() || (firstHeading ? firstHeading.text.trim() : "Ders Önizleme");
+    return {
+      title: titleVal,
+      slug: $("#metaSlug").value.trim() || slugify(titleVal),
+      description: $("#metaDesc").value.trim(),
+      level: $("#metaLevel").value || "B1",
+      type: $("#metaType").value || "",
+      difficulty: $("#metaDifficulty").value || "Orta",
+      readTime: $("#metaReadTime").value || "5",
+      author: $("#metaAuthor").value.trim(),
+      cover: $("#metaCover").value.trim(),
+      theme: $("#metaTheme").value || "none",
+      themeColor: $("#metaThemeColor").value || "#0b1220"
+    };
+  }
+
+  function buildPreviewHtml() {
+    let html = buildExportHtml(getPreviewMeta());
+    // Sadece önizlemede çözümlenemeyecek site-özel dosyaları çıkar
+    html = html.replace('<link rel="stylesheet" href="../../css/global.css">', "");
+    html = html.replace('<link rel="stylesheet" href="../../src/styles/tokens.css">', "");
+    html = html.replace('<link rel="stylesheet" href="../lesson-static.css">', "");
+    html = html.replace(/<!-- Navbar[\s\S]*?<\/script>/, "");
+    // Yerine önizlemeye özel, kendi kendine yeten yaklaşık stilleri ekle
+    html = html.replace("<" + "/style>", PREVIEW_FALLBACK_CSS + "\n<" + "/style>");
+    html = html.replace(/<body([^>]*)>/, '<body$1>\n<div class="preview-mode-banner">🔍 ÖNİZLEME MODU — gerçek sitede navbar ve bazı stiller farklı görünebilir</div>');
+    return html;
+  }
+
+  const previewOverlay = $("#previewOverlay");
+  const previewIframe = $("#previewIframe");
+  let previewBlobUrl = null;
+
+  $("#btnPreview").addEventListener("click", () => {
+    if (!blocks.length) { toast("Önizlemek için önce en az bir blok ekleyin.", "err"); return; }
+    if (previewBlobUrl) URL.revokeObjectURL(previewBlobUrl);
+    const blob = new Blob([buildPreviewHtml()], { type: "text/html;charset=utf-8" });
+    previewBlobUrl = URL.createObjectURL(blob);
+    previewIframe.src = previewBlobUrl;
+    previewOverlay.classList.add("open");
+  });
+  $("#closePreview").addEventListener("click", () => previewOverlay.classList.remove("open"));
+  previewOverlay.addEventListener("click", e => { if (e.target === previewOverlay) previewOverlay.classList.remove("open"); });
+  $("#previewOpenTab").addEventListener("click", () => { if (previewBlobUrl) window.open(previewBlobUrl, "_blank"); });
+
+  // ── Sesli Okuma (TTS) kontrolleri: kelime kartları ve diğer Almanca metinler için ──
+  const TTS_ICO_SLOW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13c0-4 3.5-7 8-7s8 3 8 7-3.5 5-8 5-8-1-8-5Z"/><circle cx="19" cy="10" r="1.6"/><path d="M6 16l-2 3"/><path d="M9 17.6l-1 2.6"/><path d="M15 17.6l1 2.6"/><path d="M18 16l2 3"/></svg>';
+  const TTS_ICO_NORMAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.3 5.7a9 9 0 0 1 0 12.6"/></svg>';
+  function escJsAttr(s) { return esc(s).replace(/'/g, "\\'"); }
+  // text: okunacak Almanca metin, lang: BCP47 dil kodu, sizeCls: "" (normal) veya "tts-cluster-sm" (küçük varyant),
+  // extraOnclick: butonlara eklenecek ek JS (örn. sürükle-bırak alanlarında tıklamanın kabarmasını durdurmak için)
+  // Paragraf/bilgi kutusu gibi zengin metin (HTML) alanlarını sesli okuma için
+  // düz metne çevirir: etiketleri kaldırır, [kelime|ipucu] köşeli parantez sözdizimini
+  // ve {{boşluk}} işaretlerini de sesli okumaya uygun hale getirir.
+  function stripHtmlForTts(html) {
+    if (!html) return "";
+    let t = String(html).replace(/<[^>]*>/g, " ");
+    t = t.replace(/\[([^\|\]]+)\|[^\]]*\]/g, "$1");
+    t = t.replace(/\{\{([^}]*)\}\}/g, "$1");
+    t = t.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
+    return t.replace(/\s+/g, " ").trim();
+  }
+
+  function ttsCluster(text, lang, sizeCls, extraOnclick) {
+    if (!text) return "";
+    const t = escJsAttr(text);
+    const l = lang || "de-DE";
+    const stop = extraOnclick ? extraOnclick : "";
+    return '<span class="tts-cluster' + (sizeCls ? " " + sizeCls : "") + '">' +
+      '<button type="button" class="tts-btn tts-slow" title="Yavaş oku" aria-label="Yavaş sesli oku" onclick="' + stop + "playSpeechText(this,'" + t + "','" + l + "',0.55)\">" + TTS_ICO_SLOW + '</button>' +
+      '<button type="button" class="tts-btn tts-normal" title="Normal hızda oku" aria-label="Normal hızda sesli oku" onclick="' + stop + "playSpeechText(this,'" + t + "','" + l + "',1)\">" + TTS_ICO_NORMAL + '</button>' +
+      '</span>';
+  }
+
+
+/* ---------- block-export-render.js ---------- */
+/* ═══════════════════════════════════════════════════════════
+   7) STATİK EXPORT RENDER (renderBlockExport)
+   Bu dosya, app.js'nin bölünmesiyle oluşturulmuştur.
+   Diğer js/*.js dosyalarıyla aynı global scope'u paylaşır
+   (module DEĞİLDİR) — bu yüzden index.html'deki script sırası önemlidir.
+   ═══════════════════════════════════════════════════════════ */
+function renderBlockExport(b) {
+    const forceTransparent = b.type === "paragraph";
+    const wrapOpen = '<div style="' + wrapperStyle(b, forceTransparent) + '">';
+    const wrapClose = "</div>";
+    switch (b.type) {
+      case "heading": {
+        // H2 veya H3 başlıklarına TOC'un yakalayabilmesi için slug ID atıyoruz
+        const idAttr = b.level !== "h1" ? ' id="' + slugify(b.text) + '"' : '';
+        const headingTts = (b.audioSlots && b.audioSlots.text) ? ttsCluster(b.text, "de-DE", "tts-cluster-sm") : "";
+        return wrapOpen + "<" + b.level + idAttr + ' style="font-family:' + fontStack(b.font) + ";font-size:" + b.size + "px;color:" + b.color + ";font-weight:" + b.weight + ";line-height:" + (b.lineHeight/100) + ";letter-spacing:" + b.letterSpacing + 'px;">' + esc(b.text) + headingTts + "</" + b.level + ">" + wrapClose;
+      }
+
+      case "paragraph": {
+        // convertTooltips fonksiyonu ile satır içi ipuçlarını HTML elementine çeviriyoruz
+        const variant = b.variant || "normal";
+        const dropCapCls = (b.dropCap === true || b.dropCap === "1") ? " lb-dropcap" : "";
+        const pStyle = 'font-family:' + fontStack(b.font) + ";font-size:" + b.size + "px;color:" + b.color + ";text-align:" + b.align + ";line-height:" + (b.lineHeight/100) + ";letter-spacing:" + b.letterSpacing + "px;background:transparent;";
+        const paraTts = (b.audioSlots && b.audioSlots.html) ? ttsCluster(stripHtmlForTts(b.html), "de-DE", "tts-cluster-sm") : "";
+        const pHtml = '<p class="lb-paragraph-text' + dropCapCls + '" style="' + pStyle + '">' + convertTooltips(b.html) + paraTts + "</p>";
+        if (variant === "quote") return wrapOpen + '<blockquote class="lb-paragraph-quote">' + pHtml + "</blockquote>" + wrapClose;
+        if (variant === "highlight") return wrapOpen + '<div class="lb-paragraph-highlight">' + pHtml + "</div>" + wrapClose;
+        return wrapOpen + pHtml + wrapClose;
+      }
+
+      case "image": {
+        if (!b.url) return "";
+        const w = Number(b.width) || 100;
+        const heightStyle = b.height ? ("height:" + Number(b.height) + "px;") : "height:auto;";
+        const shadowStyle = (b.shadow === "1" || b.shadow === true) ? "box-shadow:0 16px 40px rgba(0,0,0,.4);" : "";
+        const fit = b.objectFit || "cover";
+        const lazyAttr = (b.lazy === "0" || b.lazy === false) ? "" : ' loading="lazy"';
+        const imgId = "img_" + b.id;
+        return wrapOpen + '<figure class="premium-image-figure" style="text-align:' + b.align + ';">' +
+          '<button type="button" class="lb-image-trigger" onclick="openLightbox(\'' + imgId + '\')" aria-label="Görseli büyüt: ' + esc(b.alt || "görsel") + '">' +
+          '<img id="' + imgId + '" class="premium-image-el" src="' + esc(b.url) + '" alt="' + esc(b.alt) + '"' + lazyAttr + ' decoding="async" ' +
+          'sizes="(max-width: 640px) 100vw, ' + w + 'vw" srcset="' + esc(b.url) + ' 1x" ' +
+          'style="width:' + w + '%;max-width:100%;' + heightStyle + 'object-fit:' + fit + ';border-radius:' + b.radius + 'px;' + shadowStyle + 'cursor:zoom-in;">' +
+          '</button>' +
+          (b.caption ? '<figcaption class="premium-image-caption">' + esc(b.caption) + '</figcaption>' : '') +
+          '</figure>' + wrapClose;
+      }
+
+      case "vocab": {
+        const vocabDeTts = (b.audioSlots && b.audioSlots.de) ? ttsCluster(stripHtmlForTts(b.de), "de-DE") : "";
+        const vocabExTts = (b.audioSlots && b.audioSlots.example) ? ttsCluster(stripHtmlForTts(b.example), "de-DE", "tts-cluster-sm") : "";
+        const vocabSize = b.cardSize || "medium";
+        return wrapOpen + '<div class="vocab-card vocab-size-' + vocabSize + '">' +
+          '<div class="vocab-de">' + b.de + vocabDeTts + "</div>" +
+          (b.phon ? '<div class="vocab-phon">[' + b.phon + "]</div>" : "") +
+          '<div class="vocab-tr">' + b.tr + "</div>" +
+          (b.example ? '<div class="vocab-example">' + b.example + vocabExTts + "</div>" : "") +
+          (b.tipEnabled && b.tip ? '<div class="vocab-tip"><strong>İpucu:</strong> ' + esc(b.tip) + "</div>" : "") +
+          "</div>" + wrapClose;
+      }
+
+      case "callout": {
+        const calloutTitleTts = (b.audioSlots && b.audioSlots.title) ? ttsCluster(b.title, "de-DE", "tts-cluster-sm") : "";
+        const calloutBodyTts = (b.audioSlots && b.audioSlots.html) ? ttsCluster(stripHtmlForTts(b.html), "de-DE", "tts-cluster-sm") : "";
+        return wrapOpen + '<div class="callout-box" data-theme="' + b.theme + '">' +
+          '<div class="callout-ico">' + CALLOUT_ICON[b.theme] + '</div>' +
+          '<div class="callout-body-wrap"><div class="callout-title">' + esc(b.title) + calloutTitleTts + '</div><div class="callout-text">' + b.html + calloutBodyTts + "</div></div>" +
+          "</div>" + wrapClose;
+      }
+
+      case "table": {
+        ensureTableAudioShape(b);
+        let t = wrapOpen + '<div style="overflow-x:auto;"><table class="lb-table"><thead><tr>';
+        b.headers.forEach((h, ci) => { t += "<th>" + esc(h) + (b.audioHeaders[ci] ? ttsCluster(h, "de-DE", "tts-cluster-sm") : "") + "</th>"; });
+        t += "</tr></thead><tbody>";
+        b.rows.forEach((row, ri) => {
+          t += "<tr>";
+          row.forEach((c, ci) => { t += "<td>" + esc(c) + (b.audioCells[ri][ci] ? ttsCluster(c, "de-DE", "tts-cluster-sm") : "") + "</td>"; });
+          t += "</tr>";
+        });
+        t += "</tbody></table></div>" + wrapClose;
+        return t;
+      }
+
+      case "quiz": {
+        const qId = "q_" + b.id;
+        const quizQTts = (b.audioSlots && b.audioSlots.question) ? ttsCluster(b.question, "de-DE", "tts-cluster-sm") : "";
+        let qHtml = wrapOpen + '<div class="premium-quiz-card" id="' + qId + '" data-correct="' + b.correctIndex + '">' +
+          '<div class="quiz-question-title">' + esc(b.question) + quizQTts + '</div>' +
+          '<div class="quiz-options-list">';
+        b.options.forEach((opt, idx) => {
+          const quizOptTts = (b.audioSlots && b.audioSlots["opt" + idx]) ? ttsCluster(opt, "de-DE", "tts-cluster-sm", "event.stopPropagation();") : "";
+          qHtml += '<div class="quiz-option-item" data-index="' + idx + '">' +
+            '<span class="quiz-indicator"></span>' +
+            '<span class="quiz-opt-text">' + esc(opt) + '</span>' + quizOptTts +
+            '</div>';
+        });
+        qHtml += '</div>' +
+          '<button class="quiz-action-btn" onclick="checkQuizAnswer(\'' + qId + '\')">Cevabı Kontrol Et</button>' +
+          '<div class="quiz-explain-panel">' +
+            '<strong>' + (b.explanation ? 'Açıklama:' : '') + '</strong> ' + esc(b.explanation) +
+          '</div>' +
+          '</div>' + wrapClose;
+        return qHtml;
+      }
+
+      case "fillblank": {
+        const fbId = "fib_" + b.id;
+        const parts = parseFillBlank(b.text);
+        let inner = "";
+        parts.forEach(p => {
+          if (p.type === "text") {
+            inner += esc(p.value).replace(/\n/g, "<br>");
+          } else {
+            const w = Math.max(3, p.value.length + 2);
+            inner += '<input type="text" class="fib-input" data-answer="' + esc(p.value) + '" style="width:' + w + 'ch;" autocomplete="off" spellcheck="false">';
+          }
+        });
+        const fibTts = (b.audioSlots && b.audioSlots.text) ? ttsCluster(stripHtmlForTts(b.text), "de-DE", "tts-cluster-sm") : "";
+        return wrapOpen + '<div class="premium-fillblank-card" id="' + fbId + '">' +
+          (b.instruction ? '<div class="fib-instruction">' + esc(b.instruction) + '</div>' : '') +
+          '<div class="fib-text-body">' + inner + fibTts + '</div>' +
+          '<button class="fib-action-btn" onclick="checkFillBlank(\'' + fbId + '\')">Cevapları Kontrol Et</button>' +
+          '<div class="fib-result-msg"></div>' +
+          '</div>' + wrapClose;
+      }
+
+      case "matching": {
+        const mId = "match_" + b.id;
+        const mode = b.mode || "text";
+        const leftIsImage = mode === "image";
+        const rightIsImage = mode === "mixed";
+        function sideContent(p, isImage, fallbackLabel) {
+          if (isImage) {
+            return p.image ? '<img src="' + esc(p.image) + '" alt="" loading="lazy" decoding="async" class="matching-card-img">' : '<span class="matching-card-text">' + esc(fallbackLabel) + '</span>';
+          }
+          return '<span class="matching-card-text">' + esc(fallbackLabel) + '</span>';
+        }
+        const order = b.pairs.map((p, i) => i);
+        const shuffledOrder = shuffleArr(order.slice());
+
+        let leftHtml = '<div class="matching-col-left" role="list" aria-label="Sabit liste">';
+        b.pairs.forEach((p, i) => {
+          const leftTts = (leftIsImage || !(b.audioSlots && b.audioSlots["left" + i])) ? "" : ttsCluster(p.left, "de-DE", "tts-cluster-sm", "event.stopPropagation();");
+          leftHtml += '<div class="matching-drop-zone" role="listitem" data-target-idx="' + i + '" tabindex="0" ' +
+            'aria-label="Hedef ' + (i + 1) + ': ' + esc(leftIsImage ? "görsel" : p.left) + '">' +
+            '<span class="matching-num">' + (i + 1) + '</span>' +
+            '<span class="matching-drop-fixed">' + sideContent(p, leftIsImage, p.left) + leftTts + '</span>' +
+            '<span class="matching-drop-slot" data-slot></span>' +
+            '</div>';
+        });
+        leftHtml += '</div>';
+
+        let rightHtml = '<div class="matching-col-right" role="list" aria-label="Sürüklenebilir kartlar">';
+        shuffledOrder.forEach(idx => {
+          const p = b.pairs[idx];
+          rightHtml += '<div class="matching-card" role="button" draggable="true" tabindex="0" ' +
+            'data-pair-idx="' + idx + '" aria-label="Kart: ' + esc(rightIsImage ? "görsel" : p.right) + ', taşımak için Enter\'a basın">' +
+            sideContent(p, rightIsImage, p.right) +
+            '</div>';
+        });
+        rightHtml += '</div>';
+
+        return wrapOpen + '<div class="premium-matching-card" id="' + mId + '" data-total="' + b.pairs.length + '" role="application" aria-label="Eşleştirme alıştırması">' +
+          (b.instruction ? '<div class="matching-instruction">' + esc(b.instruction) + '</div>' : '') +
+          '<div class="matching-columns">' + leftHtml + rightHtml + '</div>' +
+          '<div class="matching-btn-row">' +
+          '<button type="button" class="matching-action-btn" onclick="checkMatching(\'' + mId + '\')">Kontrol Et</button>' +
+          '<button type="button" class="matching-retry-btn" style="display:none;" onclick="retryMatching(\'' + mId + '\')">Tekrar Dene</button>' +
+          '</div>' +
+          '<div class="matching-result-msg" aria-live="polite"></div>' +
+          '</div>' + wrapClose;
+      }
+
+      case "sentorder": {
+        const soId = "sord_" + b.id;
+        const shuffled = shuffleArr(b.sentences.map((s, i) => ({ text: s, idx: i })));
+        let itemsHtml = "";
+        shuffled.forEach((it, i) => {
+          const sentTts = (b.audioSlots && b.audioSlots["sent" + it.idx]) ? ttsCluster(it.text, "de-DE", "tts-cluster-sm") : "";
+          itemsHtml += '<div class="sentorder-item" data-orig="' + it.idx + '">' +
+            '<span class="sentorder-text">' + esc(it.text) + '</span>' +
+            sentTts +
+            '<span class="sentorder-btns">' +
+              '<button type="button" onclick="moveSentOrderItem(this,-1)">' + ICO.up + '</button>' +
+              '<button type="button" onclick="moveSentOrderItem(this,1)">' + ICO.down + '</button>' +
+            '</span>' +
+            '</div>';
+        });
+        return wrapOpen + '<div class="premium-sentorder-card" id="' + soId + '">' +
+          (b.instruction ? '<div class="sentorder-instruction">' + esc(b.instruction) + '</div>' : '') +
+          '<div class="sentorder-list">' + itemsHtml + '</div>' +
+          '<button class="sentorder-action-btn" onclick="checkSentOrder(\'' + soId + '\')">Sırayı Kontrol Et</button>' +
+          '<div class="sentorder-result-msg"></div>' +
+          '</div>' + wrapClose;
+      }
+
+      case "wordorder": {
+        const woId = "word_" + b.id;
+        const words = (b.sentence || "").trim().split(/\s+/).filter(Boolean);
+        const shuffledW = shuffleArr(words.map((w, i) => ({ text: w, idx: i })));
+        let bankHtml = "";
+        shuffledW.forEach((w, i) => {
+          const chipId = woId + "_c" + i;
+          bankHtml += '<button type="button" class="wordorder-chip" id="' + chipId + '" data-word="' + esc(w.text) + '" data-orig="' + w.idx + '" onclick="selectWordOrderChip(this)">' + esc(w.text) + '</button>';
+        });
+        const wordTts = (b.audioSlots && b.audioSlots.sentence) ? ttsCluster(b.sentence, "de-DE", "tts-cluster-sm") : "";
+        return wrapOpen + '<div class="premium-wordorder-card" id="' + woId + '" data-total="' + words.length + '">' +
+          (b.instruction ? '<div class="wordorder-instruction">' + esc(b.instruction) + wordTts + '</div>' : wordTts) +
+          '<div class="wordorder-answer-line"></div>' +
+          '<div class="wordorder-bank">' + bankHtml + '</div>' +
+          '<div class="wordorder-actions">' +
+            '<button type="button" class="wordorder-reset-btn" onclick="resetWordOrder(\'' + woId + '\')">Temizle</button>' +
+            '<button type="button" class="wordorder-action-btn" onclick="checkWordOrder(\'' + woId + '\')">Kontrol Et</button>' +
+          '</div>' +
+          '<div class="wordorder-result-msg"></div>' +
+          '</div>' + wrapClose;
+      }
+
+      case "dialogue": {
+        const dlgId = "dlg_" + b.id;
+        const firstChoiceIdx = b.lines.findIndex(ln => ln.choice);
+        let stepsHtml = "";
+        b.lines.forEach((ln, i) => {
+          const side = ln.speaker === "A" ? "left" : "right";
+          const name = ln.speaker === "A" ? (b.speakerA || "A") : (b.speakerB || "B");
+          const lineTts = (b.audioSlots && b.audioSlots["line" + i]) ? ttsCluster(ln.text, "de-DE", "tts-cluster-sm") : "";
+          const bubbleHtml = '<div class="dialogue-bubble dialogue-' + side + '">' +
+            '<div class="dialogue-avatar">' + esc((name || "?").charAt(0).toUpperCase()) + '</div>' +
+            '<div class="dialogue-bubble-body">' +
+              '<div class="dialogue-bubble-name">' + esc(name) + '</div>' +
+              '<div class="dialogue-bubble-text">' + esc(ln.text) + lineTts + '</div>' +
+            '</div>' +
+          '</div>';
+          const lockedCls = (firstChoiceIdx !== -1 && i > firstChoiceIdx) ? " dialogue-locked" : "";
+          if (ln.choice) {
+            const opts = shuffleArr([ln.text].concat(ln.distractors || []).map(t => ({ text: t })));
+            let optsHtml = "";
+            opts.forEach(o => {
+              optsHtml += '<button type="button" class="dialogue-opt-btn" data-correct="' + (o.text === ln.text ? "true" : "false") + '" onclick="checkDialogueChoice(this)">' + esc(o.text) + '</button>';
+            });
+            stepsHtml += '<div class="dialogue-step dialogue-choice-step' + lockedCls + '" data-step="' + i + '" data-bubble-html="' + esc(bubbleHtml) + '">' +
+              '<div class="dialogue-options-wrap">' +
+                '<div class="dialogue-choice-label">' + esc(name) + ' ne diyor?</div>' +
+                optsHtml +
+              '</div>' +
+            '</div>';
+          } else {
+            stepsHtml += '<div class="dialogue-step dialogue-bubble-step' + lockedCls + '" data-step="' + i + '">' + bubbleHtml + '</div>';
+          }
+        });
+        return wrapOpen + '<div class="premium-dialogue-card" id="' + dlgId + '">' +
+          (b.instruction ? '<div class="dialogue-instruction">' + esc(b.instruction) + '</div>' : '') +
+          stepsHtml +
+          '</div>' + wrapClose;
+      }
+
+      case "audio": {
+        const audT = escJsAttr(b.text);
+        const audL = b.lang || "de-DE";
+        return wrapOpen + '<div class="premium-audio-card">' +
+          '<button class="premium-audio-btn premium-audio-btn-slow" title="Yavaş oku" aria-label="Yavaş oku" onclick="playSpeechText(this,\'' + audT + '\',\'' + audL + '\',0.55)">' +
+            TTS_ICO_SLOW +
+          '</button>' +
+          '<button class="premium-audio-btn" title="Normal hızda oku" aria-label="Normal hızda oku" onclick="playSpeechText(this,\'' + audT + '\',\'' + audL + '\',1)">' +
+            ICO.play +
+          '</button>' +
+          '<div class="premium-audio-details">' +
+            '<span class="premium-audio-text">' + esc(b.text || "") + '</span>' +
+            '<span class="premium-audio-caption">' + esc(b.caption || "Almanca Telaffuz") + '</span>' +
+            '<span class="premium-audio-meta">Sistem Sesi (Web Speech API)</span>' +
+          '</div>' +
+          '</div>' + wrapClose;
+      }
+
+      case "listen": {
+        const lsId = "listen_" + b.id;
+        let questionsHtml = "";
+        (b.questions || []).forEach((q, qi) => {
+          const qName = lsId + "_q" + qi;
+          let optsHtml = "";
+          (q.options || []).forEach((opt, oi) => {
+            optsHtml += '<label class="listen-option" data-oidx="' + oi + '">' +
+              '<input type="radio" name="' + qName + '" value="' + oi + '" onchange="checkListenAnswer(this,' + Number(q.correctIndex || 0) + ')">' +
+              '<span>' + esc(opt) + '</span>' +
+              '</label>';
+          });
+          questionsHtml += '<div class="listen-question">' +
+            '<h4>' + esc(q.question) + '</h4>' +
+            '<div class="listen-options">' + optsHtml + '</div>' +
+            '<div class="listen-feedback"></div>' +
+            '</div>';
+        });
+        const audioHtml = b.audioUrl
+          ? '<audio controls preload="metadata" class="listen-audio-player" src="' + esc(b.audioUrl) + '"></audio>'
+          : '<div class="listen-audio-empty">Bu bloğa henüz bir ses dosyası eklenmedi.</div>';
+        return wrapOpen + '<div class="listen-prev" id="' + lsId + '">' +
+          audioHtml +
+          (b.audioCaption ? '<div class="listen-caption">' + esc(b.audioCaption) + '</div>' : '') +
+          questionsHtml +
+          '</div>' + wrapClose;
+      }
+
+      case "konjugation": {
+        const kjId = "konj_" + b.id;
+        const TENSE_LABEL = { praesens: "Präsens", perfekt: "Perfekt", praeteritum: "Präteritum" };
+        const KONJ_PERSONS = [["ich", "ich"], ["du", "du"], ["er", "er/sie/es"], ["wir", "wir"], ["ihr", "ihr"], ["sie", "sie/Sie"]];
+        let rowsHtml = "";
+        KONJ_PERSONS.forEach(([key, label]) => {
+          const answer = (b.answers && b.answers[key]) || "";
+          rowsHtml += '<div class="konj-row">' +
+            '<span class="konj-person">' + esc(label) + '</span>' +
+            '<input type="text" class="konj-input" data-answer="' + esc(answer) + '" autocomplete="off" spellcheck="false" autocapitalize="off">' +
+            '<span class="konj-correct-answer"></span>' +
+            '</div>';
+        });
+        return wrapOpen + '<div class="konj-prev" id="' + kjId + '">' +
+          '<div class="konj-header"><strong>Fiil:</strong>&nbsp;' + esc(b.verb) + ((b.audioSlots && b.audioSlots.verb) ? ttsCluster(b.verb, "de-DE", "tts-cluster-sm") : "") + '&nbsp;<span>' + esc(TENSE_LABEL[b.tense] || b.tense) + '</span></div>' +
+          '<div class="konj-rows">' + rowsHtml + '</div>' +
+          '<button type="button" class="konj-action-btn" onclick="checkKonjugation(\'' + kjId + '\')">Cevapları Kontrol Et</button>' +
+          '<div class="konj-result"></div>' +
+          '</div>' + wrapClose;
+      }
+
+      case "accordion": {
+        let accHtml = wrapOpen + '<div class="premium-accordion-wrap">';
+        b.items.forEach((item, i) => {
+          const accQTts = (b.audioSlots && b.audioSlots["item" + i + "q"]) ? ttsCluster(stripHtmlForTts(item.q), "de-DE", "tts-cluster-sm", "event.stopPropagation();") : "";
+          const accATts = (b.audioSlots && b.audioSlots["item" + i + "a"]) ? ttsCluster(stripHtmlForTts(item.a), "de-DE", "tts-cluster-sm") : "";
+          accHtml += '<div class="accordion-item-box">' +
+            '<button class="accordion-trigger" onclick="toggleAccordion(this)">' +
+              '<span>' + item.q + '</span>' + accQTts +
+              '<span class="acc-chevron">▼</span>' +
+            '</button>' +
+            '<div class="accordion-panel-content"><p>' + item.a + accATts + '</p></div>' +
+            '</div>';
+        });
+        accHtml += '</div>' + wrapClose;
+        return accHtml;
+      }
+
+      case "video": {
+        const embed = parseVideoEmbed(b.url);
+        if (!embed) return "";
+        return wrapOpen + '<div class="premium-video-card">' +
+          '<div class="video-ratio-box">' +
+            '<iframe src="' + esc(embed) + '" allowfullscreen loading="lazy"></iframe>' +
+          '</div>' +
+          (b.caption ? '<div class="premium-video-caption">' + esc(b.caption) + '</div>' : '') +
+          '</div>' + wrapClose;
+      }
+
+      case "code": {
+        return wrapOpen + '<div class="premium-code-box">' +
+          '<div class="code-header-bar">' +
+            '<span class="code-lang-tag">' + esc(b.lang).toUpperCase() + '</span>' +
+            '<button class="code-copy-btn" onclick="copyCodePayload(this)">Kopyala</button>' +
+          '</div>' +
+          '<pre><code>' + esc(b.code) + '</code></pre>' +
+          '</div>' + wrapClose;
+      }
+
+      case "toc": {
+        return wrapOpen + '<div class="premium-toc-card" id="auto-toc-container">' +
+          '<div class="toc-header-title">' + esc(b.title || "İçindekiler") + '</div>' +
+          '<ul class="toc-links-list" id="auto-toc-list">' +
+            '<li style="color:rgba(255,255,255,0.3); font-size:12.5px; list-style:none;">Yükleniyor...</li>' +
+          '</ul>' +
+          '</div>' + wrapClose;
+      }
+
+      default: return "";
+    }
+  }
