@@ -269,22 +269,6 @@
       const blockId = target.dataset.block, slot = target.dataset.slot;
       const block = blocks.find(b => b.id === blockId);
       if (!block) return;
-
-      // Tablo sütun başlığına bırakılırsa: sürükleme, o sütundaki TÜM hücreleri
-      // (başlık dahil) tek seferde sesli okumaya açar. Kullanıcı isterse istediği
-      // hücreyi daha sonra kendi 🔊 ikonuna tıklayarak tek tek kapatabilir.
-      if (slot && slot.indexOf("col:") === 0 && block.type === "table") {
-        const ci = parseInt(slot.slice(4), 10);
-        ensureTableAudioShape(block);
-        if (ci >= 0 && ci < block.headers.length) {
-          block.audioHeaders[ci] = true;
-          block.audioCells.forEach(row => { if (ci < row.length) row[ci] = true; });
-          renderAll();
-          toast("🔊 Sütunun tamamı sesli okumaya açıldı ✓");
-        }
-        return;
-      }
-
       block.audioSlots = block.audioSlots || {};
       block.audioSlots[slot] = true;
       let badge = target.querySelector('.audio-slot-badge[data-audioslot="' + slot + '"]');
@@ -569,42 +553,8 @@
     const canvasEl = document.getElementById("canvas");
     if (!canvasEl) return;
 
-    // ---- Otomatik kaydırma (auto-scroll) ----
-    // .canvas-wrap kendi içinde kaydırılabilir (overflow-y:auto) bir alan olduğu
-    // için, tarayıcı bir sürükleme sırasında bu iç alanı KENDİLİĞİNDEN kaydırmaz.
-    // Bloklar viewport'tan taşınca (yani "sayfa" görünürde bitince) kullanıcı
-    // aşağıdaki/yukarıdaki bloklara ulaşamaz, sürükleme orada kilitlenmiş gibi
-    // görünürdü. Aşağıdaki döngü, fare kenara yaklaştıkça bu alanı sürükleme
-    // sürerken otomatik kaydırır.
-    const scrollWrap = canvasEl.closest(".canvas-wrap") || canvasEl.parentElement;
-    const AUTOSCROLL_EDGE = 70;   // px — kenardan bu mesafede kaydırma başlar
-    const AUTOSCROLL_MAX = 16;    // px/frame — kenara tam yapışınca en yüksek hız
-    let lastDragClientY = null;
-
-    function autoScrollTick() {
-      if (draggingBlockId && scrollWrap && lastDragClientY != null) {
-        const rect = scrollWrap.getBoundingClientRect();
-        const distTop = lastDragClientY - rect.top;
-        const distBottom = rect.bottom - lastDragClientY;
-        if (distTop >= 0 && distTop < AUTOSCROLL_EDGE) {
-          scrollWrap.scrollTop -= AUTOSCROLL_MAX * (1 - distTop / AUTOSCROLL_EDGE);
-        } else if (distBottom >= 0 && distBottom < AUTOSCROLL_EDGE) {
-          scrollWrap.scrollTop += AUTOSCROLL_MAX * (1 - distBottom / AUTOSCROLL_EDGE);
-        }
-      }
-      requestAnimationFrame(autoScrollTick);
-    }
-    requestAnimationFrame(autoScrollTick);
-
-    if (scrollWrap) {
-      scrollWrap.addEventListener("dragover", (e) => {
-        if (draggingBlockId) lastDragClientY = e.clientY;
-      });
-    }
-
     canvasEl.addEventListener("dragover", (e) => {
       if (!draggingBlockId) return;
-      lastDragClientY = e.clientY;
       const target = e.target.closest(".block");
       if (!target || target.dataset.id === draggingBlockId) return;
       e.preventDefault();
@@ -851,3 +801,4 @@
       }
     }
   }
+

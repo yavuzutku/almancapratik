@@ -4,6 +4,18 @@
  * Her /dersler/{slug}/index.html buraya referans verir.
  */
 
+/* ── Tasarım sistemi: tipografi & seviye renk paleti (dersler.css ile uyumlu) ── */
+:root {
+  --font-heading: 'Plus Jakarta Sans', var(--font-display), sans-serif;
+  --font-ui: 'Inter', var(--font-body), sans-serif;
+
+  --lvl-a1-c: #22c55e; --lvl-a1-bg: rgba(34,197,94,0.1);   --lvl-a1-b: rgba(34,197,94,0.28);
+  --lvl-a2-c: #4ade80; --lvl-a2-bg: rgba(74,222,128,0.1);  --lvl-a2-b: rgba(74,222,128,0.28);
+  --lvl-b1-c: #0ea5e9; --lvl-b1-bg: rgba(14,165,233,0.1);  --lvl-b1-b: rgba(14,165,233,0.28);
+  --lvl-b2-c: #38bdf8; --lvl-b2-bg: rgba(56,189,248,0.1);  --lvl-b2-b: rgba(56,189,248,0.28);
+  --lvl-c1-c: #a855f7; --lvl-c1-bg: rgba(168,85,247,0.1);  --lvl-c1-b: rgba(245,158,11,0.3);
+}
+
 /* ── Arka plan ── */
 .bg-canvas {
   position: fixed; inset: 0;
@@ -54,7 +66,7 @@
   background: none; border: none; padding: 0;
   text-decoration: none;
   transition: color var(--transition, 0.2s);
-  font-family: var(--font-body, 'Manrope', sans-serif);
+  font-family: var(--font-ui, 'Inter', sans-serif);
 }
 .lesson-back:hover { color: var(--text-primary); }
 
@@ -80,21 +92,21 @@
 
 /* ── Kategori badge ── */
 .lesson-cat-badge {
-  padding: 2px 9px; border-radius: 5px;
-  font-size: 10px; font-weight: 700;
+  padding: 2px 9px; border-radius: 8px;
+  font-size: 10px; font-weight: 700; white-space: nowrap;
   letter-spacing: 0.06em; text-transform: uppercase;
 }
-.lesson-cat-badge[data-cat="A1"] { background: rgba(34,197,94,0.1);   border: 1px solid rgba(34,197,94,0.25);   color: #22c55e; }
-.lesson-cat-badge[data-cat="A2"] { background: rgba(134,239,172,0.1); border: 1px solid rgba(134,239,172,0.25); color: #86efac; }
-.lesson-cat-badge[data-cat="B1"] { background: rgba(96,200,240,0.1);  border: 1px solid rgba(96,200,240,0.25);  color: #60c8f0; }
-.lesson-cat-badge[data-cat="B2"] { background: rgba(129,140,248,0.1); border: 1px solid rgba(129,140,248,0.25); color: #818cf8; }
-.lesson-cat-badge[data-cat="C1"] { background: rgba(180,197,255,0.1);  border: 1px solid rgba(180,197,255,0.25);  color: #b4c5ff; }
+.lesson-cat-badge[data-cat="A1"] { background: var(--lvl-a1-bg); border: 1px solid var(--lvl-a1-b); color: var(--lvl-a1-c); }
+.lesson-cat-badge[data-cat="A2"] { background: var(--lvl-a2-bg); border: 1px solid var(--lvl-a2-b); color: var(--lvl-a2-c); }
+.lesson-cat-badge[data-cat="B1"] { background: var(--lvl-b1-bg); border: 1px solid var(--lvl-b1-b); color: var(--lvl-b1-c); }
+.lesson-cat-badge[data-cat="B2"] { background: var(--lvl-b2-bg); border: 1px solid var(--lvl-b2-b); color: var(--lvl-b2-c); }
+.lesson-cat-badge[data-cat="C1"] { background: var(--lvl-c1-bg); border: 1px solid var(--lvl-c1-b); color: var(--lvl-c1-c); }
 .lesson-cat-badge:not([data-cat]),
 .lesson-cat-badge[data-cat=""]   { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary, rgba(240,238,232,0.6)); }
 
 /* ── Başlık ── */
 .lesson-heading {
-  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
   font-size: clamp(26px, 4vw, 40px);
   font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;
   color: var(--text-primary, #f0eee8);
@@ -108,13 +120,13 @@
   font-family: 'Lora', Georgia, serif;
 }
 .lesson-body h2 {
-  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
   font-size: 22px; font-weight: 800;
   color: var(--text-primary, #f0eee8);
   margin: 36px 0 14px; letter-spacing: -0.02em;
 }
 .lesson-body h3 {
-  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
   font-size: 18px; font-weight: 700;
   color: var(--text-primary, #f0eee8);
   margin: 28px 0 10px;
@@ -154,7 +166,7 @@
   background: rgba(255,255,255,0.04);
   color: var(--text-primary, #f0eee8);
   font-weight: 600;
-  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
 }
 .lesson-body td       { color: rgba(240,238,232,0.75); }
 .lesson-body img      {

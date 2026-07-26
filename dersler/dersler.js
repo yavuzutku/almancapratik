@@ -28,6 +28,24 @@ let searchTerm       = "";
 let allLessons       = [];
 let _currentLessonId = null;
 
+/* ── Ders "tamamlandı/okundu" takibi (tarayıcı yerel depolama, giriş gerektirmez) ── */
+const COMPLETED_KEY = "ap_completed_lessons";
+function getCompletedSet() {
+  try { return new Set(JSON.parse(localStorage.getItem(COMPLETED_KEY)) || []); }
+  catch { return new Set(); }
+}
+function markLessonCompleted(lesson) {
+  const key = lesson.slug || lesson.id;
+  if (!key) return;
+  const set = getCompletedSet();
+  set.add(key);
+  try { localStorage.setItem(COMPLETED_KEY, JSON.stringify([...set])); } catch {}
+}
+function isLessonCompleted(lesson) {
+  const key = lesson.slug || lesson.id;
+  return key ? getCompletedSet().has(key) : false;
+}
+
 /* ── Admin dinle ── */
 onAdminChange((adminStatus, user) => {
   isAdmin     = adminStatus;
@@ -85,40 +103,54 @@ function showViewOnly(id) {
 }
 
 /* ══════════════════════════════════════════════
-   KATEGORİ FİLTRE
+   SEVİYE AKORDEONU (sağ sütun)
 ══════════════════════════════════════════════ */
-function buildCatFilters(lessons) {
-  const wrap    = document.getElementById("catFilterWrap");
+const LEVEL_LABELS = { A1: "Başlangıç", A2: "Temel", B1: "Orta", B2: "Üst Orta", C1: "İleri" };
+let expandedLevel = "A1";
+
+function buildLevelAccordion(lessons) {
+  const wrap = document.getElementById("levelAccordion");
+  if (!wrap) return;
   const stdCats = ["A1","A2","B1","B2","C1"];
-  const allCats = [...new Set(lessons.map(l => l.category).filter(Boolean))];
-  const custCats = allCats.filter(c => !stdCats.includes(c));
 
-  wrap.querySelectorAll(".cat-filter-btn[data-custom]").forEach(b => b.remove());
+  wrap.innerHTML = stdCats.map(cat => {
+    const inLevel = lessons.filter(l => l.category === cat);
+    const isOpen  = expandedLevel === cat;
+    const body = inLevel.length
+      ? inLevel.map(l => `<button type="button" class="level-acc-lesson" data-id="${esc(l.id)}">${esc(l.title || "Başlıksız")}</button>`).join("")
+      : `<div class="level-acc-empty">Yakında</div>`;
+    return `
+      <div class="level-acc-item${isOpen ? " open" : ""}" data-cat="${cat}">
+        <button type="button" class="level-acc-header" data-cat="${cat}">
+          <span class="level-acc-badge">${cat}</span>
+          <span class="level-acc-label">${LEVEL_LABELS[cat]}</span>
+          <svg class="level-acc-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="level-acc-body">${body}</div>
+      </div>`;
+  }).join("");
 
-  custCats.forEach(cat => {
-    const btn = document.createElement("button");
-    btn.className      = "cat-filter-btn" + (activeCatFilter === cat ? " active" : "");
-    btn.dataset.cat    = cat;
-    btn.dataset.custom = "1";
-    btn.textContent    = cat;
-    btn.addEventListener("click", () => setCatFilter(cat));
-    wrap.appendChild(btn);
+  wrap.querySelectorAll(".level-acc-header").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const cat = btn.dataset.cat;
+      if (expandedLevel === cat) { expandedLevel = null; setCatFilter("all"); }
+      else { expandedLevel = cat; setCatFilter(cat); }
+    });
   });
-
-  wrap.querySelectorAll(".cat-filter-btn").forEach(btn => {
-    btn.onclick = () => setCatFilter(btn.dataset.cat);
-    btn.classList.toggle("active", btn.dataset.cat === activeCatFilter);
+  wrap.querySelectorAll(".level-acc-lesson").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const lesson = allLessons.find(l => l.id === btn.dataset.id);
+      if (lesson) { if (lesson.isStatic) window.location.href = `/dersler/${encodeURIComponent(lesson.slug)}/`; else openLesson(lesson); }
+    });
   });
 }
 
 function setCatFilter(cat) {
   activeCatFilter = cat;
-  document.querySelectorAll(".cat-filter-btn").forEach(b =>
-    b.classList.toggle("active", b.dataset.cat === cat)
-  );
   const filtered = filterLessons(allLessons);
   updateLessonsCount(filtered.length);
   renderLessons(filtered);
+  buildLevelAccordion(isAdmin ? allLessons : allLessons.filter(l => l.published));
 }
 
 function filterLessons(lessons) {
@@ -134,18 +166,19 @@ function filterLessons(lessons) {
   return out;
 }
 
-/* ── İletişim / Kültür / Gramer sütun filtresi ──
-   Bir sütuna tıklamak o türe göre filtreler; tekrar tıklamak filtreyi kaldırır. */
+/* ── Tür pilleri: Kültür / İletişim / Gramer / Tüm Dersler ── */
 function setTypeFilter(type) {
-  activeTypeFilter = (activeTypeFilter === type) ? "all" : type;
-  document.querySelectorAll(".pillar-card").forEach(btn =>
-    btn.classList.toggle("active", btn.dataset.type === activeTypeFilter)
+  if (type === "all") { activeTypeFilter = "all"; activeCatFilter = "all"; expandedLevel = null; }
+  else activeTypeFilter = type;
+  document.querySelectorAll(".type-pill").forEach(btn =>
+    btn.classList.toggle("active", btn.dataset.type === (type === "all" ? "all" : activeTypeFilter))
   );
   const filtered = filterLessons(allLessons);
   updateLessonsCount(filtered.length);
   renderLessons(filtered, (isAdmin ? allLessons : allLessons.filter(l => l.published)).length);
+  buildLevelAccordion(isAdmin ? allLessons : allLessons.filter(l => l.published));
 }
-document.querySelectorAll(".pillar-card").forEach(btn => {
+document.querySelectorAll(".type-pill").forEach(btn => {
   btn.addEventListener("click", () => setTypeFilter(btn.dataset.type));
 });
 window.setTypeFilter = setTypeFilter;
@@ -166,12 +199,39 @@ function updateLessonsCount(n) {
   if (el) el.textContent = n ? `${n} ders` : "";
 }
 
+function renderSkeletonCards(n = 6) {
+  return Array.from({ length: n }).map(() => `
+    <div class="skeleton-card">
+      <div class="skeleton-cover"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line skeleton-line--meta"></div>
+        <div class="skeleton-line skeleton-line--title"></div>
+        <div class="skeleton-line skeleton-line--excerpt1"></div>
+        <div class="skeleton-line skeleton-line--excerpt2"></div>
+      </div>
+    </div>`).join("");
+}
+
 document.getElementById("lessonSearchInput")?.addEventListener("input", (e) => {
   searchTerm = e.target.value.trim();
   const filtered = filterLessons(allLessons);
   updateLessonsCount(filtered.length);
   renderLessons(filtered);
 });
+
+/* ── Komut paleti hissi: Ctrl+K / ⌘K ile aramaya odaklan ── */
+(function initSearchShortcut() {
+  const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  const hint  = document.getElementById("searchKbdHint");
+  if (hint) hint.textContent = isMac ? "⌘K" : "Ctrl K";
+  document.addEventListener("keydown", (e) => {
+    const isShortcut = (isMac ? e.metaKey : e.ctrlKey) && e.key.toLowerCase() === "k";
+    if (!isShortcut) return;
+    if (!document.getElementById("viewList")?.classList.contains("active")) return;
+    e.preventDefault();
+    document.getElementById("lessonSearchInput")?.focus();
+  });
+})();
 
 /* ══════════════════════════════════════════════
    LIST
@@ -208,7 +268,7 @@ async function loadStaticLessonsManifest() {
 
 async function loadLessons() {
   const grid = document.getElementById("lessonsGrid");
-  grid.innerHTML = `<div class="grid-loading"><div class="spinner"></div></div>`;
+  grid.innerHTML = renderSkeletonCards(6);
   try {
     const [snap, staticLessons] = await Promise.all([
       getDocs(query(LESSONS_COL, orderBy("createdAt","desc"))),
@@ -221,7 +281,7 @@ async function loadLessons() {
       return dbb - da;
     });
     const visible = isAdmin ? allLessons : allLessons.filter(l => l.published);
-    buildCatFilters(visible);
+    buildLevelAccordion(visible);
     updateLessonsCount(visible.length);
     renderLessons(filterLessons(visible), visible.length);
   } catch(e) {
@@ -282,8 +342,8 @@ function renderLessons(list, totalVisible = list.length) {
 
     const cat      = lesson.category || "";
     const typeMap  = { iletisim: "İletişim", kultur: "Kültür", gramer: "Gramer" };
-    const typeTag  = lesson.type && typeMap[lesson.type]
-      ? `<span class="lesson-type-tag" data-type="${esc(lesson.type)}">${typeMap[lesson.type]}</span>`
+    const typeLabel = lesson.type && typeMap[lesson.type]
+      ? `<span class="lesson-type-tag">${typeMap[lesson.type]}</span>`
       : "";
     const dateObj  = getLessonDate(lesson);
     const date     = dateObj
@@ -296,6 +356,8 @@ function renderLessons(list, totalVisible = list.length) {
     const coverHtml = lesson.coverUrl
       ? `<img class="lesson-card-cover" src="${esc(lesson.coverUrl)}" alt="${esc(lesson.title)}" loading="lazy">`
       : `<div class="lesson-card-cover-placeholder">📖</div>`;
+
+    const levelBadge = cat ? `<span class="lesson-card-level-badge">${esc(cat)}</span>` : "";
 
     /* Statik (Ders Builder ile üretilmiş, gerçek HTML dosyası olan) dersler
        Firestore'da bir doküman değildir; bu yüzden admin panelinden
@@ -311,18 +373,24 @@ function renderLessons(list, totalVisible = list.length) {
       ? `<span class="draft-badge">Taslak</span>` : "";
 
     card.innerHTML = `
-      ${coverHtml}
+      <div class="lesson-card-cover-wrap">
+        ${coverHtml}
+      </div>
       <div class="lesson-card-body">
-        <div class="lesson-card-meta">
-          ${cat ? `<span class="lesson-cat-badge" data-cat="${esc(cat)}">${esc(cat)}</span><span class="lesson-card-dot"></span>` : ""}
-          ${typeTag ? `${typeTag}<span class="lesson-card-dot"></span>` : ""}
-          <span>${date}</span>
-          <span class="lesson-card-dot"></span>
-          <span>${readMin} dk</span>
+        <div class="lesson-card-top-row">
+          ${levelBadge}
+          ${typeLabel}
           ${draftBadge}
         </div>
         <div class="lesson-card-title">${esc(lesson.title || "Başlıksız")}</div>
         ${lesson.excerpt ? `<div class="lesson-card-excerpt">${esc(lesson.excerpt)}</div>` : ""}
+        <div class="lesson-card-meta">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>${date}</span>
+          <span class="lesson-card-dot"></span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
+          <span>${readMin} dk</span>
+        </div>
         <div class="lesson-card-footer">
           <span class="lesson-card-read">Derse başla <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
           ${adminBtns}
@@ -366,6 +434,7 @@ async function loadLessonBySlug(slug) {
 function openLesson(lesson, pushUrl = true) {
   _currentLessonId = lesson.id;
   document.title   = (lesson.title || "Ders") + " — AlmancaPratik";
+  markLessonCompleted(lesson);
 
   const heroImg = document.getElementById("lessonHeroImg");
   if (lesson.coverUrl) { heroImg.src = lesson.coverUrl; heroImg.style.display = "block"; }
@@ -614,9 +683,8 @@ window.confirmDeleteLesson = confirmDeleteLesson;
 window.setCatFilter        = setCatFilter;
 
 function resetAllFilters() {
-  activeTypeFilter = "all";
-  document.querySelectorAll(".pillar-card").forEach(b => b.classList.remove("active"));
-  setCatFilter("all");
+  expandedLevel = null;
+  setTypeFilter("all");
 }
 window.resetAllFilters = resetAllFilters;
 
@@ -637,7 +705,7 @@ window.resetAllFilters = resetAllFilters;
   else if (id)    await loadLessonById(id);
   else {
     showViewOnly("viewList");
-    if (cat) setCatFilter(cat);
+    if (cat) { expandedLevel = cat; setCatFilter(cat); }
     if (type) setTypeFilter(type);
   }
 })();
