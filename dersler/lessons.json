@@ -1,14 +1,14 @@
 [
   {
-    "slug": "deneme-dersi",
-    "title": "Selamlaşma",
-    "excerpt": "almanca a1 dersleri selamlaşma",
+    "slug": "alman-alfabesi-ozel-sesler-ve-kodlama-sistemi",
+    "title": "Alman Alfabesi, Özel Sesler ve Kodlama Sistemi",
+    "excerpt": "Almancanın ses dünyasına ilk adım! 26 temel harf, Umlautlar, harf kombinasyonları, kodlama sistemi ve pratik diyaloglarla eksiksiz rehber.",
     "category": "A1",
-    "type": "iletisim",
+    "type": "gramer",
     "author": "Yavuz Utku Varol",
     "published": true,
-    "cover": null,
-    "readTime": 1,
+    "cover": "cover.jpg",
+    "readTime": 10,
     "date": "2026-07-18T15:33:21+03:00"
   }
 ]
