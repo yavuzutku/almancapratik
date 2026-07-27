@@ -50,7 +50,67 @@
     rose:  '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
   };
 
-  function commonDefaults() { return { padY: 0, padX: 0, marginY: 0, bgColor: "", bgOpacity: 30, audioSlots: {} }; }
+  function commonDefaults() { return { padY: 0, padX: 0, marginY: 0, bgColor: "", bgOpacity: 30, audioSlots: {}, tab: "content" }; }
+  /* Sekme sistemi: ders artık tamamen kullanıcı tanımlı sekmelere bölünebilir.
+     Her sekme { key, label } şeklinde projectTabs dizisinde tutulur; her blok
+     bu dizideki bir "key"e atanır (block.tab). canvasViewTab, builder canvas'ında
+     hangi sekmenin şu an görüntülendiğini/düzenlendiğini tutar — yeni eklenen
+     bloklar otomatik olarak bu sekmeye atanır. Kullanıcı istediği kadar sekme
+     ekleyip yeniden adlandırabilir ya da silebilir (bkz. ensureCanvasTabsUi). */
+  let projectTabs = [
+    { key: "content", label: "Ders İçeriği" },
+    { key: "activity", label: "Etkinlikler" }
+  ];
+  let canvasViewTab = "content";
+  function tabExists(key) { return projectTabs.some(t => t.key === key); }
+  function getProjectTab(key) { return projectTabs.find(t => t.key === key); }
+  function tabLabel(key) { const t = getProjectTab(key); return t ? t.label : key; }
+  function blockTab(b) { return tabExists(b.tab) ? b.tab : ((projectTabs[0] && projectTabs[0].key) || "content"); }
+  function blocksInTab(tabKey) { return blocks.filter(b => blockTab(b) === tabKey); }
+  function genTabKey() {
+    let n = projectTabs.length + 1, key;
+    do { key = "tab" + (n++); } while (tabExists(key));
+    return key;
+  }
+  function addProjectTab() {
+    const name = prompt('Yeni sekme adı (ör. "Gramer", "Kültür Notu"):', "");
+    if (name === null) return;
+    const label = name.trim();
+    if (!label) { toast("Sekme adı boş olamaz.", "err"); return; }
+    const key = genTabKey();
+    projectTabs.push({ key, label });
+    canvasViewTab = key;
+    activeBlockId = null;
+    rebuildCanvasTabsUi();
+    renderAll();
+  }
+  function renameProjectTab(key) {
+    const t = getProjectTab(key);
+    if (!t) return;
+    const name = prompt("Sekme adını düzenle:", t.label);
+    if (name === null) return;
+    const label = name.trim();
+    if (!label) { toast("Sekme adı boş olamaz.", "err"); return; }
+    t.label = label;
+    rebuildCanvasTabsUi();
+    renderAll();
+  }
+  function deleteProjectTab(key) {
+    if (projectTabs.length <= 1) { toast("En az bir sekme kalmalı.", "err"); return; }
+    const t = getProjectTab(key);
+    if (!t) return;
+    const count = blocksInTab(key).length;
+    const msg = count
+      ? ('"' + t.label + '" sekmesi silinecek. İçindeki ' + count + ' blok ilk sekmeye taşınacak. Emin misiniz?')
+      : ('"' + t.label + '" sekmesi silinsin mi?');
+    if (!confirm(msg)) return;
+    projectTabs = projectTabs.filter(x => x.key !== key);
+    const fallbackKey = projectTabs[0].key;
+    blocks.forEach(b => { if (b.tab === key) b.tab = fallbackKey; });
+    if (canvasViewTab === key) canvasViewTab = fallbackKey;
+    rebuildCanvasTabsUi();
+    renderAll();
+  }
   function defaultsFor(type) {
     const base = commonDefaults();
     switch (type) {
@@ -398,6 +458,7 @@
 
   function addBlock(type) {
     const block = Object.assign({ id: nextId(), type: type }, defaultsFor(type));
+    block.tab = canvasViewTab;
     if (type === "heading" || type === "paragraph") {
       const auto = idealTextColor(pageBgHex());
       if (auto) block.color = auto;
@@ -408,11 +469,20 @@
     const el = $('.block[data-id="' + block.id + '"]');
     if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
   }
+  /* Yukarı/aşağı taşıma, o bloğun KENDİ sekmesindeki (İçerik/Etkinlik) komşularına
+     göre çalışır — böylece iki sekme aynı düz diziyi paylaşsa da, kullanıcı her
+     sekmeyi kendi bağımsız sırasıymış gibi düzenleyebilir. */
   function moveBlock(id, dir) {
-    const i = blocks.findIndex(b => b.id === id);
+    const block = blocks.find(b => b.id === id);
+    if (!block) return;
+    const tabKey = blockTab(block);
+    const sameTab = blocksInTab(tabKey);
+    const i = sameTab.findIndex(b => b.id === id);
     const j = dir === "up" ? i - 1 : i + 1;
-    if (i < 0 || j < 0 || j >= blocks.length) return;
-    const tmp = blocks[i]; blocks[i] = blocks[j]; blocks[j] = tmp;
+    if (i < 0 || j < 0 || j >= sameTab.length) return;
+    const a = blocks.indexOf(sameTab[i]);
+    const b = blocks.indexOf(sameTab[j]);
+    const tmp = blocks[a]; blocks[a] = blocks[b]; blocks[b] = tmp;
     renderAll();
   }
   function deleteBlock(id) {
@@ -481,23 +551,102 @@
     if (e.key === "Escape" && activeBlockId) closeBlockSettings();
   });
 
+  /* Canvas'ın üstündeki sekme pillerini (İçerik/Etkinlik) oluşturur/günceller.
+     Henüz yoksa canvas-wrap içine bir kere ekler; her renderAll() çağrısında
+     sayaçları ve aktif durumu tazeler. */
+  function ensureCanvasTabsUi() {
+    let row = $("#canvasTabs");
+    if (row) return row;
+    const canvasWrap = document.querySelector(".canvas-wrap");
+    const canvasEl = $("#canvas");
+    if (!canvasWrap || !canvasEl) return null;
+    row = document.createElement("div");
+    row.className = "canvas-tabs";
+    row.id = "canvasTabs";
+    projectTabs.forEach(t => {
+      const key = t.key;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "canvas-tab-btn";
+      btn.dataset.tab = key;
+      btn.title = "Sekmeyi yeniden adlandırmak için çift tıklayın";
+      btn.innerHTML =
+        '<span class="canvas-tab-label">' + esc(t.label) + '</span>' +
+        '<span class="canvas-tab-count" data-tabcount="' + key + '">0</span>' +
+        '<span class="canvas-tab-del" data-tabdel="' + key + '" title="Sekmeyi sil">&times;</span>';
+      btn.addEventListener("click", (e) => {
+        if (e.target.closest(".canvas-tab-del")) return;
+        if (canvasViewTab === key) return;
+        canvasViewTab = key;
+        activeBlockId = null;
+        renderAll();
+      });
+      btn.addEventListener("dblclick", (e) => {
+        if (e.target.closest(".canvas-tab-del")) return;
+        renameProjectTab(key);
+      });
+      btn.querySelector(".canvas-tab-del").addEventListener("click", (e) => {
+        e.stopPropagation();
+        deleteProjectTab(key);
+      });
+      row.appendChild(btn);
+    });
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "canvas-tab-add";
+    addBtn.title = "Yeni sekme ekle";
+    addBtn.textContent = "+";
+    addBtn.addEventListener("click", (e) => { e.stopPropagation(); addProjectTab(); });
+    row.appendChild(addBtn);
+    canvasWrap.insertBefore(row, canvasEl);
+    return row;
+  }
+  /* Sekme eklendiğinde/silindiğinde/isim değiştiğinde çubuğu tamamen
+     yeniden oluşturmak için mevcut DOM'u kaldırır; sıradaki renderAll()
+     çağrısı ensureCanvasTabsUi() üzerinden onu güncel projectTabs ile
+     baştan kurar. */
+  function rebuildCanvasTabsUi() {
+    const row = $("#canvasTabs");
+    if (row) row.remove();
+  }
   function renderAll() {
     const canvas = $("#canvas");
+    const tabsRow = ensureCanvasTabsUi();
+    if (tabsRow) {
+      projectTabs.forEach(t => {
+        const key = t.key;
+        const count = blocksInTab(key).length;
+        const btn = tabsRow.querySelector('[data-tab="' + key + '"]');
+        if (btn) {
+          btn.classList.toggle("active", canvasViewTab === key);
+          const countEl = btn.querySelector('[data-tabcount="' + key + '"]');
+          if (countEl) countEl.textContent = count;
+          const delEl = btn.querySelector('[data-tabdel="' + key + '"]');
+          if (delEl) delEl.style.display = projectTabs.length > 1 ? "" : "none";
+        }
+      });
+    }
     canvas.innerHTML = "";
     $("#blockCount").textContent = blocks.length + " blok";
-    if (!blocks.length) {
+    const visibleBlocks = blocksInTab(canvasViewTab);
+    if (!visibleBlocks.length) {
+      const isEmptyLesson = !blocks.length;
+      const title = isEmptyLesson ? "Henüz blok yok" : ("Bu sekmede (" + tabLabel(canvasViewTab) + ") henüz blok yok");
+      const desc = isEmptyLesson
+        ? "Soldaki panelden bir blok türü seçerek dersinizi oluşturmaya başlayın."
+        : "Soldaki panelden bir blok türü seçtiğinde, buraya \"" + tabLabel(canvasViewTab) + "\" sekmesine eklenir. Diğer sekmedeki blokları görmek için üstteki sekmeyi değiştirin.";
       canvas.innerHTML =
         '<div class="empty-state"><div class="es-ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>' +
-        '<h3>Henüz blok yok</h3><p>Soldaki panelden bir blok türü seçerek dersinizi oluşturmaya başlayın.</p></div>';
-      activeBlockId = null;
+        '<h3>' + esc(title) + '</h3><p>' + esc(desc) + '</p></div>';
+      if (!blocks.find(b => b.id === activeBlockId)) activeBlockId = null;
       return;
     }
-    blocks.forEach((block, idx) => canvas.appendChild(buildBlockEl(block, idx)));
+    visibleBlocks.forEach((block, idx) => canvas.appendChild(buildBlockEl(block, idx, visibleBlocks.length)));
     const active = blocks.find(b => b.id === activeBlockId);
     if (!active) activeBlockId = null;
   }
 
-  function buildBlockEl(block, idx) {
+  function buildBlockEl(block, idx, listLength) {
     const wrap = document.createElement("div");
     wrap.className = "block"; wrap.dataset.id = block.id; wrap.dataset.type = block.type;
     if (block.id === activeBlockId) wrap.classList.add("block-active");
@@ -509,7 +658,7 @@
       '<div class="block-type-label"><span class="block-drag-handle" draggable="true" title="Sürükleyerek taşı">' + ICO.grip + '</span>' + iconFor(block.type) + '<span>' + TYPE_LABEL[block.type] + '</span></div>' +
       '<div class="block-actions">' +
         '<button data-act="up" title="Yukarı taşı"' + (idx === 0 ? " disabled" : "") + '>' + ICO.up + '</button>' +
-        '<button data-act="down" title="Aşağı taşı"' + (idx === blocks.length - 1 ? " disabled" : "") + '>' + ICO.down + '</button>' +
+        '<button data-act="down" title="Aşağı taşı"' + (idx === listLength - 1 ? " disabled" : "") + '>' + ICO.down + '</button>' +
         '<button data-act="settings" title="Ayarları aç/kapat">' + ICO.gear + '</button>' +
         '<button data-act="delete" class="danger" title="Bloğu sil">' + ICO.trash + '</button>' +
       '</div>';
@@ -653,10 +802,22 @@
     return '<div class="color-field"><input type="color" data-f="' + field + '" value="' + value + '">' + sw + '</div>';
   }
 
+  function tabSelectBtnsHtml(current) {
+    const cur = tabExists(current) ? current : ((projectTabs[0] && projectTabs[0].key) || "content");
+    let h = '<div class="tabsel-btns" data-f="tab">';
+    projectTabs.forEach(t => {
+      h += '<button type="button" data-val="' + t.key + '" class="' + (t.key === cur ? "active" : "") + '">' + esc(t.label) + '</button>';
+    });
+    return h + "</div>";
+  }
+
   function buildSettingsEl(block) {
     const el = document.createElement("div");
     el.className = "block-settings";
     let h = "";
+
+    h += fg("Sekme", tabSelectBtnsHtml(block.tab));
+    h += '<div class="settings-divider"></div>';
 
     if (block.type === "heading") {
       h += fg("Seviye", selectHtml("level", [["h1","H1"],["h2","H2"],["h3","H3"]], block.level));
@@ -760,6 +921,21 @@
         applyBlockStyle(block);
       });
     });
+    $all('[data-f="tab"] button', el).forEach(btn => {
+      btn.addEventListener("click", () => {
+        const val = btn.dataset.val;
+        if (block.tab === val) return;
+        block.tab = val;
+        // Blok başka bir sekmeye taşındığı için o sekmeye geçip orada gösterelim,
+        // böylece kullanıcı bloğu "kaybetmiş" hissetmez.
+        canvasViewTab = val;
+        activeBlockId = block.id;
+        focusedBlockId = block.id;
+        renderAll();
+        const movedEl = $('.block[data-id="' + block.id + '"]');
+        if (movedEl) movedEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
     $all(".color-swatches button", el).forEach(btn => {
       btn.addEventListener("click", () => {
         const field = btn.parentElement.dataset.fSwatch;
@@ -802,3 +978,4 @@
     }
   }
 
+  renderAll();

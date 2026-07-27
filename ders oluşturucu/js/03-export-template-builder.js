@@ -16,14 +16,53 @@ function buildExportHtml(meta) {
     // (bkz. getPreviewMeta). O blok zaten üstte H1 olarak yazıldığı için, aynı
     // metni taşıyan o bloğu gövdede tekrar basmayalım — yoksa başlık iki kez görünür.
     let titleAlreadyPrinted = false;
-    const blocksHtml = blocks.map(b => {
-      const bText = (b.text || "").trim();
-      if (!titleAlreadyPrinted && b.type === "heading" && bText && bText === (meta.title || "").trim()) {
-        titleAlreadyPrinted = true;
-        return "";
-      }
-      return renderBlockExport(b);
-    }).filter(Boolean).join("\n");
+    function renderBlockList(list) {
+      return list.map(b => {
+        const bText = (b.text || "").trim();
+        if (!titleAlreadyPrinted && b.type === "heading" && bText && bText === (meta.title || "").trim()) {
+          titleAlreadyPrinted = true;
+          return "";
+        }
+        return renderBlockExport(b);
+      }).filter(Boolean).join("\n");
+    }
+    // Sekme sistemi: her blok, kullanıcının tanımladığı sekmelerden (projectTabs)
+    // birine atanmıştır (bkz. blok ayarları > "Sekme"). Bloğu olmayan sekmeler
+    // yayınlanan sayfada gösterilmez. Sadece BİRDEN FAZLA sekmede blok varsa
+    // sekmeli görünüme geçiyoruz — aksi halde (ör. eski projeler ya da tek
+    // sekmeye sığan yeni bir ders) tek akışlı eski görünüm korunur.
+    const activeTabs = (typeof projectTabs !== "undefined" && projectTabs.length)
+      ? projectTabs
+      : [{ key: "content", label: "Ders İçeriği" }];
+    const tabKeys = activeTabs.map(t => t.key);
+    function tabKeyFor(b) { return tabKeys.includes(b.tab) ? b.tab : tabKeys[0]; }
+    const tabGroups = activeTabs
+      .map(t => ({ key: t.key, label: t.label, list: blocks.filter(b => tabKeyFor(b) === t.key) }))
+      .filter(g => g.list.length > 0);
+    const hasTabs = tabGroups.length > 1;
+    const blocksHtml = hasTabs ? "" : renderBlockList(blocks);
+    const TAB_ICO_CONTENT = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
+    const TAB_ICO_ACTIVITY = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+    const TAB_ICO_GENERIC = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+    function iconForTabKey(key) {
+      if (key === "content") return TAB_ICO_CONTENT;
+      if (key === "activity") return TAB_ICO_ACTIVITY;
+      return TAB_ICO_GENERIC;
+    }
+    const lessonBodyHtml = !hasTabs ? (
+      '<article class="lesson-body">' + blocksHtml + '</article>'
+    ) : [
+      '<div class="lesson-tabs" role="tablist" aria-label="Ders bölümleri">',
+      tabGroups.map((g, i) =>
+        '<button type="button" class="lesson-tab-btn' + (i === 0 ? ' active' : '') + '" data-tab="' + esc(g.key) + '" role="tab" aria-selected="' + (i === 0 ? 'true' : 'false') + '" aria-controls="lessonTab_' + esc(g.key) + '" id="lessonTabBtn_' + esc(g.key) + '">' + iconForTabKey(g.key) + '<span>' + esc(g.label) + '</span></button>'
+      ).join("\n"),
+      '</div>',
+      '<article class="lesson-body lesson-body--tabbed">',
+      tabGroups.map((g, i) =>
+        '<div class="lesson-tab-panel' + (i === 0 ? ' active' : '') + '" data-tabpanel="' + esc(g.key) + '" id="lessonTab_' + esc(g.key) + '" role="tabpanel" aria-labelledby="lessonTabBtn_' + esc(g.key) + '">' + renderBlockList(g.list) + '</div>'
+      ).join("\n"),
+      '</article>'
+    ].join("\n");
     const canonicalTitle = esc(meta.title);
     const SITE_URL = "https://almancapratik.com";
     const slugPart = encodeURIComponent(meta.slug || slugify(meta.title));
@@ -716,6 +755,17 @@ body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, tran
 ".toc-link-h3 { padding-left: 18px; position: relative; }",
 ".toc-link-h3::before { content: '↳'; position: absolute; left: 4px; color: rgba(255,255,255,0.2); }",
 
+"/* ── Ders sekmeleri (Ders İçeriği / Etkinlikler) — sadece hem içerik hem",
+"   etkinlik bloğu olan derslerde görünür; tek akışlı eski dersler etkilenmez ── */",
+".lesson-tabs { display: flex; gap: 10px; margin: 28px 0 6px; border-bottom: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; }",
+".lesson-tab-btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 4px 14px; margin-bottom: -1px; background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; color: rgba(226,232,240,0.5); border-bottom: 2px solid transparent; transition: color 0.15s ease, border-color 0.15s ease; }",
+".lesson-tab-btn:hover { color: #ffffff; }",
+".lesson-tab-btn.active { color: var(--xblueb); border-bottom-color: var(--xblueb); }",
+".lesson-tab-panel { display: none; }",
+".lesson-tab-panel.active { display: block; }",
+"@media (max-width: 480px) { .lesson-tabs { gap: 4px; } .lesson-tab-btn { font-size: 13px; padding: 9px 2px 12px; flex: 1; justify-content: center; } }",
+"@media print { .lesson-tabs { display: none !important; } .lesson-tab-panel { display: block !important; } }",
+
 "@media (max-width: 480px) { .callout-box { flex-direction: column; } .lb-table th, .lb-table td { padding: 8px 10px; font-size: 13px; } }",
 
 "/* ── PDF indirme butonu (yazdır tabanlı) ── */",
@@ -757,7 +807,7 @@ body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, tran
 "}",
 "</style>",
 '<script type="application/json" id="ders-builder-data">' +
-  JSON.stringify({ seq, blocks, meta }).replace(/<\//g, "<\\/") +
+  JSON.stringify({ seq, blocks, meta, tabs: (typeof projectTabs !== "undefined" ? projectTabs : undefined) }).replace(/<\//g, "<\\/") +
 '</' + 'script>',
 "</head>",
 ((meta.theme && meta.theme !== "none") ? '<body class="theme-' + esc(meta.theme) + '">' : "<body>"),
@@ -782,9 +832,7 @@ body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, tran
 "</div>",
 '<h1 class="lesson-heading">' + canonicalTitle + "</h1>",
 (meta.author ? '<div class="lb-byline">Yazar: <b>' + esc(meta.author) + "</b></div>" : ""),
-'<article class="lesson-body">',
-blocksHtml,
-"</article>",
+lessonBodyHtml,
 "</main>",
 
 '<div class="lb-lightbox-overlay" id="lbLightboxOverlay" role="dialog" aria-modal="true" aria-label="Görsel büyütme">',
@@ -840,6 +888,36 @@ blocksHtml,
 "  utterance.onerror = resetBtn;",
 "  window.speechSynthesis.speak(utterance);",
 "}",
+
+"/* 2b. Ders Sekmesi Geçişi (Ders İçeriği / Etkinlikler) */",
+"document.querySelectorAll('.lesson-tab-btn').forEach(function (btn) {",
+"  btn.addEventListener('click', function () {",
+"    var tab = btn.dataset.tab;",
+"    document.querySelectorAll('.lesson-tab-btn').forEach(function (b) {",
+"      var isActive = b === btn;",
+"      b.classList.toggle('active', isActive);",
+"      b.setAttribute('aria-selected', isActive ? 'true' : 'false');",
+"    });",
+"    document.querySelectorAll('.lesson-tab-panel').forEach(function (p) {",
+"      p.classList.toggle('active', p.dataset.tabpanel === tab);",
+"    });",
+"  });",
+"});",
+"/* TOC bağlantısı gizli bir sekmedeki başlığa gidiyorsa, önce o sekmeye geçer */",
+"function activateTabForElement(el) {",
+"  var panel = el.closest('.lesson-tab-panel');",
+"  if (!panel) return;",
+"  var tab = panel.dataset.tabpanel;",
+"  var btn = document.querySelector('.lesson-tab-btn[data-tab=\"' + tab + '\"]');",
+"  if (btn && !btn.classList.contains('active')) btn.click();",
+"}",
+"document.querySelectorAll('.toc-link-a').forEach(function (a) {",
+"  a.addEventListener('click', function () {",
+"    var id = a.getAttribute('href').slice(1);",
+"    var target = document.getElementById(id);",
+"    if (target) activateTabForElement(target);",
+"  });",
+"});",
 
 "/* 3. Dynamic Accordion Toggler */",
 "function toggleAccordion(btn) {",

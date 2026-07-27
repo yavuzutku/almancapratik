@@ -102,7 +102,7 @@
       <button class="add-block-btn" data-type="video"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></span>Video (YouTube/Vimeo)</button>
       <button class="add-block-btn" data-type="code"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>Kod Bloğu</button>
       <button class="add-block-btn" data-type="toc"><span class="abx-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>İçindekiler (TOC)</button>
-      <div class="sidebar-hint"><b>İpucu:</b> İçeriğe tıklayıp doğrudan yazabilirsin. Bir bloğun ⚙ ikonuna tıklarsan, o bloğun kendi üzerinde rengini, boyutunu, arka planını değiştirebileceğin küçük bir ayar paneli açılır; tekrar ⚙'a, panelin üzerindeki ✕'e veya Esc'e basarak kapatabilirsin. Paragrafta metin seçince biçimlendirme barı belirir. Metinde <code>[kelime|açıklama]</code> yazarsan çıktıda ipucu balonuna dönüşür. Tabloda bir sütun başlığının üzerine Sesli Okuma Aracı'nı sürükleyip bırakırsan (veya başlıktaki 🔊 ikonuna tıklarsan) o sütundaki <b>tüm kutular</b> otomatik olarak sesli okunur hale gelir; istersen bir hücrenin üzerine gelip çıkan 🔊 ikonuna tıklayarak sadece o hücreyi hızlıca kapatabilirsin.</div>
+      <div class="sidebar-hint"><b>İpucu:</b> İçeriğe tıklayıp doğrudan yazabilirsin. Bir bloğun ⚙ ikonuna tıklarsan, o bloğun kendi üzerinde rengini, boyutunu, arka planını değiştirebileceğin küçük bir ayar paneli açılır; tekrar ⚙'a, panelin üzerindeki ✕'e veya Esc'e basarak kapatabilirsin. Paragrafta metin seçince biçimlendirme barı belirir. Metinde <code>[kelime|açıklama]</code> yazarsan çıktıda ipucu balonuna dönüşür. Tabloda bir sütun başlığının üzerine Sesli Okuma Aracı'nı sürükleyip bırakırsan (veya başlıktaki 🔊 ikonuna tıklarsan) o sütundaki <b>tüm kutular</b> otomatik olarak sesli okunur hale gelir; istersen bir hücrenin üzerine gelip çıkan 🔊 ikonuna tıklayarak sadece o hücreyi hızlıca kapatabilirsin.<br><br><b>Sekmeler:</b> Canvas'ın üstündeki <b>Ders İçeriği</b> / <b>Etkinlikler</b> pillerinden hangi sekmeyi düzenlediğini seçersin; yeni eklediğin blok otomatik o sekmeye gider. Bir bloğun ⚙ panelindeki ilk alan olan <b>Sekme</b> seçiciyle, o bloğu istediğin zaman diğer sekmeye taşıyabilirsin. Bir derste hiç <b>Etkinlik</b> bloğu yoksa, yayınlanan sayfa eskisi gibi tek akışlı görünür — sekmeler yalnızca her iki sekmede de içerik olduğunda yayınlanan sayfada belirir.</div>
 
       <div style="height: 1px; background: var(--border); margin: 20px 4px 16px;"></div>
       <div class="sidebar-label">Şablonlar</div>
@@ -152,6 +152,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn" id="cancelExport">Vazgeç</button>
+      <button class="btn" id="copyExportCode"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Kodu Kopyala</button>
       <button class="btn btn-blue" id="confirmExport"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>İndir (index.html)</button>
     </div>
   </div>
@@ -220,6 +221,7 @@
 <script src="js/02-block-render-theme-export.js"></script>
 <script src="js/03-export-template-builder.js"></script>
 <script src="js/04-toolbar-projectio.js"></script>
+<script src="js/canvas-action-runner.js"></script>
 <script src="js/05-gemini-assistant.js"></script>
 </body>
 </html>

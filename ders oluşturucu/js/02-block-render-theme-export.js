@@ -811,6 +811,7 @@
   const overlay = $("#exportModalOverlay");
   $("#btnExport").addEventListener("click", () => {
     if (!blocks.length) { toast("Önce en az bir blok ekleyin.", "err"); return; }
+    autofillExportMeta();
     overlay.classList.add("open");
   });
   $("#closeExportModal").addEventListener("click", () => overlay.classList.remove("open"));
@@ -839,7 +840,66 @@
     if (!slugManuallyEdited) metaSlugInput.value = slugify(metaTitleInput.value);
   });
 
-  $("#confirmExport").addEventListener("click", () => {
+  /* ══════════════════════════════════════
+     "HTML Sayfası Oluştur" modalı açıldığında, ders içeriğinden
+     çıkarılabilecek her alanı otomatik doldurur — SADECE "Yazar Adı"
+     ve "URL Slug (klasör adı)" hariç, çünkü bunlar kullanıcıya özel
+     bilgilerdir ve içerikten tahmin edilemez. Kullanıcının zaten
+     kendi girdiği (boş olmayan) alanlara dokunmaz.
+     ══════════════════════════════════════ */
+  function stripHtmlToText(html) {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = String(html || "");
+    return (tmp.textContent || tmp.innerText || "").replace(/\s+/g, " ").trim();
+  }
+  function guessLessonType(sampleText) {
+    const t = sampleText.toLowerCase();
+    if (/kültür|kultur|gelenek|bayram|yemek kültürü|görgü kural/.test(t)) return "kultur";
+    if (/artikel|akkusativ|dativ|nominativ|genitiv|çekim|zamir|edat|cümle yapısı|gramer|fiil çekimi|hal ek/.test(t)) return "gramer";
+    return "iletisim";
+  }
+  function estimateReadTimeMinutes(totalChars) {
+    // Türkçe ortalama sessiz okuma hızına göre kabaca dakikada ~900 karakter
+    return String(Math.min(60, Math.max(1, Math.round(totalChars / 900))));
+  }
+  function autofillExportMeta() {
+    const firstHeading = blocks.find(b => b.type === "heading" && (b.text || "").trim());
+    const firstParaBlock = blocks.find(b => b.type === "paragraph" && (b.html || "").trim());
+    const firstImageBlock = blocks.find(b => b.type === "image" && (b.url || "").trim());
+    const plainPara = firstParaBlock ? stripHtmlToText(firstParaBlock.html) : "";
+
+    if (!metaTitleInput.value.trim() && firstHeading) {
+      metaTitleInput.value = firstHeading.text.trim();
+      if (!slugManuallyEdited) metaSlugInput.value = slugify(metaTitleInput.value);
+    }
+
+    const descInput = $("#metaDesc");
+    if (!descInput.value.trim() && plainPara) {
+      descInput.value = plainPara.length > 155 ? (plainPara.slice(0, 155).trim() + "…") : plainPara;
+    }
+
+    const typeSelect = $("#metaType");
+    if (!typeSelect.value) {
+      typeSelect.value = guessLessonType([firstHeading ? firstHeading.text : "", plainPara].join(" "));
+    }
+
+    const readTimeInput = $("#metaReadTime");
+    if (!readTimeInput.value.trim() || readTimeInput.value.trim() === "5") {
+      const totalChars = blocks.reduce((sum, b) => {
+        const raw = b.html || b.text || b.tr || b.de || b.example || "";
+        return sum + stripHtmlToText(String(raw)).length;
+      }, 0);
+      if (totalChars > 0) readTimeInput.value = estimateReadTimeMinutes(totalChars);
+    }
+
+    const coverInput = $("#metaCover");
+    if (!coverInput.value.trim() && firstImageBlock) coverInput.value = firstImageBlock.url.trim();
+    // Not: Seviye ve Zorluk Derecesi alanları zaten makul varsayılanlarla
+    // (B1 / Orta) önceden seçili gelir; Yazar Adı ve URL Slug ise bilinçli
+    // olarak dokunulmadan bırakılır.
+  }
+
+  function buildHtmlFromForm() {
     const title = $("#metaTitle").value.trim();
     const slug = ($("#metaSlug").value.trim() || slugify(title));
     const description = $("#metaDesc").value.trim();
@@ -851,12 +911,43 @@
     const cover = $("#metaCover").value.trim();
     const theme = $("#metaTheme").value || "ocean";
     const themeColor = $("#metaThemeColor").value || "#0b1220";
-    if (!title) { toast("Sayfa başlığı boş olamaz.", "err"); return; }
-    if (!slug) { toast("URL slug boş olamaz.", "err"); return; }
-    const html = buildExportHtml({ title, slug, description, level, type, difficulty, readTime, author, cover, theme, themeColor });
+    if (!title) { toast("Sayfa başlığı boş olamaz.", "err"); return null; }
+    if (!slug) { toast("URL slug boş olamaz.", "err"); return null; }
+    return buildExportHtml({ title, slug, description, level, type, difficulty, readTime, author, cover, theme, themeColor });
+  }
+
+  function copyTextToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise((resolve, reject) => {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.focus(); ta.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        ok ? resolve() : reject(new Error("execCommand başarısız oldu"));
+      } catch (e) { reject(e); }
+    });
+  }
+
+  $("#confirmExport").addEventListener("click", () => {
+    const html = buildHtmlFromForm();
+    if (!html) return;
     downloadHtml(html);
     overlay.classList.remove("open");
     toast("index.html indirildi ✓", "ok");
+  });
+
+  $("#copyExportCode").addEventListener("click", () => {
+    const html = buildHtmlFromForm();
+    if (!html) return;
+    copyTextToClipboard(html)
+      .then(() => toast("Kod panoya kopyalandı ✓", "ok"))
+      .catch(() => toast("Kopyalama başarısız oldu. Tarayıcı izin vermemiş olabilir.", "err"));
   });
 
   function downloadHtml(htmlStr) {

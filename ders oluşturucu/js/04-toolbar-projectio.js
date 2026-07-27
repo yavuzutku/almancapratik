@@ -347,7 +347,7 @@
      ══════════════════════════════════════ */
   $("#btnSaveProject").addEventListener("click", () => {
     if (!blocks.length) { toast("Kaydedilecek blok bulunamadı.", "err"); return; }
-    const projectData = JSON.stringify({ seq, blocks }, null, 2);
+    const projectData = JSON.stringify({ seq, blocks, tabs: projectTabs }, null, 2);
     const blob = new Blob([projectData], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -372,6 +372,7 @@
         if (Array.isArray(data.blocks)) {
           blocks = data.blocks;
           seq = data.seq || blocks.length;
+          applyLoadedTabs(data.tabs);
           renderAll();
           toast("Proje başarıyla yüklendi ✓");
         } else {
@@ -403,6 +404,7 @@
         if (Array.isArray(data.blocks)) {
           blocks = data.blocks;
           seq = data.seq || blocks.length;
+          applyLoadedTabs(data.tabs);
           activeBlockId = null;
           renderAll();
           toast("Ders HTML dosyasından yüklendi, düzenlemeye devam edebilirsiniz ✓");
@@ -420,13 +422,34 @@
   /* ══════════════════════════════════════
      Hazır Şablonlar Sistemi
      ══════════════════════════════════════ */
-  function loadIntoCanvas(newBlocks, newSeq) {
+  function loadIntoCanvas(newBlocks, newSeq, newTabs) {
     blocks = newBlocks;
     seq = newSeq || blocks.reduce((m, b) => {
       const n = parseInt(String(b.id).replace(/^b/, ""), 10);
       return isNaN(n) ? m : Math.max(m, n);
     }, blocks.length);
+    applyLoadedTabs(newTabs);
     renderAll();
+  }
+
+  // Yüklenen bir projeden/şablondan/HTML'den gelen sekme listesini (varsa)
+  // geçerli bir { key, label } dizisine dönüştürüp uygular; yoksa (eski
+  // dosyalar için) varsayılan Ders İçeriği / Etkinlikler ikilisine döner.
+  function applyLoadedTabs(rawTabs) {
+    if (Array.isArray(rawTabs) && rawTabs.length) {
+      projectTabs = rawTabs
+        .filter(t => t && t.key)
+        .map(t => ({ key: String(t.key), label: String(t.label || t.key) }));
+    }
+    if (!projectTabs.length) {
+      projectTabs = [
+        { key: "content", label: "Ders İçeriği" },
+        { key: "activity", label: "Etkinlikler" }
+      ];
+    }
+    canvasViewTab = projectTabs[0].key;
+    activeBlockId = null;
+    rebuildCanvasTabsUi();
   }
 
   $all(".template-btn[data-template]").forEach(btn => {
@@ -499,7 +522,7 @@
         '<button class="tpl-delete-btn" type="button" title="Şablonu sil"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
       row.querySelector(".template-btn").addEventListener("click", () => {
         if (blocks.length && !confirm("Mevcut çalışmanız silinecek, onaylıyor musunuz?")) return;
-        loadIntoCanvas(JSON.parse(JSON.stringify(tpl.blocks)), tpl.seq);
+        loadIntoCanvas(JSON.parse(JSON.stringify(tpl.blocks)), tpl.seq, tpl.tabs ? JSON.parse(JSON.stringify(tpl.tabs)) : undefined);
         toast('"' + tpl.name + '" şablonu yüklendi ✓');
       });
       row.querySelector(".tpl-delete-btn").addEventListener("click", (e) => {
@@ -525,6 +548,7 @@
       name: trimmed,
       blocks: JSON.parse(JSON.stringify(blocks)),
       seq: seq,
+      tabs: JSON.parse(JSON.stringify(projectTabs)),
       blockCount: blocks.length,
       savedAtLabel: new Date().toLocaleDateString("tr-TR", { day: "2-digit", month: "2-digit", year: "numeric" })
     });
