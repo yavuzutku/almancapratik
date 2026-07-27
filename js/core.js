@@ -1,9 +1,29 @@
-import { auth, logoutFirebase, onAuthChange } from "./firebase.js";
+/* ── Firebase: LAZY YÜKLEME ──
+   Performans notu: firebase.js (App + Auth + Firestore SDK'ları,
+   firebaseapp.com / gstatic.com) önceden bu dosyanın en üstünde statik
+   import olarak yükleniyordu. core.js HER sayfada (navbar için) çalıştığı
+   için bu, modül grafiği çözülmeden ÖNCE üç ayrı harici SDK isteğini
+   başlatıp kritik yolu tıkıyor, FCP/LCP'yi yavaş 4G'de saniyelerce
+   geciktiriyordu. Artık navbar/FAB HEMEN render ediliyor; Firebase
+   arka planda (idle callback ile) paralel yükleniyor ve auth durumu
+   geldiğinde UI güncelleniyor — ilk boya hiçbir zaman Firebase'i beklemiyor. */
+let _fbPromise = null;
+function loadFirebaseCore() {
+  if (_fbPromise) return _fbPromise;
+  _fbPromise = import("./firebase.js");
+  return _fbPromise;
+}
+// İlk boya bittikten hemen sonra arka planda önceden ısıt (kullanıcı
+// etkileşimine kadar hazır olsun diye) — ama render'ı bloklamaz.
+const _scheduleIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 150));
+_scheduleIdle(() => { loadFirebaseCore(); });
 
 function requireAuth() {
   const isLocal = location.hostname === "127.0.0.1" || location.hostname === "localhost";
-  onAuthChange((user) => {
-    if (!user && !isLocal) window.location.href = "/login.html";
+  loadFirebaseCore().then(({ onAuthChange }) => {
+    onAuthChange((user) => {
+      if (!user && !isLocal) window.location.href = "/login.html";
+    });
   });
 }
 
@@ -495,7 +515,7 @@ function loadNavbar() {
     }
 
     /* ── FAB: MAVİ TEMA ── */
-    .fab-main { background:linear-gradient(140deg,#1d4ed8,#3b82f6)!important; color:#eeefff!important; box-shadow:0 4px 24px rgba(37,99,235,0.45)!important; }
+    .fab-main { min-width:48px!important; min-height:48px!important; background:linear-gradient(140deg,#1d4ed8,#3b82f6)!important; color:#eeefff!important; box-shadow:0 4px 24px rgba(37,99,235,0.45)!important; }
     .fab-wrapper.active .fab-main { background:rgba(239,68,68,0.88)!important; box-shadow:0 4px 20px rgba(239,68,68,0.35)!important; }
     .fab-item-content { background:#0c1424!important; border-color:rgba(37,99,235,0.4)!important; color:#93c5fd!important; }
     .fab-label { background:#1d4ed8!important; color:#eeefff!important; box-shadow:0 4px 10px rgba(0,0,0,0.35)!important; }
@@ -757,34 +777,35 @@ function loadNavbar() {
     });
   }
 
-  /* Logout */
-  document.getElementById("snLogoutBtn")?.addEventListener("click", async () => {
-    try { await logoutFirebase(); } catch (e) { console.error(e); }
-    finally { window.location.href = "/"; }
-  });
+  /* Logout + Auth state — Firebase hazır olduğunda bağlanır (bkz. loadFirebaseCore) */
+  loadFirebaseCore().then(({ logoutFirebase, onAuthChange }) => {
+    document.getElementById("snLogoutBtn")?.addEventListener("click", async () => {
+      try { await logoutFirebase(); } catch (e) { console.error(e); }
+      finally { window.location.href = "/"; }
+    });
 
-  /* ── AUTH STATE ── */
-  onAuthChange((user) => {
-    const loginBtn  = document.getElementById("snLoginBtn");
-    const profileWr = document.getElementById("snProfileWrap");
-    if (!loginBtn || !profileWr) return;
+    onAuthChange((user) => {
+      const loginBtn  = document.getElementById("snLoginBtn");
+      const profileWr = document.getElementById("snProfileWrap");
+      if (!loginBtn || !profileWr) return;
 
-    if (user) {
-      loginBtn.style.display  = "none";
-      profileWr.style.display = "block";
+      if (user) {
+        loginBtn.style.display  = "none";
+        profileWr.style.display = "block";
 
-      const emailEl = document.getElementById("snProfileEmail");
-      if (emailEl) emailEl.textContent = user.email || user.displayName || "Kullanıcı";
+        const emailEl = document.getElementById("snProfileEmail");
+        if (emailEl) emailEl.textContent = user.email || user.displayName || "Kullanıcı";
 
-      const name = user.displayName || user.email || "U";
-      const src  = user.photoURL ||
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=131b2e&color=b4c5ff&size=64&bold=true`;
-      const img = document.getElementById("snAvatarImg");
-      if (img) img.src = src;
-    } else {
-      loginBtn.style.display  = "flex";
-      profileWr.style.display = "none";
-    }
+        const name = user.displayName || user.email || "U";
+        const src  = user.photoURL ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=131b2e&color=b4c5ff&size=64&bold=true`;
+        const img = document.getElementById("snAvatarImg");
+        if (img) img.src = src;
+      } else {
+        loginBtn.style.display  = "flex";
+        profileWr.style.display = "none";
+      }
+    });
   });
 }
 
@@ -836,8 +857,15 @@ function loadFloatingMenu() {
 }
 
 function getUserId() {
-  return auth.currentUser ? auth.currentUser.uid : null;
+  // Firebase idle-callback ile önceden ısıtıldığı için _fbPromise genelde
+  // kullanıcı etkileşimine kadar zaten çözülmüş olur (senkron erişim için
+  // önbelleğe alınmış modülü kullanıyoruz).
+  const mod = _fbCoreModule;
+  return mod?.auth?.currentUser ? mod.auth.currentUser.uid : null;
 }
+
+let _fbCoreModule = null;
+loadFirebaseCore().then((mod) => { _fbCoreModule = mod; });
 
 loadFloatingMenu();
 

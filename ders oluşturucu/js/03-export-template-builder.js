@@ -63,6 +63,33 @@ function buildExportHtml(meta) {
       ).join("\n"),
       '</article>'
     ].join("\n");
+    // ── Performans: sadece bu derste GERÇEKTEN kullanılan font ailelerini yükle ──
+    // Önceden 8 font ailesinin TAMAMI her sayfada yükleniyordu (223 KiB+ ağırlık,
+    // FCP/LCP'yi geciktiren render-blocking istek). Artık blokların içinde hangi
+    // font key'leri geçiyorsa (ör. "display","serif") sadece onlar istenir.
+    // "body" ve "display" her zaman dahil edilir çünkü sabit CSS (lesson-body,
+    // vocab-phon, lesson-heading, tablo başlıkları vb.) bunları hardcoded kullanır.
+    const FONT_GOOGLE_SEGMENTS = {
+      body:         "family=Inter:wght@400;500;600;700",
+      display:      "family=Plus+Jakarta+Sans:wght@500;600;700;800",
+      serif:        "family=Lora:ital,wght@0,400;0,500;0,600;1,400",
+      merriweather: "family=Merriweather:ital,wght@0,400;0,700;1,400",
+      playfair:     "family=Playfair+Display:wght@500;600;700;800",
+      poppins:      "family=Poppins:wght@400;500;600;700",
+      montserrat:   "family=Montserrat:wght@400;500;600;700;800",
+      nunito:       "family=Nunito:wght@400;500;600;700;800"
+    };
+    const usedFontKeys = new Set(["body", "display"]);
+    try {
+      const blocksJson = JSON.stringify(blocks);
+      Object.keys(FONT_GOOGLE_SEGMENTS).forEach(key => {
+        if (blocksJson.indexOf('"font":"' + key + '"') !== -1) usedFontKeys.add(key);
+      });
+    } catch (e) { /* JSON.stringify başarısız olursa varsayılan (body+display) ile devam et */ }
+    const fontFamiliesUrl = "https://fonts.googleapis.com/css2?" +
+      Array.from(usedFontKeys).map(k => FONT_GOOGLE_SEGMENTS[k]).join("&") +
+      "&display=swap";
+
     const canonicalTitle = esc(meta.title);
     const SITE_URL = "https://almancapratik.com";
     const slugPart = encodeURIComponent(meta.slug || slugify(meta.title));
@@ -112,7 +139,9 @@ function buildExportHtml(meta) {
 (meta.author ? '<meta name="author" content="' + esc(meta.author) + '">' : ""),
 '<script type="application/ld+json">' + JSON.stringify(jsonLd) + '</' + 'script>',
 '<script type="application/ld+json">' + JSON.stringify(breadcrumbLd) + '</' + 'script>',
-'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap">',
+'<link rel="preconnect" href="https://fonts.googleapis.com">',
+'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
+'<link rel="stylesheet" href="' + fontFamiliesUrl + '">',
 '<link rel="stylesheet" href="../../css/global.css">',
 '<link rel="stylesheet" href="../../src/styles/tokens.css">',
 '<link rel="stylesheet" href="../lesson-static.css">',
@@ -772,7 +801,7 @@ body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, tran
 ".pdf-download-btn { position: fixed; right: 22px; bottom: 22px; z-index: 9998; display: flex; align-items: center; gap: 9px; padding: 13px 20px; border: none; border-radius: 50px; background: linear-gradient(135deg, var(--xblue), var(--xblueb)); color: #071022; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13.5px; cursor: pointer; box-shadow: 0 10px 30px rgba(59,130,246,0.4), 0 0 0 1px rgba(255,255,255,0.08) inset; transition: all 0.2s ease; }",
 ".pdf-download-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 38px rgba(59,130,246,0.5), 0 0 0 1px rgba(255,255,255,0.12) inset; }",
 ".pdf-download-btn svg { flex-shrink: 0; }",
-"@media (max-width: 640px) { .pdf-download-btn { right: 14px; bottom: 14px; padding: 12px 16px; font-size: 0; } .pdf-download-btn svg { width: 20px; height: 20px; } }",
+"@media (max-width: 640px) { .pdf-download-btn { right: 14px; bottom: 14px; padding: 14px 17px; min-width: 48px; min-height: 48px; font-size: 0; } .pdf-download-btn svg { width: 20px; height: 20px; } }",
 
 "/* ── PDF / Yazdırma çıktısı (window.print tabanlı, harici kütüphane yok) ── */",
 "@media print {",
@@ -822,7 +851,7 @@ body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, tran
 "</div>",
 
 '<main class="lesson-wrap">',
-(meta.cover ? '<img src="' + esc(meta.cover) + '" alt="' + canonicalTitle + '" class="lesson-hero-img">' : ""),
+(meta.cover ? '<img src="' + esc(meta.cover) + '" alt="' + canonicalTitle + '" class="lesson-hero-img" fetchpriority="high" decoding="async" loading="eager">' : ""),
 '<div class="lesson-meta-row">',
 '<span class="lesson-cat-badge" data-cat="' + meta.level + '">' + meta.level + "</span>",
 '<span class="lesson-card-dot"></span>',

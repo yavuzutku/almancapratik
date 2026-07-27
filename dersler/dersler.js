@@ -1,22 +1,38 @@
 import { onAdminChange } from "../src/admin.js";
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore, collection, getDocs, getDoc,
-  doc, deleteDoc, query, orderBy, where
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* ── Firebase ── */
-const firebaseConfig = {
-  apiKey:            "AIzaSyCGpRMUNNSx4Kla2YrmDOBHlLSt4rOM1wQ",
-  authDomain:        "lernen-deutsch-bea69.firebaseapp.com",
-  projectId:         "lernen-deutsch-bea69",
-  storageBucket:     "lernen-deutsch-bea69.firebasestorage.app",
-  messagingSenderId: "653560965391",
-  appId:             "1:653560965391:web:545142e9be6d130a54b67a"
-};
-const app = getApps().find(a => a.name === "[DEFAULT]") || initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-const LESSONS_COL = collection(db, "lessons");
+/* ── Firebase: LAZY YÜKLEME ──
+   Performans notu: Firebase App + Firestore SDK'ları (firebaseapp.com,
+   gstatic.com) önceden bu dosyanın en üstünde statik import olarak
+   yükleniyordu — bu da modül grafiği çözülmeden ÖNCE ağ isteklerini
+   başlatıp kritik yolu tıkıyor, FCP/LCP'yi geciktiriyordu.
+   Artık Firebase SADECE gerçekten bir Firestore işlemi gerektiğinde
+   (loadLessons'ta statik ders listesi zaten ekranda gösterildikten
+   SONRA, ya da bir Firestore dersi açılırken/silinirken) dinamik
+   import ile çekiliyor. İlk boya (paint) hiçbir zaman Firebase'i
+   beklemiyor. */
+let _fbPromise = null;
+function loadFirebase() {
+  if (_fbPromise) return _fbPromise;
+  _fbPromise = (async () => {
+    const [{ initializeApp, getApps }, fs] = await Promise.all([
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+    ]);
+    const firebaseConfig = {
+      apiKey:            "AIzaSyCGpRMUNNSx4Kla2YrmDOBHlLSt4rOM1wQ",
+      authDomain:        "lernen-deutsch-bea69.firebaseapp.com",
+      projectId:         "lernen-deutsch-bea69",
+      storageBucket:     "lernen-deutsch-bea69.firebasestorage.app",
+      messagingSenderId: "653560965391",
+      appId:             "1:653560965391:web:545142e9be6d130a54b67a"
+    };
+    const app = getApps().find(a => a.name === "[DEFAULT]") || initializeApp(firebaseConfig);
+    const db  = fs.getFirestore(app);
+    const LESSONS_COL = fs.collection(db, "lessons");
+    return { ...fs, db, LESSONS_COL };
+  })();
+  return _fbPromise;
+}
 
 /* ── State ── */
 let isAdmin          = false;
@@ -266,28 +282,47 @@ async function loadStaticLessonsManifest() {
   }
 }
 
+function sortByDateDesc(list) {
+  return list.slice().sort((a, b) => {
+    const da  = getLessonDate(a)?.getTime()  || 0;
+    const dbb = getLessonDate(b)?.getTime() || 0;
+    return dbb - da;
+  });
+}
+
+function paintLessons() {
+  const visible = isAdmin ? allLessons : allLessons.filter(l => l.published);
+  buildLevelAccordion(visible);
+  updateLessonsCount(visible.length);
+  renderLessons(filterLessons(visible), visible.length);
+}
+
 async function loadLessons() {
   const grid = document.getElementById("lessonsGrid");
   grid.innerHTML = renderSkeletonCards(6);
+
+  /* 1. AŞAMA — statik dersler (lessons.json). Firebase gerektirmez,
+     tek bir fetch ile gelir; kullanıcı içeriği Firestore'u beklemeden
+     görsün diye önce bunu basıyoruz. */
+  let staticLessons = [];
+  try { staticLessons = await loadStaticLessonsManifest(); }
+  catch(e) { console.error(e); }
+  allLessons = sortByDateDesc(staticLessons);
+  paintLessons();
+
+  /* 2. AŞAMA — Firestore dersleri. Firebase SDK'sı burada, ilk boyadan
+     SONRA, arka planda çekilir ve listeye eklenince sayfa sessizce
+     güncellenir. */
   try {
-    const [snap, staticLessons] = await Promise.all([
-      getDocs(query(LESSONS_COL, orderBy("createdAt","desc"))),
-      loadStaticLessonsManifest()
-    ]);
+    const { getDocs, query, orderBy, LESSONS_COL } = await loadFirebase();
+    const snap = await getDocs(query(LESSONS_COL, orderBy("createdAt","desc")));
     const dynamicLessons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    allLessons = [...dynamicLessons, ...staticLessons].sort((a, b) => {
-      const da = getLessonDate(a)?.getTime() || 0;
-      const dbb = getLessonDate(b)?.getTime() || 0;
-      return dbb - da;
-    });
-    const visible = isAdmin ? allLessons : allLessons.filter(l => l.published);
-    buildLevelAccordion(visible);
-    updateLessonsCount(visible.length);
-    renderLessons(filterLessons(visible), visible.length);
+    allLessons = sortByDateDesc([...dynamicLessons, ...staticLessons]);
+    paintLessons();
   } catch(e) {
-    document.getElementById("lessonsGrid").innerHTML =
-      `<div class="grid-empty"><div class="grid-empty-text">Dersler yüklenirken hata oluştu.</div></div>`;
     console.error(e);
+    /* Statik dersler zaten ekranda — Firestore hatası tüm listeyi
+       boşaltmasın, sessizce loglansın yeter. */
   }
 }
 
@@ -416,6 +451,7 @@ function renderLessons(list, totalVisible = list.length) {
 ══════════════════════════════════════════════ */
 async function loadLessonById(id) {
   try {
+    const { getDoc, doc, db } = await loadFirebase();
     const snap = await getDoc(doc(db, "lessons", id));
     if (!snap.exists()) { showViewOnly("viewList"); loadLessons(); return; }
     openLesson({ id: snap.id, ...snap.data() }, false);
@@ -424,6 +460,7 @@ async function loadLessonById(id) {
 
 async function loadLessonBySlug(slug) {
   try {
+    const { getDocs, query, where, LESSONS_COL } = await loadFirebase();
     const snap = await getDocs(query(LESSONS_COL, where("slug","==",slug)));
     if (snap.empty) { showViewOnly("viewList"); loadLessons(); return; }
     const d = snap.docs[0];
@@ -648,6 +685,7 @@ document.getElementById("confirmDelete").addEventListener("click", async () => {
   if (!deleteTargetId || !isAdmin) return;
   document.getElementById("confirmOverlay").classList.remove("open");
   try {
+    const { deleteDoc, doc, db } = await loadFirebase();
     await deleteDoc(doc(db, "lessons", deleteTargetId));
     toast("Ders silindi", "ok");
     document.title = "Dersler — AlmancaPratik";
