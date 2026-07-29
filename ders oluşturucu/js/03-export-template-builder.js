@@ -11,145 +11,12 @@
    Diğer js/*.js dosyalarıyla aynı global scope'u paylaşır
    (module DEĞİLDİR) — bu yüzden index.html'deki script sırası önemlidir.
    ═══════════════════════════════════════════════════════════ */
-function buildExportHtml(meta) {
-    // Sayfa başlığı (H1) genelde ilk BAŞLIK bloğunun metninden otomatik türetilir
-    // (bkz. getPreviewMeta). O blok zaten üstte H1 olarak yazıldığı için, aynı
-    // metni taşıyan o bloğu gövdede tekrar basmayalım — yoksa başlık iki kez görünür.
-    let titleAlreadyPrinted = false;
-    function renderBlockList(list) {
-      return list.map(b => {
-        const bText = (b.text || "").trim();
-        if (!titleAlreadyPrinted && b.type === "heading" && bText && bText === (meta.title || "").trim()) {
-          titleAlreadyPrinted = true;
-          return "";
-        }
-        return renderBlockExport(b);
-      }).filter(Boolean).join("\n");
-    }
-    // Sekme sistemi: her blok, kullanıcının tanımladığı sekmelerden (projectTabs)
-    // birine atanmıştır (bkz. blok ayarları > "Sekme"). Bloğu olmayan sekmeler
-    // yayınlanan sayfada gösterilmez. Sadece BİRDEN FAZLA sekmede blok varsa
-    // sekmeli görünüme geçiyoruz — aksi halde (ör. eski projeler ya da tek
-    // sekmeye sığan yeni bir ders) tek akışlı eski görünüm korunur.
-    const activeTabs = (typeof projectTabs !== "undefined" && projectTabs.length)
-      ? projectTabs
-      : [{ key: "content", label: "Ders İçeriği" }];
-    const tabKeys = activeTabs.map(t => t.key);
-    function tabKeyFor(b) { return tabKeys.includes(b.tab) ? b.tab : tabKeys[0]; }
-    const tabGroups = activeTabs
-      .map(t => ({ key: t.key, label: t.label, list: blocks.filter(b => tabKeyFor(b) === t.key) }))
-      .filter(g => g.list.length > 0);
-    const hasTabs = tabGroups.length > 1;
-    const blocksHtml = hasTabs ? "" : renderBlockList(blocks);
-    const TAB_ICO_CONTENT = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
-    const TAB_ICO_ACTIVITY = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
-    const TAB_ICO_GENERIC = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
-    function iconForTabKey(key) {
-      if (key === "content") return TAB_ICO_CONTENT;
-      if (key === "activity") return TAB_ICO_ACTIVITY;
-      return TAB_ICO_GENERIC;
-    }
-    const lessonBodyHtml = !hasTabs ? (
-      '<article class="lesson-body">' + blocksHtml + '</article>'
-    ) : [
-      '<div class="lesson-tabs" role="tablist" aria-label="Ders bölümleri">',
-      tabGroups.map((g, i) =>
-        '<button type="button" class="lesson-tab-btn' + (i === 0 ? ' active' : '') + '" data-tab="' + esc(g.key) + '" role="tab" aria-selected="' + (i === 0 ? 'true' : 'false') + '" aria-controls="lessonTab_' + esc(g.key) + '" id="lessonTabBtn_' + esc(g.key) + '">' + iconForTabKey(g.key) + '<span>' + esc(g.label) + '</span></button>'
-      ).join("\n"),
-      '</div>',
-      '<article class="lesson-body lesson-body--tabbed">',
-      tabGroups.map((g, i) =>
-        '<div class="lesson-tab-panel' + (i === 0 ? ' active' : '') + '" data-tabpanel="' + esc(g.key) + '" id="lessonTab_' + esc(g.key) + '" role="tabpanel" aria-labelledby="lessonTabBtn_' + esc(g.key) + '">' + renderBlockList(g.list) + '</div>'
-      ).join("\n"),
-      '</article>'
-    ].join("\n");
-    // ── Performans: sadece bu derste GERÇEKTEN kullanılan font ailelerini yükle ──
-    // Önceden 8 font ailesinin TAMAMI her sayfada yükleniyordu (223 KiB+ ağırlık,
-    // FCP/LCP'yi geciktiren render-blocking istek). Artık blokların içinde hangi
-    // font key'leri geçiyorsa (ör. "display","serif") sadece onlar istenir.
-    // "body" ve "display" her zaman dahil edilir çünkü sabit CSS (lesson-body,
-    // vocab-phon, lesson-heading, tablo başlıkları vb.) bunları hardcoded kullanır.
-    const FONT_GOOGLE_SEGMENTS = {
-      body:         "family=Inter:wght@400;500;600;700",
-      display:      "family=Plus+Jakarta+Sans:wght@500;600;700;800",
-      serif:        "family=Lora:ital,wght@0,400;0,500;0,600;1,400",
-      merriweather: "family=Merriweather:ital,wght@0,400;0,700;1,400",
-      playfair:     "family=Playfair+Display:wght@500;600;700;800",
-      poppins:      "family=Poppins:wght@400;500;600;700",
-      montserrat:   "family=Montserrat:wght@400;500;600;700;800",
-      nunito:       "family=Nunito:wght@400;500;600;700;800"
-    };
-    const usedFontKeys = new Set(["body", "display"]);
-    try {
-      const blocksJson = JSON.stringify(blocks);
-      Object.keys(FONT_GOOGLE_SEGMENTS).forEach(key => {
-        if (blocksJson.indexOf('"font":"' + key + '"') !== -1) usedFontKeys.add(key);
-      });
-    } catch (e) { /* JSON.stringify başarısız olursa varsayılan (body+display) ile devam et */ }
-    const fontFamiliesUrl = "https://fonts.googleapis.com/css2?" +
-      Array.from(usedFontKeys).map(k => FONT_GOOGLE_SEGMENTS[k]).join("&") +
-      "&display=swap";
-
-    const canonicalTitle = esc(meta.title);
-    const SITE_URL = "https://almancapratik.com";
-    const slugPart = encodeURIComponent(meta.slug || slugify(meta.title));
-    const canonicalUrl = SITE_URL + "/dersler/" + slugPart + "/";
-    const jsonLd = {
-      "@context": "https://schema.org",
-      "@type": "LearningResource",
-      "name": meta.title || "Ders",
-      "description": meta.description || "",
-      "url": canonicalUrl,
-      "inLanguage": "de",
-      "educationalLevel": meta.level || undefined,
-      "author": meta.author ? { "@type": "Person", "name": meta.author } : undefined,
-      "publisher": { "@type": "Organization", "name": "AlmancaPratik", "url": SITE_URL }
-    };
-    const breadcrumbLd = {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Anasayfa", "item": SITE_URL + "/" },
-        { "@type": "ListItem", "position": 2, "name": "Dersler", "item": SITE_URL + "/dersler/" },
-        { "@type": "ListItem", "position": 3, "name": meta.title || "Ders", "item": canonicalUrl }
-      ]
-    };
-
-    return [
-"<!DOCTYPE html>",
-'<html lang="tr">',
-"<head>",
-'<!-- Bu dosya "Ders Builder" ile üretilmiştir. -->',
-'<meta charset="UTF-8">',
-'<meta name="viewport" content="width=device-width, initial-scale=1.0">',
-"<title>" + canonicalTitle + " — AlmancaPratik</title>",
-'<meta name="description" content="' + esc(meta.description) + '">',
-'<meta name="robots" content="index, follow">',
-'<link rel="canonical" href="' + canonicalUrl + '">',
-'<meta property="og:type" content="article">',
-'<meta property="og:site_name" content="AlmancaPratik">',
-'<meta property="og:title" content="' + canonicalTitle + '">',
-'<meta property="og:description" content="' + esc(meta.description) + '">',
-'<meta property="og:url" content="' + canonicalUrl + '">',
-(meta.cover ? '<meta property="og:image" content="' + esc(meta.cover) + '">' : ""),
-'<meta name="twitter:card" content="summary_large_image">',
-'<meta name="twitter:title" content="' + canonicalTitle + '">',
-'<meta name="twitter:description" content="' + esc(meta.description) + '">',
-(meta.type ? '<meta name="lesson-type" content="' + esc(meta.type) + '">' : ""),
-(meta.author ? '<meta name="author" content="' + esc(meta.author) + '">' : ""),
-'<script type="application/ld+json">' + JSON.stringify(jsonLd) + '</' + 'script>',
-'<script type="application/ld+json">' + JSON.stringify(breadcrumbLd) + '</' + 'script>',
-'<link rel="preconnect" href="https://fonts.googleapis.com">',
-'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
-'<link rel="stylesheet" href="' + fontFamiliesUrl + '">',
-'<link rel="stylesheet" href="../../css/global.css">',
-'<link rel="stylesheet" href="../../src/styles/tokens.css">',
-'<link rel="stylesheet" href="../lesson-static.css">',
-"<style>",
-":root { --xblue: #3b82f6; --xblueb: #60a5fa; --xgreen: #4fd69c; --xrose: #f07068; }",
-
-"/* ── Ders arka plan tema sistemi (25 tema) ── */",
-`
+/* ── Ders arka plan tema sistemi (25 tema) — TÜM temaların CSS'i burada tek
+ * seferde tanımlıdır. Her ders yayınlanırken (buildExportHtml) sadece o dersin
+ * SEÇİLİ olan teması filtrelenip gönderilir (bkz. getUsedLessonThemeCss),
+ * böylece kullanılmayan 24 temanın CSS'i mobilde boşuna indirilmez/parse
+ * edilmez. Yeni bir tema eklerken sadece bu listeye eklemek yeterli. ── */
+const ALL_LESSON_THEMES_CSS = `
 /* lesson-themes.css
  * Ders sayfaları için opsiyonel arka plan tema sistemi.
  * Konum: /dersler/lesson-themes.css (lesson-static.css ile aynı klasör)
@@ -468,7 +335,167 @@ body.theme-coral {
 body.theme-coral .bg-glow--1 { background: radial-gradient(circle, #fb7185, transparent 70%); }
 body.theme-coral .bg-glow--2 { background: radial-gradient(circle, #f97316, transparent 70%); }
 
-`,
+`;
+
+function getUsedLessonThemeCss(themeName) {
+  // "none" / "custom" / boş: bu fonksiyonun döndürdüğü hazır temalardan hiçbiri
+  // kullanılmaz ("custom" kendi CSS'ini ayrıca zaten üretiyor, bkz. aşağıdaki
+  // meta.theme === "custom" bloğu), o yüzden burada boş string dönüyoruz.
+  if (!themeName || themeName === "none" || themeName === "custom") return "";
+  const blocks = ALL_LESSON_THEMES_CSS.split(/\n\n+/).map(b => b.trim()).filter(Boolean);
+  const marker = "body.theme-" + themeName;
+  const found = blocks.find(b => b === marker || b.indexOf(marker + " ") === 0 || b.indexOf(marker + "\n") === 0 || b.indexOf(marker + "{") === 0);
+  return found || "";
+}
+
+function buildExportHtml(meta) {
+    // Sayfa başlığı (H1) genelde ilk BAŞLIK bloğunun metninden otomatik türetilir
+    // (bkz. getPreviewMeta). O blok zaten üstte H1 olarak yazıldığı için, aynı
+    // metni taşıyan o bloğu gövdede tekrar basmayalım — yoksa başlık iki kez görünür.
+    let titleAlreadyPrinted = false;
+    function renderBlockList(list) {
+      return list.map(b => {
+        const bText = (b.text || "").trim();
+        if (!titleAlreadyPrinted && b.type === "heading" && bText && bText === (meta.title || "").trim()) {
+          titleAlreadyPrinted = true;
+          return "";
+        }
+        return renderBlockExport(b);
+      }).filter(Boolean).join("\n");
+    }
+    // Sekme sistemi: her blok, kullanıcının tanımladığı sekmelerden (projectTabs)
+    // birine atanmıştır (bkz. blok ayarları > "Sekme"). Bloğu olmayan sekmeler
+    // yayınlanan sayfada gösterilmez. Sadece BİRDEN FAZLA sekmede blok varsa
+    // sekmeli görünüme geçiyoruz — aksi halde (ör. eski projeler ya da tek
+    // sekmeye sığan yeni bir ders) tek akışlı eski görünüm korunur.
+    const activeTabs = (typeof projectTabs !== "undefined" && projectTabs.length)
+      ? projectTabs
+      : [{ key: "content", label: "Ders İçeriği" }];
+    const tabKeys = activeTabs.map(t => t.key);
+    function tabKeyFor(b) { return tabKeys.includes(b.tab) ? b.tab : tabKeys[0]; }
+    const tabGroups = activeTabs
+      .map(t => ({ key: t.key, label: t.label, list: blocks.filter(b => tabKeyFor(b) === t.key) }))
+      .filter(g => g.list.length > 0);
+    const hasTabs = tabGroups.length > 1;
+    const blocksHtml = hasTabs ? "" : renderBlockList(blocks);
+    const TAB_ICO_CONTENT = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
+    const TAB_ICO_ACTIVITY = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+    const TAB_ICO_GENERIC = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+    function iconForTabKey(key) {
+      if (key === "content") return TAB_ICO_CONTENT;
+      if (key === "activity") return TAB_ICO_ACTIVITY;
+      return TAB_ICO_GENERIC;
+    }
+    const lessonBodyHtml = !hasTabs ? (
+      '<article class="lesson-body">' + blocksHtml + '</article>'
+    ) : [
+      '<div class="lesson-tabs" role="tablist" aria-label="Ders bölümleri">',
+      tabGroups.map((g, i) =>
+        '<button type="button" class="lesson-tab-btn' + (i === 0 ? ' active' : '') + '" data-tab="' + esc(g.key) + '" role="tab" aria-selected="' + (i === 0 ? 'true' : 'false') + '" aria-controls="lessonTab_' + esc(g.key) + '" id="lessonTabBtn_' + esc(g.key) + '">' + iconForTabKey(g.key) + '<span>' + esc(g.label) + '</span></button>'
+      ).join("\n"),
+      '</div>',
+      '<article class="lesson-body lesson-body--tabbed">',
+      tabGroups.map((g, i) =>
+        '<div class="lesson-tab-panel' + (i === 0 ? ' active' : '') + '" data-tabpanel="' + esc(g.key) + '" id="lessonTab_' + esc(g.key) + '" role="tabpanel" aria-labelledby="lessonTabBtn_' + esc(g.key) + '">' + renderBlockList(g.list) + '</div>'
+      ).join("\n"),
+      '</article>'
+    ].join("\n");
+    // ── Performans: sadece bu derste GERÇEKTEN kullanılan font ailelerini yükle ──
+    // Önceden 8 font ailesinin TAMAMI her sayfada yükleniyordu (223 KiB+ ağırlık,
+    // FCP/LCP'yi geciktiren render-blocking istek). Artık blokların içinde hangi
+    // font key'leri geçiyorsa (ör. "display","serif") sadece onlar istenir.
+    // "body" ve "display" her zaman dahil edilir çünkü sabit CSS (lesson-body,
+    // vocab-phon, lesson-heading, tablo başlıkları vb.) bunları hardcoded kullanır.
+    const FONT_GOOGLE_SEGMENTS = {
+      body:         "family=Inter:wght@400;500;600;700",
+      display:      "family=Plus+Jakarta+Sans:wght@500;600;700;800",
+      serif:        "family=Lora:ital,wght@0,400;0,500;0,600;1,400",
+      merriweather: "family=Merriweather:ital,wght@0,400;0,700;1,400",
+      playfair:     "family=Playfair+Display:wght@500;600;700;800",
+      poppins:      "family=Poppins:wght@400;500;600;700",
+      montserrat:   "family=Montserrat:wght@400;500;600;700;800",
+      nunito:       "family=Nunito:wght@400;500;600;700;800"
+    };
+    const usedFontKeys = new Set(["body", "display"]);
+    try {
+      const blocksJson = JSON.stringify(blocks);
+      Object.keys(FONT_GOOGLE_SEGMENTS).forEach(key => {
+        if (blocksJson.indexOf('"font":"' + key + '"') !== -1) usedFontKeys.add(key);
+      });
+    } catch (e) { /* JSON.stringify başarısız olursa varsayılan (body+display) ile devam et */ }
+    const fontFamiliesUrl = "https://fonts.googleapis.com/css2?" +
+      Array.from(usedFontKeys).map(k => FONT_GOOGLE_SEGMENTS[k]).join("&") +
+      "&display=swap";
+
+    const canonicalTitle = esc(meta.title);
+    const SITE_URL = "https://almancapratik.com";
+    const slugPart = encodeURIComponent(meta.slug || slugify(meta.title));
+    const canonicalUrl = SITE_URL + "/dersler/" + slugPart + "/";
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "LearningResource",
+      "name": meta.title || "Ders",
+      "description": meta.description || "",
+      "url": canonicalUrl,
+      "inLanguage": "de",
+      "educationalLevel": meta.level || undefined,
+      "author": meta.author ? { "@type": "Person", "name": meta.author } : undefined,
+      "publisher": { "@type": "Organization", "name": "AlmancaPratik", "url": SITE_URL }
+    };
+    const breadcrumbLd = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Anasayfa", "item": SITE_URL + "/" },
+        { "@type": "ListItem", "position": 2, "name": "Dersler", "item": SITE_URL + "/dersler/" },
+        { "@type": "ListItem", "position": 3, "name": meta.title || "Ders", "item": canonicalUrl }
+      ]
+    };
+
+    return [
+"<!DOCTYPE html>",
+'<html lang="tr">',
+"<head>",
+'<!-- Bu dosya "Ders Builder" ile üretilmiştir. -->',
+'<meta charset="UTF-8">',
+'<meta name="viewport" content="width=device-width, initial-scale=1.0">',
+"<title>" + canonicalTitle + " — AlmancaPratik</title>",
+'<meta name="description" content="' + esc(meta.description) + '">',
+'<meta name="robots" content="index, follow">',
+'<link rel="canonical" href="' + canonicalUrl + '">',
+'<meta property="og:type" content="article">',
+'<meta property="og:site_name" content="AlmancaPratik">',
+'<meta property="og:title" content="' + canonicalTitle + '">',
+'<meta property="og:description" content="' + esc(meta.description) + '">',
+'<meta property="og:url" content="' + canonicalUrl + '">',
+(meta.cover ? '<meta property="og:image" content="' + esc(meta.cover) + '">' : ""),
+'<meta name="twitter:card" content="summary_large_image">',
+'<meta name="twitter:title" content="' + canonicalTitle + '">',
+'<meta name="twitter:description" content="' + esc(meta.description) + '">',
+(meta.type ? '<meta name="lesson-type" content="' + esc(meta.type) + '">' : ""),
+(meta.author ? '<meta name="author" content="' + esc(meta.author) + '">' : ""),
+'<script type="application/ld+json">' + JSON.stringify(jsonLd) + '</' + 'script>',
+'<script type="application/ld+json">' + JSON.stringify(breadcrumbLd) + '</' + 'script>',
+'<link rel="preconnect" href="https://fonts.googleapis.com">',
+'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
+// Performans: Google Fonts CSS'i render-engelleyici (render-blocking) olmaktan
+// çıkarmak için standart "preload + onload'da stylesheet'e çevir" tekniği.
+// font-display:swap zaten kullanıldığından metin hiçbir zaman görünmez kalmaz
+// (önce sistem fontuyla çizilir, font gelince yumuşakça değişir); mobilde
+// kritik render yolundan bir tam network round-trip kaldırılmış olur.
+// JS kapalıysa <noscript> ile normal (engelleyici) yükleme devreye girer.
+'<link rel="preload" as="style" href="' + fontFamiliesUrl + '">',
+'<link rel="stylesheet" href="' + fontFamiliesUrl + '" media="print" onload="this.media=\'all\'">',
+'<noscript><link rel="stylesheet" href="' + fontFamiliesUrl + '"></noscript>',
+'<link rel="stylesheet" href="../../css/global.css">',
+'<link rel="stylesheet" href="../../src/styles/tokens.css">',
+'<link rel="stylesheet" href="../lesson-static.css">',
+"<style>",
+":root { --xblue: #3b82f6; --xblueb: #60a5fa; --xgreen: #4fd69c; --xrose: #f07068; }",
+
+"/* ── Ders arka plan teması: sadece bu derste seçili olan tema gönderilir ── */",
+getUsedLessonThemeCss(meta.theme),
+
 
 ((meta.theme === "custom") ? (function () {
   const bg = meta.themeColor || "#0b1220";
