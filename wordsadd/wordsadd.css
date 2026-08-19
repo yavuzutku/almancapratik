@@ -1,8 +1,6 @@
-/* global.css temel stilleri geçerli; sadece bu sayfaya özel override: */
-/* global.css temel stilleri geçerli; sadece bu sayfaya özel override: */
-body {
-  background: linear-gradient(135deg, #0a0a0f, #12121a);
-}
+/* global.css temel stilleri (renkler, fontlar, body) geçerli;
+   burada sadece bu sayfaya özel LAYOUT var — renk/font değerleri
+   tamamen global.css'teki değişkenlerden çekiliyor. */
 
 /* CONTAINER */
 .wordsadd-container {
@@ -13,12 +11,14 @@ body {
 
 /* HERO */
 .wordsadd-hero h1 {
+  font-family: var(--font-display);
   font-size: 38px;
   margin-bottom: 10px;
+  color: var(--on-surface);
 }
 
 .wordsadd-hero p {
-  color: #aaa;
+  color: var(--on-surface-variant);
   font-size: 18px;
   margin-bottom: 60px;
 }
@@ -37,20 +37,20 @@ body {
 }
 
 .method-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-container-low);
   padding: 48px 40px;
   border-radius: 20px;
   cursor: pointer;
   transition: 0.4s;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--outline-variant);
   backdrop-filter: blur(12px);
   text-align: center;
 }
 
 .method-card:hover {
   transform: translateY(-10px) scale(1.03);
-  border-color: #c9a84c;
-  box-shadow: 0 20px 60px rgba(201, 168, 76, 0.3);
+  border-color: var(--primary);
+  box-shadow: 0 20px 60px rgba(var(--primary-rgb), 0.3);
 }
 
 .method-icon {
@@ -59,14 +59,15 @@ body {
 }
 
 .method-title {
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 600;
   margin-bottom: 10px;
+  color: var(--on-surface);
 }
 
 .method-desc {
-  color: #aaa;
+  color: var(--on-surface-variant);
   line-height: 1.5;
   font-size: 15px;
 }
-

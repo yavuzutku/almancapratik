@@ -8,6 +8,7 @@ import {
   sendVerificationEmail
 } from "./firebase.js";
 
+/* YARDIMCI FONKSİYONLAR */
 function showError(elId, msg) {
   const el = document.getElementById(elId);
   if (el) { el.textContent = msg; el.style.display = msg ? "block" : "none"; }
@@ -18,152 +19,19 @@ function setLoading(btn, span, loading, label) {
   span.textContent = loading ? "Yükleniyor..." : label;
 }
 
-// Doğrulanmamış e-posta/şifre kullanıcısı buraya düşmesin diye kontrol
-onAuthChange((user) => {
-  if (!user) return;
-
-  // E-posta/şifre ile giriş yaptıysa ve doğrulamamışsa oturumu kapat
-  const isPasswordProvider = user.providerData?.[0]?.providerId === "password";
-  if (isPasswordProvider && !user.emailVerified) {
-    logoutFirebase();
-    return;
-  }
-
-  document.getElementById("login-view").style.display = "none";
-  const uv = document.getElementById("user-view");
-  uv.style.display = "flex";
-
-  const nameEl   = document.getElementById("user-name");
-  const emailEl  = document.getElementById("user-email");
-  const avatarEl = document.getElementById("user-avatar");
-  if (nameEl)   nameEl.textContent  = user.displayName || "Kullanıcı";
-  if (emailEl)  emailEl.textContent = user.email || "";
-  if (avatarEl) {
-    avatarEl.src = user.photoURL || "";
-    avatarEl.alt = (user.displayName || "Kullanıcı") + " profil fotoğrafı";
-    avatarEl.style.display = user.photoURL ? "block" : "none";
-  }
-
-  setTimeout(() => {
-    const params   = new URLSearchParams(window.location.search);
-    const returnTo = params.get("returnTo");
-    window.location.href = returnTo ? decodeURIComponent(returnTo) : "pratik/";
-  }, 700);
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  /* Tab geçişi */
-  const tabGiris  = document.getElementById("tab-giris");
-  const tabKayit  = document.getElementById("tab-kayit");
-  const formGiris = document.getElementById("form-giris");
-  const formKayit = document.getElementById("form-kayit");
-
-  function switchTab(active) {
-    const isGiris = active === "giris";
-    tabGiris.classList.toggle("tab--active", isGiris);
-    tabKayit.classList.toggle("tab--active", !isGiris);
-    formGiris.style.display = isGiris  ? "flex" : "none";
-    formKayit.style.display = !isGiris ? "flex" : "none";
-    ["err-giris", "err-kayit"].forEach(id => showError(id, ""));
-  }
-
-  tabGiris.addEventListener("click", () => switchTab("giris"));
-  tabKayit.addEventListener("click", () => switchTab("kayit"));
-
-  /* Google butonları */
-  buildGoogleBtn("google-btn-giris", "Google ile Giriş Yap");
-  buildGoogleBtn("google-btn-kayit", "Google ile Kayıt Ol");
-
-  /* E-posta ile Giriş */
-  const btnGiris  = document.getElementById("btn-giris");
-  const spanGiris = btnGiris.querySelector("span");
-
-  btnGiris.addEventListener("click", async () => {
-    const email = document.getElementById("giris-email").value.trim();
-    const pass  = document.getElementById("giris-sifre").value;
-    showError("err-giris", "");
-    if (!email || !pass) { showError("err-giris", "E-posta ve şifre zorunludur."); return; }
-    setLoading(btnGiris, spanGiris, true, "Giriş Yap");
-    try {
-      await loginWithEmail(email, pass);
-      // Başarılı → onAuthChange yönlendirir
-    } catch (err) {
-      setLoading(btnGiris, spanGiris, false, "Giriş Yap");
-
-      if (err.message === "Lütfen e-posta adresini doğrula!") {
-        const errEl = document.getElementById("err-giris");
-        errEl.style.display = "block";
-        errEl.innerHTML = `
-          ⚠️ E-posta adresiniz doğrulanmamış.
-          <button id="resendVerifyBtn" style="
-            display:block; margin-top:8px; width:100%;
-            padding:8px; border:none; border-radius:8px;
-            background:#2563eb; color:#fff; font-size:13px;
-            cursor:pointer; font-weight:500;
-          ">Doğrulama e-postasını tekrar gönder</button>
-        `;
-        document.getElementById("resendVerifyBtn").addEventListener("click", async () => {
-          try {
-            await sendVerificationEmail(email, pass);
-            errEl.innerHTML = "✅ Doğrulama e-postası gönderildi. Lütfen gelen kutunuzu kontrol edin.";
-          } catch (e) {
-            errEl.innerHTML = "❌ Gönderilemedi: " + (firebaseErrMsg(e.code) || e.message);
-          }
-        });
-        return;
-      }
-
-      showError("err-giris", firebaseErrMsg(err.code));
-    }
-  });
-
-  /* E-posta ile Kayıt */
-  const btnKayit  = document.getElementById("btn-kayit");
-  const spanKayit = btnKayit.querySelector("span");
-
-  btnKayit.addEventListener("click", async () => {
-    const name  = document.getElementById("kayit-ad").value.trim();
-    const email = document.getElementById("kayit-email").value.trim();
-    const pass  = document.getElementById("kayit-sifre").value;
-    const pass2 = document.getElementById("kayit-sifre2").value;
-    showError("err-kayit", "");
-    if (!name || !email || !pass)  { showError("err-kayit", "Tüm alanlar zorunludur."); return; }
-    if (pass !== pass2)            { showError("err-kayit", "Şifreler eşleşmiyor."); return; }
-    if (pass.length < 6)           { showError("err-kayit", "Şifre en az 6 karakter olmalıdır."); return; }
-    setLoading(btnKayit, spanKayit, true, "Kayıt Ol");
-    try {
-      await registerWithEmail(email, pass, name);
-      // signOut zaten yapıldı, onAuthChange tetiklenmez
-      setLoading(btnKayit, spanKayit, false, "Kayıt Ol");
-      const errEl = document.getElementById("err-kayit");
-      errEl.style.display = "block";
-      errEl.textContent = `✅ Kayıt başarılı! ${email} adresine doğrulama maili gönderildi. Lütfen mailinizi onaylayıp giriş yapın.`;
-    } catch (err) {
-      setLoading(btnKayit, spanKayit, false, "Kayıt Ol");
-      showError("err-kayit", firebaseErrMsg(err.code));
-    }
-  });
-
-  /* Şifremi Unuttum */
-  document.getElementById("forgot-link").addEventListener("click", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("giris-email").value.trim();
-    if (!email) { showError("err-giris", "Önce e-posta adresinizi girin."); return; }
-    try {
-      await resetPassword(email);
-      showError("err-giris", "✅ Şifre sıfırlama e-postası gönderildi.");
-    } catch (err) {
-      showError("err-giris", firebaseErrMsg(err.code));
-    }
-  });
-
-  /* Çıkış */
-  document.getElementById("logoutBtn")?.addEventListener("click", async () => {
-    try { await logoutFirebase(); } catch {}
-    window.location.reload();
-  });
-});
+function firebaseErrMsg(code) {
+  const map = {
+    "auth/user-not-found":        "Bu e-posta ile kayıtlı hesap bulunamadı.",
+    "auth/wrong-password":        "Şifre yanlış. Lütfen tekrar deneyin.",
+    "auth/invalid-credential":    "E-posta veya şifre hatalı.",
+    "auth/email-already-in-use":  "Bu e-posta adresi zaten kullanımda.",
+    "auth/weak-password":         "Şifre çok zayıf. En az 6 karakter kullanın.",
+    "auth/invalid-email":         "Geçersiz e-posta adresi.",
+    "auth/too-many-requests":     "Çok fazla deneme. Lütfen biraz bekleyin.",
+    "auth/network-request-failed":"İnternet bağlantınızı kontrol edin.",
+  };
+  return map[code] || "Bir hata oluştu. Lütfen tekrar deneyin.";
+}
 
 function buildGoogleBtn(containerId, label) {
   const container = document.getElementById(containerId);
@@ -200,16 +68,177 @@ function buildGoogleBtn(containerId, label) {
   });
 }
 
-function firebaseErrMsg(code) {
-  const map = {
-    "auth/user-not-found":        "Bu e-posta ile kayıtlı hesap bulunamadı.",
-    "auth/wrong-password":        "Şifre yanlış. Lütfen tekrar deneyin.",
-    "auth/invalid-credential":    "E-posta veya şifre hatalı.",
-    "auth/email-already-in-use":  "Bu e-posta adresi zaten kullanımda.",
-    "auth/weak-password":         "Şifre çok zayıf. En az 6 karakter kullanın.",
-    "auth/invalid-email":         "Geçersiz e-posta adresi.",
-    "auth/too-many-requests":     "Çok fazla deneme. Lütfen biraz bekleyin.",
-    "auth/network-request-failed":"İnternet bağlantınızı kontrol edin.",
-  };
-  return map[code] || "Bir hata oluştu. Lütfen tekrar deneyin.";
-}
+/* AUTH DURUM DİNLENMESİ */
+onAuthChange((user) => {
+  if (!user) return;
+
+  const isPasswordProvider = user.providerData?.[0]?.providerId === "password";
+  if (isPasswordProvider && !user.emailVerified) {
+    logoutFirebase();
+    return;
+  }
+
+  document.getElementById("login-view").style.display = "none";
+  const uv = document.getElementById("user-view");
+  uv.style.display = "flex";
+
+  const nameEl   = document.getElementById("user-name");
+  const emailEl  = document.getElementById("user-email");
+  const avatarEl = document.getElementById("user-avatar");
+  if (nameEl)   nameEl.textContent  = user.displayName || "Kullanıcı";
+  if (emailEl)  emailEl.textContent = user.email || "";
+  if (avatarEl) {
+    avatarEl.src = user.photoURL || "";
+    avatarEl.alt = (user.displayName || "Kullanıcı") + " profil fotoğrafı";
+    avatarEl.style.display = user.photoURL ? "block" : "none";
+  }
+
+  setTimeout(() => {
+    const params   = new URLSearchParams(window.location.search);
+    const returnTo = params.get("returnTo");
+    window.location.href = returnTo ? decodeURIComponent(returnTo) : "pratik/";
+  }, 700);
+});
+
+/* DOM DİNLENMESİ */
+document.addEventListener("DOMContentLoaded", () => {
+
+  const tabGiris  = document.getElementById("tab-giris");
+  const tabKayit  = document.getElementById("tab-kayit");
+  const formGiris = document.getElementById("form-giris");
+  const formKayit = document.getElementById("form-kayit");
+
+  function switchTab(active) {
+    const isGiris = active === "giris";
+    tabGiris.classList.toggle("tab--active", isGiris);
+    tabKayit.classList.toggle("tab--active", !isGiris);
+    formGiris.style.display = isGiris  ? "flex" : "none";
+    formKayit.style.display = !isGiris ? "flex" : "none";
+    ["err-giris", "err-kayit"].forEach(id => showError(id, ""));
+  }
+
+  tabGiris?.addEventListener("click", () => switchTab("giris"));
+  tabKayit?.addEventListener("click", () => switchTab("kayit"));
+
+  buildGoogleBtn("google-btn-giris", "Google ile Giriş Yap");
+  buildGoogleBtn("google-btn-kayit", "Google ile Kayıt Ol");
+
+  /* E-posta ile Giriş */
+  const btnGiris  = document.getElementById("btn-giris");
+  const spanGiris = btnGiris?.querySelector("span");
+
+  btnGiris?.addEventListener("click", async () => {
+    const email = document.getElementById("giris-email").value.trim();
+    const pass  = document.getElementById("giris-sifre").value;
+    showError("err-giris", "");
+    if (!email || !pass) { showError("err-giris", "E-posta ve şifre zorunludur."); return; }
+    setLoading(btnGiris, spanGiris, true, "Giriş Yap");
+    try {
+      await loginWithEmail(email, pass);
+    } catch (err) {
+      setLoading(btnGiris, spanGiris, false, "Giriş Yap");
+
+      if (err.message === "Lütfen e-posta adresini doğrula!") {
+        const errEl = document.getElementById("err-giris");
+        errEl.style.display = "block";
+        errEl.innerHTML = `
+          ⚠️ E-posta adresiniz doğrulanmamış.
+          <button id="resendVerifyBtn" style="
+            display:block; margin-top:8px; width:100%;
+            padding:8px; border:none; border-radius:8px;
+            background:#2563eb; color:#fff; font-size:13px;
+            cursor:pointer; font-weight:500;
+          ">Doğrulama e-postasını tekrar gönder</button>
+        `;
+        document.getElementById("resendVerifyBtn").addEventListener("click", async () => {
+          try {
+            await sendVerificationEmail(email, pass);
+            errEl.innerHTML = "✅ Doğrulama e-postası gönderildi. Lütfen gelen kutunuzu kontrol edin.";
+          } catch (e) {
+            errEl.innerHTML = "❌ Gönderilemedi: " + (firebaseErrMsg(e.code) || e.message);
+          }
+        });
+        return;
+      }
+
+      showError("err-giris", firebaseErrMsg(err.code));
+    }
+  });
+
+  /* E-posta ile Kayıt */
+  const btnKayit  = document.getElementById("btn-kayit");
+  const spanKayit = btnKayit?.querySelector("span");
+
+  btnKayit?.addEventListener("click", async () => {
+    const name  = document.getElementById("kayit-ad").value.trim();
+    const email = document.getElementById("kayit-email").value.trim();
+    const pass  = document.getElementById("kayit-sifre").value;
+    const pass2 = document.getElementById("kayit-sifre2").value;
+    showError("err-kayit", "");
+
+    if (!name || !email || !pass)  { showError("err-kayit", "Tüm alanlar zorunludur."); return; }
+    if (pass !== pass2)            { showError("err-kayit", "Şifreler eşleşmiyor."); return; }
+    if (pass.length < 6)           { showError("err-kayit", "Şifre en az 6 karakter olmalıdır."); return; }
+
+    setLoading(btnKayit, spanKayit, true, "Kayıt Ol");
+
+    try {
+      await registerWithEmail(email, pass, name);
+
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: email,
+          subject: 'AlmancaPratik - Hoş Geldin!',
+          html: `
+            <h2>Merhaba ${name},</h2>
+            <p>AlmancaPratik'e hoş geldin! Hesabın başarıyla oluşturuldu.</p>
+          `
+        })
+      });
+
+      setLoading(btnKayit, spanKayit, false, "Kayıt Ol");
+      const errEl = document.getElementById("err-kayit");
+      errEl.style.display = "block";
+      errEl.textContent = `✅ Kayıt başarılı! Lütfen ${email} adresine gelen bilgilendirme mailini kontrol edin.`;
+    } catch (err) {
+      setLoading(btnKayit, spanKayit, false, "Kayıt Ol");
+      showError("err-kayit", firebaseErrMsg(err.code));
+    }
+  });
+
+  /* Şifremi Unuttum */
+  document.getElementById("forgot-link")?.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("giris-email").value.trim();
+    if (!email) { showError("err-giris", "Önce e-posta adresinizi girin."); return; }
+
+    try {
+      await resetPassword(email);
+
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: email,
+          subject: 'AlmancaPratik - Şifre Sıfırlama Talebi',
+          html: `
+            <h3>Şifre Sıfırlama İsteği</h3>
+            <p>Şifre sıfırlama e-postası Firebase tarafından hesabınıza yönlendirildi.</p>
+          `
+        })
+      });
+
+      showError("err-giris", "✅ Şifre sıfırlama e-postası gönderildi.");
+    } catch (err) {
+      showError("err-giris", firebaseErrMsg(err.code));
+    }
+  });
+
+  /* Çıkış */
+  document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+    try { await logoutFirebase(); } catch {}
+    window.location.reload();
+  });
+});

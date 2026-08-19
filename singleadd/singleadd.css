@@ -2,29 +2,28 @@
    TOKENS  (siteyle uyumlu)
 ══════════════════════════════════════════════ */
 :root {
-  --font-body:  'DM Sans', sans-serif;
-  --font-mono:  'DM Mono', monospace;
-  --font-disp:  'Syne', sans-serif;
-  --bg-base:    #070709;
-  --surface:    rgba(255,255,255,0.04);
-  --surface-hov:rgba(255,255,255,0.07);
-  --border:     rgba(255,255,255,0.1);
-  --border-hov: rgba(255,255,255,0.2);
-  --text:       #f0eee8;
-  --muted:      rgba(240,238,232,0.45);
-  --gold:       #c9a84c;
-  --gold-d:     rgba(201,168,76,0.12);
-  --green:      #4fd69c;
-  --rose:       #f07068;
-  --blue:       #60c8f0;
+  /* Font, yüzey, metin ve vurgu renkleri artık global.css'ten geliyor.
+     --font-body / --font-mono zaten global.css'te tanımlı, burada
+     tekrar TANIMLANMIYOR (aksi halde global.css'i ezerdi). */
+  --font-disp:  var(--font-display);
+  --bg-base:    var(--background);
+  --surface:    var(--surface-container-low);
+  --surface-hov:var(--surface-container-high);
+  --border:     var(--outline-variant);
+  --border-hov: var(--outline);
+  --text:       var(--on-surface);
+  --muted:      var(--on-surface-variant);
+  --gold:       var(--primary);
+  --gold-d:     rgba(var(--primary-rgb), 0.12);
+  --green:      var(--success);
+  --rose:       var(--danger);
+  --blue:       var(--marker-blue);
   --radius:     14px;
   --trans:      0.22s cubic-bezier(0.4,0,0.2,1);
 }
 
-/* global.css'deki temel body stilleri geçerli; sadece bu sayfaya özel override: */
-body {
-  background: linear-gradient(135deg, #070709, #0f0f18);
-}
+/* Arka plan artık global.css'teki body{background:var(--background)} kuralından geliyor;
+   burada ayrı bir override yok. */
 
 /* ══════════════════════════════════════════════
    KONTEYNER
@@ -203,19 +202,19 @@ body {
   letter-spacing: 0.02em;
 }
 .wiki-artikel--der {
-  background: rgba(96,200,240,0.12);
-  border: 1px solid rgba(96,200,240,0.25);
-  color: var(--blue);
+  background: rgba(var(--gender-der-rgb), 0.12);
+  border: 1px solid rgba(var(--gender-der-rgb), 0.25);
+  color: var(--gender-der);
 }
 .wiki-artikel--die {
-  background: rgba(240,112,104,0.12);
-  border: 1px solid rgba(240,112,104,0.25);
-  color: var(--rose);
+  background: rgba(var(--gender-die-rgb), 0.12);
+  border: 1px solid rgba(var(--gender-die-rgb), 0.25);
+  color: var(--gender-die);
 }
 .wiki-artikel--das {
-  background: rgba(160,100,255,0.12);
-  border: 1px solid rgba(160,100,255,0.25);
-  color: #a064ff;
+  background: rgba(var(--gender-das-rgb), 0.12);
+  border: 1px solid rgba(var(--gender-das-rgb), 0.25);
+  color: var(--gender-das);
 }
 
 /* Kelime türü badge */
@@ -305,19 +304,19 @@ body {
   border-radius: 6px;
 }
 .preview-artikel--der {
-  background: rgba(96,200,240,0.12);
-  border: 1px solid rgba(96,200,240,0.2);
-  color: var(--blue);
+  background: rgba(var(--gender-der-rgb), 0.12);
+  border: 1px solid rgba(var(--gender-der-rgb), 0.2);
+  color: var(--gender-der);
 }
 .preview-artikel--die {
-  background: rgba(240,112,104,0.1);
-  border: 1px solid rgba(240,112,104,0.2);
-  color: var(--rose);
+  background: rgba(var(--gender-die-rgb), 0.1);
+  border: 1px solid rgba(var(--gender-die-rgb), 0.2);
+  color: var(--gender-die);
 }
 .preview-artikel--das {
-  background: rgba(160,100,255,0.1);
-  border: 1px solid rgba(160,100,255,0.2);
-  color: #a064ff;
+  background: rgba(var(--gender-das-rgb), 0.1);
+  border: 1px solid rgba(var(--gender-das-rgb), 0.2);
+  color: var(--gender-das);
 }
 
 /* ══════════════════════════════════════════════
@@ -329,7 +328,7 @@ body {
   gap: 10px;
   padding: 10px 16px;
   background: var(--surface);
-  border: 1px dashed rgba(255,255,255,0.1);
+  border: 1px dashed var(--outline-variant);
   border-radius: 10px;
   font-size: 14px;
   animation: fadeSlideIn 0.3s ease;
@@ -421,7 +420,7 @@ body {
 .tag-chip.selected {
   background: var(--gold);
   border-color: var(--gold);
-  color: #0a0a0f;
+  color: var(--on-primary);
   font-weight: 700;
 }
 
@@ -429,14 +428,14 @@ body {
    ANA BUTON
 ══════════════════════════════════════════════ */
 .primary-btn {
-  background: linear-gradient(135deg, #c9a84c, #a87c2a);
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
   border: none;
   border-radius: var(--radius);
   padding: 15px 28px;
   font-size: 15px;
   font-weight: 700;
   font-family: var(--font-body);
-  color: #fff;
+  color: var(--on-primary);
   cursor: pointer;
   transition: opacity var(--trans), transform var(--trans);
   align-self: flex-start;

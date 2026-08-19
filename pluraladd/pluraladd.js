@@ -898,10 +898,10 @@ function showPhase(n) {
    ═══════════════════════════════════════════════════════════ */
 const MODE_ICONS  = { 'tab-table':'📊', 'separator':'✂️', 'single-col':'📝', 'mixed':'🔀', 'empty':'❌' };
 const MODE_COLORS = {
-  'tab-table':  { bg:'rgba(96,200,240,.12)',  fg:'#60c8f0', border:'rgba(96,200,240,.25)' },
-  'separator':  { bg:'rgba(79,214,156,.10)',  fg:'#4fd69c', border:'rgba(79,214,156,.22)' },
-  'single-col': { bg:'rgba(255,210,80,.10)',  fg:'#ffd250', border:'rgba(255,210,80,.22)' },
-  'mixed':      { bg:'rgba(201,168,76,.10)',  fg:'#c9a84c', border:'rgba(201,168,76,.22)' },
+  'tab-table':  { bg:'rgba(var(--marker-blue-rgb),.12)',  fg:'var(--blue)',  border:'rgba(var(--marker-blue-rgb),.25)' },
+  'separator':  { bg:'rgba(var(--success-rgb),.10)',      fg:'var(--green)', border:'rgba(var(--success-rgb),.22)' },
+  'single-col': { bg:'rgba(var(--warning-rgb),.10)',      fg:'var(--amber)', border:'rgba(var(--warning-rgb),.22)' },
+  'mixed':      { bg:'rgba(var(--primary-rgb),.10)',      fg:'var(--gold)',  border:'rgba(var(--primary-rgb),.22)' },
 };
 
 function buildAnalysisBadge(analysis) {
@@ -952,9 +952,9 @@ function openPreviewModal(parsed) {
   const sum = document.createElement('div');
   sum.className = 'pv-summary';
   sum.innerHTML = `
-    <span class="pv-sum-chip" style="background:rgba(79,214,156,.1);color:#4fd69c;border:1px solid rgba(79,214,156,.2)">${yeni} yeni</span>
-    ${dups?`<span class="pv-sum-chip" style="background:rgba(96,200,240,.1);color:#60c8f0;border:1px solid rgba(96,200,240,.2)">${dups} mevcut</span>`:''}
-    ${miss?`<span class="pv-sum-chip" style="background:rgba(255,210,80,.1);color:#ffd250;border:1px solid rgba(255,210,80,.2)">${miss} çevirisiz</span>`:''}`;
+    <span class="pv-sum-chip" style="background:rgba(var(--success-rgb),.1);color:var(--green);border:1px solid rgba(var(--success-rgb),.2)">${yeni} yeni</span>
+    ${dups?`<span class="pv-sum-chip" style="background:rgba(var(--marker-blue-rgb),.1);color:var(--blue);border:1px solid rgba(var(--marker-blue-rgb),.2)">${dups} mevcut</span>`:''}
+    ${miss?`<span class="pv-sum-chip" style="background:rgba(var(--warning-rgb),.1);color:var(--amber);border:1px solid rgba(var(--warning-rgb),.2)">${miss} çevirisiz</span>`:''}`;
   body.appendChild(sum);
 
   modal.classList.add('open');
