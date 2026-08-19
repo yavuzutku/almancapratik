@@ -8,9 +8,7 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  updateProfile,
-  sendPasswordResetEmail,
-  sendEmailVerification
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
@@ -63,8 +61,10 @@ export async function registerWithEmail(email, password, displayName) {
 
   const cred = await createUserWithEmailAndPassword(auth, email, password);
   await updateProfile(cred.user, { displayName });
-  await sendEmailVerification(cred.user);
   await signOut(auth); // Kayıt sonrası oturumu kapat — doğrulama zorunlu
+  // Not: doğrulama e-postası artık burada gönderilmiyor.
+  // login.js, kayıt başarılı olduktan sonra /api/auth-email'i çağırıp
+  // Resend üzerinden gönderiyor (bkz. login.js btn-kayit click).
   return cred;
 }
 
@@ -83,16 +83,9 @@ export async function loginWithEmail(email, password) {
   return cred;
 }
 
-export async function resetPassword(email) {
-  if (!email) throw new Error("E-posta adresi zorunludur.");
-  return sendPasswordResetEmail(auth, email);
-}
-
-export async function sendVerificationEmail(email, password) {
-  const cred = await signInWithEmailAndPassword(auth, email, password);
-  await sendEmailVerification(cred.user);
-  await signOut(auth); // Mail gönder ama oturumu açma
-}
+// Not: resetPassword ve sendVerificationEmail fonksiyonları kaldırıldı.
+// Firebase'in kendi mail gönderimi yerine artık login.js doğrudan
+// /api/auth-email'i çağırıyor (Firebase Admin link üretiyor, Resend gönderiyor).
 
 
 /* ============================

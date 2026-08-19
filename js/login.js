@@ -2,10 +2,8 @@ import {
   loginWithGoogle,
   loginWithEmail,
   registerWithEmail,
-  resetPassword,
   logoutFirebase,
-  onAuthChange,
-  sendVerificationEmail
+  onAuthChange
 } from "./firebase.js";
 
 /* YARDIMCI FONKSİYONLAR */
@@ -152,10 +150,15 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         document.getElementById("resendVerifyBtn").addEventListener("click", async () => {
           try {
-            await sendVerificationEmail(email, pass);
+            const r = await fetch('https://api.almancapratik.com/api/auth-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type: 'verify', email })
+            });
+            if (!r.ok) throw new Error('Gönderim başarısız');
             errEl.innerHTML = "✅ Doğrulama e-postası gönderildi. Lütfen gelen kutunuzu kontrol edin.";
           } catch (e) {
-            errEl.innerHTML = "❌ Gönderilemedi: " + (firebaseErrMsg(e.code) || e.message);
+            errEl.innerHTML = "❌ Gönderilemedi. Lütfen tekrar dene.";
           }
         });
         return;
@@ -185,6 +188,14 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await registerWithEmail(email, pass, name);
 
+      // Doğrulama e-postası — Firebase Admin linki üretir, Resend gönderir
+      await fetch('https://api.almancapratik.com/api/auth-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'verify', email, name })
+      });
+
+      // Hoş geldin e-postası
       await fetch('https://api.almancapratik.com/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -215,24 +226,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!email) { showError("err-giris", "Önce e-posta adresinizi girin."); return; }
 
     try {
-      await resetPassword(email);
-
-      await fetch('https://api.almancapratik.com/api/send-email', {
+      const r = await fetch('https://api.almancapratik.com/api/auth-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: email,
-          subject: 'AlmancaPratik - Şifre Sıfırlama Talebi',
-          html: `
-            <h3>Şifre Sıfırlama İsteği</h3>
-            <p>Şifre sıfırlama e-postası Firebase tarafından hesabınıza yönlendirildi.</p>
-          `
-        })
+        body: JSON.stringify({ type: 'reset', email })
       });
+      if (!r.ok) throw new Error('Gönderim başarısız');
 
       showError("err-giris", "✅ Şifre sıfırlama e-postası gönderildi.");
     } catch (err) {
-      showError("err-giris", firebaseErrMsg(err.code));
+      showError("err-giris", "Bir hata oluştu. Lütfen tekrar deneyin.");
     }
   });
 
