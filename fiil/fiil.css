@@ -7,22 +7,22 @@
 
 /* ── TOKENS ─────────────────────────────── */
 :root {
-  --bg:          #08080c;
-  --surface:     #111116;
-  --surface2:    #16161c;
+  --bg:          var(--background);
+  --surface:     var(--surface-container);
+  --surface2:    var(--surface-container-high);
   --border:      rgba(255,255,255,0.07);
   --border-lit:  rgba(255,255,255,0.13);
 
-  --gold:        #b4c5ff;
+  --gold:        var(--primary);
   --gold-glow:   rgba(180,197,255,0.18);
   --gold-dim:    rgba(180,197,255,0.08);
-  --blue:        #60c8f0;
+  --blue:        var(--marker-blue);
   --blue-dim:    rgba(96,200,240,0.1);
-  --purple:      #a78bfa;
+  --purple:      var(--marker-purple);
   --purple-dim:  rgba(167,139,250,0.1);
-  --green:       #4ade80;
+  --green:       var(--success);
 
-  --text:        #f0eee8;
+  --text:        var(--on-background);
   --text-2:      rgba(240,238,232,0.55);
   --text-3:      rgba(240,238,232,0.28);
 
@@ -144,7 +144,7 @@ body::before {
 }
 
 .hero-accent {
-  background: linear-gradient(135deg, var(--gold), #dbe1ff);
+  background: linear-gradient(135deg, var(--gold), var(--primary-fixed));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -869,7 +869,7 @@ body::before {
   letter-spacing: -0.01em;
 }
 
-.cv-link:hover { color: #dbe1ff; text-decoration: underline; }
+.cv-link:hover { color: var(--primary-fixed); text-decoration: underline; }
 
 /* ── TOAST ────────────────────────────── */
 .toast {
@@ -877,7 +877,7 @@ body::before {
   bottom: 28px;
   left: 50%;
   transform: translateX(-50%) translateY(12px);
-  background: #1c1c22;
+  background: var(--surface-container-high);
   border: 1px solid var(--border-lit);
   color: var(--text);
   font-family: 'Inter', sans-serif;

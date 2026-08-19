@@ -4,21 +4,16 @@
   padding: 0;
 }
 
-:root {
-  --bg:     #0a0a0f;
-  --panel:  #12121a;
-  --border: rgba(255,255,255,0.07);
-  --gold:       #b4c5ff;
-  --gold-light: #dbe1ff;
-  --text:   #f0ede8;
-
-  /*
-   * ✅ KONTRAST DÜZELTMESİ
-   * Eski: #7a7880 → #12121a arka plan üzerinde kontrast oranı ~3.5:1 (yetersiz)
-   * Yeni: #a8a5b0 → kontrast oranı ~6.2:1 (WCAG AA geçer)
-   */
-  --muted: #a8a5b0;
-}
+/*
+   Bu sayfanın renk/font token'ları artık global.css'ten geliyor:
+   --bg      → var(--background)
+   --panel   → var(--surface)
+   --border  → var(--outline-variant)
+   --gold        → var(--primary)
+   --gold-light  → var(--primary-container)
+   --text    → var(--on-background)
+   --muted   → var(--on-surface-variant)  (kontrast: global.css'te WCAG AA için ayarlı)
+*/
 
 /* global.css temel stilleri geçerli; sadece bu sayfaya özel override: */
 body {
@@ -36,9 +31,9 @@ body {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(180,197,255,.08) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 80% at 80% 90%, rgba(100,80,180,.07) 0%, transparent 55%),
-    var(--bg);
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(var(--primary-rgb),.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 90%, rgba(var(--primary-container-rgb),.05) 0%, transparent 55%),
+    var(--background);
 }
 
 .bg-grid {
@@ -46,8 +41,8 @@ body {
   inset: 0;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    linear-gradient(rgba(var(--on-surface-rgb),.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--on-surface-rgb),.035) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent);
 }
@@ -64,7 +59,7 @@ body {
 .orb-1 {
   width: 400px;
   height: 400px;
-  background: rgba(180,197,255,.07);
+  background: rgba(var(--primary-rgb),.10);
   top: -100px;
   right: -100px;
 }
@@ -72,7 +67,7 @@ body {
 .orb-2 {
   width: 300px;
   height: 300px;
-  background: rgba(120,80,200,.06);
+  background: rgba(var(--primary-container-rgb),.08);
   bottom: -80px;
   left: -80px;
   animation-delay: -6s;
@@ -95,11 +90,11 @@ main {
 /* ── Kart ── */
 .card {
   width: 420px;
-  background: var(--panel);
-  border: 1px solid var(--border);
+  background: var(--surface);
+  border: 1px solid var(--outline-variant);
   border-radius: 24px;
   padding: 52px 48px;
-  box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.03);
+  box-shadow: 0 40px 120px rgba(var(--on-surface-rgb),.16), 0 0 0 1px rgba(var(--on-surface-rgb),.03);
   animation: rise .8s cubic-bezier(.22,1,.36,1) both;
 }
 
@@ -120,26 +115,25 @@ main {
   width: 56px;
   height: 56px;
   margin-bottom: 18px;
-  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  background: linear-gradient(135deg, var(--primary), var(--primary-container));
   border-radius: 16px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  box-shadow: 0 8px 32px rgba(180,197,255,.25);
+  box-shadow: 0 8px 32px rgba(var(--primary-rgb),.3);
 }
 
 .logo-name {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-display);
   font-size: 26px;
   font-weight: 700;
-  color: var(--text);
+  color: var(--on-background);
 }
 
 .logo-tagline {
   margin-top: 6px;
   font-size: 13px;
-  /* ✅ KONTRAST: --muted şimdi #a8a5b0 → yeterli kontrast */
-  color: var(--muted);
+  color: var(--on-surface-variant);
 }
 
 /* ── Divider ── */
@@ -154,12 +148,12 @@ main {
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--border);
+  background: var(--outline-variant);
 }
 
 .divider span {
   font-size: 11px;
-  color: var(--muted);
+  color: var(--on-surface-variant);
   text-transform: uppercase;
 }
 
@@ -173,23 +167,19 @@ main {
   margin-top: 28px;
   text-align: center;
   font-size: 12px;
-  /* ✅ KONTRAST: --muted şimdi #a8a5b0 */
-  color: var(--muted);
+  color: var(--on-surface-variant);
   line-height: 1.7;
 }
 
 .footer a {
-  color: var(--gold);
-  /*
-   * ✅ ERİŞİLEBİLİRLİK: Linkleri sadece renkle değil, altı çizgi ile de ayırt et.
-   * Rapordaki "Bağlantılar renge dayalı olarak ayırt edilebilir" uyarısını kapatır.
-   */
+  color: var(--primary);
+  /* Linkler renge ek olarak altı çizgiyle de ayırt edilir (erişilebilirlik). */
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .footer a:hover {
-  color: var(--gold-light);
+  color: var(--primary-hover);
 }
 
 /* ── Giriş yapıldı paneli ── */
@@ -208,28 +198,28 @@ main {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  border: 2px solid var(--gold);
+  border: 2px solid var(--primary);
 }
 
 .user-name {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--on-background);
   text-align: center;
 }
 
 .user-email {
   font-size: 13px;
-  color: var(--muted);
+  color: var(--on-surface-variant);
   text-align: center;
 }
 
 .badge {
   font-size: 12px;
   font-weight: 600;
-  color: var(--gold);
-  background: rgba(180,197,255,0.1);
-  border: 1px solid rgba(180,197,255,0.25);
+  color: var(--primary);
+  background: rgba(var(--primary-rgb),0.1);
+  border: 1px solid rgba(var(--primary-rgb),0.25);
   padding: 4px 12px;
   border-radius: 999px;
 }
@@ -237,19 +227,18 @@ main {
 .signout-btn {
   padding: 10px 28px;
   background: transparent;
-  border: 1px solid var(--border);
+  border: 1px solid var(--outline-variant);
   border-radius: 10px;
   cursor: pointer;
-  /* ✅ KONTRAST: --muted şimdi #a8a5b0 */
-  color: var(--muted);
-  font-family: 'Manrope', sans-serif;
+  color: var(--on-surface-variant);
+  font-family: var(--font-body);
   font-size: 14px;
   transition: border-color 0.2s, color 0.2s;
 }
 
 .signout-btn:hover {
-  border-color: var(--text);
-  color: var(--text);
+  border-color: var(--outline);
+  color: var(--on-background);
 }
 
 /* ── Mobil ── */
@@ -262,20 +251,20 @@ main {
 }
 /* login.css sonuna ekle — Google butonu */
 
-.google-btn {
+\.google-btn {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   background: #ffffff;
   color: #1f1f1f;
-  border: none;
+  border: 1px solid var(--outline-variant);
   padding: 12px 24px;
   border-radius: 8px;
   font-size: 15px;
   font-weight: 500;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-body);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(var(--on-surface-rgb),0.12);
   width: 100%;
   max-width: 324px;
   justify-content: center;
@@ -283,13 +272,13 @@ main {
 }
 
 .google-btn:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 16px rgba(var(--on-surface-rgb),0.18);
   transform: translateY(-1px);
 }
 
 .google-btn:active {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(var(--on-surface-rgb),0.12);
 }
 
 .google-btn:disabled {
@@ -303,8 +292,8 @@ main {
 ══════════════════════════════════════════════ */
 .tabs {
   display: flex;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
   border-radius: 12px;
   padding: 4px;
   margin-bottom: 24px;
@@ -318,20 +307,20 @@ main {
   border: none;
   border-radius: 9px;
   cursor: pointer;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--on-surface-variant);
   transition: background 0.2s, color 0.2s;
 }
 
 .tab:hover {
-  color: var(--text);
+  color: var(--on-background);
 }
 
 .tab--active {
-  background: rgba(255,255,255,0.08);
-  color: var(--text);
+  background: var(--surface-container);
+  color: var(--on-background);
   font-weight: 600;
 }
 
@@ -347,7 +336,7 @@ main {
 .field-label {
   font-size: 12px;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--on-surface-variant);
   letter-spacing: 0.04em;
 }
 
@@ -359,20 +348,20 @@ main {
 
 .forgot-link {
   font-size: 12px;
-  color: var(--gold);
+  color: var(--primary);
   text-decoration: underline;
   text-underline-offset: 2px;
   transition: color 0.2s;
 }
-.forgot-link:hover { color: var(--gold-light); }
+.forgot-link:hover { color: var(--primary-hover); }
 
 .field-input {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--border);
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline-variant);
   border-radius: 10px;
   padding: 11px 14px;
-  color: var(--text);
-  font-family: 'Manrope', sans-serif;
+  color: var(--on-background);
+  font-family: var(--font-body);
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s, background 0.2s;
@@ -380,20 +369,20 @@ main {
 }
 
 .field-input:focus {
-  border-color: rgba(180,197,255,0.5);
-  background: rgba(180,197,255,0.04);
+  border-color: rgba(var(--primary-rgb),0.5);
+  background: rgba(var(--primary-rgb),0.05);
 }
 
-.field-input::placeholder { color: rgba(255,255,255,0.2); }
+.field-input::placeholder { color: var(--on-surface-variant); }
 
 /* ══════════════════════════════════════════════
    HATA MESAJI
 ══════════════════════════════════════════════ */
 .form-error {
   font-size: 13px;
-  color: #ff7070;
-  background: rgba(255,80,80,0.08);
-  border: 1px solid rgba(255,80,80,0.2);
+  color: var(--danger);
+  background: rgba(var(--danger-rgb),0.08);
+  border: 1px solid rgba(var(--danger-rgb),0.25);
   border-radius: 8px;
   padding: 9px 12px;
   line-height: 1.5;
@@ -405,12 +394,12 @@ main {
 .btn-submit {
   width: 100%;
   padding: 13px;
-  background: linear-gradient(135deg, var(--gold), var(--gold-light));
-  color: #0a0a0f;
+  background: linear-gradient(135deg, var(--primary), var(--primary-container));
+  color: var(--on-primary);
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-body);
   font-size: 15px;
   font-weight: 700;
   transition: box-shadow 0.2s, transform 0.15s, opacity 0.2s;
@@ -419,7 +408,7 @@ main {
 }
 
 .btn-submit:hover {
-  box-shadow: 0 6px 24px rgba(180,197,255,0.4);
+  box-shadow: 0 6px 24px rgba(var(--primary-rgb),0.4);
   transform: translateY(-1px);
 }
 

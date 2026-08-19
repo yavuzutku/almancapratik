@@ -6,20 +6,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap');
 
 :root {
-  --gold:       #b4c5ff;
-  --gold-light: #dbe1ff;
+  --gold:       var(--primary);
+  --gold-light: var(--primary-fixed);
   --surface:    rgba(255,255,255,0.04);
   --border:     rgba(255,255,255,0.09);
-  --text:       #e8e2d5;
-  --muted:      #6b6560;
-  --der:        #4a90d9;
-  --die:        #d96b8a;
-  --das:        #6bbf8a;
-  --error:      #d97070;
+  --text:       var(--on-surface);
+  --muted:      var(--on-surface-variant);
+  --der:        var(--gender-der);
+  --die:        var(--gender-die);
+  --das:        var(--gender-das);
+  --error:      var(--danger);
 }
 
 body {
-  background: #0e0e0e;
+  background: var(--background);
   padding: 0;
   -webkit-text-size-adjust: 100%;
 }
@@ -31,7 +31,7 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 2rem 1rem;
-  background: #0e0e0e;
+  background: var(--background);
   font-family: 'DM Mono', monospace;
 }
 
@@ -177,7 +177,7 @@ body {
 
 .search-btn {
   background: var(--gold);
-  color: #0e0e0e;
+  color: var(--on-primary);
   border: none;
   padding: 0 1.3rem;
   border-radius: 8px;
@@ -398,7 +398,7 @@ body {
 .extra-bedeutung .extra-val {
   font-size: 0.72rem;
   line-height: 1.6;
-  color: #c8c0b0;
+  color: var(--on-surface-variant);
 }
 
 .meaning-sep {
@@ -864,7 +864,7 @@ body {
   display: flex;
   align-items: center;
   gap: 7px;
-  background: #1a1510;
+  background: var(--surface-container-low);
   border: 1px solid var(--gold);
   border-radius: 8px;
   padding: 8px 14px;

@@ -94,68 +94,6 @@ export async function sendVerificationEmail(email, password) {
   await signOut(auth); // Mail gönder ama oturumu açma
 }
 
-/* ============================
-   METİN KAYDET
-============================= */
-
-export async function saveMetin(userId, text) {
-  if (!userId) throw new Error("Kullanıcı kimliği bulunamadı.");
-  if (!text || text.trim().length === 0) throw new Error("Metin boş olamaz.");
-  try {
-    await addDoc(
-      collection(db, "users", userId, "texts"),
-      { text: text.trim(), created: Date.now() }
-    );
-  } catch (err) {
-    console.error("[saveMetin] Firestore hatası:", err);
-    throw new Error("Metin kaydedilemedi. Lütfen tekrar dene.");
-  }
-}
-
-/* ============================
-   METİNLERİ GETİR
-============================= */
-
-export async function getMetinler(userId) {
-  if (!userId) throw new Error("Kullanıcı kimliği bulunamadı.");
-  try {
-    const q = query(
-      collection(db, "users", userId, "texts"),
-      orderBy("created", "desc")
-    );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-  } catch (err) {
-    console.error("[getMetinler] Firestore hatası:", err);
-    throw new Error("Metinler yüklenemedi. Lütfen sayfayı yenile.");
-  }
-}
-
-/* ============================
-   METİN SİL
-============================= */
-
-export async function deleteMetin(userId, id) {
-  if (!userId || !id) throw new Error("Geçersiz parametre.");
-  try {
-    await deleteDoc(doc(db, "users", userId, "texts", id));
-  } catch (err) {
-    console.error("[deleteMetin] Firestore hatası:", err);
-    throw new Error("Metin silinemedi. Lütfen tekrar dene.");
-  }
-}
-
-export async function updateMetinTimestamp(userId, id) {
-  if (!userId || !id) throw new Error("Geçersiz parametre.");
-  try {
-    await updateDoc(doc(db, "users", userId, "texts", id), {
-      created: Date.now()
-    });
-  } catch (err) {
-    console.error("[updateMetinTimestamp] Firestore hatası:", err);
-    throw new Error("Tarih güncellenemedi.");
-  }
-}
 
 /* ============================
    YARDIMCI: KELİMEYİ BUL

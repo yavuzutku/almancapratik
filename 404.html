@@ -7,7 +7,7 @@
 
 <title>404 — Sayfa Bulunamadı | AlmancaPratik</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/global.css">
 
 <style>
@@ -20,26 +20,26 @@
 }
 
 .box{
-  background:var(--bg-card);
-  border:1px solid var(--border);
+  background:var(--surface);
+  border:1px solid var(--outline-variant);
   border-radius:16px;
   padding:48px 40px;
   text-align:center;
 }
 
 .code{
-  font-family:var(--fd);
+  font-family:var(--font-display);
   font-size:80px;
   font-weight:800;
   letter-spacing:-3px;
   margin-bottom:10px;
-  background:linear-gradient(135deg,var(--gold),var(--gold-l));
+  background:linear-gradient(135deg,var(--primary),var(--primary-container));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 
 .title{
-  font-family:var(--fd);
+  font-family:var(--font-display);
   font-size:89px;
   font-weight:800;
   margin-bottom:10px;
@@ -47,7 +47,7 @@
 
 .desc{
   font-size:25px;
-  color:var(--t2);
+  color:var(--on-surface-variant);
   margin-bottom:28px;
   line-height:1.7;
 }
@@ -65,9 +65,9 @@
   align-items:center;
   gap:6px;
   padding:12px 22px;
-  background:linear-gradient(135deg,var(--gold),var(--gold-l));
-  color:#0a0a0f;
-  font-family:var(--fd);
+  background:linear-gradient(135deg,var(--primary),var(--primary-container));
+  color:var(--on-primary);
+  font-family:var(--font-display);
   font-weight:800;
   border-radius:10px;
   text-decoration:none;
@@ -80,17 +80,17 @@
 
 .btn-ghost{
   padding:12px 18px;
-  background:var(--bg-card);
-  border:1px solid var(--border);
+  background:var(--surface);
+  border:1px solid var(--outline-variant);
   border-radius:10px;
   text-decoration:none;
-  color:var(--t2);
+  color:var(--on-surface-variant);
   transition:0.2s;
 }
 
 .btn-ghost:hover{
-  color:var(--text);
-  border-color:var(--border-h);
+  color:var(--on-background);
+  border-color:var(--outline);
 }
 
 /* mini öneriler */
@@ -104,17 +104,17 @@
 
 .quick-links a{
   font-size:12px;
-  color:var(--t2);
+  color:var(--on-surface-variant);
   text-decoration:none;
   padding:6px 10px;
-  border:1px solid var(--border);
+  border:1px solid var(--outline-variant);
   border-radius:6px;
   transition:0.2s;
 }
 
 .quick-links a:hover{
-  color:var(--gold);
-  border-color:var(--border-h);
+  color:var(--primary);
+  border-color:var(--outline);
 }
 </style>
 </head>

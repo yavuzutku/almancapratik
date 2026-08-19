@@ -4,43 +4,103 @@
 ========================= */
 
 :root {
-  --surface-container-low:     #131b2e;
-  --surface-dim:                #0b1326;
+  --surface-container-low:     #f7f9fc;
+  --surface-dim:                #e4e8ef;
   --secondary-fixed:            #d8e3fb;
-  --secondary:                  #bcc7de;
-  --on-tertiary-container:      #ffede6;
-  --on-primary-container:       #eeefff;
-  --surface-container-high:     #222a3d;
-  --surface-container:          #171f33;
-  --surface-container-lowest:   #060e20;
-  --on-secondary:                #263143;
-  --on-error:                   #690005;
+  --secondary:                  #6b7690;
+  --on-tertiary-container:      #4a2e1b;
+  --on-primary-container:       #ffffff;
+  --surface-container-high:     #eaeef6;
+  --surface-container:          #f1f4f9;
+  --surface-container-lowest:   #ffffff;
+  --on-secondary:                #ffffff;
+  --on-error:                   #ffffff;
   --primary-container:          #2563eb;
-  --secondary-container:        #3e495d;
-  --on-background:              #dae2fd;
-  --background:                 #0b1326;
-  --surface-container-highest:  #2d3449;
-  --surface-tint:               #b4c5ff;
+  --secondary-container:        #e3e8f2;
+  --on-background:              #1a2333;
+  --background:                 #f6f8fc;
+  --surface-container-highest:  #e3e8f2;
+  --surface-tint:               #2f5fde;
   --primary-fixed-dim:          #b4c5ff;
   --secondary-fixed-dim:        #bcc7de;
   --on-secondary-fixed:         #111c2d;
-  --on-primary:                 #002a78;
-  --outline:                    #8d90a0;
-  --on-surface:                 #dae2fd;
-  --on-surface-variant:         #c3c6d7;
+  --on-primary:                 #ffffff;
+  --outline:                    #c7ced4;
+  --on-surface:                 #1a2333;
+  --on-surface-variant:         #5b6479;
   --on-primary-fixed:           #00174b;
   --primary-fixed:              #dbe1ff;
-  --surface:                    #0b1326;
-  --primary:                    #b4c5ff;
-  --surface-variant:            #2d3449;
-  --on-secondary-container:     #aeb9d0;
-  --outline-variant:            #434655;
-  --inverse-on-surface:         #283044;
-  --surface-bright:             #31394d;
+  --surface:                    #ffffff;
+  --primary:                    #2f5fde;
+  --surface-variant:            #e6eaf2;
+  --on-secondary-container:     #1a2333;
+  --outline-variant:            #e3e8f0;
+  --inverse-on-surface:         #ffffff;
+  --surface-bright:             #ffffff;
 
   /* Fontlar */
   --font-display: 'Space Grotesk', sans-serif;   /* eski: Syne */
   --font-body:    'Manrope', sans-serif;         /* eski: DM Sans — alternatif: 'Inter' */
+  --font-mono:    'DM Mono', monospace;          /* etiket/badge/kod metinleri (blog, kelimeler) */
+  --font-serif:   'Lora', Georgia, serif;        /* uzun okuma metni (blog yazı gövdesi) */
+
+  /* Ana vurgu — hover durumu */
+  --primary-hover: #2450be;
+}
+
+/* =========================
+   RGB TRIPLET'LER
+   rgba(var(--x-rgb), alpha) ile saydam tonlar üretmek için.
+   Yukarıdaki HEX değerleriyle birebir eşleşir — renk değişirse
+   burayı da güncelle.
+========================= */
+:root {
+  --on-surface-rgb:         26,35,51;
+  --on-surface-variant-rgb: 91,100,121;
+  --primary-rgb:            47,95,222;
+  --primary-fixed-dim-rgb:  180,197,255;
+  --primary-fixed-rgb:      219,225,255;
+  --primary-container-rgb:  37,99,235;
+  --outline-rgb:            199,206,212;
+  --danger-rgb:             240,112,104;
+  --success-rgb:            34,197,94;
+  --warning-rgb:            255,210,80;
+  --accent-blue-rgb:        29,111,224;
+  --marker-blue-rgb:        96,200,240;
+  --marker-purple-rgb:      167,139,250;
+  --gender-der-rgb:         74,144,217;
+  --gender-die-rgb:         217,107,138;
+  --gender-das-rgb:         107,191,138;
+}
+
+/* =========================
+   SEMANTIC TOKENS
+   Bunlar site temasından (yukarıdaki paletten) BAĞIMSIZDIR.
+   Tema rengini değiştirsen bile bunlar sabit kalmalı, çünkü
+   kullanıcıya durum/kategori anlamı taşıyorlar.
+========================= */
+:root {
+  /* Durum bildirimleri (toast, hata mesajı, uyarı, başarı) */
+  --danger:   #f07068;
+  --success:  #22c55e;
+  --warning:  #ffd250;
+
+  /* İkincil vurgu mavisi — ana --primary'den kasıtlı olarak farklı,
+     linkler/rozetler gibi ikincil öğelerde kullanılır (dersler sayfası) */
+  --accent-blue: #1d6fe0;
+
+  /* Der/Die/Das dilbilgisi renk kodu (artikel bulucu) */
+  --gender-der: #4a90d9;
+  --gender-die: #d96b8a;
+  --gender-das: #6bbf8a;
+
+  /* Fiil çekim zamanı kategori işaretleri (fiil sayfası) */
+  --marker-blue:   #60c8f0;
+  --marker-purple: #a78bfa;
+  --marker-gold:   #c9a84c;
+
+  /* Prose içi link rengi */
+  --link: #1e56d6;
 }
 
 /* =========================
@@ -81,12 +141,12 @@ body {
   padding: 0 44px;
   height: 62px;
 
-  background: rgba(6,14,32,0.82);
+  background: rgba(255,255,255,0.82);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(218,226,253,0.06);
+  border-bottom: 1px solid rgba(26,35,51,0.06);
   box-shadow:
-    0 1px 0 0 rgba(180,197,255,0.08),
+    0 1px 0 0 rgba(47,95,222,0.08),
     0 4px 24px rgba(0,0,0,0.35);
 
   transition: background 0.3s ease, box-shadow 0.3s ease;
@@ -127,7 +187,7 @@ body {
 .home-btn {
   padding: 7px 16px;
   background: transparent;
-  border: 1px solid rgba(218,226,253,0.1);
+  border: 1px solid rgba(26,35,51,0.1);
   border-radius: 8px;
   cursor: pointer;
 
@@ -146,8 +206,8 @@ body {
 }
 
 .home-btn:hover {
-  background: rgba(218,226,253,0.07);
-  border-color: rgba(218,226,253,0.2);
+  background: rgba(26,35,51,0.07);
+  border-color: rgba(26,35,51,0.2);
   color: var(--on-primary-container);
   transform: translateY(-1px);
 }
@@ -160,8 +220,8 @@ body {
 .tag-chip {
   padding: 5px 12px;
   border-radius: 20px;
-  border: 1px solid rgba(218,226,253,0.1);
-  background: rgba(218,226,253,0.04);
+  border: 1px solid rgba(26,35,51,0.1);
+  background: rgba(26,35,51,0.04);
   color: var(--secondary);
   font-size: 12px;
   font-family: var(--font-body);
@@ -171,14 +231,14 @@ body {
 }
 
 .tag-chip:hover {
-  border-color: rgba(180,197,255,0.5);
+  border-color: rgba(47,95,222,0.5);
   color: var(--primary);
-  background: rgba(180,197,255,0.06);
+  background: rgba(47,95,222,0.06);
 }
 
 .tag-chip.selected {
-  background: rgba(180,197,255,0.15);
-  border-color: rgba(180,197,255,0.5);
+  background: rgba(47,95,222,0.15);
+  border-color: rgba(47,95,222,0.5);
   color: var(--primary);
   font-weight: 600;
 }
