@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await registerWithEmail(email, pass, name);
 
-      await fetch('/api/send-email', {
+      await fetch('https://api.almancapratik.com/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -217,7 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await resetPassword(email);
 
-      await fetch('/api/send-email', {
+      await fetch('https://api.almancapratik.com/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
