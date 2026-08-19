@@ -61,10 +61,9 @@ export async function registerWithEmail(email, password, displayName) {
 
   const cred = await createUserWithEmailAndPassword(auth, email, password);
   await updateProfile(cred.user, { displayName });
-  await signOut(auth); // Kayıt sonrası oturumu kapat — doğrulama zorunlu
-  // Not: doğrulama e-postası artık burada gönderilmiyor.
-  // login.js, kayıt başarılı olduktan sonra /api/auth-email'i çağırıp
-  // Resend üzerinden gönderiyor (bkz. login.js btn-kayit click).
+  // Not: artık burada signOut yapmıyoruz. Kullanıcı oturumda kalıyor,
+  // login.js e-posta doğrulanana kadar "doğrulama bekleniyor" ekranı
+  // gösterip arka planda kontrol ediyor; doğrulanınca otomatik devam ediyor.
   return cred;
 }
 

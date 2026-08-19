@@ -1,4 +1,5 @@
 import {
+  auth,
   loginWithGoogle,
   loginWithEmail,
   registerWithEmail,
@@ -66,16 +67,57 @@ function buildGoogleBtn(containerId, label) {
   });
 }
 
-/* AUTH DURUM DİNLENMESİ */
-onAuthChange((user) => {
-  if (!user) return;
+/* DOĞRULAMA BEKLEME EKRANI */
+let verifyPollInterval = null;
 
-  const isPasswordProvider = user.providerData?.[0]?.providerId === "password";
-  if (isPasswordProvider && !user.emailVerified) {
-    logoutFirebase();
-    return;
-  }
+function showVerifyWaitingOverlay(email) {
+  if (document.getElementById("verify-waiting-overlay")) return;
+  const overlay = document.createElement("div");
+  overlay.id = "verify-waiting-overlay";
+  overlay.style.cssText = `
+    position:fixed; inset:0; background:rgba(15,23,42,.94);
+    display:flex; align-items:center; justify-content:center;
+    z-index:9999; padding:24px; text-align:center;
+  `;
+  overlay.innerHTML = `
+    <div style="max-width:380px; color:#fff; font-family:sans-serif;">
+      <h2 style="margin:0 0 12px;">📧 E-postanı doğrula</h2>
+      <p style="opacity:.85; line-height:1.6; margin:0;">
+        <strong>${email}</strong> adresine bir doğrulama bağlantısı gönderdik.
+        Bağlantıya tıkladıktan sonra bu sayfa <strong>otomatik olarak devam edecek</strong>,
+        tekrar giriş yapmana gerek yok. Bu pencereyi kapatmadan bekleyebilirsin.
+      </p>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
 
+function hideVerifyWaitingOverlay() {
+  document.getElementById("verify-waiting-overlay")?.remove();
+}
+
+function stopVerifyPolling() {
+  if (verifyPollInterval) { clearInterval(verifyPollInterval); verifyPollInterval = null; }
+}
+
+function startVerifyPolling(user) {
+  if (verifyPollInterval) return;
+  verifyPollInterval = setInterval(async () => {
+    try {
+      await user.reload();
+      if (user.emailVerified) {
+        stopVerifyPolling();
+        hideVerifyWaitingOverlay();
+        proceedToApp(user);
+      }
+    } catch {
+      // sessizce geç, bir sonraki denemede tekrar kontrol eder
+    }
+  }, 4000);
+}
+
+/* GİRİŞ SONRASI TEK YÖNLENDİRME NOKTASI — HER ZAMAN ANASAYFA */
+function proceedToApp(user) {
   document.getElementById("login-view").style.display = "none";
   const uv = document.getElementById("user-view");
   uv.style.display = "flex";
@@ -92,10 +134,28 @@ onAuthChange((user) => {
   }
 
   setTimeout(() => {
-    const params   = new URLSearchParams(window.location.search);
-    const returnTo = params.get("returnTo");
-    window.location.href = returnTo ? decodeURIComponent(returnTo) : "pratik/";
+    window.location.href = "/";
   }, 700);
+}
+
+/* AUTH DURUM DİNLENMESİ */
+onAuthChange((user) => {
+  if (!user) {
+    hideVerifyWaitingOverlay();
+    stopVerifyPolling();
+    return;
+  }
+
+  const isPasswordProvider = user.providerData?.[0]?.providerId === "password";
+  if (isPasswordProvider && !user.emailVerified) {
+    showVerifyWaitingOverlay(user.email);
+    startVerifyPolling(user);
+    return;
+  }
+
+  hideVerifyWaitingOverlay();
+  stopVerifyPolling();
+  proceedToApp(user);
 });
 
 /* DOM DİNLENMESİ */
@@ -210,9 +270,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       setLoading(btnKayit, spanKayit, false, "Kayıt Ol");
-      const errEl = document.getElementById("err-kayit");
-      errEl.style.display = "block";
-      errEl.textContent = `✅ Kayıt başarılı! Lütfen ${email} adresine gelen bilgilendirme mailini kontrol edin.`;
     } catch (err) {
       setLoading(btnKayit, spanKayit, false, "Kayıt Ol");
       showError("err-kayit", firebaseErrMsg(err.code));
