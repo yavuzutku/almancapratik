@@ -76,7 +76,9 @@ export async function loginWithEmail(email, password) {
 
   if (!cred.user.emailVerified) {
     await signOut(auth);
-    throw new Error("Lütfen e-posta adresini doğrula!");
+    const err = new Error("E-posta adresiniz doğrulanmamış.");
+    err.code = "auth/email-not-verified";
+    throw err;
   }
 
   return cred;

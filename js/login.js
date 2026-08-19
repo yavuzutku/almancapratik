@@ -7,27 +7,52 @@ import {
   onAuthChange
 } from "./firebase.js";
 
-/* YARDIMCI FONKSİYONLAR */
+/* ===========================================================
+   AYARLAR
+=========================================================== */
+const VERIFY_POLL_INTERVAL_MS  = 4000;   // otomatik kontrol sıklığı
+const VERIFY_POLL_MAX_ATTEMPTS = 90;     // ~6 dakika sonra otomatik kontrolü durdur
+const RESEND_COOLDOWN_S        = 60;     // "tekrar gönder" butonu bekleme süresi (spam önleme)
+const EMAIL_RE                 = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/* ===========================================================
+   YARDIMCI FONKSİYONLAR
+=========================================================== */
 function showError(elId, msg) {
   const el = document.getElementById(elId);
   if (el) { el.textContent = msg; el.style.display = msg ? "block" : "none"; }
 }
 
 function setLoading(btn, span, loading, label) {
+  if (!btn || !span) return;
   btn.disabled = loading;
   span.textContent = loading ? "Yükleniyor..." : label;
 }
 
+// Kullanıcıdan gelen metni innerHTML içine gömerken XSS'e karşı kaçış
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = String(str ?? "");
+  return div.innerHTML;
+}
+
+function isValidEmail(email) {
+  return EMAIL_RE.test(email);
+}
+
 function firebaseErrMsg(code) {
   const map = {
-    "auth/user-not-found":        "Bu e-posta ile kayıtlı hesap bulunamadı.",
-    "auth/wrong-password":        "Şifre yanlış. Lütfen tekrar deneyin.",
-    "auth/invalid-credential":    "E-posta veya şifre hatalı.",
-    "auth/email-already-in-use":  "Bu e-posta adresi zaten kullanımda.",
-    "auth/weak-password":         "Şifre çok zayıf. En az 6 karakter kullanın.",
-    "auth/invalid-email":         "Geçersiz e-posta adresi.",
-    "auth/too-many-requests":     "Çok fazla deneme. Lütfen biraz bekleyin.",
-    "auth/network-request-failed":"İnternet bağlantınızı kontrol edin.",
+    "auth/user-not-found":         "Bu e-posta ile kayıtlı hesap bulunamadı.",
+    "auth/wrong-password":         "Şifre yanlış. Lütfen tekrar deneyin.",
+    "auth/invalid-credential":     "E-posta veya şifre hatalı.",
+    "auth/email-already-in-use":   "Bu e-posta adresi zaten kullanımda.",
+    "auth/weak-password":          "Şifre çok zayıf. En az 6 karakter kullanın.",
+    "auth/invalid-email":          "Geçersiz e-posta adresi.",
+    "auth/too-many-requests":      "Çok fazla deneme. Lütfen biraz bekleyin.",
+    "auth/network-request-failed": "İnternet bağlantınızı kontrol edin.",
+    "auth/user-disabled":          "Bu hesap devre dışı bırakılmış.",
+    "auth/requires-recent-login":  "Bu işlem için tekrar giriş yapmanız gerekiyor.",
+    "auth/email-not-verified":     "E-posta adresiniz doğrulanmamış.",
   };
   return map[code] || "Bir hata oluştu. Lütfen tekrar deneyin.";
 }
@@ -57,7 +82,7 @@ function buildGoogleBtn(containerId, label) {
     try { await loginWithGoogle(); }
     catch (err) {
       btn.disabled = false; span.textContent = label;
-      if (err.code !== "auth/popup-closed-by-user") {
+      if (err.code !== "auth/popup-closed-by-user" && err.code !== "auth/cancelled-popup-request") {
         showError(
           containerId.includes("kayit") ? "err-kayit" : "err-giris",
           "Google ile giriş başarısız."
@@ -67,11 +92,42 @@ function buildGoogleBtn(containerId, label) {
   });
 }
 
-/* DOĞRULAMA BEKLEME EKRANI */
-let verifyPollInterval = null;
+/* ===========================================================
+   E-POSTA DOĞRULAMA GÖNDERİMİ — TEK MERKEZİ FONKSİYON
+   (hem overlay'deki "tekrar gönder", hem giriş ekranındaki
+   "tekrar gönder" hem de kayıt akışı bunu kullanır)
+=========================================================== */
+async function sendVerificationEmailRequest(email, name) {
+  const body = { type: "verify", email };
+  if (name) body.name = name;
+  const r = await fetch('https://api.almancapratik.com/api/auth-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error('Gönderim başarısız');
+}
 
-function showVerifyWaitingOverlay(email) {
+/* ===========================================================
+   DOĞRULAMA BEKLEME EKRANI (OVERLAY)
+=========================================================== */
+let verifyPollInterval     = null;
+let verifyPollAttempts     = 0;
+let resendCooldownTimer    = null;
+// Kayıt sırasında doğrulama e-postası gönderilemezse, overlay henüz
+// oluşturulmamış olabilir. Bu bayrak overlay açıldığında okunur.
+let pendingVerifyEmailWarning = null;
+
+function setOverlayStatus(msg, tone = "info") {
+  const el = document.getElementById("verify-overlay-status");
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = tone === "warning" ? "#fbbf24" : tone === "error" ? "#f87171" : "rgba(255,255,255,.7)";
+}
+
+function showVerifyWaitingOverlay(user) {
   if (document.getElementById("verify-waiting-overlay")) return;
+
   const overlay = document.createElement("div");
   overlay.id = "verify-waiting-overlay";
   overlay.style.cssText = `
@@ -80,29 +136,141 @@ function showVerifyWaitingOverlay(email) {
     z-index:9999; padding:24px; text-align:center;
   `;
   overlay.innerHTML = `
-    <div style="max-width:380px; color:#fff; font-family:sans-serif;">
+    <div style="max-width:400px; color:#fff; font-family:sans-serif;">
       <h2 style="margin:0 0 12px;">📧 E-postanı doğrula</h2>
-      <p style="opacity:.85; line-height:1.6; margin:0;">
-        <strong>${email}</strong> adresine bir doğrulama bağlantısı gönderdik.
+      <p style="opacity:.85; line-height:1.6; margin:0 0 6px;">
+        <strong>${escapeHtml(user.email)}</strong> adresine bir doğrulama bağlantısı gönderdik.
         Bağlantıya tıkladıktan sonra bu sayfa <strong>otomatik olarak devam edecek</strong>,
-        tekrar giriş yapmana gerek yok. Bu pencereyi kapatmadan bekleyebilirsin.
+        tekrar giriş yapmana gerek yok.
       </p>
+      <p id="verify-overlay-status" style="font-size:13px; opacity:.7; min-height:18px; margin:0 0 18px;"></p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button id="verifyCheckNowBtn" type="button" style="
+          padding:10px; border:none; border-radius:8px;
+          background:#2563eb; color:#fff; font-size:14px;
+          font-weight:600; cursor:pointer;">Şimdi Kontrol Et</button>
+        <button id="verifyResendBtn" type="button" style="
+          padding:10px; border:1px solid rgba(255,255,255,.25); border-radius:8px;
+          background:transparent; color:#fff; font-size:14px;
+          cursor:pointer;">Doğrulama E-postasını Tekrar Gönder</button>
+        <button id="verifySignOutBtn" type="button" style="
+          padding:8px; border:none; background:transparent;
+          color:rgba(255,255,255,.55); font-size:13px;
+          text-decoration:underline; cursor:pointer;">Çıkış yap / farklı hesap kullan</button>
+      </div>
     </div>
   `;
   document.body.appendChild(overlay);
+
+  document.getElementById("verifyCheckNowBtn")
+    .addEventListener("click", () => manualCheckNow(user));
+  document.getElementById("verifyResendBtn")
+    .addEventListener("click", (e) => handleResendClick(e.currentTarget, user.email));
+  document.getElementById("verifySignOutBtn")
+    .addEventListener("click", async () => {
+      stopVerifyPolling();
+      stopResendCooldown();
+      try { await logoutFirebase(); } catch {}
+      // user null olunca onAuthChange overlay'i zaten kaldırıp login ekranına döndürür
+    });
+
+  // Kayıt sırasında e-posta gönderimi başarısız olduysa burada bildir
+  if (pendingVerifyEmailWarning) {
+    setOverlayStatus(pendingVerifyEmailWarning, "warning");
+    pendingVerifyEmailWarning = null;
+  }
 }
 
 function hideVerifyWaitingOverlay() {
   document.getElementById("verify-waiting-overlay")?.remove();
 }
 
+async function manualCheckNow(user) {
+  const btn = document.getElementById("verifyCheckNowBtn");
+  if (!btn) return;
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Kontrol ediliyor...";
+  try {
+    await user.reload();
+    if (user.emailVerified) {
+      stopVerifyPolling();
+      hideVerifyWaitingOverlay();
+      proceedToApp(user);
+      return;
+    }
+    setOverlayStatus("Henüz doğrulanmadı. Bağlantıya tıkladıktan sonra tekrar dene.", "warning");
+  } catch (err) {
+    console.error("[manualCheckNow] hata:", err);
+    setOverlayStatus("Kontrol edilemedi. İnternet bağlantınızı kontrol edin.", "error");
+  } finally {
+    if (document.getElementById("verifyCheckNowBtn")) {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
+  }
+}
+
+function stopResendCooldown() {
+  if (resendCooldownTimer) { clearInterval(resendCooldownTimer); resendCooldownTimer = null; }
+}
+
+async function handleResendClick(btn, email) {
+  if (!btn || btn.disabled) return;
+  btn.disabled = true;
+  const originalLabel = btn.textContent;
+  btn.textContent = "Gönderiliyor...";
+
+  const isOverlayBtn = btn.id === "verifyResendBtn";
+  const reportStatus = (msg, tone) => {
+    if (isOverlayBtn) setOverlayStatus(msg, tone);
+    else showError("err-giris", msg);
+  };
+
+  try {
+    await sendVerificationEmailRequest(email);
+    reportStatus("✅ Doğrulama e-postası gönderildi. Gelen kutunuzu kontrol edin.", "info");
+  } catch (err) {
+    console.error("[handleResendClick] hata:", err);
+    reportStatus("❌ Gönderilemedi. Lütfen birazdan tekrar dene.", "error");
+  }
+
+  // Spam'i / API kötüye kullanımını önlemek için butonu geri sayımla kilitle
+  let remaining = RESEND_COOLDOWN_S;
+  btn.textContent = `Tekrar gönder (${remaining}sn)`;
+  stopResendCooldown();
+  resendCooldownTimer = setInterval(() => {
+    remaining -= 1;
+    if (!btn.isConnected) { stopResendCooldown(); return; }
+    if (remaining <= 0) {
+      stopResendCooldown();
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    } else {
+      btn.textContent = `Tekrar gönder (${remaining}sn)`;
+    }
+  }, 1000);
+}
+
 function stopVerifyPolling() {
   if (verifyPollInterval) { clearInterval(verifyPollInterval); verifyPollInterval = null; }
+  verifyPollAttempts = 0;
 }
 
 function startVerifyPolling(user) {
   if (verifyPollInterval) return;
+  verifyPollAttempts = 0;
   verifyPollInterval = setInterval(async () => {
+    verifyPollAttempts += 1;
+
+    // Sonsuz polling'i engelle: belirli bir süre sonra otomatik kontrolü durdur.
+    // "Şimdi Kontrol Et" butonu her zaman aktif kalmaya devam eder.
+    if (verifyPollAttempts > VERIFY_POLL_MAX_ATTEMPTS) {
+      stopVerifyPolling();
+      setOverlayStatus("Otomatik kontrol durduruldu. Doğruladıysan \"Şimdi Kontrol Et\" butonuna bas.", "warning");
+      return;
+    }
+
     try {
       await user.reload();
       if (user.emailVerified) {
@@ -110,45 +278,60 @@ function startVerifyPolling(user) {
         hideVerifyWaitingOverlay();
         proceedToApp(user);
       }
-    } catch {
-      // sessizce geç, bir sonraki denemede tekrar kontrol eder
+    } catch (err) {
+      // Kullanıcı silinmiş / token geçersiz olabilir — sessizce sonsuza kadar denemek yerine durdur
+      console.error("[startVerifyPolling] hata:", err);
+      stopVerifyPolling();
+      setOverlayStatus("Oturum doğrulanamadı. Lütfen çıkış yapıp tekrar giriş yap.", "error");
     }
-  }, 4000);
+  }, VERIFY_POLL_INTERVAL_MS);
 }
 
-/* GİRİŞ SONRASI TEK YÖNLENDİRME NOKTASI — HER ZAMAN ANASAYFA */
+/* ===========================================================
+   GİRİŞ SONRASI TEK YÖNLENDİRME NOKTASI — HER ZAMAN ANASAYFA
+   Arayüz güncellemesi başarısız olsa bile yönlendirme MUTLAKA gerçekleşir
+   (try/finally ile garanti altına alınmıştır).
+=========================================================== */
 function proceedToApp(user) {
-  document.getElementById("login-view").style.display = "none";
-  const uv = document.getElementById("user-view");
-  uv.style.display = "flex";
+  try {
+    const loginView = document.getElementById("login-view");
+    if (loginView) loginView.style.display = "none";
 
-  const nameEl   = document.getElementById("user-name");
-  const emailEl  = document.getElementById("user-email");
-  const avatarEl = document.getElementById("user-avatar");
-  if (nameEl)   nameEl.textContent  = user.displayName || "Kullanıcı";
-  if (emailEl)  emailEl.textContent = user.email || "";
-  if (avatarEl) {
-    avatarEl.src = user.photoURL || "";
-    avatarEl.alt = (user.displayName || "Kullanıcı") + " profil fotoğrafı";
-    avatarEl.style.display = user.photoURL ? "block" : "none";
+    const uv = document.getElementById("user-view");
+    if (uv) uv.style.display = "flex";
+
+    const nameEl   = document.getElementById("user-name");
+    const emailEl  = document.getElementById("user-email");
+    const avatarEl = document.getElementById("user-avatar");
+
+    if (nameEl)  nameEl.textContent  = user.displayName || "Kullanıcı";
+    if (emailEl) emailEl.textContent = user.email || "";
+    if (avatarEl) {
+      avatarEl.src = user.photoURL || "";
+      avatarEl.alt = (user.displayName || "Kullanıcı") + " profil fotoğrafı";
+      avatarEl.style.display = user.photoURL ? "block" : "none";
+    }
+  } catch (err) {
+    console.error("[proceedToApp] Arayüz güncellenemedi, yine de yönlendiriliyor:", err);
+  } finally {
+    setTimeout(() => { window.location.href = "/"; }, 700);
   }
-
-  setTimeout(() => {
-    window.location.href = "/";
-  }, 700);
 }
 
-/* AUTH DURUM DİNLENMESİ */
+/* ===========================================================
+   AUTH DURUM DİNLENMESİ
+=========================================================== */
 onAuthChange((user) => {
   if (!user) {
     hideVerifyWaitingOverlay();
     stopVerifyPolling();
+    stopResendCooldown();
     return;
   }
 
   const isPasswordProvider = user.providerData?.[0]?.providerId === "password";
   if (isPasswordProvider && !user.emailVerified) {
-    showVerifyWaitingOverlay(user.email);
+    showVerifyWaitingOverlay(user);
     startVerifyPolling(user);
     return;
   }
@@ -158,7 +341,9 @@ onAuthChange((user) => {
   proceedToApp(user);
 });
 
-/* DOM DİNLENMESİ */
+/* ===========================================================
+   DOM DİNLENMESİ
+=========================================================== */
 document.addEventListener("DOMContentLoaded", () => {
 
   const tabGiris  = document.getElementById("tab-giris");
@@ -168,10 +353,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function switchTab(active) {
     const isGiris = active === "giris";
-    tabGiris.classList.toggle("tab--active", isGiris);
-    tabKayit.classList.toggle("tab--active", !isGiris);
-    formGiris.style.display = isGiris  ? "flex" : "none";
-    formKayit.style.display = !isGiris ? "flex" : "none";
+    tabGiris?.classList.toggle("tab--active", isGiris);
+    tabKayit?.classList.toggle("tab--active", !isGiris);
+    if (formGiris) formGiris.style.display = isGiris  ? "flex" : "none";
+    if (formKayit) formKayit.style.display = !isGiris ? "flex" : "none";
     ["err-giris", "err-kayit"].forEach(id => showError(id, ""));
   }
 
@@ -181,7 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
   buildGoogleBtn("google-btn-giris", "Google ile Giriş Yap");
   buildGoogleBtn("google-btn-kayit", "Google ile Kayıt Ol");
 
-  /* E-posta ile Giriş */
+  /* ---------- E-posta ile Giriş ---------- */
   const btnGiris  = document.getElementById("btn-giris");
   const spanGiris = btnGiris?.querySelector("span");
 
@@ -189,38 +374,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("giris-email").value.trim();
     const pass  = document.getElementById("giris-sifre").value;
     showError("err-giris", "");
+
     if (!email || !pass) { showError("err-giris", "E-posta ve şifre zorunludur."); return; }
+    if (!isValidEmail(email)) { showError("err-giris", "Geçersiz e-posta adresi."); return; }
+
     setLoading(btnGiris, spanGiris, true, "Giriş Yap");
     try {
       await loginWithEmail(email, pass);
+      setLoading(btnGiris, spanGiris, false, "Giriş Yap");
+      // Yönlendirme onAuthChange üzerinden proceedToApp ile yapılır.
     } catch (err) {
       setLoading(btnGiris, spanGiris, false, "Giriş Yap");
 
-      if (err.message === "Lütfen e-posta adresini doğrula!") {
+      if (err.code === "auth/email-not-verified") {
         const errEl = document.getElementById("err-giris");
         errEl.style.display = "block";
         errEl.innerHTML = `
           ⚠️ E-posta adresiniz doğrulanmamış.
-          <button id="resendVerifyBtn" style="
+          <button id="resendVerifyBtn" type="button" style="
             display:block; margin-top:8px; width:100%;
             padding:8px; border:none; border-radius:8px;
             background:#2563eb; color:#fff; font-size:13px;
             cursor:pointer; font-weight:500;
           ">Doğrulama e-postasını tekrar gönder</button>
         `;
-        document.getElementById("resendVerifyBtn").addEventListener("click", async () => {
-          try {
-            const r = await fetch('https://api.almancapratik.com/api/auth-email', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ type: 'verify', email })
-            });
-            if (!r.ok) throw new Error('Gönderim başarısız');
-            errEl.innerHTML = "✅ Doğrulama e-postası gönderildi. Lütfen gelen kutunuzu kontrol edin.";
-          } catch (e) {
-            errEl.innerHTML = "❌ Gönderilemedi. Lütfen tekrar dene.";
-          }
-        });
+        document.getElementById("resendVerifyBtn")
+          .addEventListener("click", (e) => handleResendClick(e.currentTarget, email));
         return;
       }
 
@@ -228,7 +407,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* E-posta ile Kayıt */
+  /* ---------- E-posta ile Kayıt ---------- */
   const btnKayit  = document.getElementById("btn-kayit");
   const spanKayit = btnKayit?.querySelector("span");
 
@@ -240,47 +419,64 @@ document.addEventListener("DOMContentLoaded", () => {
     showError("err-kayit", "");
 
     if (!name || !email || !pass)  { showError("err-kayit", "Tüm alanlar zorunludur."); return; }
+    if (!isValidEmail(email))      { showError("err-kayit", "Geçersiz e-posta adresi."); return; }
     if (pass !== pass2)            { showError("err-kayit", "Şifreler eşleşmiyor."); return; }
     if (pass.length < 6)           { showError("err-kayit", "Şifre en az 6 karakter olmalıdır."); return; }
 
     setLoading(btnKayit, spanKayit, true, "Kayıt Ol");
 
+    // 1) Hesabı oluştur. Yalnızca BU adım başarısız olursa gerçek bir
+    //    "kayıt başarısız" hatası göster — çünkü kullanıcı hesabı henüz yok.
     try {
       await registerWithEmail(email, pass, name);
-
-      // Doğrulama e-postası — Firebase Admin linki üretir, Resend gönderir
-      await fetch('https://api.almancapratik.com/api/auth-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'verify', email, name })
-      });
-
-      // Hoş geldin e-postası
-      await fetch('https://api.almancapratik.com/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: email,
-          subject: 'AlmancaPratik - Hoş Geldin!',
-          html: `
-            <h2>Merhaba ${name},</h2>
-            <p>AlmancaPratik'e hoş geldin! Hesabın başarıyla oluşturuldu.</p>
-          `
-        })
-      });
-
-      setLoading(btnKayit, spanKayit, false, "Kayıt Ol");
     } catch (err) {
       setLoading(btnKayit, spanKayit, false, "Kayıt Ol");
       showError("err-kayit", firebaseErrMsg(err.code));
+      return;
     }
+
+    setLoading(btnKayit, spanKayit, false, "Kayıt Ol");
+    // Bu noktadan itibaren hesap KESİN olarak oluşturuldu.
+    // onAuthChange az sonra tetiklenip doğrulama ekranını (overlay) gösterecek.
+
+    // 2) Doğrulama e-postası — başarısız olsa bile bunu "kayıt başarısız"
+    //    olarak GÖSTERME (hesap zaten var, kullanıcı tekrar denerse
+    //    "e-posta zaten kullanımda" hatasıyla karşılaşırdı). Bunun yerine
+    //    overlay'de bir uyarı göster; kullanıcı "Tekrar Gönder" ile telafi edebilir.
+    try {
+      await sendVerificationEmailRequest(email, name);
+    } catch (err) {
+      console.error("[Kayıt] Doğrulama e-postası gönderilemedi:", err);
+      pendingVerifyEmailWarning = "Doğrulama e-postası gönderilemedi. Aşağıdan tekrar gönderebilirsin.";
+      setOverlayStatus(pendingVerifyEmailWarning, "warning"); // overlay zaten açıksa hemen göster
+    }
+
+    // 3) Hoş geldin e-postası — tamamen best-effort, kritik değil, akışı bloklamaz.
+    fetch('https://api.almancapratik.com/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: email,
+        subject: 'AlmancaPratik - Hoş Geldin!',
+        html: `<h2>Merhaba ${escapeHtml(name)},</h2><p>AlmancaPratik'e hoş geldin! Hesabın başarıyla oluşturuldu.</p>`
+      })
+    }).catch(err => console.error("[Kayıt] Hoş geldin e-postası gönderilemedi:", err));
   });
 
-  /* Şifremi Unuttum */
-  document.getElementById("forgot-link")?.addEventListener("click", async (e) => {
+  /* ---------- Şifremi Unuttum ---------- */
+  const forgotLink = document.getElementById("forgot-link");
+  let forgotCooldown = false;
+
+  forgotLink?.addEventListener("click", async (e) => {
     e.preventDefault();
+    if (forgotCooldown) return;
+
     const email = document.getElementById("giris-email").value.trim();
     if (!email) { showError("err-giris", "Önce e-posta adresinizi girin."); return; }
+    if (!isValidEmail(email)) { showError("err-giris", "Geçersiz e-posta adresi."); return; }
+
+    forgotCooldown = true;
+    setTimeout(() => { forgotCooldown = false; }, RESEND_COOLDOWN_S * 1000);
 
     try {
       const r = await fetch('https://api.almancapratik.com/api/auth-email', {
@@ -289,14 +485,13 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ type: 'reset', email })
       });
       if (!r.ok) throw new Error('Gönderim başarısız');
-
       showError("err-giris", "✅ Şifre sıfırlama e-postası gönderildi.");
     } catch (err) {
       showError("err-giris", "Bir hata oluştu. Lütfen tekrar deneyin.");
     }
   });
 
-  /* Çıkış */
+  /* ---------- Çıkış ---------- */
   document.getElementById("logoutBtn")?.addEventListener("click", async () => {
     try { await logoutFirebase(); } catch {}
     window.location.reload();
