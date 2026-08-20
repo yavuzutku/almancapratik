@@ -131,6 +131,34 @@ function hidePopup() {
 }
 
 // ================================================================
+// LOKAL YEDEK VERİTABANI (Wiktionary API başarısız olursa devreye girer)
+// ================================================================
+
+const NOUNS_DB_URL = './datalar/nouns.json';
+let _nounsDbPromise = null;
+
+/* Dosyayı sadece ilk ihtiyaç anında çeker, sonrasında bellekte tutar */
+function loadNounsDb() {
+  if (!_nounsDbPromise) {
+    _nounsDbPromise = fetch(NOUNS_DB_URL)
+      .then(res => (res.ok ? res.json() : {}))
+      .catch(() => ({}));
+  }
+  return _nounsDbPromise;
+}
+
+async function fetchGenusLocal(variants) {
+  const db = await loadNounsDb();
+  for (const variant of variants) {
+    const entry = db[variant];
+    if (entry && (entry.g === 'm' || entry.g === 'f' || entry.g === 'n')) {
+      return { genus: entry.g, wikitext: null, plural: entry.p || null, source: 'local' };
+    }
+  }
+  return null;
+}
+
+// ================================================================
 // WIKTIONARY — ham wikitext çekme
 // ================================================================
 
@@ -173,13 +201,15 @@ async function fetchGenus(word) {
         if (m) {
           const g = m[1].toLowerCase();
           if (g === 'm' || g === 'f' || g === 'n') {
-            return { genus: g, wikitext }; /* ← erken çıkış, diğer variant'lar denenmez */
+            return { genus: g, wikitext, source: 'wiktionary' }; /* ← erken çıkış, diğer variant'lar denenmez */
           }
         }
       }
     } catch { continue; }
   }
-  return null;
+
+  /* Wiktionary'de bulunamadı → lokal yedek veritabanına düş (92k kelime, WiktionaryDE'den derlenmiş) */
+  return fetchGenusLocal(variants);
 }
 
 // ================================================================
@@ -607,20 +637,21 @@ async function searchArtikel() {
 
     if (!result) {
       showError(
-        `"<strong>${escHtml(word)}</strong>" için Wiktionary'de Almanca artikel bulunamadı.<br>` +
+        `"<strong>${escHtml(word)}</strong>" için Almanca artikel bulunamadı.<br>` +
         `Kelimenin Almanca bir isim olup olmadığını kontrol edin.`
       );
       return;
     }
 
-    const { genus, wikitext } = result;
-    const info     = genusInfo[genus];
-    const plural   = parsePlural(wikitext);
-    const ipa      = parseIPA(wikitext);
-    const bedeutung = parseBedeutung(wikitext);
+    const { genus, wikitext, plural: localPlural, source } = result;
+    const info      = genusInfo[genus];
+    /* wikitext varsa (Wiktionary) ondan parse et; yoksa (lokal yedek) hazır çoğul formu kullan */
+    const plural    = wikitext ? parsePlural(wikitext)   : (localPlural || null);
+    const ipa       = wikitext ? parseIPA(wikitext)      : null;
+    const bedeutung = wikitext ? parseBedeutung(wikitext) : [];
 
     haptic(30);
-    showResult(word, genus, plural, ipa, bedeutung);
+    showResult(word, genus, plural, ipa, bedeutung, source);
     addToHistory(word, genus, info.artikel);
     loadExampleSentences(word, info.artikel, wikitext);
 
@@ -636,9 +667,10 @@ async function searchArtikel() {
 // SONUÇ KARTINI GÖSTER
 // ================================================================
 
-function showResult(word, genus, plural, ipa, bedeutung) {
+function showResult(word, genus, plural, ipa, bedeutung, source) {
   const info        = genusInfo[genus];
   const capitalized = word.charAt(0).toUpperCase() + word.slice(1);
+  const isLocal      = source === 'local';
 
   document.getElementById('artikelBadge').textContent = info.artikel;
   document.getElementById('artikelBadge').className   = `artikel-badge ${info.cls}`;
@@ -648,11 +680,16 @@ function showResult(word, genus, plural, ipa, bedeutung) {
   document.getElementById('genusPill').className      = `genus-pill ${info.cls}`;
   document.getElementById('genusName').textContent    = info.name;
 
-  /* Wiktionary linki — artık görünür */
+  /* Wiktionary linki — sonuç lokal veritabanından geldiyse (Wiktionary'de sayfa bulunamadığı için)
+     var olmayan bir sayfaya link vermemek için gizli tut */
   const link = document.getElementById('wiktionaryLink');
   if (link) {
-    link.href = `https://de.wiktionary.org/wiki/${encodeURIComponent(capitalized)}`;
-    link.classList.remove('hidden');
+    if (isLocal) {
+      link.classList.add('hidden');
+    } else {
+      link.href = `https://de.wiktionary.org/wiki/${encodeURIComponent(capitalized)}`;
+      link.classList.remove('hidden');
+    }
   }
 
   /* Ek bilgi (IPA / Çoğul / Anlam) */
@@ -675,6 +712,13 @@ function showResult(word, genus, plural, ipa, bedeutung) {
       html += `<div class="extra-item extra-bedeutung">
         <span class="extra-label">Anlam</span>
         <span class="extra-val">${bedeutung.map(b => escHtml(b)).join('<span class="meaning-sep"> / </span>')}</span>
+      </div>`;
+    }
+    if (isLocal) {
+      html += `<div class="extra-item extra-source-note">
+        <span class="extra-val" style="opacity:.65;font-size:.85em;">
+          ℹ️ Bu sonuç yerel veritabanından alındı (Wiktionary'de anlık kayıt bulunamadı)
+        </span>
       </div>`;
     }
     extraEl.innerHTML = html;
