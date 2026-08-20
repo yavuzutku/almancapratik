@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="../../favicon.ico" type="image/x-icon">
-<link rel="stylesheet" href="../../css/global.css">
+<link rel="icon" href="../favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="../css/global.css">
 
 <title>Almanca Seviye Testi — A1'den C1'e Ücretsiz Seviye Tespit Sınavı | AlmancaPratik</title>
 <meta name="description" content="30 soruluk ücretsiz Almanca seviye testi ile A1, A2, B1, B2 veya C1 seviyende olduğunu öğren. Gramer, kelime ve okuma anlayışını test et. Türkçe açıklamalı, anında sonuç.">
@@ -249,11 +249,6 @@
       <p class="level-desc-text" id="level-desc-text"></p>
     </div>
 
-    <div class="result-actions">
-      <button class="btn-restart" onclick="restartQuiz()">↺ Tekrar Çöz</button>
-      <a class="btn-home-link" href="/pratik/">Geri Dön</a>
-    </div>
-
     <div class="wrongs-section" id="wrongs-section" style="display:none">
       <div class="wrongs-title">Yanlış Cevapladığın Sorular</div>
       <div id="wrongs-list"></div>
@@ -267,7 +262,7 @@
 
 <!-- Firebase module script -->
 <script type="module">
-  import { auth, db }         from '../../js/firebase.js';
+  import { auth, db }         from '../js/firebase.js';
   import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
   import { doc, getDoc, setDoc, serverTimestamp }
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
@@ -329,7 +324,7 @@ document.addEventListener('svt:start', function() {
 });
 </script>
 <script type="module">
-  import "../../js/core.js";
+  import "../js/core.js";
   window.loadNavbar();
 </script>
 </body>
