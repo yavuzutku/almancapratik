@@ -653,7 +653,7 @@ function loadNavbar() {
     </div>
 
     <div class="sn-footer">
-      <a class="sn-cta" href="/seviyeler/seviyetespit/" data-label="Seviye Testi">
+      <a class="sn-cta" href="/seviyetespit/" data-label="Seviye Testi">
         <span class="sn-cta-ico">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>
