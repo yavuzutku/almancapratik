@@ -5,19 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="favicon.png">
 <title>AlmancaPratik — Ücretsiz Almanca Öğrenme Platformu | A1'den C1'e</title>
-<meta name="description" content="Türkçe arayüzlü ücretsiz Almanca öğrenme platformu. Der die das artikel bulucu, kelime quizi, metin analizi, cümle örnekleri ve çeviri aracıyla A1'den C1'e pratik yap. Kayıt gerektirmez.">
-<meta name="keywords" content="almanca öğrenme, almanca pratik, almanca türkçe, der die das, almanca quiz, almanca metin analizi, almanca seviye testi, almanca artikel, almanca kelime, almanca cümle örnekleri">
+<meta name="description" content="Türkçe arayüzlü ücretsiz Almanca öğrenme platformu. Der die das artikel bulucu, kelime quizi, cümle örnekleri ve çeviri aracıyla A1'den C1'e pratik yap. Kayıt gerektirmez.">
+<meta name="keywords" content="almanca öğrenme, almanca pratik, almanca türkçe, der die das, almanca quiz, almanca seviye testi, almanca artikel, almanca kelime, almanca cümle örnekleri">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://almancapratik.com/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://almancapratik.com/">
 <meta property="og:title" content="AlmancaPratik — Ücretsiz Almanca Öğrenme Platformu">
-<meta property="og:description" content="Türkçe arayüzlü ücretsiz Almanca öğrenme platformu. Kelime quizi, artikel bulucu, metin analizi ile A1–C1 arası pratik yap.">
+<meta property="og:description" content="Türkçe arayüzlü ücretsiz Almanca öğrenme platformu. Kelime quizi, artikel bulucu, ile A1–C1 arası pratik yap.">
 <meta property="og:locale" content="tr_TR">
 <meta property="og:site_name" content="AlmancaPratik">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AlmancaPratik — Ücretsiz Almanca Öğrenme Platformu">
-<meta name="twitter:description" content="Türkçe arayüzlü ücretsiz Almanca öğrenme platformu. Kelime quizi, artikel bulucu, metin analizi ile A1–C1 arası pratik yap.">
+<meta name="twitter:description" content="Türkçe arayüzlü ücretsiz Almanca öğrenme platformu. Kelime quizi, artikel bulucu, ile A1–C1 arası pratik yap.">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","url":"https://almancapratik.com/","name":"AlmancaPratik","description":"Türkçe konuşanlar için ücretsiz Almanca öğrenme platformu.","inLanguage":"tr","potentialAction":{"@type":"SearchAction","target":"https://almancapratik.com/artikel/?word={search_term_string}","query-input":"required name=search_term_string"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"EducationalApplication","name":"AlmancaPratik","url":"https://almancapratik.com","applicationCategory":"EducationalApplication","inLanguage":"tr","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"TRY"},"educationalLevel":["A1","A2","B1","B2","C1"],"teaches":"Almanca dil becerileri"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"AlmancaPratik ücretsiz mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Artikel bulucu, cümle örnekleri, çeviri ve seviye testi hesap gerektirmez. Kişisel sözlük ve quiz için ücretsiz kayıt yeterli."}},{"@type":"Question","name":"Der die das artikel bulucu nasıl çalışır?","acceptedAnswer":{"@type":"Answer","text":"Wiktionary verileri kullanılarak girilen Almanca kelimenin der, die veya das artikeli anında gösterilir."}},{"@type":"Question","name":"Almanca seviye testi ücretsiz mi?","acceptedAnswer":{"@type":"Answer","text":"Evet, 25 soruluk Almanca seviye testi tamamen ücretsiz ve kayıt gerektirmez."}}]}</script>
@@ -93,7 +93,6 @@ tailwind.config = {
         <p class="text-base text-on-surface-variant leading-relaxed max-w-lg">
           <a class="prose-link" href="/artikel/">Artikel bulucu</a>,
           <a class="prose-link" href="/quiz/">kelime quizleri</a>,
-          <a class="prose-link" href="/metin/">metin analizi</a> ile
           Almancanda hızla ilerle. Araçların büyük kısmı giriş gerektirmez.
         </p>
       </div>
@@ -125,11 +124,7 @@ tailwind.config = {
           <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors ml-auto lg:hidden">→</span>
         </a>
 
-        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group" href="/metin/">
-          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">analytics</span>
-          <span class="text-on-surface text-sm font-medium leading-snug">Metin Analizi<br class="hidden lg:block"> &amp; Okuma</span>
-          <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors ml-auto lg:hidden">→</span>
-        </a>
+        
 
         <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group" href="/cumlebul/">
           <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">segment</span>
@@ -181,11 +176,7 @@ tailwind.config = {
         <div><h3 class="text-base font-bold font-headline text-on-surface mb-1">Cümle Örnekleri</h3><p class="text-on-surface-variant text-sm leading-relaxed max-w-md">Gerçek bağlamda kelime kullanımı — Wiktionary ve Tatoeba kaynakları.</p></div>
         <div class="flex gap-2 mt-auto pt-2"><span class="font-mono-label text-xs bg-surface-container-highest text-primary px-2.5 py-1 rounded-lg">Tatoeba</span><span class="font-mono-label text-xs bg-surface-container-highest text-primary px-2.5 py-1 rounded-lg">Wiktionary</span><span class="font-mono-label text-xs text-green-400">✓ Giriş gerekmez</span></div>
       </a>
-      <a href="/metin/" class="bg-surface-container-low border border-outline-variant/15 p-7 rounded-xl flex flex-col gap-5 hover:bg-surface-container transition-all group lg:row-span-2">
-        <div class="w-12 h-12 bg-surface-container-highest rounded-xl flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors"><span class="material-symbols-outlined" style="font-size:22px">analytics</span></div>
-        <div class="flex-grow"><h3 class="text-base font-bold font-headline text-on-surface mb-1">Metin Analizi</h3><p class="text-on-surface-variant text-sm leading-relaxed">Oku, tıkla, sözlüğüne kaydet. Herhangi bir Almanca metni interaktif okuma ortamına dönüştür.</p></div>
-        <div class="flex gap-2 mt-auto pt-2 flex-wrap"><span class="font-mono-label text-xs bg-surface-container-highest text-primary px-2.5 py-1 rounded-lg">NLP</span><span class="font-mono-label text-xs bg-surface-container-highest text-primary px-2.5 py-1 rounded-lg">Wiktionary</span></div>
-      </a>
+    
       <a href="/quiz/" class="bg-surface-container-low border border-outline-variant/15 p-7 rounded-xl flex flex-col gap-5 hover:bg-surface-container transition-all group">
         <div class="w-12 h-12 bg-surface-container-highest rounded-xl flex items-center justify-center text-primary group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors"><span class="material-symbols-outlined" style="font-size:22px">quiz</span></div>
         <div><h3 class="text-base font-bold font-headline text-on-surface mb-1">Kelime Quizi</h3><p class="text-on-surface-variant text-sm leading-relaxed">Kişisel listenden dinamik quiz — çoktan seçmeli veya yazarak.</p></div>
@@ -263,17 +254,13 @@ tailwind.config = {
       <div class="bg-surface-container-low border border-outline-variant/15 p-7 rounded-xl">
         <p class="font-mono-label text-xs font-semibold tracking-widest uppercase text-primary/80 mb-3">Nasıl Çalışır</p>
         <h3 class="text-lg font-bold font-headline text-on-surface mb-3 leading-snug">Oku, öğren, pekiştir döngüsü</h3>
-        <div class="space-y-3 text-sm text-on-surface-variant leading-relaxed">
-          <p>Bir Almanca metin yapıştır — <a class="prose-link" href="/metin/">metin analizi aracı</a> onu interaktif okuma ortamına dönüştürür. Yabancı bir kelimeye tıkladığında anlamı, artikeli ve örnek cümleler anında görünür.</p>
-          <p><a class="prose-link" href="/kelimeler/">Kişisel sözlüğüne</a> kaydettiğin kelimeler, <a class="prose-link" href="/quiz/">quiz aracında</a> otomatik test sorularına dönüşür.</p>
-        </div>
+        
       </div>
       <div class="bg-surface-container-low border border-outline-variant/15 p-7 rounded-xl md:col-span-2">
         <p class="font-mono-label text-xs font-semibold tracking-widest uppercase text-primary/80 mb-3">Araç Rehberi</p>
         <h3 class="text-lg font-bold font-headline text-on-surface mb-5 leading-snug">Her araç ne işe yarar?</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5 text-sm text-on-surface-variant leading-relaxed">
           <div><h4 class="font-semibold text-on-surface mb-1"><a class="prose-link" href="/artikel/">Der Die Das Artikel Bulucu</a></h4><p>Almancada her ismin cinsiyet eki — artikel — vardır: <strong class="text-on-surface">der</strong> (maskulin), <strong class="text-on-surface">die</strong> (feminin) veya <strong class="text-on-surface">das</strong> (nötrum). Girdiğin kelimenin cinsiyetini Wiktionary'den anında gösterir.</p></div>
-          <div><h4 class="font-semibold text-on-surface mb-1"><a class="prose-link" href="/metin/">Almanca Metin Analizi</a></h4><p>Yapıştırdığın metni interaktif okuma ortamına dönüştürür. Kelimeye tıkladığında çevirisi, artikeli ve örnek cümleler anında karşına çıkar.</p></div>
           <div><h4 class="font-semibold text-on-surface mb-1"><a class="prose-link" href="/quiz/">Almanca Kelime Quizi</a></h4><p>Sözlüğündeki kelimelerden otomatik quiz oluşturur. Çoktan seçmeli ve yazarak cevaplama modlarını destekler.</p></div>
           <div><h4 class="font-semibold text-on-surface mb-1"><a class="prose-link" href="/cumlebul/">Cümle Örnekleri Aracı</a></h4><p>Wiktionary ve Tatoeba kaynaklarından girdiğin kelimeyi içeren gerçek Almanca cümleler bulur.</p></div>
           <div><h4 class="font-semibold text-on-surface mb-1"><a class="prose-link" href="/seviyeler/seviyetespit/">Almanca Seviye Testi</a></h4><p>25 soruluk ücretsiz seviye testi, A1'den C1'e beş bölümde ölçer. Kayıt gerekmez, yaklaşık 10 dakika sürer.</p></div>
@@ -314,7 +301,6 @@ tailwind.config = {
     <div class="flex flex-col gap-2">
       <div class="faq-item bg-surface-container-low border border-outline-variant/10 rounded-xl p-5 hover:bg-surface-container"><p class="text-sm font-bold font-headline text-on-surface mb-2">AlmancaPratik ücretsiz mi?</p><p class="text-sm text-on-surface-variant leading-relaxed"><a class="prose-link" href="/artikel/">Artikel bulucu</a>, <a class="prose-link" href="/cumlebul/">cümle örnekleri</a> ve <a class="prose-link" href="/seviyeler/seviyetespit/">seviye testi</a> tamamen ücretsiz. Kişisel <a class="prose-link" href="/kelimeler/">sözlük</a> ve <a class="prose-link" href="/quiz/">quiz</a> için ücretsiz kayıt yeterli.</p></div>
       <div class="faq-item bg-surface-container-low border border-outline-variant/10 rounded-xl p-5 hover:bg-surface-container"><p class="text-sm font-bold font-headline text-on-surface mb-2">Der die das artikel bulucu nasıl çalışır?</p><p class="text-sm text-on-surface-variant leading-relaxed">Wiktionary veritabanını sorgulayarak girilen Almanca kelimenin maskulin (der), feminin (die) veya nötrum (das) olduğunu anında gösterir.</p></div>
-      <div class="faq-item bg-surface-container-low border border-outline-variant/10 rounded-xl p-5 hover:bg-surface-container"><p class="text-sm font-bold font-headline text-on-surface mb-2">Almanca metin analizi nasıl çalışır?</p><p class="text-sm text-on-surface-variant leading-relaxed"><a class="prose-link" href="/metin/">Metin analizi aracına</a> Almanca bir metin yapıştır. Bilmediğin kelimeye tıkla — çevirisi ve artikeli anında görünür. <a class="prose-link" href="/kelimeler/">Sözlüğüne ekle</a> ve <a class="prose-link" href="/quiz/">quizle</a> pekiştir.</p></div>
       <div class="faq-item bg-surface-container-low border border-outline-variant/10 rounded-xl p-5 hover:bg-surface-container"><p class="text-sm font-bold font-headline text-on-surface mb-2">Almanca seviye testi ne kadar sürer?</p><p class="text-sm text-on-surface-variant leading-relaxed">25 soruluk seviye testi yaklaşık 10 dakika sürer. Tüm CEFR seviyeleri kapsanır. Kayıt gerekmez, her yanlış cevap için Türkçe açıklama verilir.</p></div>
       <div class="faq-item bg-surface-container-low border border-outline-variant/10 rounded-xl p-5 hover:bg-surface-container"><p class="text-sm font-bold font-headline text-on-surface mb-2">Almancada hangi seviye iş başvurularında yeterli?</p><p class="text-sm text-on-surface-variant leading-relaxed">Almanya, Avusturya ve İsviçre'deki pozisyonların büyük kısmı B2 gerektirir. Akademik ortamlar genellikle C1 ister.</p></div>
       <div class="faq-item bg-surface-container-low border border-outline-variant/10 rounded-xl p-5 hover:bg-surface-container"><p class="text-sm font-bold font-headline text-on-surface mb-2">A2'den B1'e geçmek ne kadar sürer?</p><p class="text-sm text-on-surface-variant leading-relaxed">Günde 30-45 dakika düzenli çalışmayla ortalama 4-6 ayda gerçekleşebilir.</p></div>
@@ -328,7 +314,6 @@ tailwind.config = {
       <h2 id="sitemap-heading" class="text-3xl font-bold font-headline text-on-surface tracking-tight">Tüm sayfalar</h2>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-8">
-      <div><h4 class="font-mono-label text-xs font-semibold tracking-widest uppercase text-on-surface-variant mb-4">Araçlar</h4><ul class="space-y-2.5"><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/artikel/">Artikel Bulucu</a></li><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/cumlebul/">Cümle Örnekleri</a></li><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/metin/">Metin Analizi</a></li><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/okuma/">Okuma Modu</a></li><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/quiz/">Kelime Quizi</a></li></ul></div>
       <div><h4 class="font-mono-label text-xs font-semibold tracking-widest uppercase text-on-surface-variant mb-4">Sözlük</h4><ul class="space-y-2.5"><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/kelimeler/">Kelimelerim</a></li><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/wordsadd/">Kelime Ekle</a></li><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/singleadd/">Tek Kelime Ekle</a></li><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/gecmis/">Metin Geçmişi</a></li></ul></div>
       <div><h4 class="font-mono-label text-xs font-semibold tracking-widest uppercase text-on-surface-variant mb-4">İçerik</h4><ul class="space-y-2.5"><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/dersler/">Almanca Dersler</a></li><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/blog/">Blog</a></li><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/seviyeler/seviyetespit/">Seviye Testi</a></li><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/sponsorlar/">Sponsorlar</a></li></ul></div>
       <div><h4 class="font-mono-label text-xs font-semibold tracking-widest uppercase text-on-surface-variant mb-4">Hesap &amp; Diğer</h4><ul class="space-y-2.5"><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/pratik/">Platform Paneli</a></li><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/login.html">Giriş Yap</a></li><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/privacy.html">Gizlilik Politikası</a></li><li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors" href="/kullanim-sartlari.html">Kullanım Koşulları</a></li></ul></div>

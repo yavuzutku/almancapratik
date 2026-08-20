@@ -57,16 +57,18 @@ function loadNavbar() {
       --sn-w:        260px;
       --sn-cw:       64px;
       --sn-mobile-h: 58px;
-      --sn-bg:       rgba(8,12,24,0.97);
-      --sn-surf:     #171f33;
-      --sn-surf-h:   rgba(34,42,61,0.70);
-      --sn-border:   rgba(67,70,85,0.36);
-      --sn-text:     #dae2fd;
-      --sn-muted:    #6b7280;
-      --sn-primary:  #b4c5ff;
-      --sn-pc:       #2563eb;
-      --sn-pc-on:    #eeefff;
-      --sn-radius:   10px;
+      --sn-bg:       linear-gradient(184deg, #0c1122 0%, #070a14 100%);
+      --sn-surf:     #1b2340;
+      --sn-surf-h:   rgba(41,51,82,0.62);
+      --sn-border:   rgba(148,163,196,0.16);
+      --sn-text:     #eef1fc;
+      --sn-muted:    #8d95b3;
+      --sn-primary:  #a8c0ff;
+      --sn-pc:       #2f5fde;
+      --sn-pc-2:     #6d8dff;
+      --sn-pc-on:    #f5f7ff;
+      --sn-glow:     rgba(58,99,236,0.35);
+      --sn-radius:   11px;
       --sn-tr:       0.17s ease;
       --sn-slide:    0.25s cubic-bezier(0.4,0,0.2,1);
     }
@@ -98,9 +100,18 @@ function loadNavbar() {
       backdrop-filter: blur(28px) saturate(180%);
       -webkit-backdrop-filter: blur(28px) saturate(180%);
       border-right: 1px solid var(--sn-border);
+      box-shadow: 1px 0 0 rgba(255,255,255,0.03) inset, 26px 0 60px -32px rgba(4,7,15,0.7);
       border-radius: 0 20px 20px 0;
       overflow: hidden;
       transition: width var(--sn-slide), transform 0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+    #sideNav::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--sn-pc), var(--sn-pc-2), transparent 85%);
+      opacity: 0.85;
     }
     #sideNav.sn-col { width: var(--sn-cw); }
 
@@ -139,7 +150,12 @@ function loadNavbar() {
       line-height: 1.15;
       white-space: nowrap;
     }
-    .sn-brand-accent { color: var(--sn-primary); }
+    .sn-brand-accent {
+      background: linear-gradient(120deg, var(--sn-pc-2), var(--sn-primary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
     .sn-brand-tag {
       display: block;
       font-family: 'Space Grotesk', monospace;
@@ -170,6 +186,7 @@ function loadNavbar() {
       color: var(--sn-text);
       border-color: rgba(100,116,139,0.5);
     }
+    .sn-toggle-btn:focus-visible { outline: 2px solid var(--sn-pc-2); outline-offset: 2px; }
     .sn-toggle-btn svg { transition: transform var(--sn-slide); }
     #sideNav.sn-col .sn-toggle-btn svg { transform: rotate(180deg); }
 
@@ -197,6 +214,7 @@ function loadNavbar() {
     .sn-scroll::-webkit-scrollbar { width: 3px; }
     .sn-scroll::-webkit-scrollbar-track { background: transparent; }
     .sn-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 3px; }
+    .sn-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
 
     /* ── NAV ITEM ── */
     .sn-item {
@@ -207,7 +225,7 @@ function loadNavbar() {
       border-radius: var(--sn-radius);
       font-family: 'Manrope', system-ui, sans-serif;
       font-size: 13px; font-weight: 600;
-      color: rgba(195,198,215,0.72);
+      color: rgba(222,227,247,0.78);
       text-decoration: none;
       cursor: pointer;
       border: none;
@@ -219,6 +237,25 @@ function loadNavbar() {
       position: relative;
       white-space: nowrap;
     }
+    .sn-ico-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px; height: 26px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
+      transition: background var(--sn-tr), border-color var(--sn-tr), transform var(--sn-tr), box-shadow var(--sn-tr);
+    }
+    .sn-item:hover .sn-ico-box { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.14); transform: translateY(-1px); }
+    .sn-item--active .sn-ico-box {
+      background: linear-gradient(135deg, var(--sn-pc-2), var(--sn-pc));
+      border-color: transparent;
+      box-shadow: 0 4px 12px -3px var(--sn-glow);
+    }
+    .sn-item--active .sn-ico-box .sn-ico { opacity: 1; color: #fff; }
+    #sideNav.sn-col .sn-ico-box { width: 30px; height: 30px; border-radius: 9px; }
     .sn-ico {
       flex-shrink: 0;
       opacity: 0.6;
@@ -227,17 +264,13 @@ function loadNavbar() {
     }
     .sn-item:hover { color: var(--sn-text); background: var(--sn-surf-h); }
     .sn-item:hover .sn-ico { opacity: 1; }
+    .sn-item:focus-visible { outline: 2px solid var(--sn-pc-2); outline-offset: -2px; }
 
-    .sn-item--active { color: var(--sn-primary); background: rgba(37,99,235,0.12); }
-    .sn-item--active .sn-ico { opacity: 1; }
-    .sn-item--active::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 22%; bottom: 22%;
-      width: 3px;
-      background: var(--sn-pc);
-      border-radius: 0 3px 3px 0;
+    .sn-item--active {
+      color: #ffffff;
+      background: rgba(255,255,255,0.045);
     }
+    .sn-item--active .sn-ico { opacity: 1; }
 
     /* Label collapse */
     .sn-label {
@@ -307,14 +340,18 @@ function loadNavbar() {
       display: flex; align-items: center; gap: 8px;
       padding: 7px 10px; border-radius: 9px;
       font-size: 12px; font-weight: 600;
-      color: rgba(195,198,215,0.42);
+      color: rgba(210,216,240,0.58);
       text-decoration: none;
       transition: all var(--sn-tr);
       margin-top: 1px;
     }
-    .sn-all-link:hover { background: var(--sn-surf-h); color: rgba(218,226,253,0.78); }
+    .sn-all-link:hover { background: var(--sn-surf-h); color: rgba(238,241,252,0.94); }
 
-    .sn-divider { height: 1px; background: var(--sn-border); margin: 5px 4px; }
+    .sn-divider {
+      height: 1px;
+      margin: 6px 10px;
+      background: linear-gradient(90deg, transparent, var(--sn-border) 20%, var(--sn-border) 80%, transparent);
+    }
 
     /* ── ALT BAĞLANTILAR (Sponsorlar / Kullanım Koşulları / Gizlilik) ── */
     .sn-legal {
@@ -328,7 +365,7 @@ function loadNavbar() {
       font-family: 'Manrope', system-ui, sans-serif;
       font-size: 11px;
       font-weight: 500;
-      color: rgba(195,198,215,0.42);
+      color: rgba(210,216,240,0.5);
       text-decoration: none;
       white-space: nowrap;
       transition: color var(--sn-tr);
@@ -354,13 +391,22 @@ function loadNavbar() {
     .sn-cta {
       display: flex; align-items: center; justify-content: center; gap: 7px;
       padding: 10px 14px;
-      background: var(--sn-pc); color: var(--sn-pc-on);
+      background: linear-gradient(135deg, var(--sn-pc-2), var(--sn-pc));
+      color: var(--sn-pc-on);
       font-family: 'Manrope', sans-serif; font-size: 12.5px; font-weight: 700;
       border-radius: 10px; text-decoration: none;
       overflow: hidden; white-space: nowrap;
-      transition: filter var(--sn-tr), transform var(--sn-tr);
+      box-shadow: 0 6px 18px -6px var(--sn-glow);
+      transition: filter var(--sn-tr), transform var(--sn-tr), box-shadow var(--sn-tr);
     }
-    .sn-cta:hover { filter: brightness(1.14); transform: translateY(-1px); }
+    .sn-cta:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 10px 24px -6px var(--sn-glow); }
+    .sn-cta:focus-visible { outline: 2px solid var(--sn-pc-2); outline-offset: 2px; }
+    .sn-cta-ico {
+      display: flex; align-items: center; justify-content: center;
+      width: 20px; height: 20px; border-radius: 6px;
+      background: rgba(255,255,255,0.22);
+      flex-shrink: 0;
+    }
     .sn-cta-lbl {
       overflow: hidden; max-width: 160px;
       transition: max-width var(--sn-slide), opacity 0.14s ease;
@@ -373,13 +419,14 @@ function loadNavbar() {
       padding: 9px 12px;
       background: transparent; border: 1px solid var(--sn-border);
       border-radius: 10px;
-      color: rgba(195,198,215,0.7);
+      color: rgba(220,225,245,0.82);
       font-family: 'Manrope', sans-serif; font-size: 12.5px; font-weight: 600;
       text-decoration: none; cursor: pointer;
       overflow: hidden; white-space: nowrap;
-      transition: background var(--sn-tr), color var(--sn-tr);
+      transition: background var(--sn-tr), color var(--sn-tr), border-color var(--sn-tr);
     }
-    .sn-login-btn:hover { background: var(--sn-surf); color: var(--sn-text); }
+    .sn-login-btn:hover { background: var(--sn-surf); color: var(--sn-text); border-color: rgba(168,192,255,0.35); }
+    .sn-login-btn:focus-visible { outline: 2px solid var(--sn-pc-2); outline-offset: 2px; }
     .sn-login-lbl { overflow: hidden; max-width: 140px; transition: max-width var(--sn-slide), opacity 0.14s ease; }
     #sideNav.sn-col .sn-login-lbl { max-width: 0; opacity: 0; }
     #sideNav.sn-col .sn-login-btn { padding: 9px; justify-content: center; }
@@ -399,7 +446,7 @@ function loadNavbar() {
       border-radius: 50%;
       object-fit: cover;
       flex-shrink: 0;
-      border: 1.5px solid rgba(180,197,255,0.2);
+      border: 1.5px solid rgba(168,192,255,0.32);
       display: block;
     }
     .sn-profile-info {
@@ -414,16 +461,16 @@ function loadNavbar() {
       gap: 0;
     }
     .sn-profile-lbl { display:block; font-family:'Space Grotesk',monospace; font-size:9px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--sn-muted); white-space:nowrap; }
-    .sn-profile-email { display:block; font-size:11.5px; font-weight:500; color:rgba(195,198,215,0.7); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sn-profile-email { display:block; font-size:11.5px; font-weight:500; color:rgba(224,229,248,0.86); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .sn-profile-caret { flex-shrink:0; opacity:0.3; max-width:16px; overflow:hidden; transition:max-width var(--sn-slide); }
     #sideNav.sn-col .sn-profile-caret { max-width:0; }
 
     .sn-profile-drop {
       position: absolute; bottom: calc(100% + 8px); left: 0; right: 0;
       min-width: 180px;
-      background: #090f1d; border: 1px solid var(--sn-border);
+      background: #0b1020; border: 1px solid var(--sn-border);
       border-radius: 12px; padding: 5px;
-      box-shadow: 0 -18px 40px rgba(0,0,0,0.6);
+      box-shadow: 0 -18px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
       display: none; z-index: 20;
     }
     .sn-profile-drop.open { display: block; }
@@ -522,6 +569,13 @@ function loadNavbar() {
     .item-4 .fab-label::after { border-color:transparent transparent transparent #1d4ed8!important; }
     @media (hover:hover) { .fab-item:hover .fab-item-content { background:#2563eb!important; color:#eeefff!important; } }
     @media (hover:none)  { .fab-item:active .fab-item-content { background:#2563eb!important; color:#eeefff!important; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      #sideNav, #sideNav *, #snMobileBar, #snOverlay, #snTooltip {
+        transition-duration: 0.001ms !important;
+        animation-duration: 0.001ms !important;
+      }
+    }
   `;
   document.head.appendChild(style);
 
@@ -538,7 +592,7 @@ function loadNavbar() {
 
   const mkItem = (href, label, active, svgInner) => `
     <a class="sn-item${active ? " sn-item--active" : ""}" href="${href}" data-label="${label}">
-      <svg class="sn-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svgInner}</svg>
+      <span class="sn-ico-box"><svg class="sn-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svgInner}</svg></span>
       <span class="sn-label">${label}</span>
     </a>`;
 
@@ -562,10 +616,12 @@ function loadNavbar() {
       <div class="sn-group${isDersler ? " open" : ""}" id="snDerslerGroup">
         <button class="sn-item${isDersler ? " sn-item--active" : ""}" id="snDerslerToggle"
           aria-expanded="${isDersler ? "true" : "false"}" aria-controls="snDerslerSub" data-label="Dersler">
-          <svg class="sn-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-          </svg>
+          <span class="sn-ico-box">
+            <svg class="sn-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+          </span>
           <span class="sn-label">Dersler</span>
           <svg class="sn-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"/>
@@ -598,18 +654,22 @@ function loadNavbar() {
 
     <div class="sn-footer">
       <a class="sn-cta" href="/seviyeler/seviyetespit/" data-label="Seviye Testi">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
-          <path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>
-        </svg>
+        <span class="sn-cta-ico">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>
+          </svg>
+        </span>
         <span class="sn-cta-lbl">Seviye Testi — Ücretsiz</span>
       </a>
 
       <a class="sn-login-btn" id="snLoginBtn" href="/login.html" data-label="Giriş Yap">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
-          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-          <polyline points="10 17 15 12 10 7"/>
-          <line x1="15" y1="12" x2="3" y2="12"/>
-        </svg>
+        <span class="sn-ico-box" style="width:22px;height:22px;border-radius:7px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+        </span>
         <span class="sn-login-lbl">Giriş Yap</span>
       </a>
 
