@@ -641,14 +641,27 @@ function loadNavbar() {
         </div>
       </div>
 
-      ${mkItem("/artikel/", "Artikel Bulucu", isArtikel, '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>')}
-      ${mkItem("/cumlebul/", "Cümle Örnekleri", isCumle, '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>')}
-      ${mkItem("/fiil/", "Fiil Çekimleme", isFiil, '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>')}
-      ${mkItem("/quiz/", "Kelime Quizi", isQuiz, '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>')}
-      ${mkItem("/kelimeler/", "Kelimelerim", isKelimeler, '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>')}
+      ${mkItem("/hikayeler/", "Hikayeler & Okuma", p.includes("/hikayeler"), '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>')}
+      ${mkItem("/dinleme/", "Dinleme & Telaffuz", p.includes("/dinleme"), '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>')}
+      ${mkItem("/gramer/", "Gramer Rehberi", p.includes("/gramer"), '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>')}
 
       <div class="sn-divider"></div>
 
+      ${mkItem("/artikel/", "Artikel Bulucu", isArtikel, '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>')}
+      ${mkItem("/kelimeler/", "Kelimelerim", isKelimeler, '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>')}
+      ${mkItem("/fiil/", "Fiil Çekimleme", isFiil, '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>')}
+      ${mkItem("/yazma-konusma/", "Yazma & Konuşma", p.includes("/yazma-konusma"), '<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>')}
+
+      <div class="sn-divider"></div>
+
+      ${mkItem("/quiz/", "Kelime Quizi", isQuiz, '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>')}
+      ${mkItem("/cumlebul/", "Cümle Örnekleri", isCumle, '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>')}
+      ${mkItem("/seviyetespit/", "Seviye Testi", p.includes("/seviyetespit"), '<path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>')}
+      ${mkItem("/sinavlar/", "Sınavlara Hazırlık", p.includes("/sinavlar"), '<circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/>')}
+
+      <div class="sn-divider"></div>
+
+      ${mkItem("/almanyada-yasam/", "Almanya'da Yaşam", p.includes("/almanyada-yasam"), '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>')}
       ${mkItem("/blog/", "Blog", isBlog, '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>')}
     </div>
 

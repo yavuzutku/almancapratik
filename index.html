@@ -108,34 +108,53 @@ tailwind.config = {
       </div>
     </div>
 
-    <!-- SATIR 2: 5'li araç linkleri — tam genişlik, ikisinin altına hizalı -->
-    <nav class="w-full bg-surface-container-low border border-outline-variant/15 rounded-2xl overflow-hidden shadow-xl" aria-label="Platform araçları">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-outline-variant/10">
+    <!-- SATIR 2: Kategori bazlı hızlı erişim -->
+    <nav class="w-full bg-surface-container-low border border-outline-variant/15 rounded-2xl overflow-hidden shadow-xl" aria-label="Kategoriler">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y sm:divide-y-0 divide-outline-variant/10" style="display:grid;">
 
-        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group" href="/artikel/">
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group border-b border-r border-outline-variant/10" href="/dersler/">
+          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">menu_book</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">Öğrenme Yolu<br><span class="text-xs text-on-surface-variant">0'dan B2'ye Müfredat</span></span>
+        </a>
+
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group border-b border-r border-outline-variant/10" href="/hikayeler/">
+          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">auto_stories</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">Hikayeler & Okuma<br><span class="text-xs text-on-surface-variant">Leseverstehen</span></span>
+        </a>
+
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group border-b border-outline-variant/10" href="/dinleme/">
+          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">headphones</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">Dinleme & Telaffuz<br><span class="text-xs text-on-surface-variant">Hörverstehen & Aussprache</span></span>
+        </a>
+
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group border-b border-r border-outline-variant/10" href="/gramer/">
+          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">rule</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">Gramer Rehberi<br><span class="text-xs text-on-surface-variant">A'dan Z'ye</span></span>
+        </a>
+
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group border-b border-r border-outline-variant/10" href="/artikel/">
           <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">search_check</span>
-          <span class="text-on-surface text-sm font-medium leading-snug">Der Die Das<br class="hidden lg:block"> Artikel Bulucu</span>
-          <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors ml-auto lg:hidden">→</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">Kelime & Artikel Dünyası<br><span class="text-xs text-on-surface-variant">Der/Die/Das + Listeler</span></span>
         </a>
 
-        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group" href="/quiz/">
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group border-b border-outline-variant/10" href="/yazma-konusma/">
+          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">edit_note</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">Yazma & Konuşma Atölyesi<br><span class="text-xs text-on-surface-variant">Schreiben & Sprechen</span></span>
+        </a>
+
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group border-r border-outline-variant/10" href="/quiz/">
           <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">quiz</span>
-          <span class="text-on-surface text-sm font-medium leading-snug">Almanca<br class="hidden lg:block"> Kelime Quizi</span>
-          <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors ml-auto lg:hidden">→</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">İnteraktif Pratik & Araçlar<br><span class="text-xs text-on-surface-variant">Quiz, Cümle Kur, Testler</span></span>
         </a>
 
-        
-
-        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group" href="/cumlebul/">
-          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">segment</span>
-          <span class="text-on-surface text-sm font-medium leading-snug">Cümle<br class="hidden lg:block"> Örnekleri</span>
-          <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors ml-auto lg:hidden">→</span>
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group border-r border-outline-variant/10" href="/sinavlar/">
+          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">workspace_premium</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">Sınavlara Hazırlık<br><span class="text-xs text-on-surface-variant">Goethe, telc, ÖSD, TestDaF</span></span>
         </a>
 
-        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group" href="/seviyetespit/">
-          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">school</span>
-          <span class="text-on-surface text-sm font-medium leading-snug">Seviye<br class="hidden lg:block"> Testi</span>
-          <span class="text-on-surface-variant group-hover:text-primary text-xs font-mono-label transition-colors ml-auto lg:hidden">→</span>
+        <a class="flex items-center gap-3 px-5 py-4 hover:bg-surface-container transition-colors group" href="/almanyada-yasam/">
+          <span class="material-symbols-outlined text-primary shrink-0" style="font-size:20px">public</span>
+          <span class="text-on-surface text-sm font-medium leading-snug">Almanya'da Yaşam & Kültür<br><span class="text-xs text-on-surface-variant">Bürokrasi, Redewendungen</span></span>
         </a>
 
       </div>
@@ -154,7 +173,7 @@ tailwind.config = {
   <section aria-labelledby="tools-heading" class="flex flex-col gap-8">
     <div class="flex items-end justify-between gap-4 flex-wrap">
       <div>
-        <p class="font-mono-label text-xs font-semibold tracking-widest uppercase text-on-surface-variant mb-2">Araçlar</p>
+        <p class="font-mono-label text-xs font-semibold tracking-widest uppercase text-on-surface-variant mb-2">İnteraktif Pratik & Araçlar</p>
         <h2 id="tools-heading" class="text-3xl font-bold font-headline text-on-surface tracking-tight">Tüm araçlara tek yerden eriş</h2>
       </div>
     

@@ -195,12 +195,41 @@ h1 em { font-style: italic; color: var(--accent2); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
+.item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .de {
   font-family: 'Fraunces', serif;
   font-weight: 300;
   font-size: 1rem;
   line-height: 1.6;
   color: var(--text);
+}
+
+/* ── Her cümlenin gerçek kaynağı ── */
+.src-tag {
+  flex-shrink: 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  padding: 3px 8px;
+  border-radius: 20px;
+  margin-top: 2px;
+}
+.src-tag.src-wikt {
+  color: var(--accent2);
+  background: rgba(29,111,224,0.1);
+  border: 1px solid rgba(29,111,224,0.25);
+}
+.src-tag.src-backend {
+  color: var(--success);
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.28);
 }
 
 .source {
@@ -287,4 +316,8 @@ footer {
 .selectable::selection {
   background: rgba(200, 240, 96, 0.25);
   color: var(--text);
+}
+
+@media (max-width: 480px) {
+  .item-top { flex-direction: column; gap: 6px; }
 }

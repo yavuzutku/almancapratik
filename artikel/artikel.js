@@ -134,21 +134,32 @@ function hidePopup() {
 // LOKAL YEDEK VERİTABANI (Wiktionary API başarısız olursa devreye girer)
 // ================================================================
 
-const NOUNS_DB_URL = './datalar/nouns.json';
-let _nounsDbPromise = null;
+const NOUNS_DB_DIR = './datalar/';
+const _nounsDbCache = {};   // harf -> Promise<object>  (her harf sadece bir kere indirilir)
 
-/* Dosyayı sadece ilk ihtiyaç anında çeker, sonrasında bellekte tutar */
-function loadNounsDb() {
-  if (!_nounsDbPromise) {
-    _nounsDbPromise = fetch(NOUNS_DB_URL)
+/* Almanca özel harfleri normalize eder (split_nouns.py ile birebir aynı mantık) */
+const UMLAUT_MAP = { 'Ä': 'A', 'Ö': 'O', 'Ü': 'U', 'ß': 'S' };
+function letterBucket(word) {
+  if (!word) return 'misc';
+  let ch = word.charAt(0);
+  ch = UMLAUT_MAP[ch] || ch;
+  ch = ch.normalize('NFKD').charAt(0).toLowerCase();
+  return /^[a-z]$/.test(ch) ? ch : 'misc';
+}
+
+/* Sadece ilgili harfin dosyasını çeker, sonrasında bellekte tutar */
+function loadNounsBucket(letter) {
+  if (!_nounsDbCache[letter]) {
+    _nounsDbCache[letter] = fetch(`${NOUNS_DB_DIR}nouns-${letter}.json`)
       .then(res => (res.ok ? res.json() : {}))
       .catch(() => ({}));
   }
-  return _nounsDbPromise;
+  return _nounsDbCache[letter];
 }
 
 async function fetchGenusLocal(variants) {
-  const db = await loadNounsDb();
+  const letter = letterBucket(variants[0]);
+  const db = await loadNounsBucket(letter);
   for (const variant of variants) {
     const entry = db[variant];
     if (entry && (entry.g === 'm' || entry.g === 'f' || entry.g === 'n')) {

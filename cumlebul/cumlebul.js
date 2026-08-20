@@ -169,13 +169,20 @@ async function getBackendExamples(word) {
 }
 
 // ── Sonuçları HTML olarak oluştur ──
-function buildResultsHTML(sentences) {
-  return sentences.map((text, i) =>
-    `<div class="result-item">
-      <div class="de selectable" data-i="${i}">🇩🇪 ${escHtml(text)}</div>
+// items: [{ text, source }] — source: 'wiktionary' | 'backend'
+function buildResultsHTML(items) {
+  return items.map((item, i) => {
+    const isWikt = item.source === 'wiktionary';
+    const tagClass = isWikt ? 'src-wikt' : 'src-backend';
+    const tagLabel = isWikt ? '📖 Wiktionary' : '🗄️ Kendi Veritabanım';
+    return `<div class="result-item">
+      <div class="item-top">
+        <div class="de selectable" data-i="${i}">🇩🇪 ${escHtml(item.text)}</div>
+        <span class="src-tag ${tagClass}">${tagLabel}</span>
+      </div>
       <div class="tr-line" id="tr-${i}"><span class="tr-loading">çevriliyor…</span></div>
-    </div>`
-  ).join('');
+    </div>`;
+  }).join('');
 }
 
 // ── Ana arama fonksiyonu ──
@@ -202,37 +209,38 @@ async function getExamples() {
       if (wikitext) break;
     }
 
-    let finalSentences = wikitext ? parseExamples(wikitext) : [];
-    let sourceText = "Kaynak: Wiktionary";
+    const wiktSentences = wikitext ? parseExamples(wikitext) : [];
+    // Her cümleyi kaynağıyla birlikte etiketle
+    let items = wiktSentences.map(text => ({ text, source: 'wiktionary' }));
 
-    // 2. ADIM: Eğer 5'ten azsa Local Backend ile tamamla
-    if (finalSentences.length < 5) {
+    // 2. ADIM: Eğer 5'ten azsa kendi backend'imizden tamamla
+    if (items.length < 5) {
       const localResults = await getBackendExamples(word);
-      
-      // Wiktionary'de zaten olan cümleleri tekrar eklememek için kontrol et
+      const existingTexts = new Set(items.map(it => it.text));
       for (const s of localResults) {
-        if (finalSentences.length >= 5) break;
-        if (!finalSentences.includes(s)) {
-          finalSentences.push(s);
+        if (items.length >= 5) break;
+        if (!existingTexts.has(s)) {
+          items.push({ text: s, source: 'backend' });
+          existingTexts.add(s);
         }
-      }
-      
-      // Kaynak bilgisini güncelle
-      if (finalSentences.length > 0) {
-        sourceText = finalSentences.length > (wikitext ? parseExamples(wikitext).length : 0) 
-          ? "Kaynak: Wiktionary + Lokal Veri" 
-          : "Kaynak: Wiktionary";
       }
     }
 
-    // 3. ADIM: Ekranda Göster
-    if (finalSentences.length > 0) {
+    // 3. ADIM: Ekranda Göster — her cümlenin altında gerçek kaynağı yazar
+    if (items.length > 0) {
+      const wiktCount    = items.filter(it => it.source === 'wiktionary').length;
+      const backendCount = items.filter(it => it.source === 'backend').length;
+      const parts = [];
+      if (wiktCount)    parts.push(`Wiktionary: ${wiktCount}`);
+      if (backendCount) parts.push(`Kendi veritabanım: ${backendCount}`);
+      const sourceText = 'Kaynak dağılımı — ' + parts.join(' · ');
+
       res.innerHTML =
-        buildResultsHTML(finalSentences) +
+        buildResultsHTML(items) +
         `<p class="source">${sourceText}</p>`;
-      
+
       // Çevirileri başlat
-      await renderTranslations(finalSentences);
+      await renderTranslations(items.map(it => it.text));
     } else {
       err.textContent = `"${word}" için hiçbir kaynakta sonuç bulunamadı.`;
       res.innerHTML = '';
