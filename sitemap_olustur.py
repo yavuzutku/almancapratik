@@ -7,7 +7,7 @@ PROJE_DIZINI = "./"               # Tarama yapılacak ana klasör
 CIKTI_DOSYASI = "sitemap.xml"
 
 # Haris tutulacak (sitemap'e eklenmeyecek) klasörler veya dosyalar
-YASAKLI_KLASORLER = {'.git', 'node_modules', 'src', 'css', 'js', 'uploads'}
+YASAKLI_KLASORLER = {'.git', 'node_modules', 'src', 'css', 'js', 'uploads', 'ders oluşturucu'}
 YASAKLI_DOSYALAR = {'404.html'}
 
 def sitemap_uret():
