@@ -157,11 +157,41 @@ body { background: var(--st-bg); }
 .level-acc-label { flex: 1; text-align: left; font-weight: 700; font-size: 17px; color: inherit; }
 .level-acc-chevron { display: flex; transition: transform var(--transition, 0.2s); color: var(--st-text-dimmer); }
 .level-acc-item.open .level-acc-chevron { transform: rotate(180deg); color: var(--accent-blue); }
+
+/* Seviye ilerleme çubuğu — kaç ders tamamlandı */
+.level-acc-progress-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 20px 14px;
+}
+.level-acc-progress-track {
+  flex: 1; height: 5px; border-radius: 4px;
+  background: rgba(255,255,255,0.08); overflow: hidden;
+}
+.level-acc-progress-fill {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--st-primary), #22c55e);
+  transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.level-acc-progress-text {
+  flex-shrink: 0; font-family: var(--font-label); font-size: 11px;
+  color: var(--st-text-dimmer); white-space: nowrap;
+}
+
 .level-acc-body {
   max-height: 0; overflow: hidden;
   transition: max-height 0.3s cubic-bezier(0.4,0,0.2,1);
 }
 .level-acc-item.open .level-acc-body { max-height: 400px; }
+.level-acc-lesson-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 20px 8px;
+}
+.level-acc-lesson-row .level-acc-lesson { flex: 1; padding: 0; margin: 0; border-left: none; }
+.level-acc-lesson-check {
+  flex-shrink: 0; width: 15px; height: 15px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #22c55e;
+}
 .level-acc-lesson {
   display: block; width: 100%; text-align: left;
   padding: 8px 20px 8px 20px; margin: 0 0 8px; border: none; background: none; cursor: pointer;
@@ -174,7 +204,7 @@ body { background: var(--st-bg); }
   padding: 8px 20px 16px 20px; font-family: var(--font-ui); font-size: 12.5px;
   color: var(--st-text-dimmer); font-style: italic;
 }
-.level-acc-body > .level-acc-lesson:first-child,
+.level-acc-body > .level-acc-lesson-row:first-child,
 .level-acc-body > .level-acc-empty:first-child { margin-top: 4px; }
 .level-acc-body { padding-bottom: 8px; }
 
@@ -238,13 +268,24 @@ body { background: var(--st-bg); }
 }
 @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
-.lesson-card-cover-wrap { overflow: hidden; position: relative; aspect-ratio: 16 / 9; width: 100%; }
+.lesson-card-cover-wrap {
+  overflow: hidden; position: relative; aspect-ratio: 16 / 9; width: 100%;
+  background: rgba(255,255,255,0.03);
+  display: flex; align-items: center; justify-content: center;
+}
 .lesson-card-cover {
-  width: 100%; height: 100%; object-fit: cover;
+  width: 100%; height: 100%; object-fit: contain;
   display: block; background: rgba(255,255,255,0.03);
   transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
 }
-.lesson-card:hover .lesson-card-cover { transform: scale(1.05); }
+.lesson-card:hover .lesson-card-cover { transform: scale(1.03); }
+.lesson-card-completed-badge {
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(34,197,94,0.92); color: #06210f;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+}
 .lesson-card-cover-placeholder {
   width: 100%; height: 100%; aspect-ratio: 16 / 9;
   display: flex; align-items: center; justify-content: center;
@@ -479,6 +520,18 @@ body { background: var(--st-bg); }
   font-family: var(--font-ui);
 }
 .lesson-back:hover { color: var(--st-text); }
+.lesson-nav-row-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.lesson-complete-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border-radius: 10px; cursor: pointer;
+  font-family: var(--font-ui); font-size: 13px; font-weight: 600;
+  border: 1px solid var(--st-border); background: var(--st-card);
+  color: var(--st-text-dim); transition: var(--transition, 0.2s);
+}
+.lesson-complete-btn:hover { border-color: rgba(255,255,255,0.25); color: var(--st-text); }
+.lesson-complete-btn.is-done {
+  color: #22c55e; border-color: rgba(34,197,94,0.35); background: rgba(34,197,94,0.1);
+}
 .lesson-admin-actions { display: flex; gap: 8px; }
 .lesson-admin-btn {
   display: flex; align-items: center; gap: 6px;
@@ -492,8 +545,9 @@ body { background: var(--st-bg); }
 .lesson-admin-btn--danger:hover { color: var(--danger); border-color: rgba(240,112,104,0.4); background: rgba(240,112,104,0.1); }
 
 .lesson-hero-img {
-  width: 100%; max-height: 420px; object-fit: cover;
+  width: 100%; max-height: 420px; object-fit: contain;
   border-radius: 20px; margin-bottom: 40px; border: 1px solid var(--st-border);
+  background: rgba(255,255,255,0.03);
 }
 
 .lesson-meta-row {

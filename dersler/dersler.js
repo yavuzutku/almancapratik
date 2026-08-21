@@ -42,24 +42,50 @@ let activeCatFilter  = "all";
 let activeTypeFilter = "all";
 let searchTerm       = "";
 let allLessons       = [];
-let _currentLessonId = null;
+let _currentLessonId  = null;
+let _currentLessonObj = null;
 
-/* ── Ders "tamamlandı/okundu" takibi (tarayıcı yerel depolama, giriş gerektirmez) ── */
+/* ── Ders "tamamlandı" takibi (tarayıcı yerel depolama, giriş gerektirmez) ──
+   Not: eskiden bir ders sadece AÇILDIĞINDA (openLesson) otomatik olarak
+   "tamamlandı" işaretleniyordu — bu yanlıştı, sadece derse başlamak demekti,
+   bitirmek değil. Artık tamamlanma iki şekilde tetikleniyor:
+     1) Kullanıcı ders içeriğinin sonuna kadar kaydırırsa (okuma ilerleme
+        çubuğu ~%92'ye ulaşınca) otomatik işaretlenir.
+     2) Kullanıcı "Tamamlandı olarak işaretle" butonuna elle basarsa
+        (istediği zaman geri de alabilir). */
 const COMPLETED_KEY = "ap_completed_lessons";
 function getCompletedSet() {
   try { return new Set(JSON.parse(localStorage.getItem(COMPLETED_KEY)) || []); }
   catch { return new Set(); }
 }
-function markLessonCompleted(lesson) {
+function setLessonCompleted(lesson, completed) {
   const key = lesson.slug || lesson.id;
   if (!key) return;
   const set = getCompletedSet();
-  set.add(key);
+  if (completed) set.add(key); else set.delete(key);
   try { localStorage.setItem(COMPLETED_KEY, JSON.stringify([...set])); } catch {}
 }
 function isLessonCompleted(lesson) {
   const key = lesson.slug || lesson.id;
   return key ? getCompletedSet().has(key) : false;
+}
+
+/* Ders okuma ekranındaki "Tamamlandı olarak işaretle" butonunun
+   görünümünü günceller (metin + is-done stili). Ayrıca sağdaki seviye
+   akordeonundaki ilerleme çubuklarını tazeler — o an liste görünümünde
+   olmasak bile, geri dönüldüğünde güncel görünsün diye. */
+function updateCompleteButtonUI(lesson) {
+  const btn = document.getElementById("btnToggleComplete");
+  const txt = document.getElementById("btnToggleCompleteText");
+  if (!btn) return;
+  const done = isLessonCompleted(lesson);
+  btn.classList.toggle("is-done", done);
+  if (txt) txt.textContent = done ? "Tamamlandı ✓" : "Tamamlandı olarak işaretle";
+}
+
+function refreshCompletionUI() {
+  const visible = isAdmin ? allLessons : allLessons.filter(l => l.published);
+  buildLevelAccordion(visible);
 }
 
 /* ── Admin dinle ── */
@@ -130,11 +156,20 @@ function buildLevelAccordion(lessons) {
   const stdCats = ["A1","A2","B1","B2","C1"];
 
   wrap.innerHTML = stdCats.map(cat => {
-    const inLevel = lessons.filter(l => l.category === cat);
-    const isOpen  = expandedLevel === cat;
+    const inLevel   = lessons.filter(l => l.category === cat);
+    const isOpen    = expandedLevel === cat;
+    const doneCount = inLevel.filter(l => isLessonCompleted(l)).length;
+    const total     = inLevel.length;
+    const pct       = total ? Math.round((doneCount / total) * 100) : 0;
+
     const body = inLevel.length
-      ? inLevel.map(l => `<button type="button" class="level-acc-lesson" data-id="${esc(l.id)}">${esc(l.title || "Başlıksız")}</button>`).join("")
+      ? inLevel.map(l => `
+          <div class="level-acc-lesson-row">
+            <button type="button" class="level-acc-lesson" data-id="${esc(l.id)}">${esc(l.title || "Başlıksız")}</button>
+            ${isLessonCompleted(l) ? `<span class="level-acc-lesson-check" title="Tamamlandı"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>` : ""}
+          </div>`).join("")
       : `<div class="level-acc-empty">Yakında</div>`;
+
     return `
       <div class="level-acc-item${isOpen ? " open" : ""}" data-cat="${cat}">
         <button type="button" class="level-acc-header" data-cat="${cat}">
@@ -142,6 +177,11 @@ function buildLevelAccordion(lessons) {
           <span class="level-acc-label">${LEVEL_LABELS[cat]}</span>
           <svg class="level-acc-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
+        ${total ? `
+        <div class="level-acc-progress-row">
+          <div class="level-acc-progress-track"><div class="level-acc-progress-fill" style="width:${pct}%"></div></div>
+          <span class="level-acc-progress-text">${doneCount}/${total} tamamlandı</span>
+        </div>` : ""}
         <div class="level-acc-body">${body}</div>
       </div>`;
   }).join("");
@@ -264,11 +304,15 @@ async function loadStaticLessonsManifest() {
   }
 }
 
-function sortByDateDesc(list) {
+/* Dersler artık ESKİDEN YENİYE (kronolojik/öğrenme sırasına göre) sıralanıyor:
+   yeni eklenen bir ders listenin BAŞINA değil SONUNA düşer. Eskiden burada
+   "sortByDateDesc" (yeniden eskiye) kullanılıyordu, bu da her yeni ders
+   eklendiğinde listenin başına atlamasına sebep oluyordu. */
+function sortByDateAsc(list) {
   return list.slice().sort((a, b) => {
-    const da  = getLessonDate(a)?.getTime()  || 0;
+    const da  = getLessonDate(a)?.getTime() || 0;
     const dbb = getLessonDate(b)?.getTime() || 0;
-    return dbb - da;
+    return da - dbb;
   });
 }
 
@@ -289,7 +333,7 @@ async function loadLessons() {
   let staticLessons = [];
   try { staticLessons = await loadStaticLessonsManifest(); }
   catch(e) { console.error(e); }
-  allLessons = sortByDateDesc(staticLessons);
+  allLessons = sortByDateAsc(staticLessons);
   paintLessons();
 
   /* 2. AŞAMA — Firestore dersleri. Firebase SDK'sı burada, ilk boyadan
@@ -297,9 +341,9 @@ async function loadLessons() {
      güncellenir. */
   try {
     const { getDocs, query, orderBy, LESSONS_COL } = await loadFirebase();
-    const snap = await getDocs(query(LESSONS_COL, orderBy("createdAt","desc")));
+    const snap = await getDocs(query(LESSONS_COL, orderBy("createdAt","asc")));
     const dynamicLessons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    allLessons = sortByDateDesc([...dynamicLessons, ...staticLessons]);
+    allLessons = sortByDateAsc([...dynamicLessons, ...staticLessons]);
     paintLessons();
   } catch(e) {
     console.error(e);
@@ -370,6 +414,11 @@ function renderLessons(list, totalVisible = list.length) {
       ? `<img class="lesson-card-cover" src="${esc(lesson.coverUrl)}" alt="${esc(lesson.title)}" loading="lazy">`
       : `<div class="lesson-card-cover-placeholder">📖</div>`;
 
+    const completedBadgeHtml = isLessonCompleted(lesson) ? `
+      <span class="lesson-card-completed-badge" title="Tamamlandı">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </span>` : "";
+
     const levelBadge = cat ? `<span class="lesson-card-level-badge">${esc(cat)}</span>` : "";
 
     /* Statik (Ders Builder ile üretilmiş, gerçek HTML dosyası olan) dersler
@@ -388,6 +437,7 @@ function renderLessons(list, totalVisible = list.length) {
     card.innerHTML = `
       <div class="lesson-card-cover-wrap">
         ${coverHtml}
+        ${completedBadgeHtml}
       </div>
       <div class="lesson-card-body">
         <div class="lesson-card-top-row">
@@ -446,9 +496,13 @@ async function loadLessonBySlug(slug) {
 }
 
 function openLesson(lesson, pushUrl = true) {
-  _currentLessonId = lesson.id;
-  document.title   = (lesson.title || "Ders") + " — AlmancaPratik";
-  markLessonCompleted(lesson);
+  _currentLessonId  = lesson.id;
+  _currentLessonObj = lesson;
+  document.title    = (lesson.title || "Ders") + " — AlmancaPratik";
+  /* NOT: ders sadece AÇILDIĞINDA otomatik "tamamlandı" işaretlenmez —
+     bu sadece derse başlamak demektir. Tamamlanma durumu burada sadece
+     mevcut duruma göre buton görünümünü günceller. */
+  updateCompleteButtonUI(lesson);
 
   const heroImg = document.getElementById("lessonHeroImg");
   if (lesson.coverUrl) { heroImg.src = lesson.coverUrl; heroImg.style.display = "block"; }
@@ -565,8 +619,11 @@ function buildPrevNext(lesson) {
   const idx = visible.findIndex(l => l.id === lesson.id);
   if (idx === -1 || visible.length < 2) { el.innerHTML = ""; return; }
 
-  const prev = visible[idx + 1] || null; /* liste yeniden eskiye sıralı: bir sonraki eleman = daha eski ders */
-  const next = visible[idx - 1] || null;
+  /* Liste eskiden yeniye sıralı (sortByDateAsc): bir önceki dizi elemanı
+     kronolojik olarak "önceki" (daha eski) ders, bir sonraki eleman ise
+     "sonraki" (daha yeni) ders demektir. */
+  const prev = visible[idx - 1] || null;
+  const next = visible[idx + 1] || null;
 
   const card = (l, dir) => l ? `
     <a class="lesson-nav-card lesson-nav-card--${dir}" href="/dersler/${encodeURIComponent(l.slug || l.id)}">
@@ -624,14 +681,34 @@ document.getElementById("btnShareLesson")?.addEventListener("click", async () =>
   } catch { toast("Link kopyalanamadı", "err"); }
 });
 
-/* ── Okuma ilerleme çubuğu ── */
+/* ── Manuel "Tamamlandı olarak işaretle" butonu (istediği zaman geri de alınabilir) ── */
+document.getElementById("btnToggleComplete")?.addEventListener("click", () => {
+  if (!_currentLessonObj) return;
+  const nowDone = !isLessonCompleted(_currentLessonObj);
+  setLessonCompleted(_currentLessonObj, nowDone);
+  updateCompleteButtonUI(_currentLessonObj);
+  refreshCompletionUI();
+  toast(nowDone ? "Ders tamamlandı olarak işaretlendi ✓" : "Tamamlanma işareti kaldırıldı", "ok");
+});
+
+/* ── Okuma ilerleme çubuğu + otomatik tamamlanma ──
+   Kullanıcı ders içeriğinin sonuna kadar (~%92) kaydırırsa ders otomatik
+   "tamamlandı" olarak işaretlenir. Zaten tamamlanmışsa tekrar tetiklenmez. */
 window.addEventListener("scroll", () => {
   const bar = document.getElementById("readingProgressBar");
   if (!bar || !document.getElementById("viewLesson").classList.contains("active")) return;
   const h = document.documentElement;
   const scrolled = h.scrollTop;
   const max = h.scrollHeight - h.clientHeight;
-  bar.style.width = max > 0 ? Math.min(100, (scrolled / max) * 100) + "%" : "0%";
+  const pct = max > 0 ? Math.min(100, (scrolled / max) * 100) : 0;
+  bar.style.width = pct + "%";
+
+  if (pct >= 92 && _currentLessonObj && !isLessonCompleted(_currentLessonObj)) {
+    setLessonCompleted(_currentLessonObj, true);
+    updateCompleteButtonUI(_currentLessonObj);
+    refreshCompletionUI();
+    toast("Ders tamamlandı olarak işaretlendi ✓", "ok");
+  }
 }, { passive: true });
 
 document.getElementById("btnBackFromLesson").addEventListener("click", () => {
