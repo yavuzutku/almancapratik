@@ -1,8 +1,8 @@
 [
   {
     "slug": "almanca-kendini-tanitma",
-    "title": "Almanca Kendini Tanıtma: İsim, Yaş, Meslek, Ülke, Şehir ve…",
-    "excerpt": "A1 Almanca kendini tanıtma kalıplarını derinlemesine öğrenin. İsim, yaş, meslek, yaşanılan yer (Wohnort) ve konuşulan diller (Sprachen) üzerine zengin…",
+    "title": "Tanışma: Kendini Tanıtma",
+    "excerpt": "Bu ders, Almanca'da temel tanışma ve kendini tanıtma ifadelerini öğrenmek isteyen A1 seviyesindeki öğrenciler için hazırlanmıştır. İsim, yaş, meslek ve…",
     "category": "A1",
     "type": "",
     "author": "Yavuz Utku Varol",
@@ -13,10 +13,10 @@
   },
   {
     "slug": "alman-alfabesi",
-    "title": "Alman Alfabesi, Özel Sesler ve Kodlama Sistemi",
-    "excerpt": "Almancanın ses dünyasına ilk adım! 26 temel harf, Umlautlar, harf kombinasyonları, kodlama sistemi ve pratik diyaloglarla eksiksiz rehber.",
+    "title": "Almanca Alfabe ve Telaffuz Kuralları",
+    "excerpt": "Almanca alfabesindeki 26 harfi, Ä, Ö, Ü Umlautlarını, ß sesini ve resmi Buchstabieralphabet kodlama sistemini ses simülasyonlarıyla öğrenin.",
     "category": "A1",
-    "type": "gramer",
+    "type": "",
     "author": "Yavuz Utku Varol",
     "published": true,
     "cover": "cover.jpg",
