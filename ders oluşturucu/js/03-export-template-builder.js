@@ -395,9 +395,21 @@ function buildExportHtml(meta) {
       ).join("\n"),
       '</div>',
       '<article class="lesson-body lesson-body--tabbed">',
-      tabGroups.map((g, i) =>
-        '<div class="lesson-tab-panel' + (i === 0 ? ' active' : '') + '" data-tabpanel="' + esc(g.key) + '" id="lessonTab_' + esc(g.key) + '" role="tabpanel" aria-labelledby="lessonTabBtn_' + esc(g.key) + '">' + renderBlockList(g.list) + '</div>'
-      ).join("\n"),
+      tabGroups.map((g, i) => {
+        // Son sekme dışındaki her panelin sonuna, öğrenciyi bir sonraki
+        // bölüme yönlendiren bir "devam et" butonu ekliyoruz — özellikle
+        // "Konu Anlatımı" gibi bölümlerden "Alıştırmalar"a geçişi kolaylaştırır.
+        const nextGroup = tabGroups[i + 1];
+        const nextBtnHtml = nextGroup ? (
+          '<div class="lesson-tab-next-wrap">' +
+          '<button type="button" class="lesson-tab-next-btn" onclick="goToLessonTab(\'' + esc(nextGroup.key) + '\')">' +
+          '<span>' + esc(nextGroup.label) + '\'a geç</span>' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 5 7 7-7 7"/></svg>' +
+          '</button>' +
+          '</div>'
+        ) : "";
+        return '<div class="lesson-tab-panel' + (i === 0 ? ' active' : '') + '" data-tabpanel="' + esc(g.key) + '" id="lessonTab_' + esc(g.key) + '" role="tabpanel" aria-labelledby="lessonTabBtn_' + esc(g.key) + '">' + renderBlockList(g.list) + nextBtnHtml + '</div>';
+      }).join("\n"),
       '</article>'
     ].join("\n");
     // ── Performans: sadece bu derste GERÇEKTEN kullanılan font ailelerini yükle ──
@@ -863,6 +875,10 @@ getUsedLessonThemeCss(meta.theme),
 ".lesson-tab-btn.active { color: var(--xblueb); border-bottom-color: var(--xblueb); }",
 ".lesson-tab-panel { display: none; }",
 ".lesson-tab-panel.active { display: block; }",
+".lesson-tab-next-wrap { display: flex; justify-content: center; margin-top: 36px; padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.08); }",
+".lesson-tab-next-btn { display: inline-flex; align-items: center; gap: 9px; padding: 13px 26px; background: var(--xblue); color: #ffffff; border: none; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.15s ease, transform 0.15s ease; }",
+".lesson-tab-next-btn:hover { background: var(--xblueb); transform: translateY(-1px); }",
+".lesson-tab-next-btn svg { flex-shrink: 0; }",
 "@media (max-width: 480px) { .lesson-tabs { gap: 4px; } .lesson-tab-btn { font-size: 13px; padding: 9px 2px 12px; flex: 1; justify-content: center; } }",
 "@media print { .lesson-tabs { display: none !important; } .lesson-tab-panel { display: block !important; } }",
 
@@ -879,7 +895,7 @@ getUsedLessonThemeCss(meta.theme),
 "  .pdf-download-btn, .premium-progress-bar, .lesson-nav-row, .bg-canvas, .lb-lightbox-overlay,",
 "  .quiz-action-btn, .fib-action-btn, .matching-action-btn, .matching-retry-btn,",
 "  .sentorder-action-btn, .wordorder-actions, .code-copy-btn, .rt-toolbar,",
-"  .konj-action-btn, .listen-audio-player,",
+"  .konj-action-btn, .listen-audio-player, .lesson-tab-next-wrap,",
 "  .premium-audio-btn, .tts-cluster, nav, [data-navbar], .lb-image-trigger { display: none !important; }",
 "  html, body { background: #ffffff !important; color: #111827 !important; }",
 "  .lesson-wrap { max-width: 100% !important; }",
@@ -1003,6 +1019,16 @@ lessonBodyHtml,
 "    });",
 "  });",
 "});",
+"/* 'X'e geç' butonu: sekme sekmesini tıklamışçasına değiştirir, sonra yeni",
+"   sekmenin en üstüne yumuşakça kaydırır (öğrenci nereye geçtiğini görsün). */",
+"function goToLessonTab(tabKey) {",
+"  var btn = document.querySelector('.lesson-tab-btn[data-tab=\"' + tabKey + '\"]');",
+"  if (!btn) return;",
+"  btn.click();",
+"  var panel = document.querySelector('.lesson-tab-panel[data-tabpanel=\"' + tabKey + '\"]');",
+"  var scrollTarget = panel || document.querySelector('.lesson-tabs');",
+"  if (scrollTarget) scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });",
+"}",
 "/* TOC bağlantısı gizli bir sekmedeki başlığa gidiyorsa, önce o sekmeye geçer */",
 "function activateTabForElement(el) {",
 "  var panel = el.closest('.lesson-tab-panel');",
