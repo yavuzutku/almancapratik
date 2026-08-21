@@ -232,7 +232,7 @@
       "   - font alanı şu değerlerden biri olmalı: " + fontKeys,
       "   - weight alanı: \"400\", \"500\", \"600\", \"700\" veya \"800\" (string olarak, tırnaklı).",
       "   - paragraph.align: \"left\", \"center\", \"right\", \"justify\". image.align: \"left\", \"center\", \"right\".",
-      "   - heading.level: \"h1\", \"h2\" veya \"h3\". callout.theme: \"amber\"|\"green\"|\"blue\"|\"rose\".",
+      "   - heading.level: \"h2\" veya \"h3\" KULLAN. \"h1\" ASLA seçme — sayfanın H1'i zaten ders başlığından otomatik üretiliyor, ikinci bir h1 SEO açısından hatalıdır. callout.theme: \"amber\"|\"green\"|\"blue\"|\"rose\".",
       "   - image.objectFit: \"cover\" veya \"contain\"; image.shadow / image.lazy: \"0\" veya \"1\".",
       "   - table.rows bir dizi-dizisidir (satır x sütun); boyut değiştirirsen headers/audioHeaders/audioCells dizilerini de tutarlı tut.",
       "",
@@ -246,7 +246,15 @@
       '   "meta": { "title": "...", "description": "...", "level": "A1|A2|B1|B2|C1", "type": "iletisim|kultur|gramer", "difficulty": "Kolay|Orta|Zor", "readTime": "dakika (string, örn. \\"6\\")", "cover": "" }',
       "   - cover alanını SADECE derste kullanıcının verdiği gerçek bir görsel URL'si varsa doldur; yoksa boş string (\"\") bırak.",
       "   - 'meta' içine ASLA yazar adı ya da URL slug/klasör adı EKLEME — bunlar tamamen kullanıcıya aittir.",
-      "   - Küçük/yerel bir düzenleme yapıyorsan 'meta' alanını hiç EKLEME."
+      "   - Küçük/yerel bir düzenleme yapıyorsan 'meta' alanını hiç EKLEME.",
+      "",
+      "   SEO KURALLARI (title/description üretirken KESİNLİKLE uy — bu alanlar doğrudan Google arama sonucunda görünür):",
+      "   - title: 45-60 karakter arası, dersin gerçek konusunu net biçimde anlatan, tıklanabilir ama ABARTISIZ bir başlık. Sona \"— AlmancaPratik\" EKLEME (bu otomatik ekleniyor). Sonunda nokta OLMASIN. Tamamı BÜYÜK HARF olmasın.",
+      "   - description: 120-155 karakter arası, dersin içeriğini özetleyen VE öğrenciyi dersi açmaya teşvik eden doğal bir Türkçe cümle/cümleler. Başlığı birebir tekrar ETME, jenerik (\"Bu derste Almanca öğreneceksiniz\" gibi boş) ifadeler KULLANMA — dersin somut içeriğinden (hangi kelimeler, hangi kurallar, hangi örnekler) bahset.",
+      "   - Her iki alanda da dersin gerçek konusuyla ilgili en az bir somut Almanca terim/kelime geçsin (ör. \"Akkusativ\", \"der/die/das\") — anahtar kelime uyumu için önemli.",
+      "   - Aynı title/description kalıbını farklı derslerde tekrarlama; her ders kendi içeriğine özgü, benzersiz bir title+description almalı.",
+      "",
+      "9) Görsel (image) bloğu eklerken/güncellerken 'alt' alanını ASLA boş bırakma — görselde gerçekte ne göründüğünü betimleyen, kısa (5-12 kelime) açıklayıcı bir Türkçe metin yaz (ör. \"Berlin'de Brandenburg Kapısı önünde yürüyen insanlar\"). Bu hem erişilebilirlik hem görsel arama SEO'su için zorunludur. Süsleme amaçlı, anlamsız bir görselse bile en az kısa bir konu tanımı yaz."
     ].join("\n");
   }
 

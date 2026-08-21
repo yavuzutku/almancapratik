@@ -427,20 +427,59 @@ function buildExportHtml(meta) {
       Array.from(usedFontKeys).map(k => FONT_GOOGLE_SEGMENTS[k]).join("&") +
       "&display=swap";
 
-    const canonicalTitle = esc(meta.title);
+    // ── SEO GÜVENLİK AĞI ────────────────────────────────────────────────
+    // Dersler artık Gemini tarafından otomatik üretiliyor; kullanıcı title/
+    // description alanlarını elle kontrol etmeyebilir. Bu yüzden burada
+    // meta verilerini HER ZAMAN SEO açısından güvenli sınırlara çekiyoruz
+    // (boşsa doldur, çok uzunsa kes) — Gemini ne yazarsa yazsın, yayınlanan
+    // HTML'in <title>/description'ı asla bozuk/boş/aşırı uzun olmaz.
+    function smartTruncate(str, maxLen) {
+      const s = String(str || "").trim();
+      if (s.length <= maxLen) return s;
+      const cut = s.slice(0, maxLen - 1);
+      const lastSpace = cut.lastIndexOf(" ");
+      return (lastSpace > maxLen * 0.6 ? cut.slice(0, lastSpace) : cut).trim() + "…";
+    }
+    // Google başlığı ~55-60 karakterden sonra SERP'te kesiyor; sonuna zaten
+    // " — AlmancaPratik" (17 karakter) eklendiğinden ham başlığı 60 ile sınırlıyoruz.
+    const safeTitleRaw = smartTruncate(meta.title || "Ders", 60);
+    const canonicalTitle = esc(safeTitleRaw);
+    // Description boşsa H1 dışındaki ilk paragraf/metin bloğundan otomatik
+    // üret; hâlâ boşsa seviyeye göre genel ama anlamlı bir açıklamaya düş.
+    function firstTextSnippet() {
+      const b = blocks.find(x => (x.type === "paragraph" && (x.html || "").replace(/<[^>]+>/g, "").trim()) ||
+                                   (x.type === "callout" && (x.html || "").replace(/<[^>]+>/g, "").trim()));
+      if (!b) return "";
+      return ((b.html || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
+    }
+    const descFallback = firstTextSnippet() ||
+      ("AlmancaPratik ile " + (meta.level || "") + " seviyesinde \"" + (meta.title || "Almanca") + "\" konusunu örnekler ve alıştırmalarla öğren.").replace(/\s+/g, " ");
+    // Google açıklamayı ~155-160 karakterden keser; 155'te tutuyoruz.
+    const safeDescription = smartTruncate(meta.description || descFallback, 155);
     const SITE_URL = "https://almancapratik.com";
     const slugPart = encodeURIComponent(meta.slug || slugify(meta.title));
     const canonicalUrl = SITE_URL + "/dersler/" + slugPart + "/";
+    // Sosyal paylaşım görseli: kapak yoksa sitenin varsayılan görseline düş,
+    // böylece WhatsApp/Twitter/Facebook paylaşımında hiçbir zaman resimsiz
+    // (çıplak link) bir kart görünmez.
+    const ogImageUrl = meta.cover ? meta.cover : (SITE_URL + "/images/almancapratik.jpg");
+    // Basit anahtar kelime listesi (title + seviye + "Almanca öğren" + tür) —
+    // modern SEO'da meta keywords'ün ağırlığı düşük ama zararı da yok.
+    const keywordParts = [meta.title, meta.level ? "Almanca " + meta.level : "", "Almanca öğren", "AlmancaPratik"]
+      .filter(Boolean);
     const jsonLd = {
       "@context": "https://schema.org",
       "@type": "LearningResource",
-      "name": meta.title || "Ders",
-      "description": meta.description || "",
+      "name": safeTitleRaw,
+      "description": safeDescription,
       "url": canonicalUrl,
+      "image": ogImageUrl,
       "inLanguage": "de",
+      "learningResourceType": "Ders",
       "educationalLevel": meta.level || undefined,
+      "isAccessibleForFree": true,
       "author": meta.author ? { "@type": "Person", "name": meta.author } : undefined,
-      "publisher": { "@type": "Organization", "name": "AlmancaPratik", "url": SITE_URL }
+      "publisher": { "@type": "Organization", "name": "AlmancaPratik", "url": SITE_URL, "logo": SITE_URL + "/favicon.png" }
     };
     const breadcrumbLd = {
       "@context": "https://schema.org",
@@ -460,19 +499,24 @@ function buildExportHtml(meta) {
 '<meta charset="UTF-8">',
 '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
 "<title>" + canonicalTitle + " — AlmancaPratik</title>",
-'<meta name="description" content="' + esc(meta.description) + '">',
-'<meta name="robots" content="index, follow">',
+'<meta name="description" content="' + esc(safeDescription) + '">',
+(keywordParts.length ? '<meta name="keywords" content="' + esc(keywordParts.join(", ")) + '">' : ""),
+'<meta name="robots" content="index, follow, max-image-preview:large">',
 '<link rel="canonical" href="' + canonicalUrl + '">',
 '<meta property="og:type" content="article">',
 '<meta property="og:site_name" content="AlmancaPratik">',
+'<meta property="og:locale" content="tr_TR">',
 '<meta property="og:title" content="' + canonicalTitle + '">',
-'<meta property="og:description" content="' + esc(meta.description) + '">',
+'<meta property="og:description" content="' + esc(safeDescription) + '">',
 '<meta property="og:url" content="' + canonicalUrl + '">',
-(meta.cover ? '<meta property="og:image" content="' + esc(meta.cover) + '">' : ""),
+'<meta property="og:image" content="' + esc(ogImageUrl) + '">',
+'<meta property="og:image:alt" content="' + canonicalTitle + '">',
 '<meta name="twitter:card" content="summary_large_image">',
 '<meta name="twitter:title" content="' + canonicalTitle + '">',
-'<meta name="twitter:description" content="' + esc(meta.description) + '">',
+'<meta name="twitter:description" content="' + esc(safeDescription) + '">',
+'<meta name="twitter:image" content="' + esc(ogImageUrl) + '">',
 (meta.type ? '<meta name="lesson-type" content="' + esc(meta.type) + '">' : ""),
+(meta.level ? '<meta name="lesson-level" content="' + esc(meta.level) + '">' : ""),
 (meta.author ? '<meta name="author" content="' + esc(meta.author) + '">' : ""),
 '<script type="application/ld+json">' + JSON.stringify(jsonLd) + '</' + 'script>',
 '<script type="application/ld+json">' + JSON.stringify(breadcrumbLd) + '</' + 'script>',
