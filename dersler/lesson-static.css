@@ -58,7 +58,7 @@
 /* ── Breadcrumb ── */
 .lesson-nav-row {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 36px;
+  margin-bottom: 36px; gap: 12px; flex-wrap: wrap;
 }
 .lesson-back {
   display: inline-flex; align-items: center; gap: 7px;
@@ -69,6 +69,21 @@
   font-family: var(--font-ui, 'Inter', sans-serif);
 }
 .lesson-back:hover { color: var(--text-primary); }
+
+/* ── "Tamamlandı olarak işaretle" butonu ── */
+.lesson-complete-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border-radius: 10px; cursor: pointer;
+  font-family: var(--font-ui, 'Inter', sans-serif); font-size: 13px; font-weight: 600;
+  border: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+  background: rgba(255,255,255,0.03);
+  color: var(--text-secondary, rgba(240,238,232,0.6));
+  transition: var(--transition, 0.2s);
+}
+.lesson-complete-btn:hover { border-color: rgba(255,255,255,0.25); color: var(--text-primary, #f0eee8); }
+.lesson-complete-btn.is-done {
+  color: #22c55e; border-color: rgba(34,197,94,0.35); background: rgba(34,197,94,0.1);
+}
 
 /* ── Kapak görseli ── */
 .lesson-hero-img {
