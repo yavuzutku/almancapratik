@@ -171,7 +171,6 @@ function setCatFilter(cat) {
 
 function filterLessons(lessons) {
   let out = activeCatFilter === "all" ? lessons : lessons.filter(l => l.category === activeCatFilter);
-  if (activeTypeFilter !== "all") out = out.filter(l => l.type === activeTypeFilter);
   if (searchTerm) {
     const q = searchTerm.toLocaleLowerCase("tr");
     out = out.filter(l =>
@@ -181,23 +180,6 @@ function filterLessons(lessons) {
   }
   return out;
 }
-
-/* ── Tür pilleri: Kültür / İletişim / Gramer / Tüm Dersler ── */
-function setTypeFilter(type) {
-  if (type === "all") { activeTypeFilter = "all"; activeCatFilter = "all"; expandedLevel = null; }
-  else activeTypeFilter = type;
-  document.querySelectorAll(".type-pill").forEach(btn =>
-    btn.classList.toggle("active", btn.dataset.type === (type === "all" ? "all" : activeTypeFilter))
-  );
-  const filtered = filterLessons(allLessons);
-  updateLessonsCount(filtered.length);
-  renderLessons(filtered, (isAdmin ? allLessons : allLessons.filter(l => l.published)).length);
-  buildLevelAccordion(isAdmin ? allLessons : allLessons.filter(l => l.published));
-}
-document.querySelectorAll(".type-pill").forEach(btn => {
-  btn.addEventListener("click", () => setTypeFilter(btn.dataset.type));
-});
-window.setTypeFilter = setTypeFilter;
 
 /* ── Tarih yardımcı fonksiyonu: Firestore Timestamp'i de,
    statik manifest'ten gelen düz ISO string tarihi de anlar ── */
@@ -376,10 +358,6 @@ function renderLessons(list, totalVisible = list.length) {
         : `/dersler/?id=${encodeURIComponent(lesson.id)}`);
 
     const cat      = lesson.category || "";
-    const typeMap  = { iletisim: "İletişim", kultur: "Kültür", gramer: "Gramer" };
-    const typeLabel = lesson.type && typeMap[lesson.type]
-      ? `<span class="lesson-type-tag">${typeMap[lesson.type]}</span>`
-      : "";
     const dateObj  = getLessonDate(lesson);
     const date     = dateObj
       ? dateObj.toLocaleDateString("tr-TR",{day:"2-digit",month:"long",year:"numeric"})
@@ -414,7 +392,6 @@ function renderLessons(list, totalVisible = list.length) {
       <div class="lesson-card-body">
         <div class="lesson-card-top-row">
           ${levelBadge}
-          ${typeLabel}
           ${draftBadge}
         </div>
         <div class="lesson-card-title">${esc(lesson.title || "Başlıksız")}</div>
@@ -485,13 +462,8 @@ function openLesson(lesson, pushUrl = true) {
     catBadge.style.display = "inline-flex";
   } else { catBadge.style.display = "none"; }
 
-  const typeMapFull = { iletisim: "İletişim", kultur: "Kültür", gramer: "Gramer" };
   const typeTagEl = document.getElementById("lessonTypeTag");
-  if (lesson.type && typeMapFull[lesson.type]) {
-    typeTagEl.textContent   = typeMapFull[lesson.type];
-    typeTagEl.dataset.type  = lesson.type;
-    typeTagEl.style.display = "inline-flex";
-  } else { typeTagEl.style.display = "none"; }
+  if (typeTagEl) typeTagEl.style.display = "none";
 
   document.getElementById("lessonDraftBadge").style.display =
     (isAdmin && !lesson.published) ? "inline-flex" : "none";

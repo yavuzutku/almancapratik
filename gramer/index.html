@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gramer Rehberi — AlmancaPratik</title>
+  <meta name="description" content="A1'den B2'ye Almanca gramer konu anlatımları, cümle yapısı, fiil çekimleri ve edatlar.">
+  <link rel="icon" href="../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="./gramer.css">
+</head>
+<body>
+
+<div class="bg-canvas" aria-hidden="true">
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+</div>
+
+<div class="page-wrap">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1 class="page-title">Gramer Rehberi</h1>
+      <p class="page-subtitle">A1'den B2'ye tüm konu anlatımları, cümle yapısı, fiil çekimleri ve edatlar tek yerde toplanacak.</p>
+    </div>
+  </div>
+
+  <!-- Seviye filtresi -->
+  <div class="level-pill-row" id="levelPillRow">
+    <button class="level-pill active" data-level="all">Tüm Seviyeler</button>
+    <button class="level-pill" data-level="A1">A1</button>
+    <button class="level-pill" data-level="A2">A2</button>
+    <button class="level-pill" data-level="B1">B1</button>
+    <button class="level-pill" data-level="B2">B2</button>
+  </div>
+
+  <!-- Arama -->
+  <div class="search-row">
+    <input type="text" id="gramerSearch" class="search-input" placeholder="Konu ara (ör. Akkusativ, cümle yapısı...)" disabled>
+  </div>
+
+  <!-- Konu grid — şu an boş, dersler yayınlandıkça dolacak -->
+  <div class="topics-grid" id="topicsGrid"></div>
+
+  <!-- Boş durum -->
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon-box">
+      <span class="material-symbols-outlined">rule</span>
+    </div>
+    <h3 class="empty-title">Konular hazırlanıyor</h3>
+    <p class="empty-desc">Gramer konu anlatımları yakında burada, seviyene göre filtrelenebilir şekilde yer alacak.</p>
+    <a class="empty-btn" href="/dersler/">Bu Arada Derslere Göz At →</a>
+  </div>
+
+</div>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
+<script type="module">
+  import "../js/core.js";
+</script>
+<script src="./gramer.js"></script>
+
+</body>
+</html>

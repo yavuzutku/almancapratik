@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sınavlara Hazırlık — AlmancaPratik</title>
+  <meta name="description" content="Sınavlara Hazırlık bölümü yakında AlmancaPratik'te.">
+  <link rel="icon" href="../favicon.ico">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  .ys-wrap {
+    min-height: calc(100vh - 40px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+  .ys-card {
+    max-width: 560px;
+    width: 100%;
+    text-align: center;
+    background: var(--surface-container-low, #171b2c);
+    border: 1px solid var(--outline-variant, rgba(148,163,196,0.16));
+    border-radius: 24px;
+    padding: 56px 40px;
+    box-shadow: 0 30px 60px -30px rgba(4,7,15,0.5);
+  }
+  .ys-icon-box {
+    width: 72px; height: 72px;
+    margin: 0 auto 24px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(58,99,236,0.18), rgba(109,141,255,0.08));
+    border: 1px solid rgba(148,163,196,0.18);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ys-icon-box .material-symbols-outlined {
+    font-size: 34px;
+    color: #a8c0ff;
+  }
+  .ys-eyebrow {
+    font-family: 'Space Grotesk', monospace;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6d8dff;
+    margin-bottom: 10px;
+  }
+  .ys-title {
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-size: 30px; font-weight: 800;
+    color: #eef1fc;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+  .ys-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #8d95b3;
+    margin-bottom: 32px;
+  }
+  .ys-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    background: rgba(58,99,236,0.14);
+    border: 1px solid rgba(109,141,255,0.28);
+    color: #a8c0ff;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    margin-bottom: 32px;
+  }
+  .ys-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #6d8dff;
+    animation: ys-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes ys-pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.4; transform:scale(.7); } }
+  .ys-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .ys-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-size: 14px; font-weight: 700;
+    text-decoration: none;
+    transition: transform .15s ease, background .15s ease;
+  }
+  .ys-btn-primary {
+    background: linear-gradient(135deg, #3a63ec, #6d8dff);
+    color: #f5f7ff;
+  }
+  .ys-btn-primary:hover { transform: translateY(-1px); }
+  .ys-btn-secondary {
+    background: transparent;
+    border: 1px solid rgba(148,163,196,0.24);
+    color: #eef1fc;
+  }
+  .ys-btn-secondary:hover { background: rgba(255,255,255,0.05); }
+</style>
+</head>
+<body>
+
+<div class="ys-wrap">
+  <div class="ys-card">
+    <div class="ys-icon-box">
+      <span class="material-symbols-outlined">workspace_premium</span>
+    </div>
+    <div class="ys-eyebrow">AlmancaPratik</div>
+    <h1 class="ys-title">Sınavlara Hazırlık</h1>
+    <p class="ys-desc">Goethe, telc, ÖSD ve TestDaF için sınav formatları, örnek denemeler ve modül stratejileri.</p>
+    <div class="ys-badge"><span class="ys-dot"></span>Yakında burada</div>
+    <div class="ys-actions">
+      <a class="ys-btn ys-btn-primary" href="/dersler/">Derslere Göz At →</a>
+      <a class="ys-btn ys-btn-secondary" href="/">Ana Sayfaya Dön</a>
+    </div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
+<script type="module">
+  import "../js/core.js";
+</script>
+
+</body>
+</html>

@@ -1,0 +1,131 @@
+.page-wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+.page-header { margin-bottom: 28px; }
+.page-title {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 32px; font-weight: 800;
+  color: #eef1fc;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.page-subtitle {
+  font-size: 15px;
+  color: #8d95b3;
+  line-height: 1.6;
+  max-width: 620px;
+}
+
+/* Seviye filtresi */
+.level-pill-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.level-pill {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(148,163,196,0.2);
+  background: transparent;
+  color: #8d95b3;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.level-pill:hover { background: rgba(255,255,255,0.05); color: #eef1fc; }
+.level-pill.active {
+  background: linear-gradient(135deg, #3a63ec, #6d8dff);
+  border-color: transparent;
+  color: #f5f7ff;
+}
+
+/* Arama */
+.search-row { margin-bottom: 28px; }
+.search-input {
+  width: 100%;
+  padding: 13px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(148,163,196,0.18);
+  background: #171b2c;
+  color: #eef1fc;
+  font-size: 14px;
+  font-family: 'Manrope', system-ui, sans-serif;
+}
+.search-input::placeholder { color: #6b7291; }
+.search-input:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Konu grid — dersler geldikçe kart olarak dolacak */
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.topic-card {
+  background: #171b2c;
+  border: 1px solid rgba(148,163,196,0.16);
+  border-radius: 16px;
+  padding: 20px;
+  text-decoration: none;
+  display: block;
+  transition: transform .15s ease, border-color .15s ease;
+}
+.topic-card:hover { transform: translateY(-2px); border-color: rgba(109,141,255,0.35); }
+.topic-badge {
+  display: inline-block;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .06em;
+  color: #a8c0ff;
+  background: rgba(58,99,236,0.14);
+  border: 1px solid rgba(109,141,255,0.28);
+  padding: 3px 9px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+.topic-title { font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 700; color: #eef1fc; }
+
+/* Boş durum */
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  background: #171b2c;
+  border: 1px dashed rgba(148,163,196,0.22);
+  border-radius: 20px;
+}
+.empty-icon-box {
+  width: 60px; height: 60px;
+  margin: 0 auto 18px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(58,99,236,0.18), rgba(109,141,255,0.08));
+  border: 1px solid rgba(148,163,196,0.18);
+  display: flex; align-items: center; justify-content: center;
+}
+.empty-icon-box .material-symbols-outlined { font-size: 28px; color: #a8c0ff; }
+.empty-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 18px; font-weight: 800;
+  color: #eef1fc;
+  margin-bottom: 8px;
+}
+.empty-desc {
+  font-size: 14px;
+  color: #8d95b3;
+  max-width: 420px;
+  margin: 0 auto 22px;
+  line-height: 1.6;
+}
+.empty-btn {
+  display: inline-block;
+  padding: 11px 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3a63ec, #6d8dff);
+  color: #f5f7ff;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px; font-weight: 700;
+  text-decoration: none;
+}
