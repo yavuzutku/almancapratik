@@ -1,4 +1,45 @@
 import { onAdminChange } from "../src/admin.js";
+import { onAuthChange, db } from "../js/firebase.js";
+import { doc, setDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ── Giriş yapan kullanıcı — ilerlemeyi Firestore'a kaydetmek için ── */
+let authUser = null;
+onAuthChange(async (u) => {
+  authUser = u;
+  renderLoginBanner();
+  if (u) await syncCompletedFromCloud();
+});
+
+async function cloudSetCompleted(lesson, completed) {
+  if (!authUser) return;
+  const key = lesson.slug || lesson.id;
+  if (!key) return;
+  try {
+    await setDoc(doc(db, "users", authUser.uid, "progress", key), { completed, updatedAt: Date.now() }, { merge: true });
+  } catch (e) { console.error("[cloudSetCompleted]", e); }
+}
+
+async function syncCompletedFromCloud() {
+  if (!authUser) return;
+  try {
+    const snap = await getDocs(collection(db, "users", authUser.uid, "progress"));
+    const set = getCompletedSet();
+    snap.forEach(d => { const c = d.data().completed; if (c) set.add(d.id); else set.delete(d.id); });
+    localStorage.setItem(COMPLETED_KEY, JSON.stringify([...set]));
+    refreshCompletionUI();
+    if (_currentLessonObj) updateCompleteButtonUI(_currentLessonObj);
+  } catch (e) { console.error("[syncCompletedFromCloud]", e); }
+}
+
+function renderLoginBanner() {
+  const el = document.getElementById("progressLoginBanner");
+  if (!el) return;
+  if (authUser) { el.innerHTML = ""; return; }
+  el.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;margin-bottom:20px;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.25);border-radius:12px;flex-wrap:wrap;">
+    <span style="font-size:13px;color:#1a1a1a;font-weight:500">Giriş yaparsan ders ilerlemen kaydedilir.</span>
+    <a href="/login.html?returnTo=${encodeURIComponent(location.pathname)}" style="padding:8px 16px;background:#2563eb !important;color:#000 !important;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;">Giriş Yap</a>
+  </div>`;
+}
 
 /* ── Firebase: LAZY YÜKLEME ──
    Performans notu: Firebase App + Firestore SDK'ları (firebaseapp.com,
@@ -686,6 +727,7 @@ document.getElementById("btnToggleComplete")?.addEventListener("click", () => {
   if (!_currentLessonObj) return;
   const nowDone = !isLessonCompleted(_currentLessonObj);
   setLessonCompleted(_currentLessonObj, nowDone);
+  cloudSetCompleted(_currentLessonObj, nowDone);
   updateCompleteButtonUI(_currentLessonObj);
   refreshCompletionUI();
   toast(nowDone ? "Ders tamamlandı olarak işaretlendi ✓" : "Tamamlanma işareti kaldırıldı", "ok");
@@ -705,6 +747,7 @@ window.addEventListener("scroll", () => {
 
   if (pct >= 92 && _currentLessonObj && !isLessonCompleted(_currentLessonObj)) {
     setLessonCompleted(_currentLessonObj, true);
+    cloudSetCompleted(_currentLessonObj, true);
     updateCompleteButtonUI(_currentLessonObj);
     refreshCompletionUI();
     toast("Ders tamamlandı olarak işaretlendi ✓", "ok");
@@ -792,6 +835,7 @@ window.resetAllFilters = resetAllFilters;
   else if (id)    await loadLessonById(id);
   else {
     showViewOnly("viewList");
+    renderLoginBanner();
     if (cat) { expandedLevel = cat; setCatFilter(cat); }
     if (type) setTypeFilter(type);
   }
