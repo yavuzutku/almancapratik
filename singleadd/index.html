@@ -12,6 +12,8 @@
 </head>
 <body>
 
+<div class="singleadd-ambient" aria-hidden="true"></div>
+
 <div class="singleadd-container">
 
   <button class="back-btn" id="backBtn">← Geri</button>
@@ -19,6 +21,17 @@
   <div class="singleadd-hero">
     <h1>Kelime Ekle 🔤</h1>
     <p>Almanca kelimeyi yaz, sistem artikel ve temel formu otomatik önerir.</p>
+  </div>
+
+  <!-- İlerleme göstergesi (JS'e dokunmadan, #stepMeaning'in .hidden durumuna göre CSS ile güncellenir) -->
+  <div class="progress-track" aria-hidden="true">
+    <span class="progress-node progress-node--1">
+      <span class="progress-dot"></span> Kelime
+    </span>
+    <span class="progress-line"></span>
+    <span class="progress-node progress-node--2">
+      <span class="progress-dot"></span> Anlam
+    </span>
   </div>
 
   <!-- ══════════════════════════
